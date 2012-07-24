@@ -49,7 +49,7 @@ sub dump_metadata {
         print $txt_file join( "\t", (
                                  $md->{name},     $md->{species},
                                  $md->{division}, $md->{taxonomy_id},
-                                 $md->{assembly}, $md->{genebuild},
+                                 $md->{assembly_name}, $md->{genebuild},
                                  "\n" ) );
     }
     close $txt_file;
