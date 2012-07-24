@@ -50,7 +50,7 @@ my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = $cli_helper->get_dba_opts();
+my $optsd = [@{$cli_helper->get_dba_opts()},@{$cli_helper->get_dba_opts('m')}];
 push( @{$optsd}, "nocache" );
 push( @{$optsd}, "url" );
 push( @{$optsd}, "finder:s" );
@@ -60,21 +60,30 @@ push( @{$optsd}, "contigs" );
 
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 
-$opts->{finder} ||= 'Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder';
-load $opts->{finder};
-$opts->{dumper} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper';
-load $opts->{dumper};
-$opts->{processor} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor';
-load $opts->{processor};
 
 my %ens_opts = map {my $key = '-'.uc($_); $key=>$opts->{$_}} keys %$opts;
 
 # create DBAFinder
+
+$opts->{finder} ||= 'Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder';
+$logger->info("Retrieving DBAs using $opts->{finder}");
+load $opts->{finder};
 my $finder = $opts->{finder}->new(%ens_opts);
+my $dbas =  $finder->get_dbas();
+$logger->info("Retrieved ".scalar(@$dbas)." DBAs");
+
 # create processor
+$opts->{processor} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor';
+load $opts->{processor};
+$logger->info("Processing DBAs using $opts->{processor}");
 my $processor = $opts->{processor}->new(%ens_opts);
+my $details = $processor->process_metadata($dbas);
+$logger->info("Completed processing");
+
 # create dumper
 my $dumper = $opts->{dumper}->new(%ens_opts);
-my $dbas =  $finder->get_dbas();
-my $details = $processor->process_metadata($dbas);
+$opts->{dumper} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper';
+load $opts->{dumper};
+$logger->info("Dumping metadata using $opts->{dumper}");
 $dumper->dump_metadata($details);
+$logger->info("Completed dumping");
