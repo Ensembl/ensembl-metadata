@@ -81,9 +81,9 @@ my $details = $processor->process_metadata($dbas);
 $logger->info("Completed processing");
 
 # create dumper
-my $dumper = $opts->{dumper}->new(%ens_opts);
 $opts->{dumper} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper';
 load $opts->{dumper};
+my $dumper = $opts->{dumper}->new(%ens_opts);
 $logger->info("Dumping metadata using $opts->{dumper}");
 $dumper->dump_metadata($details);
 $logger->info("Completed dumping");
