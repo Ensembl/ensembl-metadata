@@ -20,7 +20,7 @@
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder;
+package Bio::EnsEMBL::Utils::MetaData::DBAFinder::EnaDBAFinder;
 use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
 use Bio::EnsEMBL::ENA::ENARegistryHelper;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
@@ -30,13 +30,12 @@ use warnings;
 sub new {
     my ( $proto, @args ) = @_;
     my $self = $proto->SUPER::new(@args);
-    my $self->{helper};
     my ( $url, $host, $port, $user, $pass, $pattern, $nocache ) =
       rearrange( [  'URL',  'HOST',    'PORT', 'USER',
                     'PASS', 'PATTERN', 'NO_CACHE' ],
                  @args );
-    if ( defined $opts->{url} ) {
-        $helper = Bio::EnsEMBL::ENA::ENARegistryHelper->new( -URL => $url );
+    if ( defined $url ) {
+        $self->{helper} = Bio::EnsEMBL::ENA::ENARegistryHelper->new( -URL => $url );
     } else {
         Bio::EnsEMBL::ENA::ENARegistryHelper->register_ena_dbs(
                                                             $host, $port, $user,

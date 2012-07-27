@@ -31,7 +31,7 @@ sub new {
     my ($caller,@args) = @_;
     my $class  = ref($caller) || $caller;
     my $self   = bless( {}, $class );
-    ($self->{contigs}) = rearrange([-CONTIGS],@args);
+    ($self->{contigs}) = rearrange(['CONTIGS'],@args);
     return $self;
 }
 
