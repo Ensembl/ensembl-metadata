@@ -60,7 +60,7 @@ sub dump_metadata {
         if ( !defined $div_link ) {
             croak "No division defined for $md->{name}";
         }
-        $div_link .= $md->{name};
+        $div_link .= $md->{species};
         my $line =
             "<tr><td><a href='${div_link}'>"
           . $md->{name}
