@@ -22,7 +22,7 @@
 
 package Bio::EnsEMBL::Utils::MetaData::DBAFinder::EnaDBAFinder;
 use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
-use Bio::EnsEMBL::ENA::ENARegistryHelper;
+use Bio::EnsEMBL::LookUp;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
@@ -35,13 +35,13 @@ sub new {
                     'PASS', 'PATTERN', 'NO_CACHE' ],
                  @args );
     if ( defined $url ) {
-        $self->{helper} = Bio::EnsEMBL::ENA::ENARegistryHelper->new( -URL => $url );
+        $self->{helper} = Bio::EnsEMBL::LookUp->new( -URL => $url );
     } else {
-        Bio::EnsEMBL::ENA::ENARegistryHelper->register_ena_dbs(
+        Bio::EnsEMBL::LookUp->register_all_dbs(
                                                             $host, $port, $user,
                                                             $pass, $pattern );
         $self->{helper} =
-          Bio::EnsEMBL::ENA::ENARegistryHelper->new( -NO_CACHE => $nocache );
+          Bio::EnsEMBL::LookUp->new( -NO_CACHE => $nocache );
     }
     return $self;
 }

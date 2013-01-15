@@ -22,13 +22,18 @@
 
 package Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder;
 use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
+use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
 
 sub new {
     my ( $proto, @args ) = @_;
     my $self = $proto->SUPER::new(@args);
+    ($self->{regfile}) = rearrange(['REGISTRY'], @args);
     $self->{registry} ||= 'Bio::EnsEMBL::Registry';
+    if(defined $self->{regfile}) {
+    	$self->{registry}->load_all($self->{regfile}); 
+    }
     return $self;
 }
 
@@ -41,7 +46,7 @@ sub get_dbas {
     my ($self) = @_;
     if ( !defined $self->{dbas} ) {
         $self->{dbas} =
-          Bio::EnsEMBL::Registry->get_all_DBAdaptors( -GROUP => 'core' );
+          Bio::EnsEMBL::Registry->get_all_DBAdaptors();
     }
     return $self->{dbas};
 }
