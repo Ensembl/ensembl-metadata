@@ -26,6 +26,7 @@ use strict;
 use warnings;
 use Log::Log4perl qw(get_logger);
 use LWP::Simple;
+use Data::Dumper;
 
 my $url_template = 'http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/eg-plugins/DIVISION/conf/ini-files/SPECIES.ini?root=ensembl&view=co';
 
@@ -41,13 +42,14 @@ sub analyze_annotation {
   my ($self, $dba) = @_;
   return {
 	nProteinCoding => $self->count_by_biotype($dba, 'protein_coding'),
-	nProteinCodingGO                 => $self->count_by_xref($dba, 'GO',                'protein_coding'),
+	nProteinCodingGO => $self->count_by_xref($dba, 'GO', 'protein_coding'),
+	nProteinCodingUniProtKB => $self->count_by_xref($dba, ['Uniprot/SWISSPROT', 'Uniprot/SPTREMBL'], 'protein_coding'),
 	nProteinCodingUniProtKBSwissProt => $self->count_by_xref($dba, 'Uniprot/SWISSPROT', 'protein_coding'),
 	nProteinCodingUniProtKBTrEMBL    => $self->count_by_xref($dba, 'Uniprot/SPTREMBL',  'protein_coding'),
 	nProteinCodingInterPro           => $self->count_by_interpro($dba),
 	nGO                              => $self->count_by_xref($dba, 'GO',                'protein_coding'),
 	nUniProtKBSwissProt => $self->count_xrefs($dba, 'Uniprot/SWISSPROT'),
-	nUniProtKBTrEMBL    => $self->count_xrefs($dba,                                'Uniprot/SPTREMBL'),
+	nUniProtKBTrEMBL    => $self->count_xrefs($dba, 'Uniprot/SPTREMBL'),
 	nInterPro           => $self->count_interpro($dba),
 	nInterProDomains    => $self->count_interpro_domains($dba)};
 }
@@ -126,14 +128,17 @@ join translation t using (transcript_id)
 join object_xref ox on (ox.ensembl_id=t.translation_id and ox.ensembl_object_type='Translation')
 join xref x using (xref_id)
 join external_db d using (external_db_id)
-where species_id=? and d.db_name=?/;
+where species_id=? and d.db_name in (NAMES)/;
 
 my $biotype_clause = q/ and g.biotype=?/;
 
 sub count_by_xref {
-  my ($self, $dba, $db_name, $biotype) = @_;
+  my ($self, $dba, $db_names, $biotype) = @_;
+  $db_names = [$db_names] if (ref($db_names) ne 'ARRAY');
   my $sql = $xref_gene_sql;
-  my $params = [$dba->species_id(), $db_name];
+  my $db_name = join ',', map { "\"$_\"" } @$db_names;
+  $sql =~ s/NAMES/$db_name/;
+  my $params = [$dba->species_id()];
   if (defined $biotype) {
 	$sql .= $biotype_clause;
 	push @$params, $biotype;
@@ -173,14 +178,17 @@ join external_db d using (external_db_id)
 where species_id=? and d.db_name=?/;
 
 sub count_xrefs {
-  my ($self, $dba, $db_name) = @_;
-  my $tot = 0;
-  $tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $gene_xref_count_sql,
-														   -PARAMS => [$dba->species_id(), $db_name]);
-  $tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $transcript_xref_count_sql,
-														   -PARAMS => [$dba->species_id(), $db_name]);
-  $tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $translation_xref_count_sql,
-														   -PARAMS => [$dba->species_id(), $db_name]);
+  my $self = shift;
+  my $dba  = shift;
+  my $tot  = 0;
+  for my $db_name (@_) {
+	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $gene_xref_count_sql,
+															 -PARAMS => [$dba->species_id(), $db_name]);
+	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $transcript_xref_count_sql,
+															 -PARAMS => [$dba->species_id(), $db_name]);
+	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $translation_xref_count_sql,
+															 -PARAMS => [$dba->species_id(), $db_name]);
+  }
   return $tot;
 }
 

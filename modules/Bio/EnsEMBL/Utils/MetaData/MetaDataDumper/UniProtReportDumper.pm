@@ -20,11 +20,12 @@
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper;
+package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::UniProtReportDumper;
 use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Carp;
 use XML::Simple;
+use Data::Dumper;
 use strict;
 use warnings;
 
@@ -32,7 +33,7 @@ sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
   my ($file) = rearrange(['FILE'], @args);
-  $self->{file} = $file || 'species.txt';
+  $self->{file} = $file || 'uniprot_report.txt';
   return $self;
 }
 
@@ -45,13 +46,13 @@ sub dump_metadata {
   my ($self, $metadata) = @_;
   open(my $txt_file, '>', $self->{file})
 	|| croak "Could not write to " . $self->{file};
-  print $txt_file '#';
-  print $txt_file join("\t", qw(species division taxonomy_id assembly genebuild variation pan_compara genome_alignments other_alignments)) . "\n";
-
-  for my $md (@{$metadata->{genome}}) {
-	print $txt_file join("\t", ($md->{name}, $md->{species}, $md->{division}, $md->{taxonomy_id}, $md->{assembly_name}, $md->{genebuild}, $self->yesno($self->count_variation($md)), $self->yesno($md->{pan_compara}), $self->yesno($self->count_dna_compara($md)), $self->yesno($self->count_alignments($md)), "\n"));
+  $self->logger()->info("Writing to UniProt report to " . $self->{file});
+  print $txt_file join("\t", qw(name species taxonomy_id assembly_id nProteinCoding nProteinCodingUniProtKBSwissProt nProteinCodingUniProtKBTrEMBL uniprotCoverage)) . "\n";
+  for my $md (sort { $self->get_uniprot_coverage($a) <=> $self->get_uniprot_coverage($b) } @{$metadata->{genome}}) {
+	print $txt_file join("\t", ($md->{name}, $md->{species}, $md->{taxonomy_id}, $md->{assembly_id}, $md->{annotation}{nProteinCoding}, $md->{annotation}{nProteinCodingUniProtKBSwissProt}, $md->{annotation}{nProteinCodingUniProtKBTrEMBL}, $self->get_uniprot_coverage($md), "\n"));
   }
   close $txt_file;
+  $self->logger()->info("Completed writing to UniProt report to " . $self->{file});
   return;
 }
 

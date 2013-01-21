@@ -61,7 +61,7 @@ sub process_metadata {
 	  $pan_species->{$gdb->name()} = 1;
 	}
   }
-  for my $dba (grep { $_->species() eq 'arabidopsis_thaliana' } values %{$dba_hash->{core}}) {
+  for my $dba (values %{$dba_hash->{core}}) {
 	eval {
 	  $self->{logger}->info("Processing " . $dba->species());
 	  # get metadata container
@@ -112,7 +112,6 @@ sub process_metadata {
 		  $md->{pan_species} = 1;
 		}
 	  } ## end if (defined $self->{annotation_analyzer...})
-	  print Dumper($md);
 	  push @{$metadata->{genome}}, $md;
 	};
 	if ($@) {

@@ -22,21 +22,81 @@
 
 package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
+use Log::Log4perl qw(get_logger);
+use Data::Dumper;
 use strict;
 use warnings;
 
 sub new {
-    my $caller = shift;
-    my $class = ref($caller) || $caller;
-    my $self = bless( {}, $class );
-    return $self;
+  my $caller = shift;
+  my $class  = ref($caller) || $caller;
+  my $self   = bless({}, $class);
+  $self->{logger} = get_logger();
+  return $self;
 }
 
 sub dump_metadata {
-    my ($self, $metadata) = @_;
-    throw "Unimplemented subroutine dump_metadata() in "
-      . ref($self)
-      . ". Please implement";
+  my ($self, $metadata) = @_;
+  throw "Unimplemented subroutine dump_metadata() in " . ref($self) . ". Please implement";
+}
+
+sub logger {
+  my ($self) = @_;
+  return $self->{logger};
+}
+
+sub get_uniprot_coverage {
+  my ($self, $md) = @_;
+  return sprintf "%.2f", 100*($md->{annotation}{nProteinCodingUniProtKB})/$md->{annotation}{nProteinCoding};
+}
+
+sub count_hash_values {
+  my ($self, $hash) = @_;
+  my $tot = 0;
+  if (defined $hash) {
+	for my $v (values %{$hash}) {
+	  $tot += $v;
+	}
+  }
+  return $tot;
+}
+
+sub count_hash_lengths {
+  my ($self, $hash) = @_;
+  my $tot = 0;
+  if (defined $hash) {
+	for my $v (values %{$hash}) {
+	  $tot += scalar(@$v);
+	}
+  }
+  return $tot;
+}
+sub count_array_lengths {
+  my ($self, $array) = @_;
+  my $tot = 0;
+  if (defined $array) {
+  	$tot = scalar(@$array);
+  }
+  return $tot;
+}
+sub count_variation {
+  my ($self, $md) = @_;
+  return $self->count_hash_values($md->{variation}{variations}) + $self->count_hash_values($md->{variation}{structural_variations});
+}
+
+sub count_dna_compara {
+  my ($self, $md) = @_;
+  return $self->count_array_lengths($md->{compara}{LASTZ_NET}) + $self->count_array_lengths($md->{compara}{BLASTZ_NET});
+}
+
+sub count_alignments {
+  my ($self, $md) = @_;
+  return $self->count_hash_values($md->{features}{proteinAlignFeatures}) + $self->count_hash_values($md->{features}{dnaAlignFeatures}) + $self->count_hash_lengths($md->{bam});
+}
+
+sub yesno {
+  my ($self, $num) = @_;
+  return (defined $num && $num>0)?'Y':'N';	
 }
 
 1;

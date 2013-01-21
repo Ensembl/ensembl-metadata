@@ -30,7 +30,7 @@ sub new {
 	my $self = $proto->SUPER::new(@args);	
 	# populate the registry
 	$self->registry()->load_registry_from_db(@args);
-    $self->registry()->set_disconnect_when_inactive();
+    $self->registry()->set_disconnect_when_inactive(1);
     return $self;
 }
 

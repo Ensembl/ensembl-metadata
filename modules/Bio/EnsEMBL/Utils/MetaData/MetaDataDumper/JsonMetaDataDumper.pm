@@ -29,25 +29,29 @@ use warnings;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 
 sub new {
-    my ( $proto, @args ) = @_;
-    my $self = $proto->SUPER::new(@args);
-    my ($file) = rearrange( ['FILE'], @args );
-    $self->{file} = $file || 'metadata.json';
-    return $self;
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  my ($file) = rearrange(['FILE'], @args);
+  $self->{file} = $file || 'metadata.json';
+  return $self;
 }
 
 sub file {
-    my ($self) = @_;
-    return $self->{file};
+  my ($self) = @_;
+  return $self->{file};
 }
 
 sub dump_metadata {
-    my ( $self, $metadata ) = @_;
-    open( my $json_file, '>', $self->file() )
-      || croak "Could not write to " . $self->file();
-    print $json_file to_json( $metadata, { pretty => 1 } );
-    close $json_file;
-    return;
+  my ($self, $metadata) = @_;
+  $self->logger()->info("Writing JSON to " . $self->{file});
+
+  open(my $json_file, '>', $self->file())
+	|| croak "Could not write to " . $self->file();
+  print $json_file to_json($metadata, {pretty => 1});
+  close $json_file;
+  $self->logger()->info("Completed writing JSON to " . $self->{file});
+
+  return;
 }
 
 1;

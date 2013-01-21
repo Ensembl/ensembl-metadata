@@ -29,56 +29,48 @@ use strict;
 use warnings;
 
 sub new {
-    my ( $proto, @args ) = @_;
-    my $self = $proto->SUPER::new(@args);
-    my ($file) = rearrange( ['FILE'], @args );
-    $self->{file} = $file || 'species.tt2';
-    $self->{div_links} = { EnsemblBacteria => "http://bacteria.ensembl.org/",
-                           EnsemblFungi    => "http://fungi.ensembl.org/",
-                           EnsemblMetazoa  => "http://metazoa.ensembl.org/",
-                           EnsemblProtists => "http://protists.ensembl.org/",
-                           EnsemblPlants   => "http://plants.ensembl.org/" };
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  my ($file) = rearrange(['FILE'], @args);
+  $self->{file} = $file || 'species.tt2';
+  $self->{div_links} = {EnsemblBacteria => "http://bacteria.ensembl.org/",
+						EnsemblFungi    => "http://fungi.ensembl.org/",
+						EnsemblMetazoa  => "http://metazoa.ensembl.org/",
+						EnsemblProtists => "http://protists.ensembl.org/",
+						EnsemblPlants   => "http://plants.ensembl.org/"};
 
-    return $self;
+  return $self;
 }
 
 sub file {
-    my ($self) = @_;
-    return $self->{file};
+  my ($self) = @_;
+  return $self->{file};
 }
 
 sub dump_metadata {
-    my ( $self, $metadata ) = @_;
-    open( my $tt2_file, '>', $self->{file} )
-      || croak "Could not write to " . $self->{file};
-    print $tt2_file
-"<table><tr><th>Species</th><th>Division</th><th>Taxonomy ID</th><th>Assembly</th><th>Genebuild</th></tr>";
-    for my $md (
-        @{ $metadata->{genome} } )
-    {
-        my $div_link = $self->{div_links}->{ $md->{division} };
-        if ( !defined $div_link ) {
-            croak "No division defined for $md->{name}";
-        }
-        $div_link .= $md->{species};
-        my $line =
-            "<tr><td><a href='${div_link}'>"
-          . $md->{name}
-          . "</a></td><td><a href='"
-          . $div_link . "'>"
-          . $md->{division}
-          . "</a></td><td>"
-          . $md->{taxonomy_id}
-          . "</td><td>"
-          . $md->{assembly_name}
-          . "</td><td>"
-          . $md->{genebuild}
-          . "</td><td></tr>\n";
-        print $tt2_file $line;
-    } ## end for my $md ( sort { $a->...})
-    print $tt2_file "</table></div>";
-    close $tt2_file;
-    return;
+  my ($self, $metadata) = @_;
+  my $td  = '<td>';
+  my $tdx = '</td>';
+  my $tr  = '<td>';
+  my $trx = '</td>';
+  open(my $tt2_file, '>', $self->{file})
+	|| croak "Could not write to " . $self->{file};
+  $self->logger()->info("Writing HTML to " . $self->{file});
+  print $tt2_file join('<table><tr>', '<th>Species</th>', '<th>Division</th>', '<th>Taxonomy ID</th>', '<th>Assembly</th>', '<th>Genebuild</th>', '<th>Variation</th>', '<th>Pan compara</th>', '<th>Genome alignments</th>', '<th>Other alignments</th>', '</tr>', "\n");
+
+  for my $md (@{$metadata->{genome}}) {
+	my $div_link = $self->{div_links}->{$md->{division}};
+	if (!defined $div_link) {
+	  croak "No division defined for $md->{name}";
+	}
+	$div_link .= $md->{species};
+	my $line = join($tr, $td, "<a href='${div_link}'>", $md->{name}, '</a>', $tdx, $td, "<a href='", $div_link, "'>", $md->{division}, '</a>', $td, $md->{taxonomy_id}, $tdx, $td, $md->{assembly_name}, $tdx, $td, $md->{genebuild}, $tdx, $td, $self->yesno($self->count_variation($md)), $tdx, $td, $self->yesno($md->{pan_compara}), $tdx, $td, $self->yesno($self->count_dna_compara($md)), $tdx, $td, $self->yesno($self->count_alignments($md)), $tdx, $trx, "\n");
+	print $tt2_file $line;
+  }
+  print $tt2_file '</table></div>';
+  close $tt2_file;
+  $self->logger()->info(' Completed writing HTML to ' . $self->{file});
+  return;
 } ## end sub dump_metadata
 
 1;
