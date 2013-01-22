@@ -104,12 +104,14 @@ sub analyze_tracks {
   # then store some or all of this in my output e.g. {bam}{source_type}[{source_name,description,source_url}]
   my $bams = {};
   my $cfg = Config::IniFiles->new(-file => \$ini);
+  if(defined $cfg) {
   for my $bam ($cfg->Parameters("ENSEMBL_INTERNAL_BAM_SOURCES")) {
 	push @{$bams->{$cfg->val($bam, 'source_type')}}, {
 	   id          => $bam,
 	   source_name => $cfg->val($bam, 'source_name'),
 	   source_url  => $cfg->val($bam, 'source_url'),
 	   description => $cfg->val($bam, 'description')};
+  }
   }
   return $bams;
 } ## end sub analyze_tracks
