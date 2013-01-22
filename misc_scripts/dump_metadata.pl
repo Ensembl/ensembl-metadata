@@ -100,7 +100,7 @@ my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('m')}];
 push(@{$optsd}, "nocache");
 push(@{$optsd}, "url:s");
 push(@{$optsd}, "finder:s");
-push(@{$optsd}, "dumper:s");
+push(@{$optsd}, "dumper:s@");
 push(@{$optsd}, "processor:s");
 push(@{$optsd}, "contigs");
 push(@{$optsd}, "annotation");
@@ -130,9 +130,11 @@ my $details   = $processor->process_metadata($dbas);
 $logger->info("Completed processing");
 
 # create dumper
-$opts->{dumper} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper';
-load $opts->{dumper};
-my $dumper = $opts->{dumper}->new(%ens_opts);
-$logger->info("Dumping metadata using $opts->{dumper}");
-$dumper->dump_metadata($details);
+$opts->{dumper} ||= ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
+for my $dumper_module (@{$opts->{dumper}}) {
+  load $dumper_module;
+  my $dumper = $dumper_module->new(%ens_opts);
+  $logger->info("Dumping metadata using $dumper");
+  $dumper->dump_metadata($details);
+}
 $logger->info("Completed dumping");
