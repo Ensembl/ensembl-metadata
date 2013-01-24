@@ -61,7 +61,10 @@ sub dump_metadata {
 
   if (defined $self->division() && $self->division()==1) {
 
-	my %mds_per_division = map { $_->{division} => $_ } @$metadata;
+	my %mds_per_division;
+	for my $md (@$metadata) {
+		push @{$mds_per_division{$md->division()}}, $md;
+	}
 	for my $division (keys %mds_per_division) {
 	  (my $out_file = $self->file()) =~ s/(.*)(.json)$/$1_$division$2/;
 	  $self->logger()->info("Writing $division metadata to $out_file");
