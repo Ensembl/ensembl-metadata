@@ -22,6 +22,7 @@
 
 package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
+use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Log::Log4perl qw(get_logger);
 use Data::Dumper;
 use strict;
