@@ -91,9 +91,6 @@ use Data::Dumper;
 use Module::Load;
 use Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
 
-Log::Log4perl->easy_init($INFO);
-my $logger = get_logger();
-
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
 my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('m')}];
@@ -105,8 +102,19 @@ push(@{$optsd}, "processor:s");
 push(@{$optsd}, "contigs");
 push(@{$optsd}, "annotation");
 push(@{$optsd}, "registry:s");
+push(@{$optsd}, "species:s");
+push(@{$optsd}, "division:s");
+push(@{$optsd}, "verbose");
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
+
+if(defined $opts->{verbose}) {
+	Log::Log4perl->easy_init($DEBUG);	
+} else {
+	Log::Log4perl->easy_init($INFO);
+}
+my $logger = get_logger();
+
 
 my %ens_opts = map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
 
@@ -116,6 +124,12 @@ $logger->info("Retrieving DBAs using $opts->{finder}");
 load $opts->{finder};
 my $finder = $opts->{finder}->new(%ens_opts);
 my $dbas   = $finder->get_dbas();
+if(defined $opts->{species}) {
+	$dbas = [grep{$_->species() eq $opts->{species}} @{$dbas}];
+}
+if(defined $opts->{species}) {
+	$dbas = [grep{$_->species() eq $opts->{species}} @{$dbas}];
+}
 $logger->info("Retrieved " . scalar(@$dbas) . " DBAs");
 
 # create processor
