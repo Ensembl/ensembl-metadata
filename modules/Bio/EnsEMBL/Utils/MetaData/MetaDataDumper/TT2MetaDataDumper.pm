@@ -31,8 +31,8 @@ use warnings;
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  my ($file) = rearrange(['FILE'], @args);
-  $self->{file} = $file || 'species.tt2';
+  $self->{file} ||= 'species.tt2';
+  $self->{division} ||= 0;
   $self->{div_links} = {EnsemblBacteria => "http://bacteria.ensembl.org/",
 						EnsemblFungi    => "http://fungi.ensembl.org/",
 						EnsemblMetazoa  => "http://metazoa.ensembl.org/",
@@ -42,20 +42,14 @@ sub new {
   return $self;
 }
 
-sub file {
-  my ($self) = @_;
-  return $self->{file};
-}
-
-sub dump_metadata {
-  my ($self, $metadata) = @_;
+sub do_dump {
+  my ($self, $metadata, $outfile) = @_;
   my $td  = '<td>';
   my $tdx = '</td>';
   my $tr  = '<td>';
   my $trx = '</td>';
-  open(my $tt2_file, '>', $self->{file})
-	|| croak "Could not write to " . $self->{file};
-  $self->logger()->info("Writing HTML to " . $self->{file});
+  open(my $tt2_file, '>', $outfile)
+	|| croak "Could not write to " . $outfile;
   print $tt2_file join('<table><tr>', '<th>Species</th>', '<th>Division</th>', '<th>Taxonomy ID</th>', '<th>Assembly</th>', '<th>Genebuild</th>', '<th>Variation</th>', '<th>Pan compara</th>', '<th>Genome alignments</th>', '<th>Other alignments</th>', '</tr>', "\n");
 
   for my $md (@{$metadata->{genome}}) {
@@ -69,9 +63,8 @@ sub dump_metadata {
   }
   print $tt2_file '</table></div>';
   close $tt2_file;
-  $self->logger()->info(' Completed writing HTML to ' . $self->{file});
   return;
-} ## end sub dump_metadata
+}
 
 1;
 

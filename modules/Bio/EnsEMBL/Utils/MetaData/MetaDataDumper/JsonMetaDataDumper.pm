@@ -31,26 +31,17 @@ use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  my ($file) = rearrange(['FILE'], @args);
-  $self->{file} = $file || 'metadata.json';
+  $self->{file}     ||= "species_metadata.json";
+  $self->{division} ||= 1;
   return $self;
 }
 
-sub file {
-  my ($self) = @_;
-  return $self->{file};
-}
-
-sub dump_metadata {
-  my ($self, $metadata) = @_;
-  $self->logger()->info("Writing JSON to " . $self->{file});
-
-  open(my $json_file, '>', $self->file())
-	|| croak "Could not write to " . $self->file();
+sub do_dump {
+  my ($self, $metadata, $out_file) = @_;
+  open(my $json_file, '>', $out_file)
+	|| croak "Could not write to " . $out_file;
   print $json_file to_json($metadata, {pretty => 1});
   close $json_file;
-  $self->logger()->info("Completed writing JSON to " . $self->{file});
-
   return;
 }
 

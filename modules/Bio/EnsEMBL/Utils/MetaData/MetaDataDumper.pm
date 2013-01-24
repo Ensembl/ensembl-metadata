@@ -28,17 +28,57 @@ use strict;
 use warnings;
 
 sub new {
-  my $caller = shift;
-  my $class  = ref($caller) || $caller;
-  my $self   = bless({}, $class);
+  my ($proto, @args) = @_;
+  my $class = ref($proto) || $proto;
+  my $self = bless({}, $class);
   $self->{logger} = get_logger();
+  ($self->{file}, $self->{division}) = rearrange(['FILE', 'PER_DIVISION'], @args);
   return $self;
 }
 
-sub dump_metadata {
-  my ($self, $metadata) = @_;
-  throw "Unimplemented subroutine dump_metadata() in " . ref($self) . ". Please implement";
+sub file {
+  my ($self) = @_;
+  return $self->{file};
 }
+
+sub division {
+  my ($self, $division) = @_;
+  if(defined $division) {
+  	$self->{division} = $division;
+  }
+  return $self->{division};
+}
+
+sub do_dump {
+  my ($self, $metadata, $outfile) = @_;
+  throw "Unimplemented subroutine do_dump() in " . ref($self) . ". Please implement";
+}
+
+sub dump_metadata {
+
+  my ($self, $metadata) = @_;
+
+  if (defined $self->division() && $self->division()==1) {
+
+	my %mds_per_division = map { $_->{division} => $_ } @$metadata;
+	for my $division (keys %mds_per_division) {
+	  (my $out_file = $self->file()) =~ s/(.*)(.json)$/$1_$division$2/;
+	  $self->logger()->info("Writing $division metadata to $out_file");
+	  $self->do_dump($mds_per_division{$division}, $out_file);
+	  $self->logger()->info("Completed writing $division to $out_file");
+	}
+
+  } else {
+
+	$self->logger()->info("Writing all metadata to " . $self->{file});
+	$self->do_dump($metadata, $self->{file});
+	$self->logger()->info("Completed writing to " . $self->{file});
+
+  }
+
+  return;
+
+} ## end sub dump_metadata
 
 sub logger {
   my ($self) = @_;
@@ -71,14 +111,16 @@ sub count_hash_lengths {
   }
   return $tot;
 }
+
 sub count_array_lengths {
   my ($self, $array) = @_;
   my $tot = 0;
   if (defined $array) {
-  	$tot = scalar(@$array);
+	$tot = scalar(@$array);
   }
   return $tot;
 }
+
 sub count_variation {
   my ($self, $md) = @_;
   return $self->count_hash_values($md->{variation}{variations}) + $self->count_hash_values($md->{variation}{structural_variations});
@@ -96,7 +138,7 @@ sub count_alignments {
 
 sub yesno {
   my ($self, $num) = @_;
-  return (defined $num && $num>0)?'Y':'N';	
+  return (defined $num && $num > 0) ? 'Y' : 'N';
 }
 
 1;

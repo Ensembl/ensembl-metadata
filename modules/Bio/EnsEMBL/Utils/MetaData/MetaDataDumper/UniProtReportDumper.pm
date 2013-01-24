@@ -32,27 +32,19 @@ use warnings;
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  my ($file) = rearrange(['FILE'], @args);
-  $self->{file} = $file || 'uniprot_report.txt';
+  $self->{file} ||= 'uniprot_report.txt';
   return $self;
 }
 
-sub file {
-  my ($self) = @_;
-  return $self->{file};
-}
-
-sub dump_metadata {
-  my ($self, $metadata) = @_;
-  open(my $txt_file, '>', $self->{file})
-	|| croak "Could not write to " . $self->{file};
-  $self->logger()->info("Writing to UniProt report to " . $self->{file});
+sub do_dump {
+  my ($self, $metadata, $outfile) = @_;
+  open(my $txt_file, '>', $outfile)
+	|| croak "Could not write to " . $outfile;
   print $txt_file join("\t", qw(name species taxonomy_id assembly_id nProteinCoding nProteinCodingUniProtKBSwissProt nProteinCodingUniProtKBTrEMBL uniprotCoverage)) . "\n";
   for my $md (sort { $self->get_uniprot_coverage($a) <=> $self->get_uniprot_coverage($b) } @{$metadata->{genome}}) {
 	print $txt_file join("\t", ($md->{name}, $md->{species}, $md->{taxonomy_id}, $md->{assembly_id}, $md->{annotation}{nProteinCoding}, $md->{annotation}{nProteinCodingUniProtKBSwissProt}, $md->{annotation}{nProteinCodingUniProtKBTrEMBL}, $self->get_uniprot_coverage($md), "\n"));
   }
   close $txt_file;
-  $self->logger()->info("Completed writing to UniProt report to " . $self->{file});
   return;
 }
 

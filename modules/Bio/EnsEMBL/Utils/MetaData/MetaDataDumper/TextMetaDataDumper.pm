@@ -31,20 +31,15 @@ use warnings;
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  my ($file) = rearrange(['FILE'], @args);
-  $self->{file} = $file || 'species.txt';
+  $self->{file} ||= 'species.txt';
+  $self->{division} ||= 0;
   return $self;
 }
 
-sub file {
-  my ($self) = @_;
-  return $self->{file};
-}
-
-sub dump_metadata {
-  my ($self, $metadata) = @_;
-  open(my $txt_file, '>', $self->{file})
-	|| croak "Could not write to " . $self->{file};
+sub do_dump {
+  my ($self, $metadata, $outfile) = @_;
+  open(my $txt_file, '>', $outfile)
+	|| croak "Could not write to " . $outfile;
   print $txt_file '#';
   print $txt_file join("\t", qw(species division taxonomy_id assembly genebuild variation pan_compara genome_alignments other_alignments)) . "\n";
 
