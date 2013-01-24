@@ -76,6 +76,7 @@ sub analyze_compara {
   my $gdb     = $dba->get_GenomeDBAdaptor()->fetch_by_registry_name($core->species());
   for my $mlss (@{$dba->get_MethodLinkSpeciesSetAdaptor()->fetch_all_by_GenomeDB($gdb)}) {
 	my $t = $mlss->method()->type();
+	next if($t eq 'FAMILY');
 	for my $gdb2 (grep { $gdb->dbID() ne $_->dbID() } @{$mlss->species_set_obj->genome_dbs()}) {
 	  push(@{$compara->{$t}}, $gdb2->name());
 	}
@@ -136,6 +137,7 @@ my $biotype_clause = q/ and g.biotype=?/;
 
 sub count_by_xref {
   my ($self, $dba, $db_names, $biotype) = @_;
+   $self->{logger}->debug("Counting genes by ".join(",",$db_names)." xref for ".$dba->species());
   $db_names = [$db_names] if (ref($db_names) ne 'ARRAY');
   my $sql = $xref_gene_sql;
   my $db_name = join ',', map { "\"$_\"" } @$db_names;
@@ -145,6 +147,7 @@ sub count_by_xref {
 	$sql .= $biotype_clause;
 	push @$params, $biotype;
   }
+   $self->{logger}->debug("Executing $sql with params: [".join(",",@$params));
   return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $sql, -PARAMS => $params);
 }
 
