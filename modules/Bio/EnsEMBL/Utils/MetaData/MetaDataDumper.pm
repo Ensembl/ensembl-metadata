@@ -62,11 +62,11 @@ sub dump_metadata {
   if (defined $self->division() && $self->division()==1) {
 
 	my %mds_per_division;
-	for my $md (@$metadata->{genome}) {
-		push @{$mds_per_division{$md->division()}{genome}}, $md;
+	for my $md (@{$metadata->{genome}}) {
+		push @{$mds_per_division{$md->{division}}{genome}}, $md;
 	}
 	for my $division (keys %mds_per_division) {
-	  (my $out_file = $self->file()) =~ s/(.*)(.json)$/$1_$division$2/;
+	  (my $out_file = $self->file()) =~ s/(.+)(\.[^.]+)$/$1_$division$2/;
 	  $self->logger()->info("Writing $division metadata to $out_file");
 	  $self->do_dump($mds_per_division{$division}, $out_file);
 	  $self->logger()->info("Completed writing $division to $out_file");
