@@ -31,7 +31,7 @@ use warnings;
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  $self->{file} ||= 'species.txt';
+  $self->{file}     ||= 'species.txt';
   $self->{division} ||= 0;
   return $self;
 }
@@ -41,14 +41,27 @@ sub do_dump {
   open(my $txt_file, '>', $outfile)
 	|| croak "Could not write to " . $outfile;
   print $txt_file '#';
-  print $txt_file join("\t", qw(species division taxonomy_id assembly genebuild variation pan_compara genome_alignments other_alignments)) . "\n";
+  print $txt_file join("\t", qw(species division taxonomy_id assembly genebuild variation pan_compara genome_alignments other_alignments core_db species_id)) . "\n";
 
   for my $md (@{$metadata->{genome}}) {
-	print $txt_file join("\t", ($md->{name}, $md->{species}, $md->{division}, $md->{taxonomy_id}, $md->{assembly_name}, $md->{genebuild}, $self->yesno($self->count_variation($md)), $self->yesno($md->{pan_compara}), $self->yesno($self->count_dna_compara($md)), $self->yesno($self->count_alignments($md)), "\n"));
+	print $txt_file join(
+	  "\t", (
+	   $md->{name},
+	   $md->{species},
+	   $md->{division},
+	   $md->{taxonomy_id},
+	   $md->{assembly_name},
+	   $md->{genebuild},
+	   $self->yesno($self->count_variation($md)),
+	   $self->yesno($md->{pan_compara}),
+	   $self->yesno($self->count_dna_compara($md)),
+	   $self->yesno($self->count_alignments($md)),
+	   $md->{dbname}, $md->{species_id},
+	   "\n"));
   }
   close $txt_file;
   return;
-}
+} ## end sub do_dump
 
 1;
 __END__
