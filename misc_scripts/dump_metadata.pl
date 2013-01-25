@@ -148,7 +148,11 @@ $opts->{dumper} ||= ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDat
 for my $dumper_module (@{$opts->{dumper}}) {
   load $dumper_module;
   my $dumper = $dumper_module->new(%ens_opts);
-  $logger->info("Dumping metadata using $dumper");
+  $dumper->division(0;)
+  $logger->info("Dumping all metadata using $dumper");
+  $dumper->dump_metadata($details);
+  $logger->info("Dumping divisional metadata using $dumper");
+  $dumper->division(1);
   $dumper->dump_metadata($details);
 }
 $logger->info("Completed dumping");
