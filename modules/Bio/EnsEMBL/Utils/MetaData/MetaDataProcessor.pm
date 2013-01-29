@@ -61,6 +61,7 @@ sub process_metadata {
 	  $pan_species->{$gdb->name()} = 1;
 	}
   }
+
   for my $dba (values %{$dba_hash->{core}}) {
 	eval {
 	  $self->{logger}->info("Processing " . $dba->species());
@@ -110,6 +111,8 @@ sub process_metadata {
 		}
 		if (defined $pan_species->{$dba->species()}) {
 		  $md->{pan_species} = 1;
+		} else {
+		  $md->{pan_species} = 0;
 		}
 	  } ## end if (defined $self->{annotation_analyzer...})
 	  push @{$metadata->{genome}}, $md;
@@ -117,7 +120,7 @@ sub process_metadata {
 	if ($@) {
 	  warning "Could not get metadata for species " . $dba->species() . ":" . $@;
 	}
-  } ## end for my $dba (grep { $_->species...})
+  } ## end for my $dba (values %{$dba_hash...})
 
   if (defined $metadata->{genome}) {
 	$metadata->{genome} = [sort { $a->{division} cmp $b->{division} or $a->{name} cmp $b->{name} } @{$metadata->{genome}}];
