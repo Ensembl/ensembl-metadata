@@ -39,7 +39,7 @@ sub new {
 sub do_dump {
   my ($self, $metadata, $outfile) = @_;
   $self->logger()->info("Writing XML to " . $outfile);
-  open(my $xml_file, '>', $self->{file}) || croak "Could not write to " . $outfile;
+  open(my $xml_file, '>', $outfile) || croak "Could not write to " . $outfile;
   print $xml_file XML::Simple->new()->XMLout($metadata, RootName => 'genomes');
   close $xml_file;
   $self->logger()->info("Completed writing XML to " . $outfile);
