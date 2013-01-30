@@ -84,7 +84,7 @@ ENDHEAD
 	  croak "No division defined for $md->{name}";
 	}
 	$div_link .= $md->{species};
-	print $tt2_file join("",$tr, $td, "<a href='${div_link}'>", $md->{name}, '</a>', $tdx, $td, "<a href='", $div_link, "'>", $md->{division}, '</a>', $td, $md->{taxonomy_id}, $tdx, $td, $md->{assembly_name}, $tdx, $td, $md->{genebuild}, $tdx, $td, $self->yesno($self->count_variation($md)), $tdx, $td, $self->yesno($md->{pan_compara}), $tdx, $td, $self->yesno($self->count_dna_compara($md)), $tdx, $td, $self->yesno($self->count_alignments($md)), $tdx, $trx, "\n");
+	print $tt2_file join("", ($tr, $td, "<a href='${div_link}'>", $md->{name}, '</a>', $tdx, $td, "<a href='", $div_link, "'>", $md->{division}, '</a>', $td, "<a href='http://www.uniprot.org/taxonomy/" . $md->{taxonomy_id} . "'>" . $md->{taxonomy_id} . "</a>", $tdx, $td, $md->{assembly_name}, $tdx, $td, $md->{genebuild}, $tdx, $td, $self->yesno($self->count_variation($md)), $tdx, $td, $self->yesno($md->{pan_compara}), $tdx, $td, $self->yesno($self->count_dna_compara($md)), $tdx, $td, $self->yesno($self->count_alignments($md)), $tdx, $trx, "\n"));
   }
   print $tt2_file <<'ENDFOOT';
 </tbody>
