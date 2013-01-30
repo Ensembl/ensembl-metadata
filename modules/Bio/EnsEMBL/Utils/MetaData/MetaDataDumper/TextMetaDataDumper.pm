@@ -53,7 +53,7 @@ sub do_dump {
 	   $md->{assembly_name},
 	   $md->{genebuild},
 	   $self->yesno($self->count_variation($md)),
-	   $self->yesno($md->{pan_compara}),
+	   $self->yesno($md->{pan_species}),
 	   $self->yesno($self->count_dna_compara($md)),
 	   $self->yesno($self->count_alignments($md)),
 	   $md->{dbname}, $md->{species_id},
