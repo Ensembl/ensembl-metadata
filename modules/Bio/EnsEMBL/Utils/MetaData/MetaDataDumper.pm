@@ -142,7 +142,7 @@ sub count_alignments {
 
 sub yesno {
   my ($self, $num) = @_;
-  return (defined $num && $num > 0) ? 'Y' : 'N';
+  return (defined $num && $num+0 > 0) ? 'Y' : 'N';
 }
 
 1;
