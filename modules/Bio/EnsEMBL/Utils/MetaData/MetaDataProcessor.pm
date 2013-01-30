@@ -96,7 +96,7 @@ sub process_metadata {
 		}
 		# variation
 		my $variation = $dba_hash->{variation}{$dba->species()};
-		if ($self->{variation} && defined $variation) {
+		if (defined $variation) {
 		  $self->{logger}->info("Processing " . $dba->species() . " variation annotation");
 		  $md->{variation} = $self->{annotation_analyzer}->analyze_variation($variation);
 		}
