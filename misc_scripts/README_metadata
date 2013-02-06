@@ -1,0 +1,70 @@
+Metadata files
+--------------
+
+From Release 17 of Ensembl Genomes, a selection of files are provided that contain metadata for the genomes provided through Ensembl Genomes.
+
+The following formats are available:
+
+.txt
+Tab separated file with the following columns:
+- name - full name of species/strain
+- species - computationally safe version of species as used internally by Ensembl
+- division - division of Ensembl Genomes (e.g. EnsemblFungi)
+- taxonomy_id - NCBI taxonomy ID
+- assembly - version of assembly
+- genebuild - version of genebuild
+- variation - Y/N indicating if variation data is available	
+- pan_compara - Y/N indicating if the genome is included in the pan taxonomic compara
+- genome_alignments - Y/N indicating if the genome is included in whole genome alignments
+- other_alignments - Y/N indicating if the genome has been aligned against other sequences e.g. EST, short read data
+- core_db	- name of MySQL core database
+- species_id - ID of genome with MySQL core database
+
+.json
+JSON format file containing full details of the analyses available for each genome as an array named "genome". Each element of the array contains the following keys:
+- name - full name of species/strain
+- species - computationally safe version of species as used internally by Ensembl
+- division - division of Ensembl Genomes (e.g. EnsemblFungi)
+- taxonomy_id - NCBI taxonomy ID
+- assembly_name - version of assembly
+- genebuild_id - version of genebuild
+- pan_species - 0/1 indicating if the genome is included in the pan taxonomic compara
+- db_name - name of MySQL core database
+- species_id - ID of genome with MySQL core database
+- annotation - associated array containing the following keys:
+-- nProteinCoding - number of protein-coding genes in this genome
+-- nInterPro - number of InterPro entries annotated to protein-coding genes in this genome
+-- nInterProDomains - number of InterPro domains annotated to protein-coding genes in this genome
+-- nGO - number of GO terms annotated to protein-coding genes in this genome
+-- nUniProtKBSwissProt - number of UniProtKB/Swiss-Prot entries annotated to protein-coding genes in this genome
+-- nUniProtKBTrEMBL - number of UniProtKB/TrEMBL entries annotated to protein-coding genes in this genome
+-- nProteinCodingUniProtKB - number of protein-coding genes with UniProtKB cross-references
+-- nProteinCodingUniProtKBSwissProt - number of protein-coding genes with UniProtKB/Swiss-Prot cross-references
+-- nProteinCodingUniProtKBTrEMBL - number of protein-coding genes with UniProtKB/TrEMBL cross-references
+-- nProteinCodingInterPro - number of protein-coding genes with InterPro domains
+-- nProteinCodingGO - number of protein-coding genes with GO terms
+- variation - associative array containing counts of variations keyed by source names
+- compara - associative array where keys are names of comparative analyses that the genome is involved in, and values are lists of genomes included in those analyses
+- features - associative array with the following keys
+-- proteinAlignFeatures - associative array of analysis names and counts of protein-genome alignments
+-- dnaAlignFeatures - associative array of analysis names and counts of DNA-genome alignments
+-- repeateFeatures - associative array of analysis names and counts of repetitive sequence features
+-- simpleFeatures - associative array of analysis names and counts of other genomic features
+- bam - associative array where keys are names of BAM file types (dna, rnaseq etc.), and values are arrays of associative arrays, one per BAM file with the following keys:
+-- source_name - descriptive name of BAM file
+-- source_url - URL where BAM file can be found
+-- id - unique identifier of BAM file
+-- description - longer description of the BAM file
+
+.xml
+An XML version of the JSON format described above
+
+Files are available for Ensembl Genomes as a whole:
+species.txt
+species_metadata.xml
+species_metadata.json
+
+and per division e.g.
+fungi/species_EnsemblFungi.txt
+fungi/species_metadata_EnsemblFungi.xml
+fungi/species_metadata_EnsemblFungi.json
