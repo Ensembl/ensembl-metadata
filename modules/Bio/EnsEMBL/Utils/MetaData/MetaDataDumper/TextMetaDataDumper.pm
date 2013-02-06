@@ -41,7 +41,7 @@ sub do_dump {
   open(my $txt_file, '>', $outfile)
 	|| croak "Could not write to " . $outfile;
   print $txt_file '#';
-  print $txt_file join("\t", qw(species division taxonomy_id assembly genebuild variation pan_compara genome_alignments other_alignments core_db species_id)) . "\n";
+  print $txt_file join("\t", qw(names species division taxonomy_id assembly genebuild variation pan_compara genome_alignments other_alignments core_db species_id)) . "\n";
 
   for my $md (@{$metadata->{genome}}) {
 	print $txt_file join(
