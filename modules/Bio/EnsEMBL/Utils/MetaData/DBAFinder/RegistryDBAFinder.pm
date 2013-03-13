@@ -23,6 +23,7 @@
 package Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder;
 use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Bio::EnsEMBL::Utils::Exception qw(throw);
 use strict;
 use warnings;
 
@@ -31,9 +32,10 @@ sub new {
     my $self = $proto->SUPER::new(@args);
     ($self->{regfile}) = rearrange(['REGISTRY'], @args);
     $self->{registry} ||= 'Bio::EnsEMBL::Registry';
-    if(defined $self->{regfile}) {
-    	$self->{registry}->load_all($self->{regfile}); 
-    }
+    if(!defined $self->{regfile}) {
+    	throw "No registry file supplied";
+    } 
+    $self->{registry}->load_all($self->{regfile}); 
     return $self;
 }
 
