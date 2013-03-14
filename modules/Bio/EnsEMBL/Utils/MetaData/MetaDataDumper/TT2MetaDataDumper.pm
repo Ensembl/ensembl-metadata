@@ -32,12 +32,22 @@ sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
   $self->{file}     ||= 'species.tt2';
-  $self->{division} ||= 0;
+  $self->{division} ||= 'Ensembl';
   $self->{div_links} = {EnsemblBacteria => "http://bacteria.ensembl.org/",
 						EnsemblFungi    => "http://fungi.ensembl.org/",
 						EnsemblMetazoa  => "http://metazoa.ensembl.org/",
 						EnsemblProtists => "http://protists.ensembl.org/",
-						EnsemblPlants   => "http://plants.ensembl.org/"};
+						EnsemblPlants   => "http://plants.ensembl.org/",
+            Ensembl         => "http://www.ensembl.org/",
+  };
+  $self->{div_names} = {
+            EnsemblBacteria => "Bacteria",
+						EnsemblFungi    => "Fungi",
+						EnsemblMetazoa  => "Metazoa",
+						EnsemblProtists => "Protists",
+						EnsemblPlants   => "Plants",
+            Ensembl         => "Ensembl",
+  };
 
   return $self;
 }
@@ -68,6 +78,7 @@ sub do_dump {
 </script> 
 <div id="static">
 <h2>Ensembl Genomes Release 17</h2>
+<p>Ensembl Genomes species metadata are also available via FTP: <a href="ftp://ftp.ensemblgenomes.org/pub/current/species.txt">Tabular text</a> | <a href="ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.json">JSON</a> | <a href="ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.xml">XML</a></p> 
 <table cellpadding="0" cellspacing="0" border="1px dotted #eeeeee"
 class="display" id="species_list">
 <thead> 
@@ -80,11 +91,12 @@ ENDHEAD
 
   for my $md (@{$metadata->{genome}}) {
 	my $div_link = $self->{div_links}->{$md->{division}};
+	my $div_name = $self->{div_names}->{$md->{division}};
 	if (!defined $div_link) {
 	  croak "No division defined for $md->{name}";
 	}
 	$div_link .= $md->{species};
-	print $tt2_file join("", ($tr, $td, "<a href='${div_link}'>", $md->{name}, '</a>', $tdx, $td, "<a href='", $div_link, "'>", $md->{division}, '</a>', $td, "<a href='http://www.uniprot.org/taxonomy/" . $md->{taxonomy_id} . "'>" . $md->{taxonomy_id} . "</a>", $tdx, $td, $md->{assembly_name}, $tdx, $td, $md->{genebuild}, $tdx, $td, $self->yesno($self->count_variation($md)), $tdx, $td, $self->yesno($md->{pan_species}), $tdx, $td, $self->yesno($self->count_dna_compara($md)), $tdx, $td, $self->yesno($self->count_alignments($md)), $tdx, $trx, "\n"));
+	print $tt2_file join("", ($tr, $td, "<a href='${div_link}'>", $md->{name}, '</a>', $tdx, $td, "<a href='", $div_link, "'>", $div_name, '</a>', $td, "<a href='http://www.uniprot.org/taxonomy/" . $md->{taxonomy_id} . "'>" . $md->{taxonomy_id} . "</a>", $tdx, $td, $md->{assembly_name}, $tdx, $td, $md->{genebuild}, $tdx, $td, $self->yesno($self->count_variation($md)), $tdx, $td, $self->yesno($md->{pan_species}), $tdx, $td, $self->yesno($self->count_dna_compara($md)), $tdx, $td, $self->yesno($self->count_alignments($md)), $tdx, $trx, "\n"));
   }
   print $tt2_file <<'ENDFOOT';
 </tbody>

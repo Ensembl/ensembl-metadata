@@ -74,7 +74,7 @@ sub process_metadata {
 				assembly_id   => $meta->single_value_by_key('assembly.accession') || '',
 				assembly_name => $meta->single_value_by_key('assembly.name') || '',
 				genebuild     => $meta->single_value_by_key('genebuild.start_date') || '',
-				division      => $meta->get_division() || '',
+				division      => $meta->get_division() || 'Ensembl',
 				dbname        => $dba->dbc()->dbname()};
 	  # get list of seqlevel contigs
 	  if (defined $self->{contigs}) {
