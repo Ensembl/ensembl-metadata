@@ -27,6 +27,7 @@ use warnings;
 use Log::Log4perl qw(get_logger);
 use LWP::Simple;
 use Data::Dumper;
+use Config::IniFiles;
 
 my $url_template = 'http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/eg-plugins/DIVISION/conf/ini-files/SPECIES.ini?root=ensembl&view=co';
 
@@ -76,7 +77,7 @@ sub analyze_compara {
   my $gdb     = $dba->get_GenomeDBAdaptor()->fetch_by_registry_name($core->species());
   for my $mlss (@{$dba->get_MethodLinkSpeciesSetAdaptor()->fetch_all_by_GenomeDB($gdb)}) {
 	my $t = $mlss->method()->type();
-	next if($t eq 'FAMILY' || $t eq 'ENSEMBL_ORTHOLOGUES' || $t eq 'ENSEMBL_PARALOGUES');
+	next if ($t eq 'FAMILY' || $t eq 'ENSEMBL_ORTHOLOGUES' || $t eq 'ENSEMBL_PARALOGUES');
 	for my $gdb2 (grep { $gdb->dbID() ne $_->dbID() } @{$mlss->species_set_obj->genome_dbs()}) {
 	  push(@{$compara->{$t}}, $gdb2->name());
 	}
@@ -105,14 +106,14 @@ sub analyze_tracks {
   # then store some or all of this in my output e.g. {bam}{source_type}[{source_name,description,source_url}]
   my $bams = {};
   my $cfg = Config::IniFiles->new(-file => \$ini);
-  if(defined $cfg) {
-  for my $bam ($cfg->Parameters("ENSEMBL_INTERNAL_BAM_SOURCES")) {
-	push @{$bams->{$cfg->val($bam, 'source_type')}}, {
-	   id          => $bam,
-	   source_name => $cfg->val($bam, 'source_name'),
-	   source_url  => $cfg->val($bam, 'source_url'),
-	   description => $cfg->val($bam, 'description')};
-  }
+  if (defined $cfg) {
+	for my $bam ($cfg->Parameters("ENSEMBL_INTERNAL_BAM_SOURCES")) {
+	  push @{$bams->{$cfg->val($bam, 'source_type')}}, {
+		 id          => $bam,
+		 source_name => $cfg->val($bam, 'source_name'),
+		 source_url  => $cfg->val($bam, 'source_url'),
+		 description => $cfg->val($bam, 'description')};
+	}
   }
   return $bams;
 } ## end sub analyze_tracks
@@ -122,23 +123,29 @@ sub count_by_biotype {
   return $dba->get_GeneAdaptor()->count_all_by_biotype($biotype);
 }
 
-my $xref_gene_sql = q/select count(distinct(gene_id)) 
+my $xref_gene_sql = q/select count(g.gene_id)
 from gene g
-join seq_region s using (seq_region_id) 
-join coord_system c using (coord_system_id) 
-join transcript tr using (gene_id)
-join translation t using (transcript_id)
-join object_xref ox on (ox.ensembl_id=t.translation_id and ox.ensembl_object_type='Translation')
-join xref x using (xref_id)
-join external_db d using (external_db_id)
-where species_id=? and d.db_name in (NAMES)/;
+where exists (select 1
+              from seq_region s, coord_system c
+              where s.seq_region_id = g.seq_region_id
+              and c.coord_system_id = s.coord_system_id
+              and species_id=? )
+and exists (select 1 from transcript tr,
+            translation t, object_xref ox, xref x, external_db d
+            where tr.gene_id = g.gene_id
+            and t.transcript_id = tr.transcript_id
+            and ox.ensembl_id=t.translation_id
+            and ox.ensembl_object_type='Translation'
+            and x.xref_id = ox.xref_id
+            and d.external_db_id= x.external_db_id
+            and d.db_name in (NAMES))/;
 
 my $biotype_clause = q/ and g.biotype=?/;
 
 sub count_by_xref {
   my ($self, $dba, $db_names, $biotype) = @_;
-   $self->{logger}->debug("Counting genes by ".join(",",$db_names)." xref for ".$dba->species());
   $db_names = [$db_names] if (ref($db_names) ne 'ARRAY');
+  $self->{logger}->debug("Counting genes by " . join(",", @$db_names) . " xref for " . $dba->species());
   my $sql = $xref_gene_sql;
   my $db_name = join ',', map { "\"$_\"" } @$db_names;
   $sql =~ s/NAMES/$db_name/;
@@ -147,52 +154,82 @@ sub count_by_xref {
 	$sql .= $biotype_clause;
 	push @$params, $biotype;
   }
-   $self->{logger}->debug("Executing $sql with params: [".join(",",@$params));
-  return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $sql, -PARAMS => $params);
+  $self->{logger}->debug("Executing $sql with params: [" . join(",", @$params));
+  my $r = $dba->dbc()->sql_helper()->execute_single_result(-SQL => $sql, -PARAMS => $params);
+  $self->{logger}->debug("Finished counting genes by " . join(",", @$db_names) . " xref for " . $dba->species());
+  return $r;
 }
 
-my $gene_xref_count_sql = q/
-select count(distinct(dbprimary_acc)) 
-from gene g
-join seq_region s using (seq_region_id) 
-join coord_system c using (coord_system_id) 
-join object_xref ox on (ox.ensembl_id=g.gene_id and ox.ensembl_object_type='Gene')
-join xref x using (xref_id)
+my $gene_xref_count_sql = q/select count(distinct(dbprimary_acc))
+from 
+xref x
 join external_db d using (external_db_id)
-where species_id=? and d.db_name=?/;
+where exists (
+    select 1 from object_xref ox,
+gene g,
+seq_region s,
+coord_system c
+where
+x.xref_id=ox.xref_id 
+and ox.ensembl_id=g. gene_id
+and ox.ensembl_object_type='Gene'
+and s.seq_region_id = g.seq_region_id
+              and c.coord_system_id = s.coord_system_id
+              and species_id=?
+) and d.db_name=?/;
 
-my $transcript_xref_count_sql = q/
-select count(distinct(dbprimary_acc)) 
-from transcript tr
-join seq_region s using (seq_region_id) 
-join coord_system c using (coord_system_id) 
-join object_xref ox on (ox.ensembl_id=tr.transcript_id and ox.ensembl_object_type='Transcript')
-join xref x using (xref_id)
+my $transcript_xref_count_sql = q/select count(distinct(dbprimary_acc))
+from 
+xref x
 join external_db d using (external_db_id)
-where species_id=? and d.db_name=?/;
+where exists (
+    select 1 from object_xref ox,
+transcript tr,
+seq_region s,
+coord_system c
+where
+x.xref_id=ox.xref_id 
+and ox.ensembl_id=tr.transcript_id
+and ox.ensembl_object_type='Transcript'
+and s.seq_region_id = tr.seq_region_id
+              and c.coord_system_id = s.coord_system_id
+              and species_id=?
+) and d.db_name=?/;
 
-my $translation_xref_count_sql = q/
-select count(distinct(dbprimary_acc)) 
-from transcript tr
-join translation t using (transcript_id)
-join seq_region s using (seq_region_id) 
-join coord_system c using (coord_system_id) 
-join object_xref ox on (ox.ensembl_id=t.translation_id and ox.ensembl_object_type='Translation')
-join xref x using (xref_id)
+my $translation_xref_count_sql = q/select count(distinct(dbprimary_acc))
+from 
+xref x
 join external_db d using (external_db_id)
-where species_id=? and d.db_name=?/;
+where exists (
+    select 1 from object_xref ox,
+translation tl,
+transcript tr,
+seq_region s,
+coord_system c
+where
+x.xref_id=ox.xref_id 
+and ox.ensembl_id=tl.translation_id
+and ox.ensembl_object_type='Translation'
+and tr.transcript_id=tl.transcript_id
+and s.seq_region_id = tr.seq_region_id
+              and c.coord_system_id = s.coord_system_id
+              and species_id=?
+) and d.db_name=?/;
+
 
 sub count_xrefs {
   my $self = shift;
   my $dba  = shift;
   my $tot  = 0;
   for my $db_name (@_) {
+	$self->{logger}->debug("Counting xrefs for $db_name");
 	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $gene_xref_count_sql,
 															 -PARAMS => [$dba->species_id(), $db_name]);
 	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $transcript_xref_count_sql,
 															 -PARAMS => [$dba->species_id(), $db_name]);
 	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $translation_xref_count_sql,
 															 -PARAMS => [$dba->species_id(), $db_name]);
+	$self->{logger}->debug("Finished counting xrefs for $db_name");
   }
   return $tot;
 }
@@ -213,7 +250,22 @@ sub count_by_interpro {
   return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $count_by_interpro, -PARAMS => [$dba->species_id()]);
 }
 
-my $count_interpro = q/select count(distinct(translation_id)) / . $count_by_interpro_base;
+my $count_interpro = q/select count(distinct(translation_id)) from  translation tl
+where
+exists (
+select 1 from transcript tr,
+seq_region s,
+coord_system c
+where 
+tr.transcript_id=tl.transcript_id
+and s.seq_region_id = tr.seq_region_id
+and c.coord_system_id = s.coord_system_id
+and species_id=?
+)
+and exists (
+select 1 from protein_feature pf, interpro i
+where pf.hit_name=i.id and tl.translation_id=pf.translation_id
+)/;
 
 sub count_interpro {
   my ($self, $dba) = @_;
