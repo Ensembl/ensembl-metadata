@@ -32,10 +32,9 @@ sub new {
     my $self = $proto->SUPER::new(@args);
     ($self->{regfile}) = rearrange(['REGISTRY'], @args);
     $self->{registry} ||= 'Bio::EnsEMBL::Registry';
-    if(!defined $self->{regfile}) {
-    	throw "No registry file supplied";
-    } 
-    $self->{registry}->load_all($self->{regfile}); 
+    if(defined $self->{regfile}) {
+    	$self->{registry}->load_all($self->{regfile}); 
+    }
     return $self;
 }
 
