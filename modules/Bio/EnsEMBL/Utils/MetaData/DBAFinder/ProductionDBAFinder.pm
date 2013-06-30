@@ -62,7 +62,7 @@ sub get_dbas {
     for my $db (
         @{  $self->{production_dbc}->sql_helper()->execute_simple(
                 -SQL =>
-q/select full_db_name from db_list join db using (db_id) where db_type='core' and is_current=1/
+q/select full_db_name as db_name from db_list join db using (db_id) where is_current=1 UNION select db_name from division_db where is_current=1 and db_type='COMPARA'/
             ) } )
     {
         my $dba_list=  $dbs->{$db};
