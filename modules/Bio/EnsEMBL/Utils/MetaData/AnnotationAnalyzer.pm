@@ -275,7 +275,7 @@ sub count_structural_variations {
 my $count_genotypes = q/
 select name,count(*) 
 from tmp_individual_genotype_single_bp 
-join sample using (sample_id) group by name/;
+join individual using (individual_id) group by name/;
 
 sub count_genotypes {
   my ($self, $dba) = @_;
@@ -283,10 +283,11 @@ sub count_genotypes {
 }
 
 my $count_phenotypes = q/
-select name,count(*)
-from phenotype
-join variation_annotation using (phenotype_id)
-group by name
+select p.name,count(*) 
+from phenotype p 
+join phenotype_feature pf using (phenotype_id) 
+join variation v on (object_id=v.name and type='Variation') 
+group by p.name;
 /;
 
 sub count_phenotypes {
