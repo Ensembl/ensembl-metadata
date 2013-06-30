@@ -61,8 +61,7 @@ sub process_metadata {
 	  $pan_species->{$gdb->name()} = 1;
 	}
   }
-
-  for my $dba (values %{$dba_hash->{core}}) {
+ for my $dba (values %{$dba_hash->{core}}) {
 	eval {
 	  $self->{logger}->info("Processing " . $dba->species());
 	  # get metadata container
@@ -118,7 +117,7 @@ sub process_metadata {
 	  push @{$metadata->{genome}}, $md;
 	};
 	if ($@) {
-	  warning "Could not get metadata for species " . $dba->species() . ":" . $@;
+	  throw "Could not get metadata for species " . $dba->species() . ":" . $@;
 	}
   } ## end for my $dba (values %{$dba_hash...})
 
