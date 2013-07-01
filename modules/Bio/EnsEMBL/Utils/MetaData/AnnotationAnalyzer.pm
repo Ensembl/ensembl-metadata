@@ -74,13 +74,18 @@ sub analyze_variation {
 sub analyze_compara {
   my ($self, $dba, $core) = @_;
   my $compara = {};
-  my $gdb     = $dba->get_GenomeDBAdaptor()->fetch_by_registry_name($core->species());
-  for my $mlss (@{$dba->get_MethodLinkSpeciesSetAdaptor()->fetch_all_by_GenomeDB($gdb)}) {
-	my $t = $mlss->method()->type();
-	next if($t eq 'FAMILY' || $t eq 'ENSEMBL_ORTHOLOGUES' || $t eq 'ENSEMBL_PARALOGUES');
-	for my $gdb2 (grep { $gdb->dbID() ne $_->dbID() } @{$mlss->species_set_obj->genome_dbs()}) {
-	  push(@{$compara->{$t}}, $gdb2->name());
-	}
+  eval {
+      my $gdb     = $dba->get_GenomeDBAdaptor()->fetch_by_registry_name($core->species());
+      for my $mlss (@{$dba->get_MethodLinkSpeciesSetAdaptor()->fetch_all_by_GenomeDB($gdb)}) {
+	  my $t = $mlss->method()->type();
+	  next if($t eq 'FAMILY' || $t eq 'ENSEMBL_ORTHOLOGUES' || $t eq 'ENSEMBL_PARALOGUES');
+	  for my $gdb2 (grep { $gdb->dbID() ne $_->dbID() } @{$mlss->species_set_obj->genome_dbs()}) {
+	      push(@{$compara->{$t}}, $gdb2->name());
+	  }
+      }
+  };
+  if($@) {
+      warn "No compara entry found for ".$dba->species();
   }
   return $compara;
 }
