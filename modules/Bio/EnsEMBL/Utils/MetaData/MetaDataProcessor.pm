@@ -61,9 +61,11 @@ sub process_metadata {
 	  $pan_species->{$gdb->name()} = 1;
 	}
   }
+  my $n = 0;
+  my $total = scalar(values %{$dba_hash->{core}});
  for my $dba (values %{$dba_hash->{core}}) {
 	eval {
-	  $self->{logger}->info("Processing " . $dba->species());
+	  $self->{logger}->info("Processing " . $dba->species()  . " (".++$n."/$total)" ); 
 	  # get metadata container
 	  my $meta = $dba->get_MetaContainer();
 	  my $md = {species       => $dba->species(),
