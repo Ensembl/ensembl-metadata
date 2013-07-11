@@ -54,13 +54,15 @@ sub new {
 
 sub do_dump {
   my ($self, $metadata, $outfile) = @_;
+  my $eg_version = $metadata->{genome}->[0]->{dbname};
+  $eg_version =~ s/[a-z]+_([0-9]+)_[0-9]+_[0-9]+/$1/;
   my $td  = '<td>';
   my $tdx = '</td>';
   my $tr  = '<tr>';
   my $trx = '</tr>';
   open(my $tt2_file, '>', $outfile)
 	|| croak "Could not write to " . $outfile;
-  print $tt2_file <<'ENDHEAD';
+  print $tt2_file <<"ENDHEAD2;
 	<style type="text/css" title="currentStyle">
     	@import "/static/css/grid.css";
 	</style>
@@ -77,7 +79,7 @@ sub do_dump {
 } );
 </script> 
 <div id="static">
-<h2>Ensembl Genomes Release 17</h2>
+<h2>Ensembl Genomes Release $eg_version</h2>
 <p>Ensembl Genomes species metadata are also available via FTP: <a href="ftp://ftp.ensemblgenomes.org/pub/current/species.txt">Tabular text</a> | <a href="ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.json">JSON</a> | <a href="ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.xml">XML</a></p> 
 <table cellpadding="0" cellspacing="0" border="1px dotted #eeeeee"
 class="display" id="species_list">
