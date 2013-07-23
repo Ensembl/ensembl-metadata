@@ -62,9 +62,9 @@ sub do_dump {
   my $trx = '</tr>';
   open(my $tt2_file, '>', $outfile)
 	|| croak "Could not write to " . $outfile;
-  print $tt2_file <<"ENDHEAD2;
+  print $tt2_file <<"ENDHEAD";
 	<style type="text/css" title="currentStyle">
-    	@import "/static/css/grid.css";
+    	\@import "/static/css/grid.css";
 	</style>
 
 	<script type="text/javascript" charset="utf-8" src="/static/js/jquery.dataTables.min.js"></script>
