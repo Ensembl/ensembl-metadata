@@ -71,6 +71,7 @@ sub process_metadata {
 	  my $dbname = $dba->dbc()->dbname();
 	  my $size   = $dba->dbc()->sql_helper()->execute_single_result(-SQL => "select SUM(data_length + index_length) from information_schema.tables where table_schema=?", -PARAMS => [$dbname]);
 	  my $tableN = $dba->dbc()->sql_helper()->execute_single_result(-SQL => "select count(*) from information_schema.tables where table_schema=?", -PARAMS => [$dbname]);
+	  my $type = get_type($dbname);
 	  my $md = {species       => $dba->species(),
 				species_id    => $dba->species_id(),
 				name          => $meta->get_scientific_name() || '',
@@ -79,10 +80,7 @@ sub process_metadata {
 				assembly_name => $meta->single_value_by_key('assembly.name') || '',
 				genebuild     => $meta->single_value_by_key('genebuild.start_date') || '',
 				division      => $meta->get_division() || 'Ensembl',
-				db            => {
-					   name   => $dbname,
-					   size   => $size,
-					   tableN => $tableN}};
+				dbname=>$dbname};
 	  # get list of seqlevel contigs
 	  if (defined $self->{contigs}) {
 		my $slice_adaptor = $dba->get_SliceAdaptor();
