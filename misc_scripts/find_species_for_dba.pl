@@ -6,7 +6,7 @@ find_species_for_dba.pl - This script finds the species level taxon to which the
 
 =head1 SYNOPSIS
 
-check_db_assembly.pl [arguments]
+find_species_for_dba.pl [arguments]
 
   --user=user                         username for the core database
 
@@ -16,11 +16,21 @@ check_db_assembly.pl [arguments]
 
   --port=port                         port for core database
 
-  --pattern=pattern                   core databases to ex$componentamine
+  --pattern=pattern                   core databases to examine
                                       Note that this is a standard regular expression of the
                                       form '^[a-b].*core.*' for all core databases starting with a or b
 
   --dbname=dbname                     single core database to process
+  
+  --taxuser=user                         username for the taxonomy database
+
+  --taxpass=pass                         password for taxonomy database
+
+  --taxhost=host                         server where the taxonomy databases are stored
+
+  --taxport=port                         port for taxonomy database
+
+  --taxdbname=dbname                     taxonomy database
                                       
   --species_id=species_id			  ID of species to run over (by default all species in database are examined)
   
@@ -30,13 +40,13 @@ check_db_assembly.pl [arguments]
 
 =head1 DESCRIPTION
 
-This script checks sequences from top level against the ENA sequence archive and checks vs the assembly database
+This script tries to find the species name for each genome, and store the URL to the wikipedia page if it exists
 
 =head1 EXAMPLES
 
-perl -I modules/ misc-scripts/check_db_assembly.pl \
-  -host mysql-eg-staging-1 -port 4160 -user ensrw -pass xyz -dbname pyrococcus_collection_core_14_67_1 \
-  -esauser xxx -esapass xxx -esahost drambuie -esaport 1541 -esadbname ESAPRO -esadriver Oracle \
+perl -I modules/ misc-scripts/find_species_for_dba.pl \
+  -host mysql-eg-staging-2 -port 4275 -user ensrw -pass xyz -dbname bacteria_1_collection_core_20_73_1 \
+  -taxuser ensro -taxhost mysql-eg-staging-2 -taxport 4275 -taxdbname ncbi_taxonomy -write_meta
 
 =head1 MAINTAINER
 
