@@ -153,7 +153,7 @@ $report->{removed_genomes} = scalar @$removed_genomes;
 my $summary_file = "summary.txt";
 $logger->info("Writing summary to $summary_file");
 my $news = <<END;
-Release $report->{eg_version} Ensembl Bacteria has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} eubacteria and $report->{archaea} archaea) containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes $report->{new_genomes} new genomes, $report->{new_assemblies},  genomes with updated assemblies, $report->{new_annotations} genomes with updated annotation, $report->{renamed_genomes} genomes where the assigned name has changed, and $report->{removed_genomes} genomes removed since the last release.
+Release $report->{eg_version} Ensembl Bacteria has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} eubacteria and $report->{archaea} archaea) containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes $report->{new_genomes} new genomes, $report->{new_assemblies} genomes with updated assemblies, $report->{new_annotations} genomes with updated annotation, $report->{renamed_genomes} genomes where the assigned name has changed, and $report->{removed_genomes} genomes removed since the last release.
 END
 open my $summary, ">", "$summary_file" || croak "Could not open $summary_file for writing";
 print $summary $news;
