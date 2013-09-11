@@ -29,7 +29,6 @@ dstaines
 =head1 MAINTANER
 
 $Author$
-
 =head1 VERSION
 
 $Revision$
@@ -72,27 +71,23 @@ my $renamed_genomes = [];
 # removed genomes
 my $removed_genomes = [];
 while (my ($set_chain, $genome) = each %{$genomes->{genomes}}) {
-  my $prev_genome = $prev_genomes->{$set_chain};
+  my $prev_genome = $prev_genomes->{genomes}->{$set_chain};
   if (!defined $prev_genome) {
 	push @$new_genomes, $genome;
   } else {
-	if ($genome->{assembly} ne $prev_genome->{assembly}) {
-	  push @$new_assemblies, {new => $genome, old => $prev_genome};
-	}
 	if ($genome->{name} ne $prev_genome->{name}) {
 	  push @$renamed_genomes, {new => $genome, old => $prev_genome};
 	}
-	if ($genome->{genebuild} ne $prev_genome->{genebuild}) {
-	  push @$new_genebuilds, {new => $genome, old => $prev_genome};
-	}
-	if ($genome->{genebuild_version} ne $prev_genome->{genebuild_version}) {
+	if ($genome->{assembly} ne $prev_genome->{assembly}) {
+	  push @$new_assemblies, {new => $genome, old => $prev_genome};
+	} elsif ($genome->{genebuild_version} ne $prev_genome->{genebuild_version}) {
 	  push @$new_annotations, {new => $genome, old => $prev_genome};
 	}
   }
 }
 
 while (my ($set_chain, $genome) = each %{$prev_genomes->{genomes}}) {
-  if (!defined $genomes->{$set_chain}) {
+  if (!defined $genomes->{genomes}->{$set_chain}) {
 	push @$removed_genomes, $genome;
   }
 }
@@ -148,7 +143,6 @@ write_to_file(
 	return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
   });
 
-
 my $report = $genomes->{report};
 $report->{new_genomes}     = scalar @$new_genomes;
 $report->{new_assemblies}  = scalar @$new_assemblies;
@@ -161,7 +155,7 @@ $logger->info("Writing summary to $summary_file");
 my $news = <<END;
 Release $report->{eg_version} Ensembl Bacteria has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} eubacteria and $report->{archaea} archaea) containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes $report->{new_genomes} new genomes, $report->{new_assemblies},  genomes with updated assemblies, $report->{new_annotations} genomes with updated annotation, $report->{renamed_genomes} genomes where the assigned name has changed, and $report->{removed_genomes} genomes removed since the last release.
 END
-open my $summary,">","$summary_file" || croak "Could not open $summary_file for writing";
+open my $summary, ">", "$summary_file" || croak "Could not open $summary_file for writing";
 print $summary $news;
 close $summary;
 
@@ -204,7 +198,7 @@ sub genome_details {
 	  -CALLBACK => sub {
 		my ($database, $species_id, $assembly, $name, $full_name, $genebuild, $genebuild_version) = @{$_[0]};
 		$report->{genomes}++;
-		my ($set_chain, $version) = split ',', $assembly;
+		my ($set_chain, $version) = split ('\\.', $assembly);
 		$genomes->{$set_chain} = {set_chain         => $set_chain,
 								  version           => $version,
 								  assembly          => $assembly,
