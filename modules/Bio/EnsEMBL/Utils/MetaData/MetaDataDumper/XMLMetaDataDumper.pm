@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -31,7 +30,7 @@ use warnings;
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  $self->{file} ||= "species_metadata.xml";
+  $self->{file}     ||= "species_metadata.xml";
   $self->{division} ||= 1;
   return $self;
 }
@@ -39,8 +38,10 @@ sub new {
 sub do_dump {
   my ($self, $metadata, $outfile) = @_;
   $self->logger()->info("Writing XML to " . $outfile);
-  open(my $xml_file, '>', $outfile) || croak "Could not write to " . $outfile;
-  print $xml_file XML::Simple->new()->XMLout($metadata, RootName => 'genomes');
+  open(my $xml_file, '>', $outfile) ||
+	croak "Could not write to " . $outfile;
+  print $xml_file XML::Simple->new()
+	->XMLout($metadata, RootName => 'genomes');
   close $xml_file;
   $self->logger()->info("Completed writing XML to " . $outfile);
   return;

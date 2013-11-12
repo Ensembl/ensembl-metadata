@@ -28,35 +28,35 @@ use strict;
 use warnings;
 
 sub new {
-    my ( $proto, @args ) = @_;
-    my $self = $proto->SUPER::new(@args);
-    my ( $url, $host, $port, $user, $pass, $pattern, $nocache ) =
-      rearrange( [  'URL',  'HOST',    'PORT', 'USER',
-                    'PASS', 'PATTERN', 'NO_CACHE' ],
-                 @args );
-    if ( defined $url ) {
-        $self->{helper} = Bio::EnsEMBL::LookUp->new( -URL => $url );
-    } else {
-        Bio::EnsEMBL::LookUp->register_all_dbs(
-                                                            $host, $port, $user,
-                                                            $pass, $pattern );
-        $self->{helper} =
-          Bio::EnsEMBL::LookUp->new( -NO_CACHE => $nocache );
-    }
-    return $self;
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  my ($url, $host, $port, $user, $pass, $pattern, $nocache) =
+	rearrange(
+			  ['URL',  'HOST',    'PORT', 'USER',
+			   'PASS', 'PATTERN', 'NO_CACHE'],
+			  @args);
+  if (defined $url) {
+	$self->{helper} = Bio::EnsEMBL::LookUp->new(-URL => $url);
+  }
+  else {
+	Bio::EnsEMBL::LookUp->register_all_dbs($host, $port, $user, $pass,
+										   $pattern);
+	$self->{helper} = Bio::EnsEMBL::LookUp->new(-NO_CACHE => $nocache);
+  }
+  return $self;
 }
 
 sub helper {
-    my ($self) = @_;
-    return $self->{helper};
+  my ($self) = @_;
+  return $self->{helper};
 }
 
 sub get_dbas {
-    my ($self) = @_;
-    if ( !defined $self->{dbas} ) {
-        $self->{dbas} = $self->helper()->get_all_DBAdaptors();
-    }
-    return $self->{dbas};
+  my ($self) = @_;
+  if (!defined $self->{dbas}) {
+	$self->{dbas} = $self->helper()->get_all_DBAdaptors();
+  }
+  return $self->{dbas};
 }
 
 1;

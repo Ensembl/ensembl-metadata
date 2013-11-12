@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -28,28 +27,27 @@ use strict;
 use warnings;
 
 sub new {
-    my ( $proto, @args ) = @_;
-    my $self = $proto->SUPER::new(@args);
-    ($self->{regfile}) = rearrange(['REGISTRY'], @args);
-    $self->{registry} ||= 'Bio::EnsEMBL::Registry';
-    if(defined $self->{regfile}) {
-    	$self->{registry}->load_all($self->{regfile}); 
-    }
-    return $self;
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  ($self->{regfile}) = rearrange(['REGISTRY'], @args);
+  $self->{registry} ||= 'Bio::EnsEMBL::Registry';
+  if (defined $self->{regfile}) {
+	$self->{registry}->load_all($self->{regfile});
+  }
+  return $self;
 }
 
 sub registry {
-    my ($self) = @_;
-    return $self->{registry};
+  my ($self) = @_;
+  return $self->{registry};
 }
 
 sub get_dbas {
-    my ($self) = @_;
-    if ( !defined $self->{dbas} ) {
-        $self->{dbas} =
-          Bio::EnsEMBL::Registry->get_all_DBAdaptors();
-    }
-    return $self->{dbas};
+  my ($self) = @_;
+  if (!defined $self->{dbas}) {
+	$self->{dbas} = Bio::EnsEMBL::Registry->get_all_DBAdaptors();
+  }
+  return $self->{dbas};
 }
 
 1;

@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -24,56 +23,57 @@ use strict;
 use warnings;
 
 package Bio::EnsEMBL::Utils::MetaData::DBAFinder::ProductionDBAFinder;
-use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder );
+use base
+  qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder );
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Data::Dumper;
 
 sub new {
-    my ( $proto, @args ) = @_;
-    my $self = $proto->SUPER::new(@args);
-    # get the production database
-    my ( $mhost, $mport, $muser, $mpass, $mdbname ) =
-      rearrange( [ 'MHOST', 'MPORT', 'MUSER', 'MPASS', 'MDBNAME' ],
-                 @args );
-    $self->{production_dbc} =
-      Bio::EnsEMBL::DBSQL::DBConnection->new( -USER =>,
-                                              $muser,
-                                              -PASS =>,
-                                              $mpass,
-                                              -HOST =>,
-                                              $mhost,
-                                              -PORT =>,
-                                              $mport,
-                                              -DBNAME =>,
-                                              $mdbname );
-    return $self;
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  # get the production database
+  my ($mhost, $mport, $muser, $mpass, $mdbname) =
+	rearrange(['MHOST', 'MPORT', 'MUSER', 'MPASS', 'MDBNAME'], @args);
+  $self->{production_dbc} =
+	Bio::EnsEMBL::DBSQL::DBConnection->new(-USER =>,
+										   $muser,
+										   -PASS =>,
+										   $mpass,
+										   -HOST =>,
+										   $mhost,
+										   -PORT =>,
+										   $mport,
+										   -DBNAME =>,
+										   $mdbname);
+  return $self;
 }
 
 sub get_dbas {
-    my ($self) = @_;
-    # get parents and hash by DB
-    my $dbs;
-    for my $dba (@{ $self->SUPER::get_dbas() }) {
-        push @{$dbs->{$dba->dbc()->dbname()}},$dba;
-    }
-    my $dbas = [];
-    # get list of dbs
-    for my $db (
-        @{  $self->{production_dbc}->sql_helper()->execute_simple(
-                -SQL =>
+  my ($self) = @_;
+  # get parents and hash by DB
+  my $dbs;
+  for my $dba (@{$self->SUPER::get_dbas()}) {
+	push @{$dbs->{$dba->dbc()->dbname()}}, $dba;
+  }
+  my $dbas = [];
+  # get list of dbs
+  for my $db (
+	@{$self->{production_dbc}->sql_helper()->execute_simple(
+		-SQL =>
 q/select full_db_name as db_name from db_list join db using (db_id) where is_current=1 UNION select db_name from division_db where is_current=1 and db_type='COMPARA'/
-            ) } )
-    {
-        my $dba_list=  $dbs->{$db};
-        if(defined $dba_list) {
-           push @$dbas,@$dba_list; 
-        }  else {
-            throw "Expected database $db not found";
-        }  
-    }
-    return $dbas;
-}
+	  )})
+  {
+	my $dba_list = $dbs->{$db};
+	if (defined $dba_list) {
+	  push @$dbas, @$dba_list;
+	}
+	else {
+	  throw "Expected database $db not found";
+	}
+  }
+  return $dbas;
+} ## end sub get_dbas
 
 1;
 

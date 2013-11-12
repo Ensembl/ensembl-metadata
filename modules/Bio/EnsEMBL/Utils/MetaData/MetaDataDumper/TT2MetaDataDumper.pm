@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -33,21 +32,19 @@ sub new {
   my $self = $proto->SUPER::new(@args);
   $self->{file}     ||= 'species.tt2';
   $self->{division} ||= 'Ensembl';
-  $self->{div_links} = {EnsemblBacteria => "http://bacteria.ensembl.org/",
-						EnsemblFungi    => "http://fungi.ensembl.org/",
-						EnsemblMetazoa  => "http://metazoa.ensembl.org/",
-						EnsemblProtists => "http://protists.ensembl.org/",
-						EnsemblPlants   => "http://plants.ensembl.org/",
-            Ensembl         => "http://www.ensembl.org/",
-  };
-  $self->{div_names} = {
-            EnsemblBacteria => "Bacteria",
+  $self->{div_links} = {
+					  EnsemblBacteria => "http://bacteria.ensembl.org/",
+					  EnsemblFungi    => "http://fungi.ensembl.org/",
+					  EnsemblMetazoa  => "http://metazoa.ensembl.org/",
+					  EnsemblProtists => "http://protists.ensembl.org/",
+					  EnsemblPlants   => "http://plants.ensembl.org/",
+					  Ensembl         => "http://www.ensembl.org/",};
+  $self->{div_names} = {EnsemblBacteria => "Bacteria",
 						EnsemblFungi    => "Fungi",
 						EnsemblMetazoa  => "Metazoa",
 						EnsemblProtists => "Protists",
 						EnsemblPlants   => "Plants",
-            Ensembl         => "Ensembl",
-  };
+						Ensembl         => "Ensembl",};
 
   return $self;
 }
@@ -60,8 +57,8 @@ sub do_dump {
   my $tdx = '</td>';
   my $tr  = '<tr>';
   my $trx = '</tr>';
-  open(my $tt2_file, '>', $outfile)
-	|| croak "Could not write to " . $outfile;
+  open(my $tt2_file, '>', $outfile) ||
+	croak "Could not write to " . $outfile;
   print $tt2_file <<"ENDHEAD";
 	<style type="text/css" title="currentStyle">
     	\@import "/static/css/grid.css";
@@ -98,8 +95,45 @@ ENDHEAD
 	  croak "No division defined for $md->{name}";
 	}
 	$div_link .= $md->{species};
-	print $tt2_file join("", ($tr, $td, "<a href='${div_link}'>", $md->{name}, '</a>', $tdx, $td, "<a href='", $div_link, "'>", $div_name, '</a>', $td, "<a href='http://www.uniprot.org/taxonomy/" . $md->{taxonomy_id} . "'>" . $md->{taxonomy_id} . "</a>", $tdx, $td, $md->{assembly_name}, $tdx, $td, $md->{genebuild}, $tdx, $td, $self->yesno($self->count_variation($md)), $tdx, $td, $self->yesno($md->{pan_species}), $tdx, $td, $self->yesno($self->count_dna_compara($md)), $tdx, $td, $self->yesno($self->count_alignments($md)), $tdx, $trx, "\n"));
-  }
+	print $tt2_file join("",
+						 ($tr,
+						  $td,
+						  "<a href='${div_link}'>",
+						  $md->{name},
+						  '</a>',
+						  $tdx,
+						  $td,
+						  "<a href='",
+						  $div_link,
+						  "'>",
+						  $div_name,
+						  '</a>',
+						  $td,
+						  "<a href='http://www.uniprot.org/taxonomy/" .
+							$md->{taxonomy_id} .
+							"'>" . $md->{taxonomy_id} . "</a>",
+						  $tdx,
+						  $td,
+						  $md->{assembly_name},
+						  $tdx,
+						  $td,
+						  $md->{genebuild},
+						  $tdx,
+						  $td,
+						  $self->yesno($self->count_variation($md)),
+						  $tdx,
+						  $td,
+						  $self->yesno($md->{pan_species}),
+						  $tdx,
+						  $td,
+						  $self->yesno($self->count_dna_compara($md)),
+						  $tdx,
+						  $td,
+						  $self->yesno($self->count_alignments($md)),
+						  $tdx,
+						  $trx,
+						  "\n"));
+  } ## end for my $md (@{$metadata...})
   print $tt2_file <<'ENDFOOT';
 </tbody>
 <tfoot>

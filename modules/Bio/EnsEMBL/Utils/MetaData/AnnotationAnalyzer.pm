@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -29,7 +28,8 @@ use LWP::Simple;
 use Data::Dumper;
 use Config::IniFiles;
 
-my $url_template = 'http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/eg-plugins/DIVISION/conf/ini-files/SPECIES.ini?root=ensembl&view=co';
+my $url_template =
+'http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/eg-plugins/DIVISION/conf/ini-files/SPECIES.ini?root=ensembl&view=co';
 
 sub new {
   my $caller = shift;
@@ -43,52 +43,71 @@ sub analyze_annotation {
   my ($self, $dba) = @_;
   return {
 	nProteinCoding => $self->count_by_biotype($dba, 'protein_coding'),
-	nProteinCodingGO => $self->count_by_xref($dba, 'GO', 'protein_coding'),
-	nProteinCodingUniProtKB => $self->count_by_xref($dba, ['Uniprot/SWISSPROT', 'Uniprot/SPTREMBL'], 'protein_coding'),
-	nProteinCodingUniProtKBSwissProt => $self->count_by_xref($dba, 'Uniprot/SWISSPROT', 'protein_coding'),
-	nProteinCodingUniProtKBTrEMBL    => $self->count_by_xref($dba, 'Uniprot/SPTREMBL',  'protein_coding'),
-	nProteinCodingInterPro           => $self->count_by_interpro($dba),
-	nGO                              => $self->count_by_xref($dba, 'GO',                'protein_coding'),
-	nUniProtKBSwissProt => $self->count_xrefs($dba, 'Uniprot/SWISSPROT'),
-	nUniProtKBTrEMBL    => $self->count_xrefs($dba, 'Uniprot/SPTREMBL'),
-	nInterPro           => $self->count_interpro($dba),
-	nInterProDomains    => $self->count_interpro_domains($dba)};
+	nProteinCodingGO =>
+	  $self->count_by_xref($dba, 'GO', 'protein_coding'),
+	nProteinCodingUniProtKB =>
+	  $self->count_by_xref($dba,
+						   ['Uniprot/SWISSPROT', 'Uniprot/SPTREMBL'],
+						   'protein_coding'),
+	nProteinCodingUniProtKBSwissProt =>
+	  $self->count_by_xref($dba, 'Uniprot/SWISSPROT', 'protein_coding'),
+	nProteinCodingUniProtKBTrEMBL =>
+	  $self->count_by_xref($dba, 'Uniprot/SPTREMBL', 'protein_coding'),
+	nProteinCodingInterPro => $self->count_by_interpro($dba),
+	nGO => $self->count_by_xref($dba, 'GO', 'protein_coding'),
+	nUniProtKBSwissProt =>
+	  $self->count_xrefs($dba, 'Uniprot/SWISSPROT'),
+	nUniProtKBTrEMBL => $self->count_xrefs($dba, 'Uniprot/SPTREMBL'),
+	nInterPro        => $self->count_interpro($dba),
+	nInterProDomains => $self->count_interpro_domains($dba)};
 }
 
 sub analyze_features {
   my ($self, $dba) = @_;
-  return {simpleFeatures       => $self->count_features($dba, 'simple_feature'),
-		  repeatFeatures       => $self->count_features($dba, 'repeat_feature'),
-		  proteinAlignFeatures => $self->count_features($dba, 'protein_align_feature'),
-		  dnaAlignFeatures     => $self->count_features($dba, 'dna_align_feature')};
+  return {
+	simpleFeatures => $self->count_features($dba, 'simple_feature'),
+	repeatFeatures => $self->count_features($dba, 'repeat_feature'),
+	proteinAlignFeatures =>
+	  $self->count_features($dba, 'protein_align_feature'),
+	dnaAlignFeatures => $self->count_features($dba, 'dna_align_feature')
+  };
 }
 
 sub analyze_variation {
   my ($self, $dba) = @_;
-  return {variations           => $self->count_variations($dba),
-		  structuralVariations => $self->count_structural_variations($dba),
-		  genotypes            => $self->count_genotypes($dba),
-		  phenotypes           => $self->count_phenotypes($dba)};
+  return {
+	   variations           => $self->count_variations($dba),
+	   structuralVariations => $self->count_structural_variations($dba),
+	   genotypes            => $self->count_genotypes($dba),
+	   phenotypes           => $self->count_phenotypes($dba)};
 }
 
 sub analyze_compara {
   my ($self, $dba, $core) = @_;
   my $compara = {};
   eval {
-      my $gdb     = $dba->get_GenomeDBAdaptor()->fetch_by_registry_name($core->species());
-      for my $mlss (@{$dba->get_MethodLinkSpeciesSetAdaptor()->fetch_all_by_GenomeDB($gdb)}) {
+	my $gdb = $dba->get_GenomeDBAdaptor()
+	  ->fetch_by_registry_name($core->species());
+	for my $mlss (@{$dba->get_MethodLinkSpeciesSetAdaptor()
+					  ->fetch_all_by_GenomeDB($gdb)})
+	{
 	  my $t = $mlss->method()->type();
-	  next if($t eq 'FAMILY' || $t eq 'ENSEMBL_ORTHOLOGUES' || $t eq 'ENSEMBL_PARALOGUES');
-	  for my $gdb2 (grep { $gdb->dbID() ne $_->dbID() } @{$mlss->species_set_obj->genome_dbs()}) {
-	      push(@{$compara->{$t}}, $gdb2->name());
+	  next
+		if ($t eq 'FAMILY' ||
+			$t eq 'ENSEMBL_ORTHOLOGUES' ||
+			$t eq 'ENSEMBL_PARALOGUES');
+	  for my $gdb2 (grep { $gdb->dbID() ne $_->dbID() }
+					@{$mlss->species_set_obj->genome_dbs()})
+	  {
+		push(@{$compara->{$t}}, $gdb2->name());
 	  }
-      }
+	}
   };
-  if($@) {
-      warn "No compara entry found for ".$dba->species();
+  if ($@) {
+	warn "No compara entry found for " . $dba->species();
   }
   return $compara;
-}
+} ## end sub analyze_compara
 
 sub analyze_tracks {
   my ($self, $species, $division) = @_;
@@ -98,27 +117,27 @@ sub analyze_tracks {
   (my $ini_url = $url_template) =~ s/SPECIES/$species/;
   $ini_url =~ s/DIVISION/$division/;
   my $ini = get($ini_url);
-  # parse out and look at:
-  # [ENSEMBL_INTERNAL_BAM_SOURCES]
-  # 1_Puccinia_triticina_SRR035315 = dna_align_est
-  # walk through keys and use keys to find sections like:
-  # [1_Puccinia_triticina_SRR035315]
-  # source_name        = Transcriptomics sequences of fresh spores. Run id: SRR035315
-  # description        = RNA-Seq study.
-  # source_url         = http://ftp.sra.ebi.ac.uk/vol1/ERZ000/ERZ000002/SRR035315.bam
-  # source_type        = rnaseq
-  # display            = normal
-  # then store some or all of this in my output e.g. {bam}{source_type}[{source_name,description,source_url}]
+# parse out and look at:
+# [ENSEMBL_INTERNAL_BAM_SOURCES]
+# 1_Puccinia_triticina_SRR035315 = dna_align_est
+# walk through keys and use keys to find sections like:
+# [1_Puccinia_triticina_SRR035315]
+# source_name        = Transcriptomics sequences of fresh spores. Run id: SRR035315
+# description        = RNA-Seq study.
+# source_url         = http://ftp.sra.ebi.ac.uk/vol1/ERZ000/ERZ000002/SRR035315.bam
+# source_type        = rnaseq
+# display            = normal
+# then store some or all of this in my output e.g. {bam}{source_type}[{source_name,description,source_url}]
   my $bams = {};
   my $cfg = Config::IniFiles->new(-file => \$ini);
-  if(defined $cfg) {
-  for my $bam ($cfg->Parameters("ENSEMBL_INTERNAL_BAM_SOURCES")) {
-	push @{$bams->{$cfg->val($bam, 'source_type')}}, {
-	   id          => $bam,
-	   source_name => $cfg->val($bam, 'source_name'),
-	   source_url  => $cfg->val($bam, 'source_url'),
-	   description => $cfg->val($bam, 'description')};
-  }
+  if (defined $cfg) {
+	for my $bam ($cfg->Parameters("ENSEMBL_INTERNAL_BAM_SOURCES")) {
+	  push @{$bams->{$cfg->val($bam, 'source_type')}},
+		{id          => $bam,
+		 source_name => $cfg->val($bam, 'source_name'),
+		 source_url  => $cfg->val($bam, 'source_url'),
+		 description => $cfg->val($bam, 'description')};
+	}
   }
   return $bams;
 } ## end sub analyze_tracks
@@ -143,7 +162,8 @@ my $biotype_clause = q/ and g.biotype=?/;
 
 sub count_by_xref {
   my ($self, $dba, $db_names, $biotype) = @_;
-   $self->{logger}->debug("Counting genes by ".join(",",$db_names)." xref for ".$dba->species());
+  $self->{logger}->debug("Counting genes by " .
+				 join(",", $db_names) . " xref for " . $dba->species());
   $db_names = [$db_names] if (ref($db_names) ne 'ARRAY');
   my $sql = $xref_gene_sql;
   my $db_name = join ',', map { "\"$_\"" } @$db_names;
@@ -153,8 +173,10 @@ sub count_by_xref {
 	$sql .= $biotype_clause;
 	push @$params, $biotype;
   }
-   $self->{logger}->debug("Executing $sql with params: [".join(",",@$params));
-  return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $sql, -PARAMS => $params);
+  $self->{logger}
+	->debug("Executing $sql with params: [" . join(",", @$params));
+  return $dba->dbc()->sql_helper()
+	->execute_single_result(-SQL => $sql, -PARAMS => $params);
 }
 
 my $gene_xref_count_sql = q/
@@ -193,12 +215,21 @@ sub count_xrefs {
   my $dba  = shift;
   my $tot  = 0;
   for my $db_name (@_) {
-	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $gene_xref_count_sql,
-															 -PARAMS => [$dba->species_id(), $db_name]);
-	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $transcript_xref_count_sql,
-															 -PARAMS => [$dba->species_id(), $db_name]);
-	$tot += $dba->dbc()->sql_helper()->execute_single_result(-SQL    => $translation_xref_count_sql,
-															 -PARAMS => [$dba->species_id(), $db_name]);
+	$tot +=
+	  $dba->dbc()->sql_helper()->execute_single_result(
+							   -SQL    => $gene_xref_count_sql,
+							   -PARAMS => [$dba->species_id(), $db_name]
+	  );
+	$tot +=
+	  $dba->dbc()->sql_helper()->execute_single_result(
+							   -SQL    => $transcript_xref_count_sql,
+							   -PARAMS => [$dba->species_id(), $db_name]
+	  );
+	$tot +=
+	  $dba->dbc()->sql_helper()->execute_single_result(
+							   -SQL    => $translation_xref_count_sql,
+							   -PARAMS => [$dba->species_id(), $db_name]
+	  );
   }
   return $tot;
 }
@@ -212,25 +243,41 @@ join coord_system using (coord_system_id)
 where species_id=?
 /;
 
-my $count_by_interpro = 'select count(distinct(interpro_ac)) ' . $count_by_interpro_base;
+my $count_by_interpro =
+  'select count(distinct(interpro_ac)) ' . $count_by_interpro_base;
 
 sub count_by_interpro {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $count_by_interpro, -PARAMS => [$dba->species_id()]);
+  return
+	$dba->dbc()->sql_helper()->execute_single_result(
+										 -SQL    => $count_by_interpro,
+										 -PARAMS => [$dba->species_id()]
+	);
 }
 
-my $count_interpro = q/select count(distinct(translation_id)) / . $count_by_interpro_base;
+my $count_interpro =
+  q/select count(distinct(translation_id)) / . $count_by_interpro_base;
 
 sub count_interpro {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $count_interpro, -PARAMS => [$dba->species_id()]);
+  return
+	$dba->dbc()->sql_helper()->execute_single_result(
+										 -SQL    => $count_interpro,
+										 -PARAMS => [$dba->species_id()]
+	);
 }
 
-my $count_interpro_domains = q/select count(distinct(protein_feature_id)) / . $count_by_interpro_base;
+my $count_interpro_domains =
+  q/select count(distinct(protein_feature_id)) / .
+  $count_by_interpro_base;
 
 sub count_interpro_domains {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $count_interpro_domains, -PARAMS => [$dba->species_id()]);
+  return
+	$dba->dbc()->sql_helper()->execute_single_result(
+										-SQL => $count_interpro_domains,
+										-PARAMS => [$dba->species_id()]
+	);
 }
 
 my $count_toplevel = q/select count(*) from seq_region 
@@ -241,7 +288,11 @@ where species_id=? and code='toplevel'/;
 
 sub count_toplevel {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_single_result(-SQL => $count_toplevel, -PARAMS => [$dba->species_id()]);
+  return
+	$dba->dbc()->sql_helper()->execute_single_result(
+										 -SQL    => $count_toplevel,
+										 -PARAMS => [$dba->species_id()]
+	);
 }
 
 my $count_features = q/select logic_name,count(*) 
@@ -254,7 +305,8 @@ sub count_features {
   my ($self, $dba, $table) = @_;
   my $sql = $count_features;
   $sql =~ s/TABLE/$table/;
-  return $dba->dbc()->sql_helper()->execute_into_hash(-SQL => $sql, -PARAMS => [$dba->species_id()]);
+  return $dba->dbc()->sql_helper()
+	->execute_into_hash(-SQL => $sql, -PARAMS => [$dba->species_id()]);
 }
 
 my $count_variation = q/select s.name,count(*) 
@@ -264,7 +316,8 @@ group by s.name/;
 
 sub count_variations {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_into_hash(-SQL => $count_variation, -PARAMS => []);
+  return $dba->dbc()->sql_helper()
+	->execute_into_hash(-SQL => $count_variation, -PARAMS => []);
 }
 
 my $count_structural_variation = q/select s.name,count(*) 
@@ -274,7 +327,10 @@ group by s.name/;
 
 sub count_structural_variations {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_into_hash(-SQL => $count_structural_variation, -PARAMS => []);
+  return
+	$dba->dbc()->sql_helper()->execute_into_hash(
+									-SQL => $count_structural_variation,
+									-PARAMS => []);
 }
 
 my $count_genotypes = q/
@@ -284,7 +340,8 @@ join individual using (individual_id) group by name/;
 
 sub count_genotypes {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_into_hash(-SQL => $count_genotypes, -PARAMS => []);
+  return $dba->dbc()->sql_helper()
+	->execute_into_hash(-SQL => $count_genotypes, -PARAMS => []);
 }
 
 my $count_phenotypes = q/
@@ -297,7 +354,8 @@ group by p.name;
 
 sub count_phenotypes {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()->execute_into_hash(-SQL => $count_phenotypes, -PARAMS => []);
+  return $dba->dbc()->sql_helper()
+	->execute_into_hash(-SQL => $count_phenotypes, -PARAMS => []);
 }
 
 1;

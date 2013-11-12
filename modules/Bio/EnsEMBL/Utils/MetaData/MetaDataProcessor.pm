@@ -89,10 +89,9 @@ sub process_metadata {
 	  my $md = {
 		 species    => $dba->species(),
 		 species_id => $dba->species_id(),
-		 strain => $meta->single_value_by_key('species.strain') ||
+		 strain => $meta->single_value_by_key('species.strain') || '',
+		 serotype => $meta->single_value_by_key('species.serotype') ||
 		   '',
-		 serotype => $meta->single_value_by_key('species.serotype')
-		   || '',
 		 name        => $meta->get_scientific_name() || '',
 		 taxonomy_id => $meta->get_taxonomy_id()     || '',
 		 assembly_id => $meta->single_value_by_key('assembly.accession')
@@ -110,7 +109,7 @@ sub process_metadata {
 		  -SQL =>
 'select name from coord_system where species_id=? order by rank asc',
 		  -PARAMS => [$dba->species_id()])}[0];
-	  
+
 	  # get list of seqlevel contigs
 	  if (defined $self->{contigs}) {
 		my $slice_adaptor = $dba->get_SliceAdaptor();
@@ -118,7 +117,7 @@ sub process_metadata {
 		  push @{$md->{accession}}, $contig->seq_region_name();
 		}
 	  }
-	  
+
 	  # get toplevel base count
 	  $md->{base_count} =
 		$dba->dbc()->sql_helper()->execute_single_result(
@@ -129,7 +128,7 @@ sub process_metadata {
 	 join coord_system cs using (coord_system_id) 
 	 where code='toplevel' and species_id=?/,
 		-PARAMS => [$dba->species_id()]);
-		
+
 	  # get associated PMIDs
 	  $md->{publications} = $dba->dbc()->sql_helper()->execute_simple(
 		-SQL => q/select distinct dbprimary_acc from 

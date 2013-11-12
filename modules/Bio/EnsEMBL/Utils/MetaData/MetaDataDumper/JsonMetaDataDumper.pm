@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -38,8 +37,8 @@ sub new {
 
 sub do_dump {
   my ($self, $metadata, $out_file) = @_;
-  open(my $json_file, '>', $out_file)
-	|| croak "Could not write to " . $out_file;
+  open(my $json_file, '>', $out_file) ||
+	croak "Could not write to " . $out_file;
   print $json_file to_json($metadata, {pretty => 1});
   close $json_file;
   return;

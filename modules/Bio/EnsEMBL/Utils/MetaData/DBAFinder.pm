@@ -1,4 +1,3 @@
-
 =pod
 =head1 LICENSE
 
@@ -26,17 +25,16 @@ use strict;
 use warnings;
 
 sub new {
-    my $caller = shift;
-    my $class = ref($caller) || $caller;
-    my $self = bless( {}, $class );
-    return $self;
+  my $caller = shift;
+  my $class  = ref($caller) || $caller;
+  my $self   = bless({}, $class);
+  return $self;
 }
 
 sub get_dbas {
-    my ($self) = @_;
-    throw "Unimplemented subroutine get_dbas() in "
-      . ref($self)
-      . ". Please implement";
+  my ($self) = @_;
+  throw "Unimplemented subroutine get_dbas() in " .
+	ref($self) . ". Please implement";
 }
 
 1;

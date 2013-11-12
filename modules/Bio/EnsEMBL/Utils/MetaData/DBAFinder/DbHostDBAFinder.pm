@@ -21,17 +21,18 @@
 =cut
 
 package Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder;
-use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder );
+use base
+  qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder );
 use strict;
 use warnings;
 
 sub new {
-    my ( $proto, @args ) = @_;
-	my $self = $proto->SUPER::new(@args);	
-	# populate the registry
-	$self->registry()->load_registry_from_db(@args);
-    $self->registry()->set_disconnect_when_inactive(1);
-    return $self;
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  # populate the registry
+  $self->registry()->load_registry_from_db(@args);
+  $self->registry()->set_disconnect_when_inactive(1);
+  return $self;
 }
 
 1;
