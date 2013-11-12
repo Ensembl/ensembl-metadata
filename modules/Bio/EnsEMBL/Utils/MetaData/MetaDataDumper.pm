@@ -137,6 +137,11 @@ sub count_variation {
 	$self->count_hash_values($md->{variation}{structural_variations});
 }
 
+sub count_pep_compara {
+  my ($self, $md) = @_;
+  return $self->count_array_lengths($md->{compara}{PROTEIN_TREES});
+}
+
 sub count_dna_compara {
   my ($self, $md) = @_;
   return $self->count_array_lengths($md->{compara}{LASTZ_NET}) +
