@@ -20,19 +20,14 @@
 
 =head1 DESCRIPTION
 
-This script is used to generate a summary of key metadata for ENA bacteria in JSON and XML.
+This script is used to reggenerate metadata files using an existing JSON file (so databases do not need touching)
 
 =head1 EXAMPLE
 
-To dump the metadata for a new Ensembl Genomes release as tt2:
-perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro \
-	-mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro -mdbname ensembl_production \
-	-dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TT2MetaDataDumper
+To redump the metadata for a new Ensembl Genomes release as tt2:
+perl redump_metadata.pl -json species_metadata.json -dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TT2MetaDataDumper
 
-To dump the metadata for a new Ensembl Genomes release as txt:
-perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro \
-	-mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro -mdbname ensembl_production \
-	-dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper
+perl redump_metadata.pl -json species_metadata.json -dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper
 	
 =head1 USAGE
 
