@@ -137,7 +137,7 @@ sub count_variation {
 	$self->count_hash_values($md->{variation}{structural_variations});
 }
 
-sub count_pep_compara {
+sub count_peptide_compara {
   my ($self, $md) = @_;
   return $self->count_array_lengths($md->{compara}{PROTEIN_TREES});
 }
@@ -145,7 +145,8 @@ sub count_pep_compara {
 sub count_dna_compara {
   my ($self, $md) = @_;
   return $self->count_array_lengths($md->{compara}{LASTZ_NET}) +
-	$self->count_array_lengths($md->{compara}{BLASTZ_NET});
+	$self->count_array_lengths($md->{compara}{BLASTZ_NET}) +
+	$self->count_array_lengths($md->{compara}{TRANSLATED_BLAT_NET});
 }
 
 sub count_alignments {
