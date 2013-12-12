@@ -163,7 +163,7 @@ sub write_to_file {
   my ($data, $file_name, $header, $callback) = @_;
   $logger->info("Writing to $file_name");
   open my $file, ">", $file_name or croak "Could not open output file $file_name";
-  print $file join("\t", @{$header}) . "\n";
+  print $file "#".join("\t", @{$header}) . "\n";
   for my $datum (@{$data}) {
 	print $file join("\t", @{$callback->($datum)}) . "\n";
   }
