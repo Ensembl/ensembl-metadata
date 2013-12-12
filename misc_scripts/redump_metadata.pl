@@ -90,6 +90,9 @@ for my $dumper_module (@{$opts->{dumper}}) {
   load $dumper_module;
   my $dumper = $dumper_module->new();
   $logger->info("Dumping metadata using $dumper");
+  $dumper->division(0);
+  $dumper->dump_metadata($metadata);
+  $dumper->division(1);
   $dumper->dump_metadata($metadata);
 }
 $logger->info("Completed dumping");
