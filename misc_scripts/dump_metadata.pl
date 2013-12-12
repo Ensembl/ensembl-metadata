@@ -127,8 +127,8 @@ my $dbas   = $finder->get_dbas();
 if(defined $opts->{species}) {
 	$dbas = [grep{$_->species() eq $opts->{species}} @{$dbas}];
 }
-if(defined $opts->{species}) {
-	$dbas = [grep{$_->species() eq $opts->{species}} @{$dbas}];
+if(defined $opts->{division}) {
+	$dbas = [grep{$_->get_MetaContainer()->get_division() eq $opts->{division}} @{$dbas}];
 }
 $logger->info("Retrieved " . scalar(@$dbas) . " DBAs");
 
