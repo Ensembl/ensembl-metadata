@@ -24,6 +24,7 @@
 package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper;
 use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Data::Dumper;
 use Carp;
 use XML::Simple;
 use strict;
@@ -57,11 +58,11 @@ sub do_dump {
 						  $md->{assembly_name},
 						  $md->{assembly_id},
 						  $md->{genebuild},
-						  $self->yesno($self->count_variation($md)),
+						  $self->yesno($md->count_variation()),
 						  $self->yesno($md->{pan_species}),
-						  $self->yesno($self->count_peptide_compara($md)),
-						  $self->yesno($self->count_dna_compara($md)),
-						  $self->yesno($self->count_alignments($md)),
+						  $self->yesno($md->count_peptide_compara()),
+						  $self->yesno($md->count_dna_compara()),
+						  $self->yesno($md->count_alignments()),
 						  $md->{dbname},
 						  $md->{species_id},
 						  "\n"));

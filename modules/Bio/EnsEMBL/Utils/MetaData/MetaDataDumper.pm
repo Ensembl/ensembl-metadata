@@ -93,69 +93,7 @@ sub logger {
   return $self->{logger};
 }
 
-sub get_uniprot_coverage {
-  my ($self, $md) = @_;
-  return sprintf "%.2f",
-	100*($md->{annotation}{nProteinCodingUniProtKB})/
-	$md->{annotation}{nProteinCoding};
-}
 
-sub count_hash_values {
-  my ($self, $hash) = @_;
-  my $tot = 0;
-  if (defined $hash) {
-	for my $v (values %{$hash}) {
-	  $tot += $v;
-	}
-  }
-  return $tot;
-}
-
-sub count_hash_lengths {
-  my ($self, $hash) = @_;
-  my $tot = 0;
-  if (defined $hash) {
-	for my $v (values %{$hash}) {
-	  $tot += scalar(@$v);
-	}
-  }
-  return $tot;
-}
-
-sub count_array_lengths {
-  my ($self, $array) = @_;
-  my $tot = 0;
-  if (defined $array) {
-	$tot = scalar(@$array);
-  }
-  return $tot;
-}
-
-sub count_variation {
-  my ($self, $md) = @_;
-  return $self->count_hash_values($md->{variation}{variations}) +
-	$self->count_hash_values($md->{variation}{structural_variations});
-}
-
-sub count_peptide_compara {
-  my ($self, $md) = @_;
-  return $self->count_array_lengths($md->{compara}{PROTEIN_TREES});
-}
-
-sub count_dna_compara {
-  my ($self, $md) = @_;
-  return $self->count_array_lengths($md->{compara}{LASTZ_NET}) +
-	$self->count_array_lengths($md->{compara}{BLASTZ_NET}) +
-	$self->count_array_lengths($md->{compara}{TRANSLATED_BLAT_NET});
-}
-
-sub count_alignments {
-  my ($self, $md) = @_;
-  return
-	  $self->count_hash_values($md->{features}{proteinAlignFeatures})
-	+ $self->count_hash_values($md->{features}{dnaAlignFeatures})
-	+ $self->count_hash_lengths($md->{bam});
-}
 
 sub yesno {
   my ($self, $num) = @_;

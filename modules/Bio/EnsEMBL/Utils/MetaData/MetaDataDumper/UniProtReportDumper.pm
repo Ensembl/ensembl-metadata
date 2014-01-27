@@ -49,6 +49,7 @@ sub do_dump {
 		<=> $self->get_uniprot_coverage($b)
 	} @{$metadata->{genome}})
   {
+  	print Dumper($md);
 	print $txt_file join(
 				   "\t",
 				   ($md->{name},

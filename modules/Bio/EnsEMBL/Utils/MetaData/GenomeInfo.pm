@@ -20,8 +20,9 @@
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper;
-
+package Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
+use Log::Log4perl qw(get_logger);
+use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
 
@@ -30,30 +31,57 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self = bless({}, $class);
   $self->{logger} = get_logger();
-  ($self->{species},   $self->{dbname},        $self->{species_id},
-   $self->{taxid},     $self->{assembly_name}, $self->{assembly_id},
-   $self->{genebuild}, $self->{division},      $self->{aliases},
-   $self->{division_compara}, $self->{pan_compara},
-   $self->{accessions}, $self->{variations}, $self->{features},
-   $self->{annotation}, $self->{read_alignments}
+  ($self->{name},        $self->{species},     $self->{dbname},
+   $self->{species_id},  $self->{taxonomy_id}, $self->{assembly_name},
+   $self->{assembly_id}, $self->{genebuild},   $self->{division},
+   $self->{strain},      $self->{serotype}
+
 	) =
 	rearrange(
-			  ['SPECIES',       'DBNAME',
-			   'SPECIES_ID',    'TAXID',
-			   'ASSEMBLY_NAME', 'ASSEMBLY_ID',
-			   'GENEBUILD',     'DIVISION',
-			   'ALIASES',       'DIVISION_COMPARA',
-			   'PAN_COMPARA',   'ACCESSIONS',
-			   'VARIATIONS',    'FEATURES',
-			   'ANNOTATION',    'READ_ALIGNMENTS'],
+			  ['NAME',        'SPECIES',
+			   'DBNAME',      'SPECIES_ID',
+			   'TAXONOMY_ID', 'ASSEMBLY_NAME',
+			   'ASSEMBLY_ID', 'GENEBUILD',
+			   'DIVISION',    'STRAIN',
+			   'SEROTYPE',],
 			  @args);
   return $self;
 }
 
+sub dbID {
+  my ($self, $id) = @_;
+  $self->{dbID} = $id if (defined $id);
+  return $self->{dbID};
+}
+
+sub adaptor {
+  my ($self, $adaptor) = @_;
+  $self->{adaptor} = $adaptor if (defined $adaptor);
+  return $self->{adaptor};
+}
+# first-class attributes
 sub species {
   my ($self, $species) = @_;
   $self->{species} = $species if (defined $species);
   return $self->{species};
+}
+
+sub strain {
+  my ($self, $arg) = @_;
+  $self->{strain} = $arg if (defined $arg);
+  return $self->{strain};
+}
+
+sub serotype {
+  my ($self, $arg) = @_;
+  $self->{serotype} = $arg if (defined $arg);
+  return $self->{serotype};
+}
+
+sub name {
+  my ($self, $arg) = @_;
+  $self->{name} = $arg if (defined $arg);
+  return $self->{name};
 }
 
 sub dbname {
@@ -68,10 +96,10 @@ sub species_id {
   return $self->{species_id};
 }
 
-sub taxid {
-  my ($self, $taxid) = @_;
-  $self->{taxid} = $taxid if (defined $taxid);
-  return $self->{taxid};
+sub taxonomy_id {
+  my ($self, $taxonomy_id) = @_;
+  $self->{taxonomy_id} = $taxonomy_id if (defined $taxonomy_id);
+  return $self->{taxonomy_id};
 }
 
 sub assembly_name {
@@ -86,6 +114,19 @@ sub assembly_id {
   return $self->{assembly_id};
 }
 
+sub assembly_level {
+  my ($self, $assembly_level) = @_;
+  $self->{assembly_level} = $assembly_level
+	if (defined $assembly_level);
+  return $self->{assembly_level};
+}
+
+sub base_count {
+  my ($self, $base_count) = @_;
+  $self->{base_count} = $base_count if (defined $base_count);
+  return $self->{base_count};
+}
+
 sub genebuild {
   my ($self, $genebuild) = @_;
   $self->{genebuild} = $genebuild if (defined $genebuild);
@@ -98,29 +139,41 @@ sub division {
   return $self->{division};
 }
 
+sub pan_species {
+  my ($self, $arg) = @_;
+  $self->{pan_species} = $arg if (defined $arg);
+  return $self->{pan_species};
+}
+
+sub db_size {
+  my ($self, $arg) = @_;
+  $self->{db_size} = $arg if (defined $arg);
+  return $self->{db_size};
+}
+
+# references
 sub aliases {
   my ($self, $aliases) = @_;
   $self->{aliases} = $aliases if (defined $aliases);
   return $self->{aliases};
 }
 
-sub division_compara {
-  my ($self, $division_compara) = @_;
-  $self->{division_compara} = $division_compara
-	if (defined $division_compara);
-  return $self->{division_compara};
-}
-# partners in pan
-sub pan_compara {
-  my ($self, $pan_compara) = @_;
-  $self->{pan_compara} = $pan_compara if (defined $pan_compara);
-  return $self->{pan_compara};
+sub compara {
+  my ($self, $compara) = @_;
+  $self->{compara} = $compara if (defined $compara);
+  return $self->{compara};
 }
 
-sub accessions {
-  my ($self, $accessions) = @_;
-  $self->{accessions} = $accessions if (defined $accessions);
-  return $self->{accessions};
+sub sequences {
+  my ($self, $sequences) = @_;
+  $self->{sequences} = $sequences if (defined $sequences);
+  return $self->{sequences};
+}
+
+sub publications {
+  my ($self, $publications) = @_;
+  $self->{publications} = $publications if (defined $publications);
+  return $self->{publications};
 }
 
 sub variations {
@@ -146,6 +199,71 @@ sub read_alignments {
   $self->{read_alignments} = $read_alignments
 	if (defined $read_alignments);
   return $self->{read_alignments};
+}
+
+# utility methods
+sub get_uniprot_coverage {
+  my ($self) = @_;
+  return sprintf "%.2f",
+	100*($self->{annotation}{nProteinCodingUniProtKB})/
+	$self->{annotation}{nProteinCoding};
+}
+
+sub count_hash_values {
+  my ($self, $hash) = @_;
+  my $tot = 0;
+  if (defined $hash) {
+	for my $v (values %{$hash}) {
+	  $tot += $v;
+	}
+  }
+  return $tot;
+}
+
+sub count_hash_lengths {
+  my ($self, $hash) = @_;
+  my $tot = 0;
+  if (defined $hash) {
+	for my $v (values %{$hash}) {
+	  $tot += scalar(@$v);
+	}
+  }
+  return $tot;
+}
+
+sub count_array_lengths {
+  my ($self, $array) = @_;
+  my $tot = 0;
+  if (defined $array) {
+	$tot = scalar(@$array);
+  }
+  return $tot;
+}
+
+sub count_variation {
+  my ($self) = @_;
+  return $self->count_hash_values($self->{variation}{variations}) +
+	$self->count_hash_values($self->{variation}{structural_variations});
+}
+
+sub count_peptide_compara {
+  my ($self) = @_;
+  return $self->count_array_lengths($self->{compara}{PROTEIN_TREES});
+}
+
+sub count_dna_compara {
+  my ($self) = @_;
+  return $self->count_array_lengths($self->{compara}{LASTZ_NET}) +
+	$self->count_array_lengths($self->{compara}{BLASTZ_NET}) +
+	$self->count_array_lengths($self->{compara}{TRANSLATED_BLAT_NET});
+}
+
+sub count_alignments {
+  my ($self) = @_;
+  return $self->count_hash_values(
+							  $self->{features}{proteinAlignFeatures}) +
+	$self->count_hash_values($self->{features}{dnaAlignFeatures}) +
+	$self->count_hash_lengths($self->{read_alignments});
 }
 
 1;
