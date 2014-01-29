@@ -139,12 +139,6 @@ sub division {
   return $self->{division};
 }
 
-sub pan_species {
-  my ($self, $arg) = @_;
-  $self->{pan_species} = $arg if (defined $arg);
-  return $self->{pan_species};
-}
-
 sub db_size {
   my ($self, $arg) = @_;
   $self->{db_size} = $arg if (defined $arg);
@@ -154,51 +148,138 @@ sub db_size {
 # references
 sub aliases {
   my ($self, $aliases) = @_;
-  $self->{aliases} = $aliases if (defined $aliases);
+  if (defined $aliases) {
+	$self->{aliases} = $aliases;
+  }
   return $self->{aliases};
 }
 
 sub compara {
   my ($self, $compara) = @_;
-  $self->{compara} = $compara if (defined $compara);
+  if (defined $compara) {
+	$self->{compara}               = $compara;
+	$self->{has_peptide_compara}   = undef;
+	$self->{has_genome_alignments} = undef;
+  }
   return $self->{compara};
+}
+
+sub pan_compara {
+  my ($self, $compara) = @_;
+  if (defined $compara) {
+	$self->{pan_compara}     = $compara;
+	$self->{has_pan_compara} = undef;
+  }
+  return $self->{pan_compara};
 }
 
 sub sequences {
   my ($self, $sequences) = @_;
-  $self->{sequences} = $sequences if (defined $sequences);
+  if (defined $sequences) {
+	$self->{sequences} = $sequences;
+  }
   return $self->{sequences};
 }
 
 sub publications {
   my ($self, $publications) = @_;
-  $self->{publications} = $publications if (defined $publications);
+  if (defined $publications) {
+	$self->{publications} = $publications;
+  }
   return $self->{publications};
 }
 
 sub variations {
   my ($self, $variations) = @_;
-  $self->{variations} = $variations if (defined $variations);
+  if (defined $variations) {
+	$self->{variations}     = $variations;
+	$self->{has_variations} = undef;
+  }
   return $self->{variations};
 }
 
 sub features {
   my ($self, $features) = @_;
-  $self->{features} = $features if (defined $features);
+  if (defined $features) {
+	$self->{features} = $features;
+  }
   return $self->{features};
 }
 
-sub annotation {
+sub annotations {
   my ($self, $annotation) = @_;
-  $self->{annotation} = $annotation if (defined $annotation);
+  if (defined $annotation) {
+	$self->{annotation} = $annotation;
+  }
   return $self->{annotation};
 }
 
 sub read_alignments {
   my ($self, $read_alignments) = @_;
-  $self->{read_alignments} = $read_alignments
-	if (defined $read_alignments);
+  if (defined $read_alignments) {
+	$self->{read_alignments}      = $read_alignments;
+	$self->{has_other_alignments} = undef;
+  }
   return $self->{read_alignments};
+}
+
+# boolean optimisers
+sub has_variation {
+  my ($self, $arg) = @_;
+  if (defined $arg) {
+	$self->{has_variation} = $arg;
+  }
+  elsif (!defined($self->{has_variation})) {
+	$self->{has_variation} = $self->count_variation() > 0 ? 1 : 0;
+  }
+  return $self->{has_variation};
+}
+
+sub has_genome_alignments {
+  my ($self, $arg) = @_;
+  if (defined $arg) {
+	$self->{has_genome_alignments} = $arg;
+  }
+  elsif (!defined($self->{has_genome_alignments})) {
+	$self->{has_genome_alignments} =
+	  $self->count_dna_compara() > 0 ? 1 : 0;
+  }
+  return $self->{has_genome_alignments};
+}
+
+sub has_peptide_compara {
+  my ($self, $arg) = @_;
+  if (defined $arg) {
+	$self->{has_peptide_compara} = $arg;
+  }
+  elsif (!defined($self->{has_peptide_compara})) {
+	$self->{has_peptide_compara} =
+	  $self->count_peptide_compara() > 0 ? 1 : 0;
+  }
+  return $self->{has_peptide_compara};
+}
+
+sub has_pan_compara {
+  my ($self, $arg) = @_;
+  if (defined $arg) {
+	$self->{has_pan_compara} = $arg;
+  }
+  elsif (!defined($self->{has_pan_compara})) {
+	$self->{has_pan_compara} = $self->count_pan_compara() > 0 ? 1 : 0;
+  }
+  return $self->{has_pan_compara};
+}
+
+sub has_other_alignments {
+  my ($self, $arg) = @_;
+  if (defined $arg) {
+	$self->{has_other_alignments} = $arg;
+  }
+  elsif (!defined($self->{has_other_alignments})) {
+	$self->{has_other_alignments} =
+	  $self->count_alignments() > 0 ? 1 : 0;
+  }
+  return $self->{has_other_alignments};
 }
 
 # utility methods
@@ -244,6 +325,12 @@ sub count_variation {
   my ($self) = @_;
   return $self->count_hash_values($self->{variation}{variations}) +
 	$self->count_hash_values($self->{variation}{structural_variations});
+}
+
+sub count_pan_compara {
+  my ($self) = @_;
+  return $self->count_array_lengths(
+								   $self->{pan_compara}{PROTEIN_TREES});
 }
 
 sub count_peptide_compara {

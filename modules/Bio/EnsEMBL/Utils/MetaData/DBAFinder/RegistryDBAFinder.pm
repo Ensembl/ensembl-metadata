@@ -23,6 +23,7 @@ package Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder;
 use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Utils::Exception qw(throw);
+use Data::Dumper;
 use strict;
 use warnings;
 

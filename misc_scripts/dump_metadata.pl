@@ -90,6 +90,8 @@ use Pod::Usage;
 use Data::Dumper;
 use Module::Load;
 use Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::DBSQL::DBConnection;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
@@ -115,6 +117,13 @@ if(defined $opts->{verbose}) {
 }
 my $logger = get_logger();
 
+my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
+-USER=>'ensrw',
+-PASS=>'writ3r',
+-PORT=>3306,
+-HOST=>'127.0.0.1',
+-DBNAME=>'genome_info');
+my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
 
 my %ens_opts = map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
 
@@ -142,6 +151,12 @@ if ($opts->{annotation}) {
 my $processor = $opts->{processor}->new(%ens_opts);
 my $details   = $processor->process_metadata($dbas);
 $logger->info("Completed processing");
+print Dumper($gdba);
+for my $md (@{$details}) {
+	print Dumper($md);
+	$gdba->store($md);
+}
+exit;
 
 # create dumper
 $opts->{dumper} ||= ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];

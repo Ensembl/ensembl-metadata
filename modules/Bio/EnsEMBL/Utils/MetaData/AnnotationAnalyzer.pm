@@ -29,7 +29,7 @@ use Data::Dumper;
 use Config::IniFiles;
 
 my $url_template =
-'http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/eg-plugins/DIVISION/conf/ini-files/SPECIES.ini?root=ensembl&view=co';
+'https://raw.github.com/EnsemblGenomes/eg-web-DIVISION/master/conf/ini-files/SPECIES.ini';
 
 sub new {
   my $caller = shift;
