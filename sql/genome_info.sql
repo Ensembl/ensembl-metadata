@@ -46,7 +46,7 @@ CREATE TABLE `genome` (
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
   UNIQUE KEY `assembly_id` (`assembly_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,6 +60,22 @@ CREATE TABLE `genome_alias` (
   `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `alias` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   UNIQUE KEY `id_alias` (`genome_id`,`alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `genome_alignment`
+--
+
+DROP TABLE IF EXISTS `genome_alignment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genome_alignment` (
+  `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(32) NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `count` int(10) unsigned NOT NULL,
+  UNIQUE KEY `id_type_key` (`genome_id`,`type`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -91,6 +107,20 @@ CREATE TABLE `genome_feature` (
   `analysis` varchar(128) NOT NULL,
   `count` int(10) unsigned NOT NULL,
   UNIQUE KEY `id_type_analysis` (`genome_id`,`type`,`analysis`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `genome_publication`
+--
+
+DROP TABLE IF EXISTS `genome_publication`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genome_publication` (
+  `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `publication` varchar(64) DEFAULT NULL,
+  UNIQUE KEY `id_publication` (`genome_id`,`publication`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -133,4 +163,4 @@ CREATE TABLE `genome_variation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-30 12:26:24
+-- Dump completed on 2014-01-30 15:16:22

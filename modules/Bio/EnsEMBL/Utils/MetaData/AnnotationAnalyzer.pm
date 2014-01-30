@@ -1,3 +1,4 @@
+
 =pod
 =head1 LICENSE
 
@@ -65,11 +66,8 @@ sub analyze_annotation {
 sub analyze_features {
   my ($self, $dba) = @_;
   return {
-	simpleFeatures => $self->count_features($dba, 'simple_feature'),
-	repeatFeatures => $self->count_features($dba, 'repeat_feature'),
-	proteinAlignFeatures =>
-	  $self->count_features($dba, 'protein_align_feature'),
-	dnaAlignFeatures => $self->count_features($dba, 'dna_align_feature')
+		simpleFeatures => $self->count_features($dba, 'simple_feature'),
+		repeatFeatures => $self->count_features($dba, 'repeat_feature')
   };
 }
 
@@ -108,6 +106,20 @@ sub analyze_compara {
   }
   return $compara;
 } ## end sub analyze_compara
+
+sub analyze_alignments {
+  my ($self, $dba) = @_;
+  my $ali = {};
+  my $pf = $self->count_features($dba, 'protein_align_feature');
+  if(scalar(keys %$pf)>0) {
+  	$ali->{proteinAlignFeatures} = $pf;
+  }
+  my $df = $self->count_features($dba, 'dna_align_feature');
+  if(scalar(keys %$pf)>0) {
+  	$ali->{dnaAlignFeatures} = $pf;
+  }
+  return $ali;
+}
 
 sub analyze_tracks {
   my ($self, $species, $division) = @_;

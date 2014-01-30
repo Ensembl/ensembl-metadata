@@ -179,6 +179,8 @@ where c.species_id=?/,
 	$md->annotations(
 				$self->{annotation_analyzer}->analyze_annotation($dba));
 	# features
+	my $core_ali  = $self->{annotation_analyzer}->analyze_alignments($dba);
+	my $other_ali = {};
 	$md->features($self->{annotation_analyzer}->analyze_features($dba));
 	my $other_features = $dbas->{other_features};
 	if (defined $other_features) {
@@ -187,11 +189,12 @@ where c.species_id=?/,
 	  my %features = (%{$md->features()},
 					  %{$self->{annotation_analyzer}
 						  ->analyze_features($other_features)});
+	  $other_ali = $self->{annotation_analyzer}->analyze_alignments($other_features);
 	  $size += get_dbsize($other_features);
 	  $md->features(\%features);
 	}
 	my $variation = $dbas->{variation};
-	                                       # variation
+	# variation
 	if (defined $variation) {
 	  $self->{logger}->info(
 			 "Processing " . $dba->species() . " variation annotation");
@@ -200,10 +203,16 @@ where c.species_id=?/,
 	  $size += get_dbsize($variation);
 	}
 	# BAM
-	  $self->{logger}->info(
-			 "Processing " . $dba->species() . " read aligments");
-	$md->read_alignments($self->{annotation_analyzer}
-					 ->analyze_tracks($md->{species}, $md->{division}));
+	$self->{logger}
+	  ->info("Processing " . $dba->species() . " read aligments");
+	my $read_ali = $self->{annotation_analyzer}
+	  ->analyze_tracks($md->{species}, $md->{division});
+	my %all_ali = (%{$core_ali}, %{$other_ali});
+	# add bam tracks by count - use source name
+	for my $bam (@{$read_ali->{bam}}) {
+		$all_ali{bam}{$bam->{id}}++;
+	}
+	$md->other_alignments(\%all_ali);
 	$md->db_size($size);
 
   } ## end if (defined $self->{annotation_analyzer...})

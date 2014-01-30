@@ -23,6 +23,7 @@
 package Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
 use Log::Log4perl qw(get_logger);
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Data::Dumper;
 use strict;
 use warnings;
 
@@ -151,6 +152,9 @@ sub aliases {
   if (defined $aliases) {
 	$self->{aliases} = $aliases;
   }
+  elsif (!defined $self->{aliases} && defined $self->adaptor()) {
+	$self->adaptor()->fetch_aliases($self);
+  }
   return $self->{aliases};
 }
 
@@ -178,6 +182,9 @@ sub sequences {
   if (defined $sequences) {
 	$self->{sequences} = $sequences;
   }
+  elsif (!defined $self->{sequences} && defined $self->adaptor()) {
+	$self->adaptor()->fetch_sequences($self);
+  }
   return $self->{sequences};
 }
 
@@ -185,6 +192,9 @@ sub publications {
   my ($self, $publications) = @_;
   if (defined $publications) {
 	$self->{publications} = $publications;
+  }
+  elsif (!defined $self->{publications} && defined $self->adaptor()) {
+	$self->adaptor()->fetch_publications($self);
   }
   return $self->{publications};
 }
@@ -195,6 +205,9 @@ sub variations {
 	$self->{variations}     = $variations;
 	$self->{has_variations} = undef;
   }
+  elsif (!defined $self->{variations} && defined $self->adaptor()) {
+	$self->adaptor()->fetch_variations($self);
+  }
   return $self->{variations};
 }
 
@@ -203,36 +216,48 @@ sub features {
   if (defined $features) {
 	$self->{features} = $features;
   }
+  elsif (!defined $self->{features} && defined $self->adaptor()) {
+	$self->adaptor()->fetch_features($self);
+  }
   return $self->{features};
 }
 
 sub annotations {
   my ($self, $annotation) = @_;
   if (defined $annotation) {
-	$self->{annotation} = $annotation;
+	$self->{annotations} = $annotation;
   }
-  return $self->{annotation};
+  elsif (!defined $self->{annotations} && defined $self->adaptor()) {
+	$self->adaptor()->fetch_annotations($self);
+  }
+  return $self->{annotations};
 }
 
-sub read_alignments {
-  my ($self, $read_alignments) = @_;
-  if (defined $read_alignments) {
-	$self->{read_alignments}      = $read_alignments;
+sub other_alignments {
+  my ($self, $other_alignments) = @_;
+  if (defined $other_alignments) {
+	$self->{other_alignments}     = $other_alignments;
 	$self->{has_other_alignments} = undef;
   }
-  return $self->{read_alignments};
+  elsif (!defined $self->{other_alignments} && defined $self->adaptor())
+  {
+	$self->adaptor()->fetch_other_alignments($self);
+  }
+  return $self->{other_alignments};
 }
 
 # boolean optimisers
-sub has_variation {
+sub has_variations {
   my ($self, $arg) = @_;
   if (defined $arg) {
-	$self->{has_variation} = $arg;
+	$self->{has_variations} = $arg;
   }
-  elsif (!defined($self->{has_variation})) {
-	$self->{has_variation} = $self->count_variation() > 0 ? 1 : 0;
+  elsif (!defined($self->{has_variations})) {
+	print "Looking at variations for " . $self->name() . "\n";
+	$self->{has_variations} = $self->count_variation() > 0 ? 1 : 0;
+	print $self->{has_variations} . "\n";
   }
-  return $self->{has_variation};
+  return $self->{has_variations};
 }
 
 sub has_genome_alignments {
@@ -323,8 +348,9 @@ sub count_array_lengths {
 
 sub count_variation {
   my ($self) = @_;
-  return $self->count_hash_values($self->{variation}{variations}) +
-	$self->count_hash_values($self->{variation}{structural_variations});
+  return $self->count_hash_values($self->{variations}{variations}) +
+	$self->count_hash_values(
+							$self->{variations}{structural_variations});
 }
 
 sub count_pan_compara {
@@ -347,10 +373,11 @@ sub count_dna_compara {
 
 sub count_alignments {
   my ($self) = @_;
-  return $self->count_hash_values(
-							  $self->{features}{proteinAlignFeatures}) +
-	$self->count_hash_values($self->{features}{dnaAlignFeatures}) +
-	$self->count_hash_lengths($self->{read_alignments});
+  return $self->count_hash_values($self->{other_alignments}{bam}) +
+	$self->count_hash_values(
+					  $self->{other_alignments}{proteinAlignFeatures}) +
+	$self->count_hash_values(
+						   $self->{other_alignments}{dnaAlignFeatures});
 }
 
 1;
