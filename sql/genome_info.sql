@@ -46,7 +46,7 @@ CREATE TABLE `genome` (
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
   UNIQUE KEY `assembly_id` (`assembly_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,9 +118,9 @@ DROP TABLE IF EXISTS `genome_variation`;
 CREATE TABLE `genome_variation` (
   `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(32) NOT NULL,
-  `key` varchar(128) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `count` int(10) unsigned NOT NULL,
-  UNIQUE KEY `id_type_key` (`genome_id`,`type`,`key`)
+  UNIQUE KEY `id_type_key` (`genome_id`,`type`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

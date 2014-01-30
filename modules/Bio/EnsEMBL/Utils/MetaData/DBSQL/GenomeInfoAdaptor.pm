@@ -71,7 +71,7 @@ has_genome_alignments,has_other_alignments)
   $genome->adaptor($self);
   $self->_store_aliases($genome);
   $self->_store_sequences($genome);
-  $self->_store_annotation($genome);
+  $self->_store_annotations($genome);
   $self->_store_features($genome);
   $self->_store_variations($genome);
   return;
@@ -106,7 +106,7 @@ sub _store_features {
 	  $self->{dbc}->sql_helper()->execute_update(
 		-SQL =>
 		  q/insert into genome_feature(genome_id,type,analysis,count)
-		values(?,?,?)/,
+		values(?,?,?,?)/,
 		-PARAMS => [$genome->dbID(), $type, $analysis, $count]);
 	}
   }
@@ -118,7 +118,7 @@ sub _store_annotations {
   while (my ($type, $count) = each %{$genome->annotations()}) {
 	$self->{dbc}->sql_helper()->execute_update(
 	  -SQL => q/insert into genome_annotation(genome_id,type,count)
-		values(?,?)/,
+		values(?,?,?)/,
 	  -PARAMS => [$genome->dbID(), $type, $count]);
   }
   return;
@@ -130,8 +130,8 @@ sub _store_variations {
 	while (my ($key, $count) = each %$f) {
 	  $self->{dbc}->sql_helper()->execute_update(
 		-SQL =>
-		  q/insert into genome_variation(genome_id,type,analysis,count)
-		values(?,?,?)/,
+		  q/insert into genome_variation(genome_id,type,name,count)
+		values(?,?,?,?)/,
 		-PARAMS => [$genome->dbID(), $type, $key, $count]);
 	}
   }
@@ -164,6 +164,25 @@ sub fetch_by_species {
   my ($self, $species) = @_;
   return _first_element(
 				$self->_generic_fetch_with_args({'species', $species}));
+}
+
+sub fetch_variations {
+  my ($self, $genome) = @_;
+  croak
+"Cannot fetch variations for a GenomeInfo object that has not been stored"
+	if !defined $genome->dbID();
+  my $variations = {};
+  $self->{dbc}->sql_helper()->execute_no_return(
+	-SQL =>
+	  'select type,key,count from genome_variation where genome_id=?',
+	-CALLBACK => sub {
+	  my @row = @{shift @_};
+	  $variations->{$row[0]}->{$row[1]} = $row[2];
+	  return;
+	},
+	-PARAMS => [$genome->dbID()]);
+  $genome->variations($variations);
+  return;
 }
 
 sub _first_element {
