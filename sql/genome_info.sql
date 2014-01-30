@@ -50,6 +50,20 @@ CREATE TABLE `genome` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `genome_alias`
+--
+
+DROP TABLE IF EXISTS `genome_alias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genome_alias` (
+  `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `alias` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  UNIQUE KEY `id_alias` (`genome_id`,`alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `genome_annotation`
 --
 
@@ -119,4 +133,4 @@ CREATE TABLE `genome_variation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-29 22:19:13
+-- Dump completed on 2014-01-30 12:26:24
