@@ -27,6 +27,7 @@ use warnings;
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
+use Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
 use Data::Dumper;
 
 sub new {
@@ -36,10 +37,39 @@ sub new {
   return $self;
 }
 
+sub _cache {
+  my ($self, $type) = @_;
+  if (!defined $self->{cache} || !defined $self->{cache}{$type}) {
+	$self->{cache}{$type} = {};
+  }
+  return $self->{cache}{$type};
+}
+
+sub _clear_cache {
+	my ($self, $type) = @_;
+	if(defined $type) {
+		$self->{cache}{$type} = {};
+	} else {
+		$self->{cache} = {};		
+	}
+	return;
+}
+
+sub _get_cached_obj {
+  my ($self, $type, $id) = @_;
+  return $self->_cache($type)->{$id};
+}
+
+sub _store_cached_obj {
+  my ($self, $type, $obj) = @_;
+  $self->_cache($type)->{$obj->dbID()} = $obj;
+  return;
+}
+
 sub store {
   my ($self, $genome) = @_;
   return if defined $genome->dbID();
-  print "ASS=".$genome->assembly_level()."\n";
+  print "ASS=" . $genome->assembly_level() . "\n";
   $self->{dbc}->sql_helper()->execute_update(
 	-SQL =>
 q/insert into genome(name,species,strain,serotype,division,taxonomy_id,
@@ -76,9 +106,9 @@ has_genome_alignments,has_other_alignments)
   $self->_store_features($genome);
   $self->_store_variations($genome);
   $self->_store_alignments($genome);
-  $self->_store_compara($genome->peptide_compara());
-  $self->_store_compara($genome->dna_compara());
-  $self->_store_compara($genome->pan_compara());
+  for my $compara (@{$genome->compara()}) {
+  	$self->_store_compara($compara);
+  }
   return;
 } ## end sub store
 
@@ -330,6 +360,88 @@ sub fetch_sequences {
   return;
 }
 
+sub fetch_dna_compara {
+  my ($self, $genome) = @_;
+  return if !$genome->has_genome_alignments();
+  my $id = $self->{dbc}->sql_helper()->execute_single_result(
+	-SQL => q/select distinct compara_analysis_id from compara_analysis 
+  join genome_compara_analysis using (compara_analysis_id)
+  where genome_id=? and method in ('BLASTZ_NET','LASTZ_NET','TRANSLATED_BLAT_NET')/,
+	-PARAMS => [$genome->dbID()]);
+  $genome->dna_compara($self->_fetch_compara($id));
+  return;
+}
+
+sub fetch_peptide_compara {
+  my ($self, $genome) = @_;
+  return if !$genome->has_peptide_compara();
+  my $id = $self->{dbc}->sql_helper()->execute_single_result(
+	-SQL => q/select distinct(compara_analysis_id) from compara_analysis 
+  join genome_compara_analysis using (compara_analysis_id)
+  where genome_id=? and method='PROTEIN_TREES'/,
+	-PARAMS => [$genome->dbID()]);
+  $genome->peptide_compara($self->_fetch_compara($id));
+  return;
+}
+
+sub fetch_pan_compara {
+  my ($self, $genome) = @_;
+  return if !$genome->has_pan_compara();
+  my $id = $self->{dbc}->sql_helper()->execute_single_result(
+	-SQL => q/select distinct compara_analysis_id from compara_analysis 
+  join genome_compara_analysis using (compara_analysis_id)
+  where genome_id=? and method='PROTEIN_TREES' and division='pan_homology'/,
+	-PARAMS => [$genome->dbID()]);
+  $genome->pan_compara($self->_fetch_compara($id));
+  return;
+}
+
+sub _fetch_compara {
+  my ($self, $id) = @_;
+  # check to see if we've cached this already
+  my $compara =
+	$self->_get_cached_obj(
+					 'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo',
+					 $id);
+  if (!defined $compara) {
+	# generate from a query
+	# build the main object first
+	my ($compara) = @{
+	  $self->{dbc}->sql_helper()->execute(
+		-SQL =>
+q/select compara_analysis_id, division, method from compara_analysis where compara_analysis_id=?/,
+		-PARAMS   => [$id],
+		-CALLBACK => sub {
+		  my @row = @{shift @_};
+		  my $c =
+			Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new();
+		  $c->dbID($row[0]);
+		  $c->division($row[1]);
+		  $c->method($row[2]);
+		  return $c;
+		});
+	};
+	$compara->adaptor($self);
+# add genomes on one by one (don't nest the fetch here as could run of connections)
+	my $genomes = [];
+	for my $genome_id (
+	  @{$self->{dbc}->sql_helper()->execute_simple(
+		  -SQL =>
+q/select distinct(genome_id) from genome_compara_analysis where compara_analysis_id=?/,
+		  -PARAMS => [$id]);
+	  })
+	{
+	  push @$genomes, $self->fetch_by_dbID($genome_id);
+	}
+	$compara->genomes($genomes);
+	# cache the completed compara object
+	$self->_store_cached_obj(
+					 'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo',
+					 $compara);
+  } ## end if (!defined $compara)
+  return $compara;
+} ## end sub _fetch_compara
+
 sub _fetch_children {
   my ($self, $md) = @_;
   $self->fetch_variations($md);
@@ -338,6 +450,9 @@ sub _fetch_children {
   $self->fetch_publications($md);
   $self->fetch_annotations($md);
   $self->fetch_other_alignments($md);
+  $self->fetch_peptide_compara($md);
+  $self->fetch_dna_compara($md);
+  $self->fetch_pan_compara($md);
   return;
 }
 
@@ -379,8 +494,17 @@ sub _generic_fetch {
 	-USE_HASHREFS => 1,
 	-CALLBACK     => sub {
 	  my $row = shift @_;
-	  my $md = bless $row, 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo';
-	  $md->adaptor($self);
+	  my $md =
+		$self->_get_cached_obj(
+							'Bio::EnsEMBL::Utils::MetaData::GenomeInfo',
+							$row->{dbID});
+	  if (!defined $md) {
+		$md = bless $row, 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo';
+		$md->adaptor($self);
+		$self->_store_cached_obj(
+							'Bio::EnsEMBL::Utils::MetaData::GenomeInfo',
+							$md);
+	  }
 	  return $md;
 	},
 	-PARAMS => $params);
@@ -390,6 +514,6 @@ sub _generic_fetch {
 	}
   }
   return $mds;
-}
+} ## end sub _generic_fetch
 
 1;
