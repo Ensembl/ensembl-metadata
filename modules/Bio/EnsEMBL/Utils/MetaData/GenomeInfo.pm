@@ -38,11 +38,16 @@ sub new {
    $self->{division},    $self->{strain},         $self->{serotype},
    $self->{taxonomy_id},
 
-	) = rearrange(
-	['NAME', 'SPECIES', 'DBNAME', 'SPECIES_ID', 'TAXONOMY_ID',
-	 'ASSEMBLY_NAME', 'ASSEMBLY_ID', 'ASSEMBLY_LEVEL',
-	 'GENEBUILD', 'DIVISION', 'STRAIN', 'SEROTYPE', 'TAXONOMY_ID',],
-	@args);
+	) =
+	rearrange(
+			  ['NAME',        'SPECIES',
+			   'DBNAME',      'SPECIES_ID',
+			   'TAXONOMY_ID', 'ASSEMBLY_NAME',
+			   'ASSEMBLY_ID', 'ASSEMBLY_LEVEL',
+			   'GENEBUILD',   'DIVISION',
+			   'STRAIN',      'SEROTYPE',
+			   'TAXONOMY_ID',],
+			  @args);
   return $self;
 }
 
@@ -158,10 +163,10 @@ sub aliases {
 sub compara {
   my ($self, $compara) = @_;
   if (defined $compara) {
-	$self->{compara}     = $compara;
-	$self->{has_peptide_compara} = undef;
+	$self->{compara}               = $compara;
+	$self->{has_peptide_compara}   = undef;
 	$self->{has_genome_alignments} = undef;
-	$self->{has_pan_compara} = undef;
+	$self->{has_pan_compara}       = undef;
   }
   elsif (!defined $self->{compara} && defined $self->adaptor()) {
 	$self->adaptor()->fetch_comparas($self);
@@ -255,12 +260,15 @@ sub has_genome_alignments {
   if (defined $arg) {
 	$self->{has_genome_alignments} = $arg;
   }
-  elsif (!defined($self->{has_genome_alignments}) && defined $self->compara()) {
+  elsif (!defined($self->{has_genome_alignments}) &&
+		 defined $self->compara())
+  {
+	$self->{has_genome_alignments} = 0;
 	for my $compara (@{$self->compara()}) {
-		if($compara->is_dna_compara()) {
-			$self->{has_genome_alignments} = 1;
-			last;
-		}
+	  if ($compara->is_dna_compara()) {
+		$self->{has_genome_alignments} = 1;
+		last;
+	  }
 	}
   }
   return $self->{has_genome_alignments};
@@ -271,12 +279,15 @@ sub has_peptide_compara {
   if (defined $arg) {
 	$self->{has_peptide_compara} = $arg;
   }
-  elsif (!defined($self->{has_peptide_compara}) && defined $self->compara()) {
+  elsif (!defined($self->{has_peptide_compara}) &&
+		 defined $self->compara())
+  {
 	for my $compara (@{$self->compara()}) {
-		if($compara->is_peptide_compara()) {
-			$self->{has_peptide_compara} = 1;
-			last;
-		}
+	  $self->{has_peptide_compara} = 0;
+	  if ($compara->is_peptide_compara()) {
+		$self->{has_peptide_compara} = 1;
+		last;
+	  }
 	}
   }
   return $self->{has_peptide_compara};
@@ -287,12 +298,14 @@ sub has_pan_compara {
   if (defined $arg) {
 	$self->{has_pan_compara} = $arg;
   }
-  elsif (!defined($self->{has_pan_compara}) && defined $self->compara()) {
+  elsif (!defined($self->{has_pan_compara}) && defined $self->compara())
+  {
+	$self->{has_pan_compara} = 0;
 	for my $compara (@{$self->compara()}) {
-		if($compara->is_pan_compara()) {
-			$self->{has_pan_compara} = 1;
-			last;
-		}
+	  if ($compara->is_pan_compara()) {
+		$self->{has_pan_compara} = 1;
+		last;
+	  }
 	}
   }
   return $self->{has_pan_compara};

@@ -262,6 +262,7 @@ sub fetch_variations {
 	},
 	-PARAMS => [$genome->dbID()]);
   $genome->variations($variations);
+  $genome->has_variations();
   return;
 }
 
@@ -281,6 +282,7 @@ sub fetch_other_alignments {
 	},
 	-PARAMS => [$genome->dbID()]);
   $genome->other_alignments($alignments);
+  $genome->has_other_alignments();
   return;
 }
 
@@ -370,12 +372,15 @@ sub fetch_comparas {
 		-SQL =>
 		  q/select distinct compara_analysis_id from compara_analysis 
   join genome_compara_analysis using (compara_analysis_id)
-  where genome_id=? and method in ('BLASTZ_NET','LASTZ_NET','TRANSLATED_BLAT_NET')/,
+  where genome_id=? and method in ('BLASTZ_NET','LASTZ_NET','TRANSLATED_BLAT_NET', 'PROTEIN_TREES')/,
 		-PARAMS => [$genome->dbID()])})
   {
 	push @$comparas, $self->_fetch_compara($id);
   }
   $genome->compara($comparas);
+  $genome->has_pan_compara();
+  $genome->has_genome_alignments();
+  $genome->has_peptide_compara();
   return;
 }
 
@@ -389,7 +394,7 @@ sub _fetch_compara {
   if (!defined $compara) {
 	# generate from a query
 	# build the main object first
-	my ($compara) = @{
+	($compara) = @{
 	  $self->{dbc}->sql_helper()->execute(
 		-SQL =>
 q/select compara_analysis_id, division, method from compara_analysis where compara_analysis_id=?/,
