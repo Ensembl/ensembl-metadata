@@ -46,13 +46,14 @@ sub _cache {
 }
 
 sub _clear_cache {
-	my ($self, $type) = @_;
-	if(defined $type) {
-		$self->{cache}{$type} = {};
-	} else {
-		$self->{cache} = {};		
-	}
-	return;
+  my ($self, $type) = @_;
+  if (defined $type) {
+	$self->{cache}{$type} = {};
+  }
+  else {
+	$self->{cache} = {};
+  }
+  return;
 }
 
 sub _get_cached_obj {
@@ -69,7 +70,6 @@ sub _store_cached_obj {
 sub store {
   my ($self, $genome) = @_;
   return if defined $genome->dbID();
-  print "ASS=" . $genome->assembly_level() . "\n";
   $self->{dbc}->sql_helper()->execute_update(
 	-SQL =>
 q/insert into genome(name,species,strain,serotype,division,taxonomy_id,
@@ -106,8 +106,10 @@ has_genome_alignments,has_other_alignments)
   $self->_store_features($genome);
   $self->_store_variations($genome);
   $self->_store_alignments($genome);
-  for my $compara (@{$genome->compara()}) {
-  	$self->_store_compara($compara);
+  if (defined $genome->compara()) {
+	for my $compara (@{$genome->compara()}) {
+	  $self->_store_compara($compara);
+	}
   }
   return;
 } ## end sub store
@@ -360,39 +362,20 @@ sub fetch_sequences {
   return;
 }
 
-sub fetch_dna_compara {
+sub fetch_comparas {
   my ($self, $genome) = @_;
-  return if !$genome->has_genome_alignments();
-  my $id = $self->{dbc}->sql_helper()->execute_single_result(
-	-SQL => q/select distinct compara_analysis_id from compara_analysis 
+  my $comparas = [];
+  for my $id (
+	@{$self->{dbc}->sql_helper()->execute_simple(
+		-SQL =>
+		  q/select distinct compara_analysis_id from compara_analysis 
   join genome_compara_analysis using (compara_analysis_id)
   where genome_id=? and method in ('BLASTZ_NET','LASTZ_NET','TRANSLATED_BLAT_NET')/,
-	-PARAMS => [$genome->dbID()]);
-  $genome->dna_compara($self->_fetch_compara($id));
-  return;
-}
-
-sub fetch_peptide_compara {
-  my ($self, $genome) = @_;
-  return if !$genome->has_peptide_compara();
-  my $id = $self->{dbc}->sql_helper()->execute_single_result(
-	-SQL => q/select distinct(compara_analysis_id) from compara_analysis 
-  join genome_compara_analysis using (compara_analysis_id)
-  where genome_id=? and method='PROTEIN_TREES'/,
-	-PARAMS => [$genome->dbID()]);
-  $genome->peptide_compara($self->_fetch_compara($id));
-  return;
-}
-
-sub fetch_pan_compara {
-  my ($self, $genome) = @_;
-  return if !$genome->has_pan_compara();
-  my $id = $self->{dbc}->sql_helper()->execute_single_result(
-	-SQL => q/select distinct compara_analysis_id from compara_analysis 
-  join genome_compara_analysis using (compara_analysis_id)
-  where genome_id=? and method='PROTEIN_TREES' and division='pan_homology'/,
-	-PARAMS => [$genome->dbID()]);
-  $genome->pan_compara($self->_fetch_compara($id));
+		-PARAMS => [$genome->dbID()])})
+  {
+	push @$comparas, $self->_fetch_compara($id);
+  }
+  $genome->compara($comparas);
   return;
 }
 
@@ -450,9 +433,7 @@ sub _fetch_children {
   $self->fetch_publications($md);
   $self->fetch_annotations($md);
   $self->fetch_other_alignments($md);
-  $self->fetch_peptide_compara($md);
-  $self->fetch_dna_compara($md);
-  $self->fetch_pan_compara($md);
+  $self->fetch_comparas($md);
   return;
 }
 

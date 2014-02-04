@@ -251,31 +251,27 @@ sub process_compara {
 		  $self->{logger}
 			->info("Creating info object for " . $gdb->name());
 		  $genomeInfo = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
-			-NAME          => $gdb->name(),
-			-SPECIES       => $gdb->name(),
-			-DIVISION      => 'Ensembl',
-			-SPECIES_ID    => '1',
-			-ASSEMBLY_NAME => $gdb->assembly(),
+			-NAME           => $gdb->name(),
+			-SPECIES        => $gdb->name(),
+			-DIVISION       => 'Ensembl',
+			-SPECIES_ID     => '1',
+			-ASSEMBLY_NAME  => $gdb->assembly(),
 			-ASSEMBLY_LEVEL => 'unknown',
 #				-ASSEMBLY_LEVEL => $gdb->has_karotype() ? 'chromosome' :
 			#				  'supercontig',
 			-GENEBUILD   => $gdb->genebuild(),
 			-TAXONOMY_ID => $gdb->taxon_id(),
-			-DBNAME      => $gdb->name().'_core_n_n');
-			$genomeInfo->base_count(0);
+			-DBNAME      => $gdb->name() . '_core_n_n');
+		  $genomeInfo->base_count(0);
 		  $genomes->{$gdb->name()} = $genomeInfo;
 		}
 		push @{$compara_info->genomes()}, $genomeInfo;
-		if ($division eq 'pan_homology') {
-		  $genomeInfo->pan_compara($compara_info);
+
+		if (!defined $genomeInfo->compara()) {
+		  $genomeInfo->compara([$compara_info]);
 		}
 		else {
-		  if ($method eq 'PROTEIN_TREES') {
-			$genomeInfo->peptide_compara($compara_info);
-		  }
-		  else {
-			$genomeInfo->dna_compara($compara_info);
-		  }
+		  push @{$genomeInfo->compara()}, $compara_info;
 		}
 	  } ## end for my $gdb (@{$mlss->species_set_obj...})
 	} ## end if (defined $mlss_arr ...)

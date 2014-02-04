@@ -77,6 +77,21 @@ sub genomes {
   return $self->{genomes};
 }
 
+sub is_pan_compara {
+	my ($self) = @_;
+	return $self->{division} eq 'pan_homology';
+}
+
+sub is_peptide_compara {
+	my ($self) = @_;
+	return $self->{division} ne 'pan_homology' && $self->{method} eq 'PROTEIN_TREES';
+}
+
+sub is_dna_compara {
+	my ($self) = @_;
+	return $self->{method} eq 'TRANSLATED_BLAT_NET' || $self->{method} eq 'LASTZ_NET' || $self->{method} eq 'BLASTZ_NET';
+}
+
 1;
 
 __END__
