@@ -32,20 +32,17 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self = bless({}, $class);
   $self->{logger} = get_logger();
-  ($self->{name},        $self->{species},     $self->{dbname},
-   $self->{species_id},  $self->{taxonomy_id}, $self->{assembly_name},
-   $self->{assembly_id}, $self->{genebuild},   $self->{division},
-   $self->{strain},      $self->{serotype}
+  ($self->{name},       $self->{species},     $self->{dbname},
+   $self->{species_id}, $self->{taxonomy_id}, $self->{assembly_name},
+   $self->{assembly_id}, $self->{assembly_level}, $self->{genebuild},
+   $self->{division},    $self->{strain},         $self->{serotype},
+   $self->{taxonomy_id},
 
-	) =
-	rearrange(
-			  ['NAME',        'SPECIES',
-			   'DBNAME',      'SPECIES_ID',
-			   'TAXONOMY_ID', 'ASSEMBLY_NAME',
-			   'ASSEMBLY_ID', 'GENEBUILD',
-			   'DIVISION',    'STRAIN',
-			   'SEROTYPE',],
-			  @args);
+	) = rearrange(
+	['NAME', 'SPECIES', 'DBNAME', 'SPECIES_ID', 'TAXONOMY_ID',
+	 'ASSEMBLY_NAME', 'ASSEMBLY_ID', 'ASSEMBLY_LEVEL',
+	 'GENEBUILD', 'DIVISION', 'STRAIN', 'SEROTYPE', 'TAXONOMY_ID',],
+	@args);
   return $self;
 }
 
@@ -158,14 +155,22 @@ sub aliases {
   return $self->{aliases};
 }
 
-sub compara {
+sub peptide_compara {
   my ($self, $compara) = @_;
   if (defined $compara) {
-	$self->{compara}               = $compara;
-	$self->{has_peptide_compara}   = undef;
+	$self->{peptide_compara}     = $compara;
+	$self->{has_peptide_compara} = undef;
+  }
+  return $self->{peptide_compara};
+}
+
+sub dna_compara {
+  my ($self, $compara) = @_;
+  if (defined $compara) {
+	$self->{dna_compara}           = $compara;
 	$self->{has_genome_alignments} = undef;
   }
-  return $self->{compara};
+  return $self->{dna_compara};
 }
 
 sub pan_compara {
@@ -267,7 +272,7 @@ sub has_genome_alignments {
   }
   elsif (!defined($self->{has_genome_alignments})) {
 	$self->{has_genome_alignments} =
-	  $self->count_dna_compara() > 0 ? 1 : 0;
+	  defined $self->{dna_compara} ? 1 : 0;
   }
   return $self->{has_genome_alignments};
 }
@@ -279,7 +284,7 @@ sub has_peptide_compara {
   }
   elsif (!defined($self->{has_peptide_compara})) {
 	$self->{has_peptide_compara} =
-	  $self->count_peptide_compara() > 0 ? 1 : 0;
+	  defined $self->{peptide_compara} ? 1 : 0;
   }
   return $self->{has_peptide_compara};
 }
@@ -290,7 +295,7 @@ sub has_pan_compara {
 	$self->{has_pan_compara} = $arg;
   }
   elsif (!defined($self->{has_pan_compara})) {
-	$self->{has_pan_compara} = $self->count_pan_compara() > 0 ? 1 : 0;
+	$self->{has_pan_compara} = defined $self->{pan_compara} ? 1 : 0;
   }
   return $self->{has_pan_compara};
 }
@@ -351,24 +356,6 @@ sub count_variation {
   return $self->count_hash_values($self->{variations}{variations}) +
 	$self->count_hash_values(
 							$self->{variations}{structural_variations});
-}
-
-sub count_pan_compara {
-  my ($self) = @_;
-  return $self->count_array_lengths(
-								   $self->{pan_compara}{PROTEIN_TREES});
-}
-
-sub count_peptide_compara {
-  my ($self) = @_;
-  return $self->count_array_lengths($self->{compara}{PROTEIN_TREES});
-}
-
-sub count_dna_compara {
-  my ($self) = @_;
-  return $self->count_array_lengths($self->{compara}{LASTZ_NET}) +
-	$self->count_array_lengths($self->{compara}{BLASTZ_NET}) +
-	$self->count_array_lengths($self->{compara}{TRANSLATED_BLAT_NET});
 }
 
 sub count_alignments {

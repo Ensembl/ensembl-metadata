@@ -38,7 +38,8 @@ sub new {
 
 sub store {
   my ($self, $genome) = @_;
-  croak("Genome has already been stored") if defined $genome->dbID();
+  return if defined $genome->dbID();
+  print "ASS=".$genome->assembly_level()."\n";
   $self->{dbc}->sql_helper()->execute_update(
 	-SQL =>
 q/insert into genome(name,species,strain,serotype,division,taxonomy_id,
@@ -75,8 +76,34 @@ has_genome_alignments,has_other_alignments)
   $self->_store_features($genome);
   $self->_store_variations($genome);
   $self->_store_alignments($genome);
+  $self->_store_compara($genome->peptide_compara());
+  $self->_store_compara($genome->dna_compara());
+  $self->_store_compara($genome->pan_compara());
   return;
 } ## end sub store
+
+sub _store_compara {
+  my ($self, $compara) = @_;
+  return if !defined $compara || defined $compara->dbID();
+  $self->{dbc}->sql_helper()->execute_update(
+	-SQL => q/insert into compara_analysis(method,division,dbname)
+		values(?,?,?)/,
+	-PARAMS =>
+	  [$compara->method(), $compara->division(), $compara->dbname()],
+	-CALLBACK => sub {
+	  my ($sth, $dbh, $rv) = @_;
+	  $compara->dbID($dbh->{mysql_insertid});
+	});
+  for my $genome (@{$compara->genomes()}) {
+	$self->store($genome);
+	$self->{dbc}->sql_helper()->execute_update(
+	  -SQL =>
+q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
+		values(?,?)/,
+	  -PARAMS => [$genome->dbID(), $compara->dbID()]);
+  }
+  return;
+}
 
 sub _store_aliases {
   my ($self, $genome) = @_;
@@ -270,9 +297,9 @@ sub fetch_publications {
 	if !defined $genome->dbID();
   my $pubs =
 	$self->{dbc}->sql_helper()->execute_simple(
-	 -SQL =>
-	   'select publication from genome_publication where genome_id=?',
-	 -PARAMS => [$genome->dbID()]);
+	   -SQL =>
+		 'select publication from genome_publication where genome_id=?',
+	   -PARAMS => [$genome->dbID()]);
   $genome->publications($pubs);
   return;
 }
