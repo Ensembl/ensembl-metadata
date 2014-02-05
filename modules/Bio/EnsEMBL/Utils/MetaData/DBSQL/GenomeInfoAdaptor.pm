@@ -397,7 +397,7 @@ sub _fetch_compara {
 	($compara) = @{
 	  $self->{dbc}->sql_helper()->execute(
 		-SQL =>
-q/select compara_analysis_id, division, method from compara_analysis where compara_analysis_id=?/,
+q/select compara_analysis_id, division, method, dbname from compara_analysis where compara_analysis_id=?/,
 		-PARAMS   => [$id],
 		-CALLBACK => sub {
 		  my @row = @{shift @_};
@@ -406,6 +406,7 @@ q/select compara_analysis_id, division, method from compara_analysis where compa
 		  $c->dbID($row[0]);
 		  $c->division($row[1]);
 		  $c->method($row[2]);
+		  $c->dbname($row[3]);
 		  return $c;
 		});
 	};
