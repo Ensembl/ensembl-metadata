@@ -378,6 +378,35 @@ sub count_alignments {
 						   $self->{other_alignments}{dnaAlignFeatures});
 }
 
+sub to_hash {
+  my ($in) = @_;
+  my $out;
+  my $type = ref $in;
+  if ($type eq 'ARRAY') {
+	$out = [];
+	for my $item (@{$in}) {
+	  push @{$out}, to_hash($item);
+	}
+  }
+  elsif ($type eq 'HASH' || $type eq 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo') {
+	$out = {};
+	while (my ($key, $val) = each %$in) {
+	  if ($key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger') {
+		$out->{$key} = to_hash($val);
+	  }
+
+	}
+  }
+  elsif ($type eq 'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo') {
+	$out = $in->to_hash();
+  }
+  else {
+	$out = $in;
+  }
+
+  return $out;
+} ## end sub to_hash
+
 1;
 
 __END__

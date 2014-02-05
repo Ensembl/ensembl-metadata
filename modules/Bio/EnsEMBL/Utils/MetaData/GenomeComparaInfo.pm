@@ -31,8 +31,8 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self = bless({}, $class);
   $self->{logger} = get_logger();
-  ($self->{division}, $self->{method}, $self->{dbname},
-   $self->{genomes}
+  ($self->{division}, $self->{method},
+   $self->{dbname},   $self->{genomes}
   ) = rearrange(['DIVISION', 'METHOD', 'DBNAME', 'GENOMES'], @args);
   return $self;
 }
@@ -78,18 +78,36 @@ sub genomes {
 }
 
 sub is_pan_compara {
-	my ($self) = @_;
-	return $self->{division} eq 'pan_homology';
+  my ($self) = @_;
+  return $self->{division} eq 'pan_homology';
 }
 
 sub is_peptide_compara {
-	my ($self) = @_;
-	return $self->{division} ne 'pan_homology' && $self->{method} eq 'PROTEIN_TREES';
+  my ($self) = @_;
+  return $self->{division} ne 'pan_homology' &&
+	$self->{method} eq 'PROTEIN_TREES';
 }
 
 sub is_dna_compara {
-	my ($self) = @_;
-	return $self->{method} eq 'TRANSLATED_BLAT_NET' || $self->{method} eq 'LASTZ_NET' || $self->{method} eq 'BLASTZ_NET';
+  my ($self) = @_;
+  return $self->{method} eq 'TRANSLATED_BLAT_NET' ||
+	$self->{method} eq 'LASTZ_NET' ||
+	$self->{method} eq 'BLASTZ_NET';
+}
+
+sub to_hash {
+  my ($in) = @_;
+  my $out = {method             => $in->{method},
+			 division           => $in->{division},
+			 dbname             => $in->{dbname},
+			 is_pan_compara     => $in->is_pan_compara(),
+			 is_peptide_compara => $in->is_peptide_compara(),
+			 is_dna_compara     => $in->is_dna_compara(),};
+  $out->{genomes} = [];
+  for my $genome (@{$in->genomes()}) {
+	push @{$out->{genomes}}, $genome->species();
+  }
+  return $out;
 }
 
 1;
