@@ -156,7 +156,7 @@ sub _store_sequences {
   while (my @vals = $it->()) {
 	$self->{dbc}->sql_helper()
 	  ->execute_update(-SQL =>
-			 'insert into genome_sequence(genome_id,seq_name) values ' .
+			 'insert ignore into genome_sequence(genome_id,seq_name) values ' .
 			 join(',', map { '('.$genome->dbID() . ',"' . $_ . '")' } @vals)
 			 );
   }
