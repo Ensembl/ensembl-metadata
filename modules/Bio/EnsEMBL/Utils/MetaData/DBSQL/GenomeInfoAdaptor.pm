@@ -29,6 +29,7 @@ use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
 use Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
 use Data::Dumper;
+use List::MoreUtils qw/natatime/;
 
 sub new {
   my ($proto, @args) = @_;
@@ -107,6 +108,7 @@ has_genome_alignments,has_other_alignments)
   $self->_store_variations($genome);
   $self->_store_alignments($genome);
   if (defined $genome->compara()) {
+
 	for my $compara (@{$genome->compara()}) {
 	  $self->_store_compara($compara);
 	}
@@ -150,11 +152,13 @@ sub _store_aliases {
 
 sub _store_sequences {
   my ($self, $genome) = @_;
-  for my $sequence (@{$genome->sequences()}) {
-	$self->{dbc}->sql_helper()->execute_update(
-	  -SQL => q/insert into genome_sequence(genome_id,seq_name)
-		values(?,?)/,
-	  -PARAMS => [$genome->dbID(), $sequence]);
+  my $it = natatime 1000, @{$genome->sequences()};
+  while (my @vals = $it->()) {
+	$self->{dbc}->sql_helper()
+	  ->execute_update(-SQL =>
+			 'insert into genome_sequence(genome_id,seq_name) values ' .
+			 join(',', map { '('.$genome->dbID() . ',"' . $_ . '")' } @vals)
+			 );
   }
   return;
 }
