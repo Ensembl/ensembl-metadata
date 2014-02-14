@@ -103,15 +103,13 @@ sub process_genome {
 	Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
 	-species    => $dba->species(),
 	-species_id => $dba->species_id(),
-	-strain     => $meta->single_value_by_key('species.strain') || '',
-	-serotype   => $meta->single_value_by_key('species.serotype') || '',
-	-name       => $meta->get_scientific_name() || '',
-	-taxonomy_id => $meta->get_taxonomy_id() || '',
-	-assembly_id => $meta->single_value_by_key('assembly.accession') ||
-	  '',
-	-assembly_name => $meta->single_value_by_key('assembly.name') || '',
-	-genebuild => $meta->single_value_by_key('genebuild.start_date') ||
-	  '',
+	-strain     => $meta->single_value_by_key('species.strain'),
+	-serotype   => $meta->single_value_by_key('species.serotype'),
+	-name       => $meta->get_scientific_name(),
+	-taxonomy_id => $meta->get_taxonomy_id(),
+	-assembly_id => $meta->single_value_by_key('assembly.accession'),
+	-assembly_name => $meta->single_value_by_key('assembly.name'),
+	-genebuild => $meta->single_value_by_key('genebuild.start_date'),
 	-division => $meta->get_division() || 'Ensembl',
 	-dbname => $dbname);
 
