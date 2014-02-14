@@ -99,20 +99,18 @@ sub process_genome {
 	-PARAMS => [$dbname]);
   #my $type = get_type($dbname);
   # TODO replace md with instance of GenomeInfo
-  my $md =
-	Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
-	-species    => $dba->species(),
-	-species_id => $dba->species_id(),
-	-strain     => $meta->single_value_by_key('species.strain'),
-	-serotype   => $meta->single_value_by_key('species.serotype'),
-	-name       => $meta->get_scientific_name(),
-	-taxonomy_id => $meta->get_taxonomy_id(),
-	-assembly_id => $meta->single_value_by_key('assembly.accession'),
-	-assembly_name => $meta->single_value_by_key('assembly.name'),
-	-genebuild => $meta->single_value_by_key('genebuild.start_date'),
-	-division => $meta->get_division() || 'Ensembl',
-	-dbname => $dbname);
-
+  my $md = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+	  -species    => $dba->species(),
+	  -species_id => $dba->species_id(),
+	  -division   => $meta->get_division() || 'Ensembl',
+	  -dbname     => $dbname);
+  $md->strain($meta->single_value_by_key('species.strain'));
+  $md->serotype($meta->single_value_by_key('species.serotype'));
+  $md->name($meta->get_scientific_name());
+  $md->taxonomy_id($meta->get_taxonomy_id());
+  $md->assembly_id($meta->single_value_by_key('assembly.accession'));
+  $md->assembly_name($meta->single_value_by_key('assembly.name'));
+  $md->genebuild($meta->single_value_by_key('genebuild.start_date'));
   # get highest assembly level
   $md->assembly_level(
 	@{$dba->dbc()->sql_helper()->execute_simple(
