@@ -119,26 +119,47 @@ sub process_genome {
 		-PARAMS => [$dba->species_id()])}[0]);
 
   # get list of seq names
-  my $seqs = {};
+  my $seqs_arr = [];
+  
   if (defined $self->{contigs}) {
+  	my $seqs = {};
+  	# 1. get complete list of seq_regions as a hash vs. ENA synonyms
 	$dba->dbc()->sql_helper()->execute_no_return(
-	  -SQL => q/select s.name,ss.synonym from coord_system c 
-join seq_region s using (coord_system_id) 
-left join seq_region_synonym ss using (seq_region_id)
-where c.species_id=?/,
+	  -SQL => q/select distinct s.name, ss.synonym 
+	  from coord_system c  
+	  join seq_region s using (coord_system_id)  
+	  left join seq_region_synonym ss on 
+	  	(ss.seq_region_id=s.seq_region_id and ss.external_db_id in 
+	  		(select external_db_id from external_db where db_name='EMBL')) 
+	  where c.species_id=? and attrib like '%default_version%'/,
 	  -PARAMS   => [$dba->species_id()],
 	  -CALLBACK => sub {
-		my @row = @{shift @_};
-
-		$seqs->{$row[0]} = 1;
-		if (defined $row[1]) {
-		  $seqs->{$row[1]} = 1;
-		}
+		my ($name,$acc) = @{shift @_};
+		$seqs->{$name} = $acc;
+		return;
+	  });  
+	  	  	
+	  # 2. add accessions where the name is flagged as being in ENA
+	  $dba->dbc()->sql_helper()->execute_no_return(
+	  -SQL => q/
+	  select s.name 
+	  from coord_system c  
+	  join seq_region s using (coord_system_id)  	  
+	  join seq_region_attrib sa using (seq_region_id)  
+	  where sa.value='ENA' and c.species_id=? and attrib like '%default_version%'/,
+	  -PARAMS   => [$dba->species_id()],
+	  -CALLBACK => sub {
+		my ($acc) = @{shift @_};
+		$seqs->{$acc} = $acc;
 		return;
 	  });
+	  	
+	  while(my @vals = each %$seqs) {
+	  	push @$seqs_arr, \@vals;
+	  }	
   }
 
-  $md->sequences([keys(%$seqs)]);
+  $md->sequences($seqs_arr);
   # get toplevel base count
   $md->base_count(
 	$dba->dbc()->sql_helper()->execute_single_result(

@@ -163,8 +163,10 @@ DROP TABLE IF EXISTS `genome_sequence`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `genome_sequence` (
   `genome_id` int(10) unsigned NOT NULL,
-  `seq_name` varchar(40) NOT NULL,
-  UNIQUE KEY `id_alias` (`genome_id`,`seq_name`)
+  `name` varchar(40) NOT NULL,
+  `acc` varchar(24) DEFAULT NULL,
+  UNIQUE KEY `id_alias` (`genome_id`,`name`,`acc`),
+  KEY `acc` (`acc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

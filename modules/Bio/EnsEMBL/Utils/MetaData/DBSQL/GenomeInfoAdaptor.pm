@@ -154,10 +154,11 @@ sub _store_sequences {
   my ($self, $genome) = @_;
   my $it = natatime 1000, @{$genome->sequences()};
   while (my @vals = $it->()) {
+  	my $sql = 'insert ignore into genome_sequence(genome_id,name,acc) values ' .
+			 join(',', map { '('.$genome->dbID() . ',"' . $_->[0] . '",'. ($_->[1]?('"'.$_->[1].'"'):('NULL')) . ')' } @vals);
 	$self->{dbc}->sql_helper()
 	  ->execute_update(-SQL =>
-			 'insert ignore into genome_sequence(genome_id,seq_name) values ' .
-			 join(',', map { '('.$genome->dbID() . ',"' . $_ . '")' } @vals)
+			 $sql
 			 );
   }
   return;
@@ -361,8 +362,8 @@ sub fetch_sequences {
 "Cannot fetch sequences for a GenomeInfo object that has not been stored"
 	if !defined $genome->dbID();
   my $sequences =
-	$self->{dbc}->sql_helper()->execute_simple(
-	   -SQL => 'select seq_name from genome_sequence where genome_id=?',
+	$self->{dbc}->sql_helper()->execute(
+	   -SQL => 'select name,acc from genome_sequence where genome_id=?',
 	   -PARAMS => [$genome->dbID()]);
   $genome->sequences($sequences);
   return;
