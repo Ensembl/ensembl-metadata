@@ -23,9 +23,19 @@ limitations under the License.
 
 Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
 
+=head1 SYNOPSIS
+
+my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
+-USER=>'anonymous',
+-PORT=>4157,
+-HOST=>'mysql.ebi.ac.uk',
+-DBNAME=>'genome_info_21');
+my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
+my $md = $gdba->fetch_by_species("arabidopsis_thaliana");
+
 =head1 DESCRIPTION
 
-TODO
+Adaptor for storing and retrieving GenomeInfo objects from MySQL genome_info database
 
 =head1 Author
 
@@ -44,6 +54,26 @@ use Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
 use Data::Dumper;
 use List::MoreUtils qw/natatime/;
 
+=head1 CONSTRUCTOR
+=head2 new
+  Arg [-DIVISION]  : 
+       string - Compara division e.g. plants, pan_homology
+  Arg [-METHOD]    : 
+       string - compara method e.g. PROTEIN_TREES, LASTZ_NET
+  Arg [-DBNAME] : 
+       string - name of the compara database in which the analysis can be found
+  Arg [-GENOMES]  : 
+       arrayref - list of genomes involved in analysis
+
+  Example    : $info = Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(...);
+  Description: Creates a new info object
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+
+=cut
+
 sub new {
   my ($proto, @args) = @_;
   my $self = bless {}, $proto;
@@ -51,35 +81,15 @@ sub new {
   return $self;
 }
 
-sub _cache {
-  my ($self, $type) = @_;
-  if (!defined $self->{cache} || !defined $self->{cache}{$type}) {
-	$self->{cache}{$type} = {};
-  }
-  return $self->{cache}{$type};
-}
-
-sub _clear_cache {
-  my ($self, $type) = @_;
-  if (defined $type) {
-	$self->{cache}{$type} = {};
-  }
-  else {
-	$self->{cache} = {};
-  }
-  return;
-}
-
-sub _get_cached_obj {
-  my ($self, $type, $id) = @_;
-  return $self->_cache($type)->{$id};
-}
-
-sub _store_cached_obj {
-  my ($self, $type, $obj) = @_;
-  $self->_cache($type)->{$obj->dbID()} = $obj;
-  return;
-}
+=head1 METHODS
+=head2 store
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the supplied object and all associated child objects (includes other genomes attached by compara if not already stored)
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub store {
   my ($self, $genome) = @_;
@@ -129,6 +139,15 @@ has_genome_alignments,has_other_alignments)
   return;
 } ## end sub store
 
+=head2 _store_compara
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Description: Stores the supplied object and all associated  genomes (if not already stored)
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 sub _store_compara {
   my ($self, $compara) = @_;
   return if !defined $compara || defined $compara->dbID();
@@ -152,6 +171,15 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
   return;
 }
 
+=head2 _store_aliases
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the aliases for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 sub _store_aliases {
   my ($self, $genome) = @_;
   for my $alias (@{$genome->aliases()}) {
@@ -162,6 +190,15 @@ sub _store_aliases {
   }
   return;
 }
+
+=head2 _store_sequences
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the sequences for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 sub _store_sequences {
   my ($self, $genome) = @_;
@@ -180,6 +217,15 @@ sub _store_sequences {
   return;
 }
 
+=head2 _store_features
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the features for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 sub _store_features {
   my ($self, $genome) = @_;
   while (my ($type, $f) = each %{$genome->features()}) {
@@ -194,6 +240,15 @@ sub _store_features {
   return;
 }
 
+=head2 _store_annotations
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the annotations for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 sub _store_annotations {
   my ($self, $genome) = @_;
   while (my ($type, $count) = each %{$genome->annotations()}) {
@@ -204,6 +259,15 @@ sub _store_annotations {
   }
   return;
 }
+
+=head2 _store_variations
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the variations for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 sub _store_variations {
   my ($self, $genome) = @_;
@@ -219,6 +283,15 @@ sub _store_variations {
   return;
 }
 
+=head2 _store_alignments
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Stores the alignments for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 sub _store_alignments {
   my ($self, $genome) = @_;
   while (my ($type, $f) = each %{$genome->other_alignments()}) {
@@ -233,38 +306,144 @@ sub _store_alignments {
   return;
 }
 
+my $base_fetch_sql = q/
+select 
+genome_id as dbID,species,name,strain,serotype,division,taxonomy_id,
+assembly_id,assembly_name,assembly_level,base_count,
+genebuild,dbname,species_id,
+has_pan_compara,has_variation,has_peptide_compara,
+has_genome_alignments,has_other_alignments
+from genome
+/;
+
+=head2 fetch_all
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub fetch_all {
   my ($self, $keen) = @_;
-  return $self->_generic_fetch_with_args({}, $keen);
+  return $self->_fetch_generic_with_args({}, $keen);
 }
 
+=head2 fetch_by_dbID
+  Arg	     : ID of genome info
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified ID
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub fetch_by_dbID {
   my ($self, $id, $keen) = @_;
   return
-	_first_element($self->_generic_fetch_with_args({'genome_id', $id}),
+	_first_element($self->_fetch_generic_with_args({'genome_id', $id}),
 				   $keen);
 }
 
+=head2 fetch_by_species
+  Arg	     : Name of species
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified species
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub fetch_by_assembly_id {
   my ($self, $id, $keen) = @_;
   return _first_element(
-		   $self->_generic_fetch_with_args({'assembly_id', $id}, $keen))
-	;
+		  $self->_fetch_generic_with_args({'assembly_id', $id}, $keen));
 }
 
+=head2 fetch_by_division
+  Arg	     : Name of division
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome infos for specified division
+  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub fetch_by_division {
   my ($self, $division, $keen) = @_;
-  return $self->_generic_fetch_with_args({'division', $division},
+  return $self->_fetch_generic_with_args({'division', $division},
 										 $keen);
 }
 
+=head2 fetch_by_species
+  Arg	     : Name of species
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified species
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub fetch_by_species {
   my ($self, $species, $keen) = @_;
   return _first_element(
-		 $self->_generic_fetch_with_args({'species', $species}, $keen));
+		 $self->_fetch_generic_with_args({'species', $species}, $keen));
 }
 
-sub fetch_variations {
+=head2 fetch_by_name
+  Arg	     : Name of genome
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified species
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub fetch_by_name {
+  my ($self, $name, $keen) = @_;
+  return _first_element(
+		  $self->_fetch_generic_with_args({'name', $name}, $keen));
+}
+
+=head2 fetch_by_name_pattern
+  Arg	     : Regular expression matching of genome
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified species
+  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub fetch_by_name_pattern {
+  my ($self, $name, $keen) = @_;  
+  return 
+		  $self->_fetch_generic($base_fetch_sql . q/ where name REGEXP ?/, [$name], $keen);
+}
+
+=head2 fetch_by_alias
+  Arg	     : Alias of genome
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified species
+  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub fetch_by_alias {
+  my ($self, $name, $keen) = @_;  
+  return 
+		  $self->_fetch_generic($base_fetch_sql . q/ join genome_alias using (genome_id) where alias=?/, [$name], $keen);
+}
+
+=head2 _fetch_variations
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add variations to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_variations {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch variations for a GenomeInfo object that has not been stored"
@@ -284,7 +463,15 @@ sub fetch_variations {
   return;
 }
 
-sub fetch_other_alignments {
+=head2 _fetch_other_alignments
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add other_alignments to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_other_alignments {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch alignments for a GenomeInfo object that has not been stored"
@@ -304,7 +491,15 @@ sub fetch_other_alignments {
   return;
 }
 
-sub fetch_annotations {
+=head2 _fetch_annotations
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add annotations to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_annotations {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch annotations for a GenomeInfo object that has not been stored"
@@ -323,7 +518,15 @@ sub fetch_annotations {
   return;
 }
 
-sub fetch_features {
+=head2 _fetch_features
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add features to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_features {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch features  for a GenomeInfo object that has not been stored"
@@ -342,7 +545,15 @@ sub fetch_features {
   return;
 }
 
-sub fetch_publications {
+=head2 _fetch_publications
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add publications to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_publications {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch publications for a GenomeInfo object that has not been stored"
@@ -356,7 +567,15 @@ sub fetch_publications {
   return;
 }
 
-sub fetch_aliases {
+=head2 _fetch_aliases
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add aliases to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_aliases {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch aliases for a GenomeInfo object that has not been stored"
@@ -369,7 +588,15 @@ sub fetch_aliases {
   return;
 }
 
-sub fetch_sequences {
+=head2 _fetch_sequences
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add sequences to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_sequences {
   my ($self, $genome) = @_;
   croak
 "Cannot fetch sequences for a GenomeInfo object that has not been stored"
@@ -382,7 +609,15 @@ sub fetch_sequences {
   return;
 }
 
-sub fetch_comparas {
+=head2 _fetch_comparas
+  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Description: Add compara info to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_comparas {
   my ($self, $genome) = @_;
   my $comparas = [];
   for my $id (
@@ -402,6 +637,14 @@ sub fetch_comparas {
   return;
 }
 
+=head2 _fetch_compara
+  Arg	     : ID of GenomeComparaInfo 
+  Description: Fetch compara analyses by ID
+  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _fetch_compara {
   my ($self, $id) = @_;
   # check to see if we've cached this already
@@ -449,39 +692,37 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
   return $compara;
 } ## end sub _fetch_compara
 
+=head2 _fetch_children
+  Arg	     : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Description: Fetch all children of specified genome info object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _fetch_children {
   my ($self, $md) = @_;
-  $self->fetch_variations($md);
-  $self->fetch_sequences($md);
-  $self->fetch_aliases($md);
-  $self->fetch_publications($md);
-  $self->fetch_annotations($md);
-  $self->fetch_other_alignments($md);
-  $self->fetch_comparas($md);
+  $self->_fetch_variations($md);
+  $self->_fetch_sequences($md);
+  $self->_fetch_aliases($md);
+  $self->_fetch_publications($md);
+  $self->_fetch_annotations($md);
+  $self->_fetch_other_alignments($md);
+  $self->_fetch_comparas($md);
   return;
 }
 
-sub _first_element {
-  my ($arr) = @_;
-  if (defined $arr && scalar(@$arr) > 0) {
-	return $arr->[0];
-  }
-  else {
-	return undef;
-  }
-}
-
-my $base_fetch_sql = q/
-select 
-genome_id as dbID,species,name,strain,serotype,division,taxonomy_id,
-assembly_id,assembly_name,assembly_level,base_count,
-genebuild,dbname,species_id,
-has_pan_compara,has_variation,has_peptide_compara,
-has_genome_alignments,has_other_alignments
-from genome
-/;
-
-sub _generic_fetch_with_args {
+=head2 _fetch_generic_with_args
+  Arg	     : hashref of arguments by column
+  Arg        : (optional) if set to 1, all children will be fetched
+  Description: Instantiate a GenomeInfo from the database using a 
+               generic method, with the supplied arguments
+  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_generic_with_args {
   my ($self, $args, $keen) = @_;
   my $sql    = $base_fetch_sql;
   my $params = [values %$args];
@@ -489,10 +730,21 @@ sub _generic_fetch_with_args {
   if ($clause ne '') {
 	$sql .= ' where ' . $clause;
   }
-  return $self->_generic_fetch($sql, $params, $keen);
+  return $self->_fetch_generic($sql, $params, $keen);
 }
 
-sub _generic_fetch {
+=head2 _fetch_generic
+  Arg	     : SQL to use to fetch object
+  Arg	     : arrayref of bind parameters
+  Arg        : (optional) if set to 1, all children will be fetched
+  Description: Instantiate a GenomeInfo from the database using the specified SQL
+  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _fetch_generic {
   my ($self, $sql, $params, $keen) = @_;
   my $mds = $self->{dbc}->sql_helper()->execute(
 	-SQL          => $sql,
@@ -519,6 +771,93 @@ sub _generic_fetch {
 	}
   }
   return $mds;
-} ## end sub _generic_fetch
+} ## end sub _fetch_generic
+
+=head2 _cache
+  Arg	     : type of object for cache
+  Description: Return internal cache for given type
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _cache {
+  my ($self, $type) = @_;
+  if (!defined $self->{cache} || !defined $self->{cache}{$type}) {
+	$self->{cache}{$type} = {};
+  }
+  return $self->{cache}{$type};
+}
+
+=head2 _clear_cache
+  Arg	     : (optional) type of object to clear
+  Description: Clear internal cache (optionally just one type)
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _clear_cache {
+  my ($self, $type) = @_;
+  if (defined $type) {
+	$self->{cache}{$type} = {};
+  }
+  else {
+	$self->{cache} = {};
+  }
+  return;
+}
+
+=head2 _get_cached_obj
+  Arg	     : type of object to retrieve
+  Arg	     : ID of object to retrieve
+  Description: Retrieve object from internal cache
+  Returntype : object
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _get_cached_obj {
+  my ($self, $type, $id) = @_;
+  return $self->_cache($type)->{$id};
+}
+
+=head2 _store_cached_obj
+  Arg	     : type of object to store
+  Arg	     : object to store
+  Description: Store object in internal cache
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_cached_obj {
+  my ($self, $type, $obj) = @_;
+  $self->_cache($type)->{$obj->dbID()} = $obj;
+  return;
+}
+
+=head2 _first_element
+  Arg	     : arrayref
+  Description: Utility method to return the first element in a list, undef if empty
+  Returntype : arrayref element
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _first_element {
+  my ($arr) = @_;
+  if (defined $arr && scalar(@$arr) > 0) {
+	return $arr->[0];
+  }
+  else {
+	return undef;
+  }
+}
 
 1;
