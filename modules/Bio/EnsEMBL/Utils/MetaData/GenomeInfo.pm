@@ -666,6 +666,7 @@ sub get_uniprot_coverage {
 
 =head2 to_hash
   Description: Render genome as plain hash suitable for export as JSON/XML
+  Argument   : (optional) if set to 1, force expansion of children
   Returntype : Hashref
   Exceptions : none
   Caller     : general
@@ -682,7 +683,7 @@ sub to_hash {
   if ($type eq 'ARRAY') {
 	$out = [];
 	for my $item (@{$in}) {
-	  push @{$out}, to_hash($item);
+	  push @{$out}, to_hash($item, $keen);
 	}
   }
   elsif ($type eq 'HASH' ||
@@ -691,7 +692,7 @@ sub to_hash {
 	$out = {};
 	while (my ($key, $val) = each %$in) {
 	  if ($key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger') {
-		$out->{$key} = to_hash($val);
+		$out->{$key} = to_hash($val, $keen);
 	  }
 
 	}
