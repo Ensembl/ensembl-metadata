@@ -209,8 +209,8 @@ sub _store_sequences {
 	  . join(
 	  ',',
 	  map {
-		'(' . $genome->dbID() . ',"' . $_->[0] . '",' .
-		  ($_->[1] ? ('"' . $_->[1] . '"') : ('NULL')) . ')'
+		'(' . $genome->dbID() . ',"' . $_->{name} . '",' .
+		  ($_->{acc} ? ('"' . $_->{acc} . '"') : ('NULL')) . ')'
 	  } @vals);
 	$self->{dbc}->sql_helper()->execute_update(-SQL => $sql);
   }
@@ -669,6 +669,7 @@ sub _fetch_sequences {
 	if !defined $genome->dbID();
   my $sequences =
 	$self->{dbc}->sql_helper()->execute(
+	   -USE_HASHREFS=>1,
 	   -SQL => 'select name,acc from genome_sequence where genome_id=?',
 	   -PARAMS => [$genome->dbID()]);
   $genome->sequences($sequences);

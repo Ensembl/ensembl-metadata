@@ -362,7 +362,7 @@ sub compara {
 
 =head2 sequences
   Arg        : (optional) arrayref of sequences to set
-  Description: Gets/sets array of elements describing sequences from the assembly. Elements are name-accession tuples (as arrayrefs) 
+  Description: Gets/sets array of hashrefs describing sequences from the assembly. Elements are hashrefs with name and acc as keys
   Returntype : Arrayref
   Exceptions : none
   Caller     : general

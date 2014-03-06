@@ -99,11 +99,12 @@ sub process_genome {
 	-PARAMS => [$dbname]);
   #my $type = get_type($dbname);
   # TODO replace md with instance of GenomeInfo
-  my $md = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
-	  -species    => $dba->species(),
-	  -species_id => $dba->species_id(),
-	  -division   => $meta->get_division() || 'Ensembl',
-	  -dbname     => $dbname);
+  my $md =
+	Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+						-species    => $dba->species(),
+						-species_id => $dba->species_id(),
+						-division => $meta->get_division() || 'Ensembl',
+						-dbname   => $dbname);
   $md->strain($meta->single_value_by_key('species.strain'));
   $md->serotype($meta->single_value_by_key('species.serotype'));
   $md->name($meta->get_scientific_name());
@@ -120,10 +121,10 @@ sub process_genome {
 
   # get list of seq names
   my $seqs_arr = [];
-  
+
   if (defined $self->{contigs}) {
-  	my $seqs = {};
-  	# 1. get complete list of seq_regions as a hash vs. ENA synonyms
+	my $seqs = {};
+	# 1. get complete list of seq_regions as a hash vs. ENA synonyms
 	$dba->dbc()->sql_helper()->execute_no_return(
 	  -SQL => q/select distinct s.name, ss.synonym 
 	  from coord_system c  
@@ -134,13 +135,13 @@ sub process_genome {
 	  where c.species_id=? and attrib like '%default_version%'/,
 	  -PARAMS   => [$dba->species_id()],
 	  -CALLBACK => sub {
-		my ($name,$acc) = @{shift @_};
+		my ($name, $acc) = @{shift @_};
 		$seqs->{$name} = $acc;
 		return;
-	  });  
-	  	  	
-	  # 2. add accessions where the name is flagged as being in ENA
-	  $dba->dbc()->sql_helper()->execute_no_return(
+	  });
+
+	# 2. add accessions where the name is flagged as being in ENA
+	$dba->dbc()->sql_helper()->execute_no_return(
 	  -SQL => q/
 	  select s.name 
 	  from coord_system c  
@@ -153,11 +154,11 @@ sub process_genome {
 		$seqs->{$acc} = $acc;
 		return;
 	  });
-	  	
-	  while(my @vals = each %$seqs) {
-	  	push @$seqs_arr, \@vals;
-	  }	
-  }
+
+	while (my ($key, $acc) = each %$seqs) {
+	  push @$seqs_arr, {name => $key, acc => $acc};
+	}
+  } ## end if (defined $self->{contigs...})
 
   $md->sequences($seqs_arr);
   # get toplevel base count
@@ -240,14 +241,12 @@ sub process_genome {
   return $md;
 } ## end sub process_genome
 
-my $DIVISION_NAMES = {
-	'bacteria'=>'EnsemblBacteria',
-	'plants'=>'EnsemblPlants',
-	'protists'=>'EnsemblProtists',
-	'fungi'=>'EnsemblFungi',
-	'metazoa'=>'EnsemblMetazoa',
-	'pan_homology'=>'EnsemblPan'
-};
+my $DIVISION_NAMES = {'bacteria'     => 'EnsemblBacteria',
+					  'plants'       => 'EnsemblPlants',
+					  'protists'     => 'EnsemblProtists',
+					  'fungi'        => 'EnsemblFungi',
+					  'metazoa'      => 'EnsemblMetazoa',
+					  'pan_homology' => 'EnsemblPan'};
 
 sub process_compara {
   my ($self, $compara, $genomes) = @_;
@@ -256,9 +255,9 @@ sub process_compara {
 
   (my $division = $compara->dbc()->dbname()) =~
 	s/ensembl_compara_([a-z_]+)_[0-9]+_[0-9]+/$1/;
-   
-    $division = $DIVISION_NAMES->{$division}||$division;
-   
+
+  $division = $DIVISION_NAMES->{$division} || $division;
+
   my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
   for my $method (
