@@ -36,36 +36,17 @@ perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro 
 	
 =head1 USAGE
 
-  --user=user                      username for the release database server
+  --user=user                      username for the genome_info database server
 
-  --pass=pass                      password for release database server
+  --pass=pass                      password for genome_info database server
 
-  --host=host                      release database server 
+  --host=host                      genome_info database server 
 
-  --port=port                      port for release database server 
-  
-  --mdriver=dbname                  driver to use for production database
+  --port=port                      port for genome_info database server 
 
-  --muser=user                      username for the production database
-
-  --mpass=pass                      password for production database
-
-  --mhost=host                      server where the production database is stored
-
-  --mport=port                      port for production database
-  
-  --mdbname=dbname                  name/SID of production database to process
-
-  --mdriver=dbname                  driver to use for production database
-  
-  --url=url							ENA genomes registry URL (use with Bio::EnsEMBL::Utils::MetaData::DBAFinder::EnaDBAFinder)
+  --dbname=dbname                     port for genome_info database server 
   
   --dumper=dumper				     dumper to use (must extend Bio::EnsEMBL::Utils::MetaData::MetaDataDumper)
-
-  --finder=finder				     finder to use (must extend Bio::EnsEMBL::Utils::MetaData::DBAFinder)
-
-  --processor=processor				     processor to use (must extend Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor)
-
 
 =head1 AUTHOR
 
@@ -89,85 +70,60 @@ use Log::Log4perl qw(:easy);
 use Pod::Usage;
 use Data::Dumper;
 use Module::Load;
-use Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
 use Bio::EnsEMBL::DBSQL::DBConnection;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('m')}];
-push(@{$optsd}, "nocache");
-push(@{$optsd}, "url:s");
-push(@{$optsd}, "finder:s");
+my $optsd = [@{$cli_helper->get_dba_opts()}];
 push(@{$optsd}, "dumper:s@");
-push(@{$optsd}, "processor:s");
-push(@{$optsd}, "contigs");
-push(@{$optsd}, "annotation");
-push(@{$optsd}, "registry:s");
-push(@{$optsd}, "species:s");
 push(@{$optsd}, "division:s");
 push(@{$optsd}, "verbose");
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 
-if(defined $opts->{verbose}) {
-	Log::Log4perl->easy_init($DEBUG);	
-} else {
-	Log::Log4perl->easy_init($INFO);
+if (defined $opts->{verbose}) {
+  Log::Log4perl->easy_init($DEBUG);
+}
+else {
+  Log::Log4perl->easy_init($INFO);
 }
 my $logger = get_logger();
 
-my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
--USER=>'ensrw',
--PASS=>'writ3r',
--PORT=>3306,
--HOST=>'127.0.0.1',
--DBNAME=>'genome_info');
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
+my ($dba) = @{$cli_helper->get_dbas_for_opts($opts)};
+my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+												   -DBC => $dba->dbc());
+# get dbas to dump
 
-my %ens_opts = map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
+my %ens_opts =
+  map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
 
-# create DBAFinder
-$opts->{finder} ||= 'Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder';
-$logger->info("Retrieving DBAs using $opts->{finder}");
-load $opts->{finder};
-my $finder = $opts->{finder}->new(%ens_opts);
-my $dbas   = $finder->get_dbas();
-if(defined $opts->{species}) {
-	$dbas = [grep{$_->species() eq $opts->{species}} @{$dbas}];
+# get all metadata
+my $metadata = [];
+if (defined $opts->{division}) {
+  $logger->info("Fetching metadata for " . $opts->{division});
+  $metadata = $gdba->fetch_by_division($opts->{division});
 }
-if(defined $opts->{division}) {
-	$dbas = [grep{$_->get_MetaContainer()->get_division() eq $opts->{division}} @{$dbas}];
+else {
+  $logger->info("Fetching all metadata");
+  $metadata = $gdba->fetch_all();
 }
-$logger->info("Retrieved " . scalar(@$dbas) . " DBAs");
 
-# create processor
-$opts->{processor} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor';
-load $opts->{processor};
-$logger->info("Processing DBAs using $opts->{processor}");
-if ($opts->{annotation}) {
-  $ens_opts{ANNOTATION_ANALYZER} = Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer->new();
-}
-my $processor = $opts->{processor}->new(%ens_opts);
-my $details   = $processor->process_metadata($dbas);
-$logger->info("Completed processing");
-print Dumper($gdba);
-for my $md (@{$details}) {
-	print Dumper($md);
-	$gdba->store($md);
-}
-exit;
+$metadata = [grep { $_->division() ne 'Ensembl' } @$metadata];
 
 # create dumper
-$opts->{dumper} ||= ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
+$opts->{dumper} ||=
+  ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
 for my $dumper_module (@{$opts->{dumper}}) {
   load $dumper_module;
   my $dumper = $dumper_module->new(%ens_opts);
-  $dumper->division(0);
-  $logger->info("Dumping all metadata using $dumper");
-  $dumper->dump_metadata($details);
-  $logger->info("Dumping divisional metadata using $dumper");
+  if (!defined $opts->{division}) {
+	$dumper->division(0);
+	$logger->info("Dumping metadata using $dumper");
+	$dumper->dump_metadata($metadata);
+  }
+  $logger->info("Dumping per-division metadata using $dumper");
   $dumper->division(1);
-  $dumper->dump_metadata($details);
+  $dumper->dump_metadata($metadata);
 }
 $logger->info("Completed dumping");

@@ -45,26 +45,26 @@ sub do_dump {
   print $txt_file '#';
   
   print $txt_file join("\t",
-					   qw(names species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
+					   qw(name species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
 	) .
 	"\n";
 
-  for my $md (@{$metadata->{genome}}) {
+  for my $md (@{$metadata}) {
 	print $txt_file join("\t",
-						 ($md->{name},
-						  $md->{species},
-						  $md->{division},
-						  $md->{taxonomy_id},
-						  $md->{assembly_name},
-						  $md->{assembly_id},
-						  $md->{genebuild},
-						  $self->yesno($md->count_variation()),
-						  $self->yesno($md->{pan_species}),
-						  $self->yesno($md->count_peptide_compara()),
-						  $self->yesno($md->count_dna_compara()),
-						  $self->yesno($md->count_alignments()),
-						  $md->{dbname},
-						  $md->{species_id},
+						 ($md->name(),
+						  $md->species(),
+						  $md->division(),
+						  $md->taxonomy_id(),
+						  $md->assembly_name()||'',
+						  $md->assembly_id()||'',
+						  $md->genebuild()||'',
+						  $self->yesno($md->has_variations()),
+						  $self->yesno($md->has_pan_compara()),
+						  $self->yesno($md->has_peptide_compara()),
+						  $self->yesno($md->has_genome_alignments()),
+						  $self->yesno($md->has_other_alignments()),
+						  $md->dbname(),
+						  $md->species_id(),
 						  "\n"));
   }
   close $txt_file;

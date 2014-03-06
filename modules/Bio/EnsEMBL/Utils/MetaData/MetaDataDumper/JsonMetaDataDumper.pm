@@ -39,7 +39,7 @@ sub do_dump {
   my ($self, $metadata, $out_file) = @_;
   open(my $json_file, '>', $out_file) ||
 	croak "Could not write to " . $out_file;
-  print $json_file to_json($metadata, {pretty => 1});
+  print $json_file to_json($self->metadata_to_hash($metadata), {pretty => 1});
   close $json_file;
   return;
 }

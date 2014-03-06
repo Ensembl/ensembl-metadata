@@ -1,3 +1,4 @@
+
 =pod
 =head1 LICENSE
 
@@ -45,25 +46,24 @@ sub do_dump {
 	"\n";
   for my $md (
 	sort {
-	  $self->get_uniprot_coverage($a)
-		<=> $self->get_uniprot_coverage($b)
-	} @{$metadata->{genome}})
+	  $b->get_uniprot_coverage($a) <=> $a->get_uniprot_coverage($b) or
+	  $a->name() cmp $b->name() 
+	} @{$metadata})
   {
-  	print Dumper($md);
 	print $txt_file join(
-				   "\t",
-				   ($md->{name},
-					$md->{species},
-					$md->{division},
-					$md->{taxonomy_id},
-					$md->{assembly_id},
-					$md->{assembly_name},
-					$md->{genebuild},
-					$md->{annotation}{nProteinCoding},
-					$md->{annotation}{nProteinCodingUniProtKBSwissProt},
-					$md->{annotation}{nProteinCodingUniProtKBTrEMBL},
-					$self->get_uniprot_coverage($md),
-					"\n"));
+				"\t",
+				($md->name(),
+				 $md->species(),
+				 $md->division(),
+				 $md->taxonomy_id(),
+				 $md->assembly_id()   || '',
+				 $md->assembly_name() || '',
+				 $md->genebuild()     || '',
+				 $md->annotations()->{nProteinCoding},
+				 $md->annotations()->{nProteinCodingUniProtKBSwissProt},
+				 $md->annotations()->{nProteinCodingUniProtKBTrEMBL},
+				 sprintf("%.2f", $md->get_uniprot_coverage($md)),
+				 "\n"));
   }
   close $txt_file;
   return;

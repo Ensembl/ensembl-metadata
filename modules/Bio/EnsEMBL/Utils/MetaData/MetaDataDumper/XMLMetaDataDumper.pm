@@ -41,7 +41,7 @@ sub do_dump {
   open(my $xml_file, '>', $outfile) ||
 	croak "Could not write to " . $outfile;
   print $xml_file XML::Simple->new()
-	->XMLout($metadata, RootName => 'genomes');
+	->XMLout($self->metadata_to_hash($metadata), RootName => 'genomes');
   close $xml_file;
   $self->logger()->info("Completed writing XML to " . $outfile);
   return;
