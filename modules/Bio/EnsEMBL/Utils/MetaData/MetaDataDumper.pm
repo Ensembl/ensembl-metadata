@@ -33,22 +33,9 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self = bless({}, $class);
   $self->{logger} = get_logger();
-  ($self->{file}, $self->{division}) =
-	rearrange(['FILE', 'PER_DIVISION'], @args);
+    ($self->{file}) =
+	rearrange(['FILE'], @args);
   return $self;
-}
-
-sub file {
-  my ($self) = @_;
-  return $self->{file};
-}
-
-sub division {
-  my ($self, $division) = @_;
-  if (defined $division) {
-	$self->{division} = $division;
-  }
-  return $self->{division};
 }
 
 sub do_dump {
@@ -59,16 +46,16 @@ sub do_dump {
 
 sub dump_metadata {
 
-  my ($self, $metadata) = @_;
+  my ($self, $metadata, $file, $division) = @_;
 
-  if (defined $self->division() && $self->division() == 1) {
+  if (defined $division && $division == 1) {
 
 	my %mds_per_division;
 	for my $md (@{$metadata}) {
 	  push @{$mds_per_division{$md->division()}}, $md;
 	}
 	for my $division (keys %mds_per_division) {
-	  (my $out_file = $self->file()) =~
+	  (my $out_file = $file) =~
 		s/(.+)(\.[^.]+)$/$1_$division$2/;
 	  $self->logger()->info("Writing $division metadata to $out_file");
 	  $self->do_dump($mds_per_division{$division}, $out_file);
@@ -78,9 +65,9 @@ sub dump_metadata {
   }
   else {
 
-	$self->logger()->info("Writing all metadata to " . $self->{file});
-	$self->do_dump($metadata, $self->{file});
-	$self->logger()->info("Completed writing to " . $self->{file});
+	$self->logger()->info("Writing all metadata to " . $file);
+	$self->do_dump($metadata, $file);
+	$self->logger()->info("Completed writing to " . $file);
 
   }
 

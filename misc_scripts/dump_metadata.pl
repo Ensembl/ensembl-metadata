@@ -90,14 +90,9 @@ else {
 }
 my $logger = get_logger();
 
-my ($dba) = @{$cli_helper->get_dbas_for_opts($opts)};
+my ($dba) = @{$cli_helper->get_dbas_for_opts($opts,1)};
 my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
 												   -DBC => $dba->dbc());
-# get dbas to dump
-
-my %ens_opts =
-  map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
-
 # get all metadata
 my $metadata = [];
 if (defined $opts->{division}) {
@@ -116,14 +111,12 @@ $opts->{dumper} ||=
   ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
 for my $dumper_module (@{$opts->{dumper}}) {
   load $dumper_module;
-  my $dumper = $dumper_module->new(%ens_opts);
+  my $dumper = $dumper_module->new();
   if (!defined $opts->{division}) {
-	$dumper->division(0);
 	$logger->info("Dumping metadata using $dumper");
-	$dumper->dump_metadata($metadata);
+	$dumper->dump_metadata($metadata, $dumper->{file});
   }
   $logger->info("Dumping per-division metadata using $dumper");
-  $dumper->division(1);
-  $dumper->dump_metadata($metadata);
+  $dumper->dump_metadata($metadata, $dumper->{file}, 1);
 }
 $logger->info("Completed dumping");

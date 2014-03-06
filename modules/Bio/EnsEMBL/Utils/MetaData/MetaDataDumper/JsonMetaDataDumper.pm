@@ -31,7 +31,6 @@ sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
   $self->{file}     ||= "species_metadata.json";
-  $self->{division} ||= 1;
   return $self;
 }
 
