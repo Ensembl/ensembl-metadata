@@ -240,6 +240,15 @@ sub process_genome {
   return $md;
 } ## end sub process_genome
 
+my $DIVISION_NAMES = {
+	'bacteria'=>'EnsemblBacteria',
+	'plants'=>'EnsemblPlants',
+	'protists'=>'EnsemblProtists',
+	'fungi'=>'EnsemblFungi',
+	'metazoa'=>'EnsemblMetazoa',
+	'pan_homology'=>'EnsemblPan'
+};
+
 sub process_compara {
   my ($self, $compara, $genomes) = @_;
   $self->{logger}
@@ -247,7 +256,9 @@ sub process_compara {
 
   (my $division = $compara->dbc()->dbname()) =~
 	s/ensembl_compara_([a-z_]+)_[0-9]+_[0-9]+/$1/;
-
+   
+    $division = $DIVISION_NAMES->{$division}||$division;
+   
   my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
   for my $method (
