@@ -44,9 +44,7 @@ Dan Staines
 =cut
 
 package Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
-use Log::Log4perl qw(get_logger);
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-use Data::Dumper;
 use strict;
 use warnings;
 
@@ -90,7 +88,6 @@ sub new {
   my ($proto, @args) = @_;
   my $class = ref($proto) || $proto;
   my $self = bless({}, $class);
-  $self->{logger} = get_logger();
   ($self->{name},       $self->{species},     $self->{dbname},
    $self->{species_id}, $self->{taxonomy_id}, $self->{assembly_name},
    $self->{assembly_id}, $self->{assembly_level}, $self->{genebuild},
@@ -335,7 +332,7 @@ sub aliases {
 	$self->{aliases} = $aliases;
   }
   elsif (!defined $self->{aliases} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_aliases($self);
+	$self->adaptor()->_fetch_aliases($self);
   }
   return $self->{aliases};
 }
@@ -358,7 +355,7 @@ sub compara {
 	$self->{has_pan_compara}       = undef;
   }
   elsif (!defined $self->{compara} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_comparas($self);
+	$self->adaptor()->_fetch_comparas($self);
   }
   return $self->{compara};
 }
@@ -378,7 +375,7 @@ sub sequences {
 	$self->{sequences} = $sequences;
   }
   elsif (!defined $self->{sequences} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_sequences($self);
+	$self->adaptor()->_fetch_sequences($self);
   }
   return $self->{sequences};
 }
@@ -398,7 +395,7 @@ sub publications {
 	$self->{publications} = $publications;
   }
   elsif (!defined $self->{publications} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_publications($self);
+	$self->adaptor()->_fetch_publications($self);
   }
   return $self->{publications};
 }
@@ -421,7 +418,7 @@ sub variations {
 	$self->{has_variations} = undef;
   }
   elsif (!defined $self->{variations} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_variations($self);
+	$self->adaptor()->_fetch_variations($self);
   }
   return $self->{variations};
 }
@@ -443,7 +440,7 @@ sub features {
 	$self->{features} = $features;
   }
   elsif (!defined $self->{features} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_features($self);
+	$self->adaptor()->_fetch_features($self);
   }
   return $self->{features};
 }
@@ -464,7 +461,7 @@ sub annotations {
 	$self->{annotations} = $annotation;
   }
   elsif (!defined $self->{annotations} && defined $self->adaptor()) {
-	$self->adaptor()->fetch_annotations($self);
+	$self->adaptor()->_fetch_annotations($self);
   }
   return $self->{annotations};
 }
@@ -487,7 +484,7 @@ sub other_alignments {
   }
   elsif (!defined $self->{other_alignments} && defined $self->adaptor())
   {
-	$self->adaptor()->fetch_other_alignments($self);
+	$self->adaptor()->_fetch_other_alignments($self);
   }
   return $self->{other_alignments};
 }
@@ -651,7 +648,7 @@ sub count_alignments {
 
 =head2 get_uniprot_coverage
   Description: Get % of protein coding genes with a UniProt cross-reference
-  Returntype : String with uniprot coverage as percentage
+  Returntype : uniprot coverage as percentage
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -659,9 +656,9 @@ sub count_alignments {
 
 sub get_uniprot_coverage {
   my ($self) = @_;
-  return sprintf "%.2f",
-	100*($self->{annotation}{nProteinCodingUniProtKB})/
-	$self->{annotation}{nProteinCoding};
+  return 
+	100.0*($self->annotations()->{nProteinCodingUniProtKB})/
+	$self->annotations()->{nProteinCoding};
 }
 
 =head2 to_hash
