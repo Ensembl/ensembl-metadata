@@ -316,12 +316,13 @@ has_genome_alignments,has_other_alignments
 from genome
 /;
 
+
 =head2 fetch_all
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info
   Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_all {
@@ -351,7 +352,7 @@ sub fetch_by_dbID {
   Description: Fetch genome info for specified species
   Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_by_assembly_id {
@@ -366,7 +367,7 @@ sub fetch_by_assembly_id {
   Description: Fetch genome infos for specified division
   Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_by_division {
@@ -381,7 +382,7 @@ sub fetch_by_division {
   Description: Fetch genome info for specified species
   Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_by_species {
@@ -396,7 +397,7 @@ sub fetch_by_species {
   Description: Fetch genome info for specified species
   Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_by_name {
@@ -411,7 +412,7 @@ sub fetch_by_name {
   Description: Fetch genome info for specified species
   Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_by_name_pattern {
@@ -426,13 +427,78 @@ sub fetch_by_name_pattern {
   Description: Fetch genome info for specified species
   Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
   Exceptions : none
-  Caller     : internal
+  Caller     : general
   Status     : Stable
 =cut
 sub fetch_by_alias {
   my ($self, $name, $keen) = @_;  
   return 
 		  $self->_fetch_generic($base_fetch_sql . q/ join genome_alias using (genome_id) where alias=?/, [$name], $keen);
+}
+
+=head2 fetch_with_variation
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have variation data
+  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub fetch_with_variation {
+  my ($self, $keen) = @_;
+  return $self->_fetch_generic_with_args({'has_variation'=>'1'}, $keen);
+}
+
+=head2 fetch_with_peptide_compara
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have peptide compara data
+  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub fetch_with_peptide_compara {
+  my ($self, $keen) = @_;
+  return $self->_fetch_generic_with_args({'has_peptide_compara'=>'1'}, $keen);
+}
+
+=head2 fetch_with_pan_compara
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have pan comapra data
+  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub fetch_with_pan_compara {
+  my ($self, $keen) = @_;
+  return $self->_fetch_generic_with_args({'has_pan_compara'=>'1'}, $keen);
+}
+
+=head2 fetch_with_genome_alignments
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have whole genome alignment data
+  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub fetch_with_genome_alignments {
+  my ($self, $keen) = @_;
+  return $self->_fetch_generic_with_args({'has_genome_alignments'=>'1'}, $keen);
+}
+
+=head2 fetch_with_other_alignments
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have other alignment data
+  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub fetch_with_other_alignments {
+  my ($self, $keen) = @_;
+  return $self->_fetch_generic_with_args({'has_other_alignments'=>'1'}, $keen);
 }
 
 =head2 _fetch_variations
