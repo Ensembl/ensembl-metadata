@@ -90,7 +90,7 @@ else {
 }
 my $logger = get_logger();
 
-my ($dba) = @{$cli_helper->get_dbas_for_opts($opts)};
+my ($dba) = @{$cli_helper->get_dbas_for_opts($opts,1)};
 my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
 												   -DBC => $dba->dbc());
 # get dbas to dump
