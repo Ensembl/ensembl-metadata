@@ -42,7 +42,6 @@ Dan Staines
 =cut
 
 package Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
-use Log::Log4perl qw(get_logger);
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
@@ -70,7 +69,6 @@ sub new {
   my ($proto, @args) = @_;
   my $class = ref($proto) || $proto;
   my $self = bless({}, $class);
-  $self->{logger} = get_logger();
   ($self->{division}, $self->{method},
    $self->{dbname},   $self->{genomes}
   ) = rearrange(['DIVISION', 'METHOD', 'DBNAME', 'GENOMES'], @args);
@@ -147,7 +145,7 @@ sub genomes {
 =cut
 sub is_pan_compara {
   my ($self) = @_;
-  return $self->{division} eq 'pan_homology'?1:0;
+  return $self->{division} eq 'EnsemblPan'?1:0;
 }
 
 =head2 is_peptide_compara
