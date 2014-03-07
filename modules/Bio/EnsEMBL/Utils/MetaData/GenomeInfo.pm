@@ -689,6 +689,10 @@ sub to_hash {
 	$out = {};
 	while (my ($key, $val) = each %$in) {
 	  if ($key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger') {
+	  	# deal with keys starting with numbers, which are not valid element names in XML
+	  	if($key =~ m/^[0-9].*/) {
+	  		$key = '_'.$key;
+	  	}
 		$out->{$key} = to_hash($val, $keen);
 	  }
 
@@ -792,6 +796,26 @@ sub _preload {
 	$self->publications();
 	$self->sequences();
 	$self->variations();
+	return;
+}
+
+=head2 _preload
+  Description: Remove all children (used after hash transformation to ensure object is minimised)
+  Returntype : none
+  Exceptions : none
+  Caller     : dump_metadata.pl
+  Status     : Stable
+=cut
+sub _unload {
+	my ($self) = @_;
+	$self->{aliases} = undef;
+	$self->{annotations} = undef;
+	$self->{compara} = undef;
+	$self->{features} = undef;
+	$self->{other_alignments} = undef;
+	$self->{publications} = undef;
+	$self->{sequences} = undef;
+	$self->{variations} = undef;
 	return;
 }
 
