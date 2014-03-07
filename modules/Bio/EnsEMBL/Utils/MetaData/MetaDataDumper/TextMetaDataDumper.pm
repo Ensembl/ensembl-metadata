@@ -33,43 +33,44 @@ use warnings;
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  $self->{file}     ||= 'species.txt';
-  $self->{division} ||= 0;
+  $self->{file} ||= 'species.txt';
   return $self;
 }
 
-sub do_dump {
-  my ($self, $metadata, $outfile) = @_;
-  open(my $txt_file, '>', $outfile) ||
-	croak "Could not write to " . $outfile;
-  print $txt_file '#';
-  
-  print $txt_file join("\t",
-					   qw(name species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
-	) .
-	"\n";
-
-  for my $md (@{$metadata}) {
-	print $txt_file join("\t",
-						 ($md->name(),
-						  $md->species(),
-						  $md->division(),
-						  $md->taxonomy_id(),
-						  $md->assembly_name()||'',
-						  $md->assembly_id()||'',
-						  $md->genebuild()||'',
-						  $self->yesno($md->has_variations()),
-						  $self->yesno($md->has_pan_compara()),
-						  $self->yesno($md->has_peptide_compara()),
-						  $self->yesno($md->has_genome_alignments()),
-						  $self->yesno($md->has_other_alignments()),
-						  $md->dbname(),
-						  $md->species_id(),
-						  "\n"));
+sub start {
+  my ($self, $file, $divisions) = @_;
+  $self->SUPER::start($divisions, $file);
+  for my $fh (values %{$self->{files}}) {
+	print $fh '#'
+	  .
+	  join("\t",
+		   qw(name species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
+	  ) .
+	  "\n";
   }
-  close $txt_file;
   return;
-} ## end sub do_dump
+}
+
+sub _write_metadata_to_file {
+  my ($self, $md, $fh) = @_;
+  print $fh join("\t",
+				 ($md->name(),
+				  $md->species(),
+				  $md->division(),
+				  $md->taxonomy_id(),
+				  $md->assembly_name() || '',
+				  $md->assembly_id()   || '',
+				  $md->genebuild()     || '',
+				  $self->yesno($md->has_variations()),
+				  $self->yesno($md->has_pan_compara()),
+				  $self->yesno($md->has_peptide_compara()),
+				  $self->yesno($md->has_genome_alignments()),
+				  $self->yesno($md->has_other_alignments()),
+				  $md->dbname(),
+				  $md->species_id(),
+				  "\n"));
+  return;
+}
 
 1;
 __END__

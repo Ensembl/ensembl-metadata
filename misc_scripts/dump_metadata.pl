@@ -68,16 +68,17 @@ use Bio::EnsEMBL::Utils::CliHelper;
 use Carp;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
-use Data::Dumper;
 use Module::Load;
 use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
 use Bio::EnsEMBL::DBSQL::DBConnection;
+
+use Data::Dumper;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
 my $optsd = [@{$cli_helper->get_dba_opts()}];
 push(@{$optsd}, "dumper:s@");
-push(@{$optsd}, "division:s");
+push(@{$optsd}, "division:s@");
 push(@{$optsd}, "verbose");
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
@@ -90,33 +91,60 @@ else {
 }
 my $logger = get_logger();
 
-my ($dba) = @{$cli_helper->get_dbas_for_opts($opts,1)};
+my ($dba) = @{$cli_helper->get_dbas_for_opts($opts, 1)};
 my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
 												   -DBC => $dba->dbc());
+
 # get all metadata
-my $metadata = [];
-if (defined $opts->{division}) {
-  $logger->info("Fetching metadata for " . $opts->{division});
-  $metadata = $gdba->fetch_by_division($opts->{division});
-}
-else {
-  $logger->info("Fetching all metadata");
-  $metadata = $gdba->fetch_all();
+my $dump_all = 0;
+if (!defined $opts->{division} || scalar(@{$opts->{division}}) == 0) {
+  $opts->{division} = $gdba->list_divisions();
+  $dump_all = 1;
 }
 
-$metadata = [grep { $_->division() ne 'Ensembl' } @$metadata];
+my @metadata = ();
+for my $division (@{$opts->{division}}) {
+  $logger->info("Fetching metadata for $division");
+  @metadata =
+	(@{$gdba->fetch_by_division($division)}, @metadata);
+}
+$logger->info("Retrieved metadata for ".scalar(@metadata)." genomes");
+@metadata = 
+  sort {
+	$a->division() cmp $b->division() or
+	  $a->name() cmp $b->name()
+  } @metadata;
 
 # create dumper
 $opts->{dumper} ||=
   ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
-for my $dumper_module (@{$opts->{dumper}}) {
-  load $dumper_module;
-  my $dumper = $dumper_module->new();
-  if (!defined $opts->{division}) {
-	$logger->info("Dumping metadata using $dumper");
-	$dumper->dump_metadata($metadata, $dumper->{file});
-  }
-  $logger->info("Dumping per-division metadata using $dumper");
-  $dumper->dump_metadata($metadata, $dumper->{file}, 1);
+
+my @dumpers = map { load $_; $_->new() } @{$opts->{dumper}};
+
+# start dumpers
+$logger->info("Starting dumpers");
+for my $dumper (@dumpers) {
+  $dumper->start($dumper->{file}, $opts->{division}, $dump_all);
 }
+# process metadata
+$logger->info("Writing metadata");
+while (my $md = pop(@metadata)) {
+  for my $dumper (@dumpers) {
+	$logger->debug(
+		  "Dumping metadata " . $md->name() . " using " . ref($dumper));
+	if ($dump_all==1) {
+	  $dumper->write_metadata($md, $dumper->{all});
+	}
+	$dumper->write_metadata($md, $md->{division});
+  }
+  # unload to reduce memory consumption
+  $md->_unload();
+}
+
+$logger->info("Closing dumpers");
+# finish dumpers
+for my $dumper (@dumpers) {
+  $dumper->end();
+}
+
 $logger->info("Completed dumping");

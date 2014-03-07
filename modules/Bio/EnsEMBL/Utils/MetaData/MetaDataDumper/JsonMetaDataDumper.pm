@@ -34,14 +34,33 @@ sub new {
   return $self;
 }
 
-sub do_dump {
-  my ($self, $metadata, $out_file) = @_;
-  open(my $json_file, '>', $out_file) ||
-	croak "Could not write to " . $out_file;
-  print $json_file to_json($self->metadata_to_hash($metadata), {pretty => 1});
-  close $json_file;
+sub start {
+  my ($self, $file, $divisions) = @_;
+  $self->SUPER::start($divisions, $file);
+  for my $fh (values %{$self->{files}}) {
+  	  print $fh "[\n";
+  }
   return;
 }
+
+sub _write_metadata_to_file {
+  my ($self, $md, $fh, $count) = @_;
+  if($count>0) {
+  	print $fh ",\n";
+  }
+  print $fh to_json($md->to_hash(1), {pretty => 1});
+  return;
+}
+
+sub end {
+  my ($self) = @_;
+  for my $fh (values %{$self->{files}}) {
+  	  print $fh "]\n";
+  }
+  $self->SUPER::end();
+  return;
+}
+
 
 1;
 

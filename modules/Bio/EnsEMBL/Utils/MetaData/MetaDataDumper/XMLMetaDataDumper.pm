@@ -1,3 +1,4 @@
+
 =pod
 =head1 LICENSE
 
@@ -44,6 +45,32 @@ sub do_dump {
 	->XMLout($self->metadata_to_hash($metadata), RootName => 'genomes');
   close $xml_file;
   $self->logger()->info("Completed writing XML to " . $outfile);
+  return;
+}
+
+sub start {
+  my ($self, $file, $divisions) = @_;
+  $self->SUPER::start($divisions, $file);
+  for my $fh (values %{$self->{files}}) {
+	print $fh "<genomes>";
+  }
+  return;
+}
+
+sub _write_metadata_to_file {
+  my ($self, $md, $fh, $count) = @_;
+  print $fh XML::Simple->new()
+	->XMLout($md->to_hash(1), RootName => 'genome')
+	;
+  return;
+}
+
+sub end {
+  my ($self) = @_;
+  for my $fh (values %{$self->{files}}) {
+	print $fh "</genomes>\n";
+  }
+  $self->SUPER::end();
   return;
 }
 

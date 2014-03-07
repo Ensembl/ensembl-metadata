@@ -36,21 +36,21 @@ sub new {
   return $self;
 }
 
-sub do_dump {
-  my ($self, $metadata, $outfile) = @_;
-  open(my $txt_file, '>', $outfile) ||
-	croak "Could not write to " . $outfile;
-  print $txt_file join("\t",
+sub start {
+  my ($self, $file, $divisions) = @_;
+  $self->SUPER::start($divisions, $file);
+  for my $fh (values %{$self->{files}}) {
+  	  print $fh '#'. join("\t",
 					   qw(name species division taxonomy_id assembly_id assembly_name genebuild nProteinCoding nProteinCodingUniProtKBSwissProt nProteinCodingUniProtKBTrEMBL uniprotCoverage)
 	) .
 	"\n";
-  for my $md (
-	sort {
-	  $b->get_uniprot_coverage($a) <=> $a->get_uniprot_coverage($b) or
-	  $a->name() cmp $b->name() 
-	} @{$metadata})
-  {
-	print $txt_file join(
+  }
+  return;
+}
+
+sub _write_metadata_to_file {
+  my ($self, $md, $fh) = @_; 
+  print $fh join(
 				"\t",
 				($md->name(),
 				 $md->species(),
@@ -64,10 +64,8 @@ sub do_dump {
 				 $md->annotations()->{nProteinCodingUniProtKBTrEMBL},
 				 sprintf("%.2f", $md->get_uniprot_coverage($md)),
 				 "\n"));
-  }
-  close $txt_file;
   return;
-} ## end sub do_dump
+}
 
 1;
 __END__
