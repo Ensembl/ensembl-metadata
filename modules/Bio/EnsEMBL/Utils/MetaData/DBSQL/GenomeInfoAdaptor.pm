@@ -306,6 +306,22 @@ sub _store_alignments {
   return;
 }
 
+=head2 list_divisions
+  Description: Get list of all Ensembl Genomes divisions for which information is available
+  Returntype : Arrayref of strings
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub list_divisions {
+  my ($self) = @_;
+  return $self->{dbc}->sql_helper()
+	->execute_simple(-SQL =>
+	   q/select distinct division from genome where division<>'Ensembl'/
+	);
+}
+
 my $base_fetch_sql = q/
 select 
 genome_id as dbID,species,name,strain,serotype,division,taxonomy_id,
@@ -316,7 +332,6 @@ has_genome_alignments,has_other_alignments
 from genome
 /;
 
-
 =head2 fetch_all
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info
@@ -325,6 +340,7 @@ from genome
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_all {
   my ($self, $keen) = @_;
   return $self->_fetch_generic_with_args({}, $keen);
@@ -339,6 +355,7 @@ sub fetch_all {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub fetch_by_dbID {
   my ($self, $id, $keen) = @_;
   return
@@ -355,6 +372,7 @@ sub fetch_by_dbID {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_by_assembly_id {
   my ($self, $id, $keen) = @_;
   return _first_element(
@@ -370,6 +388,7 @@ sub fetch_by_assembly_id {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_by_division {
   my ($self, $division, $keen) = @_;
   return $self->_fetch_generic_with_args({'division', $division},
@@ -385,6 +404,7 @@ sub fetch_by_division {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_by_species {
   my ($self, $species, $keen) = @_;
   return _first_element(
@@ -400,10 +420,11 @@ sub fetch_by_species {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_by_name {
   my ($self, $name, $keen) = @_;
   return _first_element(
-		  $self->_fetch_generic_with_args({'name', $name}, $keen));
+			   $self->_fetch_generic_with_args({'name', $name}, $keen));
 }
 
 =head2 fetch_by_name_pattern
@@ -415,10 +436,12 @@ sub fetch_by_name {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_by_name_pattern {
-  my ($self, $name, $keen) = @_;  
-  return 
-		  $self->_fetch_generic($base_fetch_sql . q/ where name REGEXP ?/, [$name], $keen);
+  my ($self, $name, $keen) = @_;
+  return
+	$self->_fetch_generic($base_fetch_sql . q/ where name REGEXP ?/,
+						  [$name], $keen);
 }
 
 =head2 fetch_by_alias
@@ -430,10 +453,15 @@ sub fetch_by_name_pattern {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_by_alias {
-  my ($self, $name, $keen) = @_;  
-  return 
-		  $self->_fetch_generic($base_fetch_sql . q/ join genome_alias using (genome_id) where alias=?/, [$name], $keen);
+  my ($self, $name, $keen) = @_;
+  return
+	$self->_fetch_generic(
+				$base_fetch_sql .
+				  q/ join genome_alias using (genome_id) where alias=?/,
+				[$name],
+				$keen);
 }
 
 =head2 fetch_with_variation
@@ -444,9 +472,11 @@ sub fetch_by_alias {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_with_variation {
   my ($self, $keen) = @_;
-  return $self->_fetch_generic_with_args({'has_variation'=>'1'}, $keen);
+  return $self->_fetch_generic_with_args({'has_variation' => '1'},
+										 $keen);
 }
 
 =head2 fetch_with_peptide_compara
@@ -457,9 +487,12 @@ sub fetch_with_variation {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_with_peptide_compara {
   my ($self, $keen) = @_;
-  return $self->_fetch_generic_with_args({'has_peptide_compara'=>'1'}, $keen);
+  return
+	$self->_fetch_generic_with_args({'has_peptide_compara' => '1'},
+									$keen);
 }
 
 =head2 fetch_with_pan_compara
@@ -470,9 +503,11 @@ sub fetch_with_peptide_compara {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_with_pan_compara {
   my ($self, $keen) = @_;
-  return $self->_fetch_generic_with_args({'has_pan_compara'=>'1'}, $keen);
+  return $self->_fetch_generic_with_args({'has_pan_compara' => '1'},
+										 $keen);
 }
 
 =head2 fetch_with_genome_alignments
@@ -483,9 +518,12 @@ sub fetch_with_pan_compara {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_with_genome_alignments {
   my ($self, $keen) = @_;
-  return $self->_fetch_generic_with_args({'has_genome_alignments'=>'1'}, $keen);
+  return
+	$self->_fetch_generic_with_args({'has_genome_alignments' => '1'},
+									$keen);
 }
 
 =head2 fetch_with_other_alignments
@@ -496,9 +534,12 @@ sub fetch_with_genome_alignments {
   Caller     : general
   Status     : Stable
 =cut
+
 sub fetch_with_other_alignments {
   my ($self, $keen) = @_;
-  return $self->_fetch_generic_with_args({'has_other_alignments'=>'1'}, $keen);
+  return
+	$self->_fetch_generic_with_args({'has_other_alignments' => '1'},
+									$keen);
 }
 
 =head2 _fetch_variations
@@ -509,6 +550,7 @@ sub fetch_with_other_alignments {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_variations {
   my ($self, $genome) = @_;
   croak
@@ -537,6 +579,7 @@ sub _fetch_variations {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_other_alignments {
   my ($self, $genome) = @_;
   croak
@@ -565,6 +608,7 @@ sub _fetch_other_alignments {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_annotations {
   my ($self, $genome) = @_;
   croak
@@ -592,6 +636,7 @@ sub _fetch_annotations {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_features {
   my ($self, $genome) = @_;
   croak
@@ -619,6 +664,7 @@ sub _fetch_features {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_publications {
   my ($self, $genome) = @_;
   croak
@@ -641,6 +687,7 @@ sub _fetch_publications {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_aliases {
   my ($self, $genome) = @_;
   croak
@@ -662,6 +709,7 @@ sub _fetch_aliases {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_sequences {
   my ($self, $genome) = @_;
   croak
@@ -669,7 +717,7 @@ sub _fetch_sequences {
 	if !defined $genome->dbID();
   my $sequences =
 	$self->{dbc}->sql_helper()->execute(
-	   -USE_HASHREFS=>1,
+	   -USE_HASHREFS => 1,
 	   -SQL => 'select name,acc from genome_sequence where genome_id=?',
 	   -PARAMS => [$genome->dbID()]);
   $genome->sequences($sequences);
@@ -684,6 +732,7 @@ sub _fetch_sequences {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_comparas {
   my ($self, $genome) = @_;
   my $comparas = [];
@@ -712,6 +761,7 @@ sub _fetch_comparas {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_compara {
   my ($self, $id) = @_;
   # check to see if we've cached this already
@@ -767,6 +817,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_children {
   my ($self, $md) = @_;
   $self->_fetch_variations($md);
@@ -789,6 +840,7 @@ sub _fetch_children {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_generic_with_args {
   my ($self, $args, $keen) = @_;
   my $sql    = $base_fetch_sql;
