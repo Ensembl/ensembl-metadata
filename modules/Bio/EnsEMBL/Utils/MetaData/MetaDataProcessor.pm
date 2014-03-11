@@ -264,20 +264,26 @@ sub process_compara {
 			 qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT_NET/)
   {
 	my $mlss_arr = $adaptor->fetch_all_by_method_link_type($method);
-	if (defined $mlss_arr && scalar(@{$mlss_arr}) > 0) {
-	  my $mlss = $mlss_arr->[0];
+	if (defined $mlss_arr) {
 	  my $compara_info =
 		Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(
 								   -DBNAME => $compara->dbc()->dbname(),
 								   -DIVISION => $division,
 								   -METHOD   => $method,
 								   -GENOMES  => []);
-	  for my $gdb (@{$mlss->species_set_obj->genome_dbs()}) {
+	  my $dbs = {};
+	  for my $mlss (@{$mlss_arr}) {
+		for my $gdb (@{$mlss->species_set_obj->genome_dbs()}) {
+		  $dbs->{$gdb->name()} = $gdb;
+		}
+	  }
+	  for my $gdb (values %{$dbs}) {
 		my $genomeInfo = $genomes->{$gdb->name()};
 		if (!defined $genomeInfo) {
 		  $self->{logger}
 			->info("Creating info object for " . $gdb->name());
-		  $genomeInfo = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+		  $genomeInfo = Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+			->new(
 			-NAME           => $gdb->name(),
 			-SPECIES        => $gdb->name(),
 			-DIVISION       => 'Ensembl',
@@ -300,8 +306,8 @@ sub process_compara {
 		else {
 		  push @{$genomeInfo->compara()}, $compara_info;
 		}
-	  } ## end for my $gdb (@{$mlss->species_set_obj...})
-	} ## end if (defined $mlss_arr ...)
+	  } ## end for my $gdb (values %{$dbs...})
+	} ## end if (defined $mlss_arr)
   } ## end for my $method (...)
 
   $self->{logger}->info("Completed processing compara database " .
