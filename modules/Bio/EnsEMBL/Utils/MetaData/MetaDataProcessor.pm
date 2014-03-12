@@ -2,21 +2,19 @@
 =pod
 =head1 LICENSE
 
-  Copyright (c) 1999-2011 The European Bioinformatics Institute and
-  Genome Research Limited.  All rights reserved.
+Copyright [1999-2014] EMBL-European Bioinformatics Institute
 
-  This software is distributed under a modified Apache license.
-  For license details, please see
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-    http://www.ensembl.org/info/about/code_licence.html
+     http://www.apache.org/licenses/LICENSE-2.0
 
-=head1 CONTACT
-
-  Please email comments or questions to the public Ensembl
-  developers list at <dev@ensembl.org>.
-
-  Questions may also be sent to the Ensembl help desk at
-  <helpdesk@ensembl.org>.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
  
 =cut
 
@@ -97,8 +95,6 @@ sub process_genome {
 	-SQL =>
 "select count(*) from information_schema.tables where table_schema=?",
 	-PARAMS => [$dbname]);
-  #my $type = get_type($dbname);
-  # TODO replace md with instance of GenomeInfo
   my $md =
 	Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
 						-species    => $dba->species(),
@@ -261,40 +257,51 @@ sub process_compara {
   my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
   for my $method (
-			 qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT_NET/)
+	qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET/
+	)
   {
-	my $mlss_arr = $adaptor->fetch_all_by_method_link_type($method);
-	if (defined $mlss_arr) {
+	# group by species_set
+	my $mlss_by_ss = {};
+	for my $mlss (@{$adaptor->fetch_all_by_method_link_type($method)}) {
+	  push @{$mlss_by_ss->{$mlss->species_set_obj()->dbID()}}, $mlss;
+	}
+
+	for my $mlss_list (values %$mlss_by_ss) {
+
+	  my $dbs = {};
+	  my $ss_name;
+	  for my $mlss (@{$mlss_list}) {
+		$ss_name ||= $mlss->species_set_obj()->get_tagvalue('name');
+		for my $gdb (@{$mlss->species_set_obj()->genome_dbs()}) {
+		  $dbs->{$gdb->name()} = $gdb;
+		}
+	  }
+
 	  my $compara_info =
 		Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(
 								   -DBNAME => $compara->dbc()->dbname(),
 								   -DIVISION => $division,
 								   -METHOD   => $method,
+								   -SET_NAME => $ss_name,
 								   -GENOMES  => []);
-	  my $dbs = {};
-	  for my $mlss (@{$mlss_arr}) {
-		for my $gdb (@{$mlss->species_set_obj->genome_dbs()}) {
-		  $dbs->{$gdb->name()} = $gdb;
-		}
-	  }
+
 	  for my $gdb (values %{$dbs}) {
 		my $genomeInfo = $genomes->{$gdb->name()};
 		if (!defined $genomeInfo) {
 		  $self->{logger}
 			->info("Creating info object for " . $gdb->name());
-		  $genomeInfo = Bio::EnsEMBL::Utils::MetaData::GenomeInfo
-			->new(
-			-NAME           => $gdb->name(),
-			-SPECIES        => $gdb->name(),
-			-DIVISION       => 'Ensembl',
-			-SPECIES_ID     => '1',
-			-ASSEMBLY_NAME  => $gdb->assembly(),
-			-ASSEMBLY_LEVEL => 'unknown',
-#				-ASSEMBLY_LEVEL => $gdb->has_karotype() ? 'chromosome' :
-			#				  'supercontig',
-			-GENEBUILD   => $gdb->genebuild(),
-			-TAXONOMY_ID => $gdb->taxon_id(),
-			-DBNAME      => $gdb->name() . '_core_n_n');
+		  $genomeInfo =
+			Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+								   -NAME           => $gdb->name(),
+								   -SPECIES        => $gdb->name(),
+								   -DIVISION       => 'Ensembl',
+								   -SPECIES_ID     => '1',
+								   -ASSEMBLY_NAME  => $gdb->assembly(),
+								   -ASSEMBLY_LEVEL => 'unknown',
+								   -GENEBUILD      => $gdb->genebuild(),
+								   -TAXONOMY_ID    => $gdb->taxon_id(),
+								   -DBNAME => $gdb->name() . '_core_n_n'
+			);
 		  $genomeInfo->base_count(0);
 		  $genomes->{$gdb->name()} = $genomeInfo;
 		}
@@ -307,7 +314,7 @@ sub process_compara {
 		  push @{$genomeInfo->compara()}, $compara_info;
 		}
 	  } ## end for my $gdb (values %{$dbs...})
-	} ## end if (defined $mlss_arr)
+	} ## end for my $mlss_list (values...)
   } ## end for my $method (...)
 
   $self->{logger}->info("Completed processing compara database " .
