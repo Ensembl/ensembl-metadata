@@ -1,3 +1,4 @@
+
 =pod
 =head1 LICENSE
 
@@ -27,7 +28,7 @@ use base
   qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder );
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-use Data::Dumper;
+use Bio::EnsEMBL::Registry;
 
 sub new {
   my ($proto, @args) = @_;
@@ -46,6 +47,7 @@ sub new {
 										   $mport,
 										   -DBNAME =>,
 										   $mdbname);
+
   return $self;
 }
 
