@@ -21,6 +21,7 @@ limitations under the License.
 package Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
 use Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
+use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Data::Dumper;
@@ -71,7 +72,7 @@ sub process_metadata {
   while (my ($genome, $dbas) = each %$dba_hash) {
 	$self->{logger}
 	  ->info("Processing " . $genome . " (" . ++$n . "/$total)");
-	$genome_infos->{$genome} = $self->process_genome($genome, $dbas);
+	$genome_infos->{$genome} = $self->process_genome($dbas);
   }
 
   # 3. apply compara
@@ -83,7 +84,7 @@ sub process_metadata {
 } ## end sub process_metadata
 
 sub process_genome {
-  my ($self, $genome, $dbas) = @_;
+  my ($self, $dbas) = @_;
   my $dba = $dbas->{core};
 
   # get metadata container
@@ -257,7 +258,7 @@ sub process_compara {
   my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
   for my $method (
-	qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET/
+	qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
 	)
   {
 	# group by species_set
@@ -290,8 +291,18 @@ sub process_compara {
 		if (!defined $genomeInfo) {
 		  $self->{logger}
 			->info("Creating info object for " . $gdb->name());
-		  $genomeInfo =
-			Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+		  # get core dba
+		  my $dba;
+		  eval {
+			$dba = Bio::EnsEMBL::Registry->get_DBAdaptor($gdb->name(),
+												  'core');
+		  };
+		  if (defined $dba) {
+			$genomeInfo = $self->process_genome({core => $dba});
+		  }
+		  else {
+			$genomeInfo =
+			  Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
 								   -NAME           => $gdb->name(),
 								   -SPECIES        => $gdb->name(),
 								   -DIVISION       => 'Ensembl',
@@ -301,10 +312,11 @@ sub process_compara {
 								   -GENEBUILD      => $gdb->genebuild(),
 								   -TAXONOMY_ID    => $gdb->taxon_id(),
 								   -DBNAME => $gdb->name() . '_core_n_n'
-			);
+			  );
+		  }
 		  $genomeInfo->base_count(0);
 		  $genomes->{$gdb->name()} = $genomeInfo;
-		}
+		} ## end if (!defined $genomeInfo)
 		push @{$compara_info->genomes()}, $genomeInfo;
 
 		if (!defined $genomeInfo->compara()) {
