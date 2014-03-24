@@ -106,7 +106,7 @@ my @metadata = ();
 for my $division (@{$opts->{division}}) {
   $logger->info("Fetching metadata for $division");
   @metadata =
-	(@{$gdba->fetch_by_division($division)}, @metadata);
+	(@{$gdba->fetch_all_by_division($division)}, @metadata);
 }
 $logger->info("Retrieved metadata for ".scalar(@metadata)." genomes");
 @metadata = 
@@ -124,7 +124,8 @@ my @dumpers = map { load $_; $_->new() } @{$opts->{dumper}};
 # start dumpers
 $logger->info("Starting dumpers");
 for my $dumper (@dumpers) {
-  $dumper->start($dumper->{file}, $opts->{division}, $dump_all);
+    print ref $dumper;
+  $dumper->start($opts->{division}, $dumper->{file}, $dump_all);
 }
 # process metadata
 $logger->info("Writing metadata");
@@ -133,8 +134,14 @@ while (my $md = pop(@metadata)) {
 	$logger->debug(
 		  "Dumping metadata " . $md->name() . " using " . ref($dumper));
 	if ($dump_all==1) {
+	$logger->debug(
+		  "Dumping metadata " . $md->name() . " to 'all' file using " . ref($dumper));
+
 	  $dumper->write_metadata($md, $dumper->{all});
 	}
+	$logger->debug(
+		  "Dumping metadata " . $md->name() . " to divisional file using " . ref($dumper));
+
 	$dumper->write_metadata($md, $md->{division});
   }
   # unload to reduce memory consumption
