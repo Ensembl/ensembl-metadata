@@ -37,8 +37,8 @@ sub new {
 }
 
 sub start {
-  my ($self, $file, $divisions) = @_;
-  $self->SUPER::start($divisions, $file);
+  my ($self, $divisions, $file, $dump_all) = @_;
+  $self->SUPER::start($divisions, $file, $dump_all);
   for my $fh (values %{$self->{files}}) {
   	  print $fh '#'. join("\t",
 					   qw(name species division taxonomy_id assembly_id assembly_name genebuild nProteinCoding nProteinCodingUniProtKBSwissProt nProteinCodingUniProtKBTrEMBL uniprotCoverage)
