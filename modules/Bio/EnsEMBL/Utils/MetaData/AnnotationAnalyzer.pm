@@ -136,7 +136,7 @@ sub analyze_tracks {
   if ($res->is_success) {
       $ini = $res->content;
   } else {
-      throw "Could not retrieve $ini_url: ".$res->status_line;
+      $self->{logger}->debug("Could not retrieve $ini_url: ".$res->status_line);
   }
 
 # parse out and look at:
