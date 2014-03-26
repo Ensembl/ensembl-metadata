@@ -199,7 +199,7 @@ sub process_genome {
 	  $self->{annotation_analyzer}->analyze_alignments($dba);
 	my $other_ali = {};
 	$md->features($self->{annotation_analyzer}->analyze_features($dba));
-	my $other_features = $dbas->{other_features};
+	my $other_features = $dbas->{otherfeatures};
 	if (defined $other_features) {
 	  $self->{logger}->info(
 		 "Processing " . $dba->species() . " otherfeatures annotation");
@@ -230,6 +230,7 @@ sub process_genome {
 	for my $bam (@{$read_ali->{bam}}) {
 	  $all_ali{bam}{$bam->{id}}++;
 	}
+	print Dumper(%all_ali);
 	$md->other_alignments(\%all_ali);
 	$md->db_size($size);
 
