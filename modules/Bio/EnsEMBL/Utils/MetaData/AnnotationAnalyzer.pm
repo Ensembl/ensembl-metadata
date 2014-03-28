@@ -23,9 +23,10 @@ use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use strict;
 use warnings;
 use Log::Log4perl qw(get_logger);
-use LWP::Simple;
 use Data::Dumper;
 use Config::IniFiles;
+use LWP::UserAgent;
+my $ua = LWP::UserAgent->new();
 
 my $url_template =
 'https://raw.github.com/EnsemblGenomes/eg-web-DIVISION/master/conf/ini-files/SPECIES.ini';
@@ -123,10 +124,21 @@ sub analyze_tracks {
   my ($self, $species, $division) = @_;
   $species = ucfirst($species);
   ($division = lc $division) =~ s/ensembl//;
-  # get the ini file from CVS
+  # get the ini file from git
   (my $ini_url = $url_template) =~ s/SPECIES/$species/;
   $ini_url =~ s/DIVISION/$division/;
-  my $ini = get($ini_url);
+
+  my $req = HTTP::Request->new(GET => $ini_url);
+  # Pass request to the user agent and get a response back
+  my $res = $ua->request($req);
+  my $ini;
+  # Check the outcome of the response
+  if ($res->is_success) {
+      $ini = $res->content;
+  } else {
+      $self->{logger}->debug("Could not retrieve $ini_url: ".$res->status_line);
+  }
+
 # parse out and look at:
 # [ENSEMBL_INTERNAL_BAM_SOURCES]
 # 1_Puccinia_triticina_SRR035315 = dna_align_est

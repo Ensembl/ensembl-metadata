@@ -41,6 +41,7 @@ sub new {
 
 sub start {
   my ($self, $divisions, $file, $dump_all) = @_;
+  print "DUMPALL=$dump_all\n";
   $self->{files}     = {};
   $self->{filenames} = {};
   $self->logger()->debug("Opening output files");
@@ -53,7 +54,7 @@ sub start {
 	  croak "Could not open $out_file for writing";
 	$self->{files}->{$division}     = $fh;
 	$self->{filenames}->{$division} = $out_file;
-	$self->{$division}->{count}     = 0;
+	$self->{count}{$division}     = 0;
   }
   if (defined $dump_all && $dump_all==1) {
 	my $fh;
@@ -61,6 +62,7 @@ sub start {
 	open($fh, '>', $file) || croak "Could not open $file for writing";
 	$self->{files}->{$self->{all}}     = $fh;
 	$self->{filenames}->{$self->{all}} = $file;
+	$self->{count}{$self->{all}}     = 0;
   }
   $self->{files_handles} = {};
   $self->logger()
@@ -86,8 +88,8 @@ sub write_metadata {
   my ($self, $metadata, $division) = @_;
   my $fh = $self->{files}{$division};
   if (defined $fh) {
-	$self->_write_metadata_to_file($metadata, $fh, $self->{$division}{count});
-	$self->{$division}{count} += 1;
+	$self->_write_metadata_to_file($metadata, $fh, $self->{count}->{$division});
+	$self->{count}->{$division} += 1;
   }
   return;
 }

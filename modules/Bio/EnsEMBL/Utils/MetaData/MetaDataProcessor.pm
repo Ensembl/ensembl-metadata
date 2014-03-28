@@ -86,7 +86,7 @@ sub process_metadata {
 sub process_genome {
   my ($self, $dbas) = @_;
   my $dba = $dbas->{core};
-
+  $dba->dbc()->reconnect_when_lost(1);
   # get metadata container
   my $meta   = $dba->get_MetaContainer();
   my $dbname = $dba->dbc()->dbname();
@@ -235,7 +235,7 @@ sub process_genome {
 	$md->db_size($size);
 
   } ## end if (defined $self->{annotation_analyzer...})
-
+  $dba->dbc()->disconnect_if_idle();
   return $md;
 } ## end sub process_genome
 
