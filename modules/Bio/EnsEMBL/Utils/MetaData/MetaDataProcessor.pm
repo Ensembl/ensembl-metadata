@@ -104,7 +104,7 @@ sub process_genome {
 						-dbname   => $dbname);
   $md->strain($meta->single_value_by_key('species.strain'));
   $md->serotype($meta->single_value_by_key('species.serotype'));
-  $md->name($meta->get_scientific_name());
+  $md->name($meta->get_display_name());
   $md->taxonomy_id($meta->get_taxonomy_id());
   $md->assembly_id($meta->single_value_by_key('assembly.accession'));
   $md->assembly_name($meta->single_value_by_key('assembly.name'));
