@@ -107,66 +107,89 @@ use Bio::EnsEMBL::DBSQL::DBConnection;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}, @{$cli_helper->get_dba_opts('m')}, @{$cli_helper->get_dba_opts('g')}];
-push(@{$optsd}, "nocache");
-push(@{$optsd}, "url:s");
-push(@{$optsd}, "finder:s");
-push(@{$optsd}, "processor:s");
-push(@{$optsd}, "contigs");
-push(@{$optsd}, "annotation");
-push(@{$optsd}, "registry:s");
-push(@{$optsd}, "species:s");
-push(@{$optsd}, "division:s");
-push(@{$optsd}, "verbose");
+my $optsd = [ @{ $cli_helper->get_dba_opts() },
+			  @{ $cli_helper->get_dba_opts('m') },
+			  @{ $cli_helper->get_dba_opts('g') } ];
+push( @{$optsd}, "nocache" );
+push( @{$optsd}, "url:s" );
+push( @{$optsd}, "finder:s" );
+push( @{$optsd}, "processor:s" );
+push( @{$optsd}, "contigs" );
+push( @{$optsd}, "annotation" );
+push( @{$optsd}, "registry:s" );
+push( @{$optsd}, "species:s" );
+push( @{$optsd}, "division:s" );
+push( @{$optsd}, "verbose" );
+push( @{$optsd}, "force_update" );
 
-my $opts = $cli_helper->process_args($optsd, \&pod2usage);
+my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 
-if(defined $opts->{verbose}) {
-	Log::Log4perl->easy_init($DEBUG);	
-} else {
-	Log::Log4perl->easy_init($INFO);
+if ( defined $opts->{verbose} ) {
+  Log::Log4perl->easy_init($DEBUG);
+}
+else {
+  Log::Log4perl->easy_init($INFO);
 }
 my $logger = get_logger();
-	
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>Bio::EnsEMBL::DBSQL::DBConnection->new(
-											-USER =>,
-										   $opts->{guser},
-										   -PASS =>,
-										   $opts->{gpass},
-										   -HOST =>,
-										   $opts->{ghost},
-										   -PORT =>,
-										   $opts->{gport},
-										   -DBNAME =>,
-										   $opts->{gdbname}));
 
-my %ens_opts = map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
+my $gdba =
+  Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+							   -DBC =>
+								 Bio::EnsEMBL::DBSQL::DBConnection->new(
+														-USER =>,
+														$opts->{guser},
+														-PASS =>,
+														$opts->{gpass},
+														-HOST =>,
+														$opts->{ghost},
+														-PORT =>,
+														$opts->{gport},
+														-DBNAME =>,
+														$opts->{gdbname}
+								 ) );
+
+my %processor_opts =
+  map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
 
 # create DBAFinder
-$opts->{finder} ||= 'Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder';
+$opts->{finder} ||=
+  'Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder';
 $logger->info("Retrieving DBAs using $opts->{finder}");
 load $opts->{finder};
-my $finder = $opts->{finder}->new(%ens_opts);
+my $finder = $opts->{finder}->new(%processor_opts);
 my $dbas   = $finder->get_dbas();
-if(defined $opts->{species}) {
-	$dbas = [grep{$_->species() eq $opts->{species}} @{$dbas}];
+if ( defined $opts->{species} ) {
+  $dbas = [ grep { $_->species() eq $opts->{species} } @{$dbas} ];
 }
-if(defined $opts->{division}) {
-	$dbas = [grep{$_->get_MetaContainer()->get_division() eq $opts->{division}} @{$dbas}];
+if ( defined $opts->{division} ) {
+  $dbas = [
+	grep {
+	  $_->get_MetaContainer()->get_division() eq $opts->{division}
+	} @{$dbas} ];
 }
-$logger->info("Retrieved " . scalar(@$dbas) . " DBAs");
+$logger->info( "Retrieved " . scalar(@$dbas) . " DBAs" );
 
 # create processor
-$opts->{processor} ||= 'Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor';
+$opts->{processor} ||=
+  'Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor';
 load $opts->{processor};
 $logger->info("Processing DBAs using $opts->{processor}");
-if ($opts->{annotation}) {
-  $ens_opts{ANNOTATION_ANALYZER} = Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer->new();
+if ( $opts->{annotation} ) {
+  $processor_opts{ANNOTATION_ANALYZER} =
+	Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer->new();
 }
-my $processor = $opts->{processor}->new(%ens_opts);
+if ( defined $opts->{force_update} ) {
+  $processor_opts{FORCE_UPDATE} = 1;
+}
+$processor_opts{INFO_ADAPTOR} = $gdba;
+my $processor = $opts->{processor}->new(%processor_opts);
 my $details   = $processor->process_metadata($dbas);
 $logger->info("Completed processing");
-for my $md (@{$details}) {
-	$logger->info("Storing ".$md->species());
-	$gdba->store($md);
+for my $md ( @{$details} ) {
+  $logger->info( "Storing " . $md->species() );
+  if(defined $md->dbID() && defined $opts->{force_update}) {
+  	$gdba->update($md);  	
+  } else {
+  	$gdba->store($md);
+  }
 }
