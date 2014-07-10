@@ -111,8 +111,8 @@ for my $division (@{$opts->{division}}) {
 $logger->info("Retrieved metadata for ".scalar(@metadata)." genomes");
 @metadata = 
   sort {
-	$a->division() cmp $b->division() or
-	  $a->name() cmp $b->name()
+	$b->division() cmp $a->division() or
+	  $b->name() cmp $a->name()
   } @metadata;
 
 # create dumper
