@@ -114,8 +114,8 @@ sub analyze_alignments {
   	$ali->{proteinAlignFeatures} = $pf;
   }
   my $df = $self->count_features($dba, 'dna_align_feature');
-  if(scalar(keys %$pf)>0) {
-  	$ali->{dnaAlignFeatures} = $pf;
+  if(scalar(keys %$df)>0) {
+  	$ali->{dnaAlignFeatures} = $df;
   }
   return $ali;
 }
