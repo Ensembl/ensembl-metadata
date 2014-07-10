@@ -78,6 +78,8 @@ perl load_metadata_db.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ens
 
   --processor=processor				     processor to use (must extend Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor)
 
+  --force_update				     If information already exists for a species/database, replace
+
 
 =head1 AUTHOR
 
