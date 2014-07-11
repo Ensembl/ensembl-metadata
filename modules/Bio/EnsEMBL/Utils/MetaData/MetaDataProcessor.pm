@@ -115,6 +115,7 @@ sub process_genome {
 		$md->adaptor( $extant_md->adaptor() );
 	  }
 	  else {
+	  	$self->{logger}->info( $md->species(). " already stored");
 		# reuse existing, unused
 		return $extant_md;
 	  }
@@ -249,7 +250,6 @@ sub process_genome {
 	for my $bam ( @{ $read_ali->{bam} } ) {
 	  $all_ali{bam}{ $bam->{id} }++;
 	}
-	print Dumper(%all_ali);
 	$md->other_alignments( \%all_ali );
 	$md->db_size($size);
 
@@ -299,7 +299,14 @@ sub process_compara {
 		for my $gdb ( @{ $mlss->species_set_obj()->genome_dbs() } ) {
 		  $dbs->{ $gdb->name() } = $gdb;
 		}
+		if(!defined $ss_name) {
+	  		$ss_name  = $mlss->name();
+	    }
+	    if(defined $ss_name) {
+	    	last;
+	    }
 	  }
+	  
 
 	  my $compara_info =
 		Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(
@@ -310,13 +317,15 @@ sub process_compara {
 								   -GENOMES  => [] );
 
 	  if ( defined $self->{info_adaptor} ) {
-		my $extant_compara_info = $self->{info_adaptor}->();
+		my $extant_compara_info = $self->{info_adaptor}->fetch_compara_by_dbname_method_set($compara->dbc()->dbname(),$method,$ss_name);
 		if ( defined $extant_compara_info ) {
 		  if ( defined $self->{force_update} ) {
+		  	$self->{logger}->info("Reusing ID for existing compara analysis ".$extant_compara_info->dbname()."/".$method."/".$ss_name);
 			$compara_info->dbID( $extant_compara_info->dbID() );
 			$compara_info->adaptor( $extant_compara_info->adaptor() );
 		  }
 		  else {
+		  	$self->{logger}->info("Reusing existing compara analysis ".$extant_compara_info->dbname()."/".$method."/".$ss_name);
 			return $extant_compara_info;
 		  }
 		}

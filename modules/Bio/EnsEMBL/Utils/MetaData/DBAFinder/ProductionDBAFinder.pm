@@ -31,50 +31,88 @@ use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Registry;
 
 sub new {
-  my ($proto, @args) = @_;
+  my ( $proto, @args ) = @_;
   my $self = $proto->SUPER::new(@args);
   # get the production database
-  my ($mhost, $mport, $muser, $mpass, $mdbname) =
-	rearrange(['MHOST', 'MPORT', 'MUSER', 'MPASS', 'MDBNAME'], @args);
+  my ( $mhost, $mport, $muser, $mpass, $mdbname ) =
+	rearrange( [ 'MHOST', 'MPORT', 'MUSER', 'MPASS', 'MDBNAME' ],
+			   @args );
   $self->{production_dbc} =
-	Bio::EnsEMBL::DBSQL::DBConnection->new(-USER =>,
-										   $muser,
-										   -PASS =>,
-										   $mpass,
-										   -HOST =>,
-										   $mhost,
-										   -PORT =>,
-										   $mport,
-										   -DBNAME =>,
-										   $mdbname);
+	Bio::EnsEMBL::DBSQL::DBConnection->new( -USER =>,
+											$muser,
+											-PASS =>,
+											$mpass,
+											-HOST =>,
+											$mhost,
+											-PORT =>,
+											$mport,
+											-DBNAME =>,
+											$mdbname );
 
   return $self;
 }
 
 sub get_dbas {
   my ($self) = @_;
-  # get parents and hash by DB
-  my $dbs;
-  for my $dba (@{$self->SUPER::get_dbas()}) {
-	push @{$dbs->{$dba->dbc()->dbname()}}, $dba;
-  }
-  my $dbas = [];
-  # get list of dbs
-  for my $db (
-	@{$self->{production_dbc}->sql_helper()->execute_simple(
-		-SQL =>
-q/select full_db_name as db_name from db_list join db using (db_id) where is_current=1 UNION select db_name from division_db where is_current=1 and db_type='COMPARA'/
-	  )})
-  {
-	my $dba_list = $dbs->{$db};
-	if (defined $dba_list) {
-	  push @$dbas, @$dba_list;
+  if ( !defined $self->{dbas} ) {
+	$self->{dbas} = Bio::EnsEMBL::Registry->get_all_DBAdaptors();
+	$self->{logger}
+	  ->info( "Found " . scalar( @{ $self->{dbas} } ) . " DBAs" );
+	# get parents and hash by DB
+	my $dbs = {};
+	for my $dba ( @{ $self->{dbas} } ) {
+	  push @{ $dbs->{ $dba->dbc()->dbname() } }, $dba;
+	}
+
+	my @dbs;
+	# restrict by division
+	if ( defined $self->{division} ) {
+	  @dbs = @{
+		$self->{production_dbc}->sql_helper()->execute_simple(
+		  -SQL =>
+q/select full_db_name as db_name from db_list join db using (db_id) 
+join species using (species_id) join division_species using (species_id) 
+join division using (division_id)  where db.is_current=1 and division.name=? 
+UNION select db_name from division_db join division using (division_id) 
+where division_db.is_current=1 and db_type='COMPARA' and division.name=?/,
+		  -PARAMS => [ $self->{division}, $self->{division} ] ) };
+	}
+	elsif ( defined $self->{species} ) {
+	  @dbs = @{
+		$self->{production_dbc}->sql_helper()->execute_simple(
+		  -SQL =>
+q/select full_db_name as db_name from db_list join db using (db_id) join species using (species_id) where db.is_current=1 and production_name=?/,
+		  -PARAMS => [ $self->{species} ] ) };
 	}
 	else {
-	  throw "Expected database $db not found";
+	  @dbs = @{
+		$self->{production_dbc}->sql_helper()->execute_simple(
+		  -SQL =>
+q/select full_db_name as db_name from db_list join db using (db_id) where db.is_current=1 
+UNION select db_name from division_db where division_db.is_current=1 and db_type='COMPARA'/
+		) };
+
 	}
-  }
-  return $dbas;
+	# filter by pattern/dbname
+	if ( defined $self->{dbname} ) {
+	  @dbs = grep { $_ eq $self->{dbname} } @dbs;
+	}
+	elsif ( defined $self->{pattern} ) {
+	  @dbs = grep { $_ =~ m/$self->{pattern}/i } @dbs;
+	}
+
+	$self->{dbas} = [];
+	for my $db (@dbs) {
+	  my $dba_list = $dbs->{$db};
+	  if ( defined $dba_list ) {
+		push @{ $self->{dbas} }, @$dba_list;
+	  }
+	  else {
+		throw "Expected database $db not found";
+	  }
+	}
+  } ## end if ( !defined $self->{...})
+  return $self->{dbas};
 } ## end sub get_dbas
 
 1;
