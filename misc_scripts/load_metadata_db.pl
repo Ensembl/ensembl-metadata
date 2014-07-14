@@ -160,15 +160,6 @@ $logger->info("Retrieving DBAs using $opts->{finder}");
 load $opts->{finder};
 my $finder = $opts->{finder}->new(%processor_opts);
 my $dbas   = $finder->get_dbas();
-if ( defined $opts->{species} ) {
-  $dbas = [ grep { $_->species() eq $opts->{species} } @{$dbas} ];
-}
-if ( defined $opts->{division} ) {
-  $dbas = [
-	grep {
-	  $_->get_MetaContainer()->get_division() eq $opts->{division}
-	} @{$dbas} ];
-}
 $logger->info( "Retrieved " . scalar(@$dbas) . " DBAs" );
 
 # create processor
@@ -177,21 +168,37 @@ $opts->{processor} ||=
 load $opts->{processor};
 $logger->info("Processing DBAs using $opts->{processor}");
 if ( $opts->{annotation} ) {
-  $processor_opts{ANNOTATION_ANALYZER} =
+  $processor_opts{-ANNOTATION_ANALYZER} =
 	Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer->new();
 }
-if ( defined $opts->{force_update} ) {
-  $processor_opts{FORCE_UPDATE} = 1;
-}
-$processor_opts{INFO_ADAPTOR} = $gdba;
+$processor_opts{-INFO_ADAPTOR} = $gdba;
 my $processor = $opts->{processor}->new(%processor_opts);
 my $details   = $processor->process_metadata($dbas);
 $logger->info("Completed processing");
 for my $md ( @{$details} ) {
-  $logger->info( "Storing " . $md->species() );
-  if(defined $md->dbID() && defined $opts->{force_update}) {
-  	$gdba->update($md);  	
-  } else {
-  	$gdba->store($md);
+	# if the species has been stored and we want to force an update, update it
+	# otherwise only store if its not been seen already
+  if ( defined $md->dbID() && defined $opts->{force_update} ) {
+	$logger->info( "Updating " . $md->species() );
+	$gdba->update($md);
+  }
+  elsif ( !defined $md->dbID() ) {
+	$logger->info( "Storing " . $md->species() );
+	$gdba->store($md);
+  }
+  # if we're not just updating a single species, update compara too
+  if ( !defined $opts->{species} && defined $md->compara() ) {
+	for my $compara ( @{ $md->compara() } ) {
+	  if ( defined $compara->dbID() && defined $opts->{force_update} ) {
+		$logger->info( "Updating compara " . $compara->to_string() );
+		$gdba->update_compara($compara);
+	  }
+	  elsif ( !defined $compara->dbID() ) {
+		$logger->info( "Storing " . $compara->to_string() );
+		$gdba->store_compara($compara);
+	  }
+	}
   }
 }
+
+$logger->info("Metadata load complete");

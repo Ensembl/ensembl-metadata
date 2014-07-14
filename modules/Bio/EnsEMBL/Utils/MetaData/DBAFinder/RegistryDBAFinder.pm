@@ -1,3 +1,4 @@
+
 =pod
 =head1 LICENSE
 
@@ -26,15 +27,22 @@ use Bio::EnsEMBL::Utils::Exception qw(throw);
 use Data::Dumper;
 use strict;
 use warnings;
+use Log::Log4perl qw(get_logger);
 
 sub new {
-  my ($proto, @args) = @_;
+  my ( $proto, @args ) = @_;
   my $self = $proto->SUPER::new(@args);
-  ($self->{regfile}) = rearrange(['REGISTRY'], @args);
+  ( $self->{regfile},  $self->{dbname}, $self->{pattern},
+	$self->{division}, $self->{species} )
+	= rearrange(
+				 [ 'REGISTRY', 'DBNAME', 'PATTERN', 'DIVISION',
+				   'SPECIES' ],
+				 @args );
   $self->{registry} ||= 'Bio::EnsEMBL::Registry';
-  if (defined $self->{regfile}) {
-	$self->{registry}->load_all($self->{regfile});
+  if ( defined $self->{regfile} ) {
+	$self->{registry}->load_all( $self->{regfile} );
   }
+  $self->{logger} = get_logger();
   return $self;
 }
 
@@ -45,11 +53,47 @@ sub registry {
 
 sub get_dbas {
   my ($self) = @_;
-  if (!defined $self->{dbas}) {
+  if ( !defined $self->{dbas} ) {
 	$self->{dbas} = Bio::EnsEMBL::Registry->get_all_DBAdaptors();
-  }
+	$self->{logger}
+	  ->info( "Found " . scalar( @{ $self->{dbas} } ) . " DBAs" );
+	if ( defined $self->{dbname} ) {
+	  $self->{logger}
+		->info( "Restricting DBAs to DBs " . $self->{dbname} );
+	  $self->{dbas} = [ grep { $_->dbc()->dbname() eq $self->{dbname} }
+						@{ $self->{dbas} } ];
+	}
+	elsif ( defined $self->{pattern} ) {
+	  $self->{logger}
+		->info( "Restricting DBAs to DBs " . $self->{pattern} );
+
+	  $self->{dbas} = [
+		grep {
+		  $_->dbc()->dbname() =~ m/$self->{pattern}/i
+		} @{ $self->{dbas} } ];
+	}
+	elsif ( defined $self->{species} ) {
+	  $self->{logger}
+		->info( "Restricting DBAs to species " . $self->{species} );
+	  $self->{dbas} = [ grep { $_->species() eq $self->{dbname} }
+						@{ $self->{dbas} } ];
+	}
+	elsif ( defined $self->{division} ) {
+	  $self->{logger}
+		->info( "Restricting DBAs to division " . $self->{division} );
+	  $self->{dbas} = [
+		grep {
+		  ref( $_->get_MetaContainer() ) eq
+			'Bio::EnsEMBL::DBSQL::MetaContainer' &&
+			$_->get_MetaContainer()->get_division() =~
+			m/$self->{division}/i
+		} @{ $self->{dbas} } ];
+	}
+	$self->{logger}
+	  ->info( "Filtered to " . scalar( @{ $self->{dbas} } ) . " DBAs" );
+  } ## end if ( !defined $self->{...})
   return $self->{dbas};
-}
+} ## end sub get_dbas
 
 1;
 
