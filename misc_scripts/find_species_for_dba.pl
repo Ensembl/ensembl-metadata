@@ -133,6 +133,7 @@ my $wiki_urls = {};
 
 my $ua = LWP::UserAgent->new();
 
+
 ## use the command line options to get an array of database details
 for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 
@@ -140,10 +141,12 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
   my $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%{$db_args});
 
   my $meta = $dba->get_MetaContainer();
+
   if (defined $opts->{division} && $meta->get_division() ne $opts->{division}) {
 	$dba->dbc()->disconnect_if_idle(1);
 	next;
   }
+
 
   my $dbname = $dba->dbc()->dbname();
   #my $nom = $dba->dbc()->dbname() . '.' . $dba->species_id();
@@ -175,19 +178,20 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 	  my $wiki_url = $wiki_urls->{$species->name()};
 	  if (!$wiki_url) {
 		($wiki_url = $wiki_url_base . $species->name()) =~ s/ +/_/g;
-		if (!$ua->get($wiki_url)->is_success) {
+		if (!$ua->head($wiki_url)->is_success) {
 		  $wiki_url = 'MISSING';
 		}
 		$wiki_urls->{$species->name()} = $wiki_url;
 	  }
 
 	  if ($wiki_url ne 'MISSING') {
-		my $curr_wiki_url = $meta->single_value_by_key($meta_key);
-		if (!defined $curr_wiki_url || $curr_wiki_url ne $wiki_url) {
+	      my $curr_wiki_url = $meta->single_value_by_key($meta_key);
+	      if (!defined $curr_wiki_url || $curr_wiki_url ne $wiki_url) {
 		  $logger->info("Inserting meta key $meta_key $wiki_url");
 		  $meta->store_key_value($meta_key, $wiki_url);
-		}
+	      }
 	  }
+
 	}
 
   }
