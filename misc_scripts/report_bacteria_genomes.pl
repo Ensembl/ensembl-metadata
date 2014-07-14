@@ -232,6 +232,7 @@ sub genome_details {
 	}
 	# count seq_regions for ENA
 	$report->{seq_regions} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.seq_region join $db_name.seq_region_attrib using (seq_region_id) where value='ENA'");
+	$dbc->disconnect_if_idle();
   } ## end for my $db_name (grep {...})
   return {genomes => $genomes, report => $report};
 } ## end sub genome_details
