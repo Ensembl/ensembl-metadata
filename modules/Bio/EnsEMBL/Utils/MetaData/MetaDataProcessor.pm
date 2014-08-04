@@ -281,6 +281,10 @@ sub process_compara {
 	qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
 	)
   {
+
+  $self->{logger}->info(
+		   "Processing method type $method from compara database " . $compara->dbc()->dbname() );
+
 	# group by species_set
 	my $mlss_by_ss = {};
 	for
@@ -307,6 +311,9 @@ sub process_compara {
 	    }
 	  }
 	  
+  $self->{logger}->info(
+		   "Processing species set $ss_name for method $method from compara database " . $compara->dbc()->dbname() );
+
 
 	  my $compara_info =
 		Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(
@@ -332,11 +339,17 @@ sub process_compara {
 	  }
 
 	  for my $gdb ( values %{$dbs} ) {
+
+  $self->{logger}->info(
+		   "Processing species ".$gdb->name()." from species set $ss_name for method $method from compara database " . $compara->dbc()->dbname() );
+
+
 		my $genomeInfo = $genomes->{ $gdb->name() };
 		# have we got one in the database already?
 		if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
 		  $genomeInfo =
 			$self->{info_adaptor}->fetch_by_species( $gdb->name() );
+		  $genomes->{ $gdb->name() } = $genomeInfo;
 		}
 
 		# last attempt, create one
