@@ -50,7 +50,11 @@ sub new {
   $self->{registry} ||= 'Bio::EnsEMBL::Registry';
   if ( defined $self->{regfile} ) {
 	$self->{registry}->load_all( $self->{regfile} );
+  } else {
+      $self->registry()->load_registry_from_db(@args);
+      $self->registry()->set_disconnect_when_inactive(1);
   }
+  print $self->{species}."\n";
   $self->{logger} = get_logger();
   return $self;
 }
@@ -81,10 +85,10 @@ sub get_dbas {
 		  $_->dbc()->dbname() =~ m/$self->{pattern}/i
 		} @{ $self->{dbas} } ];
 	}
-	elsif ( defined $self->{species} ) {
+	if ( defined $self->{species} ) {
 	  $self->{logger}
 		->info( "Restricting DBAs to species " . $self->{species} );
-	  $self->{dbas} = [ grep { $_->species() eq $self->{dbname} }
+	  $self->{dbas} = [ grep { $_->species() eq $self->{species} }
 						@{ $self->{dbas} } ];
 	}
 	elsif ( defined $self->{division} ) {
