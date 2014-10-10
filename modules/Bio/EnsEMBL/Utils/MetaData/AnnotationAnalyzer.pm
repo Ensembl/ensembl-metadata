@@ -360,8 +360,12 @@ join individual using (individual_id) group by name/;
 
 sub count_genotypes {
   my ($self, $dba) = @_;
-  return $dba->dbc()->sql_helper()
+  my $cnt = {};
+  eval {
+  $cnt = $dba->dbc()->sql_helper()
 	->execute_into_hash(-SQL => $count_genotypes, -PARAMS => []);
+  };
+  return $cnt;
 }
 
 my $count_phenotypes = q/
