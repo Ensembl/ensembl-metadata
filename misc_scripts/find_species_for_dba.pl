@@ -175,25 +175,29 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 	print $outfile $dbname . "\t" . $dba->species_id() . "\t" . $dba->species() . "\t" . $species->name() . "\n";
 
 	if ($opts->{write_meta}) {
+
+            $logger->info("Inserting meta key species.species_name ".$species->name());
             $meta->store_key_value("species.species_name",$species->name());
+            $logger->info("Inserting meta key species.species_taxonomy_id ".$species->taxon_id());
             $meta->store_key_value("species.species_taxonomy_id",$species->taxon_id());
-	  my $wiki_url = $wiki_urls->{$species->name()};
-	  if (!$wiki_url) {
+
+            my $wiki_url = $wiki_urls->{$species->name()};
+            if (!$wiki_url) {
 		($wiki_url = $wiki_url_base . $species->name()) =~ s/ +/_/g;
 		if (!$ua->head($wiki_url)->is_success) {
-		  $wiki_url = 'MISSING';
+                    $wiki_url = 'MISSING';
 		}
 		$wiki_urls->{$species->name()} = $wiki_url;
-	  }
-
-	  if ($wiki_url ne 'MISSING') {
-	      my $curr_wiki_url = $meta->single_value_by_key($meta_key);
-	      if (!defined $curr_wiki_url || $curr_wiki_url ne $wiki_url) {
-		  $logger->info("Inserting meta key $meta_key $wiki_url");
-		  $meta->store_key_value($meta_key, $wiki_url);
-	      }
-	  }
-
+            }
+            
+            if ($wiki_url ne 'MISSING') {
+                my $curr_wiki_url = $meta->single_value_by_key($meta_key);
+                if (!defined $curr_wiki_url || $curr_wiki_url ne $wiki_url) {
+                    $logger->info("Inserting meta key $meta_key $wiki_url");
+                    $meta->store_key_value($meta_key, $wiki_url);
+                }
+            }
+            
 	}
 
   }
