@@ -167,7 +167,7 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 	if ($opts->{write_meta}) {
             $meta->store_key_value("species.species_name",$species->name());
             $meta->store_key_value("species.species_taxonomy_id",$species->taxon_id());
-	  my $wiki_url = $wiki_urls->{$spees->name()};
+	  my $wiki_url = $wiki_urls->{$species->name()};
 	  if (!$wiki_url) {
 		($wiki_url = $wiki_url_base . $species->name()) =~ s/ +/_/g;
 		if (!$ua->head($wiki_url)->is_success) {
