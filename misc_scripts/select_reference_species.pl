@@ -118,7 +118,6 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 
   if(!defined $opts->{division} || $opts->{division} eq $meta->get_division()) {
       my $species = $meta->single_value_by_key("species.production_name");
-      if($species =~ m/cruzi/) {
       $logger->info("Processing ".$species. "(".$dba->dbc()->dbname()."/".$dba->species_id().")\n");
       my $species_id = $meta->single_value_by_key("species.species_taxonomy_id");
       croak "Species tax ID not set" unless defined $species_id;
@@ -135,7 +134,6 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
       };
       push @{$species_dbas->{$species_id}}, $dba_details;
       $n++;
-      }
   }
 
   $dba->dbc()->disconnect_if_idle();
