@@ -50,7 +50,6 @@ sub new {
 
 sub start {
   my ($self, $divisions, $file, $dump_all) = @_;
-  print "DUMPALL=$dump_all\n";
   $self->{files}     = {};
   $self->{filenames} = {};
   $self->logger()->debug("Opening output files");
