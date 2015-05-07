@@ -99,6 +99,9 @@ if ($opts->{verbose}) {
 }
 my $logger = get_logger();
 
+my $credit_1='<a href="';
+my $credit_2='" ><img alt="Wikipedia" src="/sites/ensemblgenomes.org/files/wikipedia_logo_v2_en.png" style="float:left; height:73px; width:64px" /></a>';
+
 my $wex = Bio::EnsEMBL::Utils::MetaData::WikiExtractor->new();
 my $data = [];
 for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
@@ -108,6 +111,7 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
   $logger->info("Processing ".$dba->species());
   my $info = $wex->extract_wiki_data($dba);
   if(defined $info && defined $info->{description}) {
+      $info->{description} = $credit_1 . $info->{wiki_url} . $credit_2 . $info->{description};
       push @$data, $info;
       $logger->debug("Wikipedia information found for ".$dba->species());
   } else {
