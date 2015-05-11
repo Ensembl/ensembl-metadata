@@ -42,7 +42,7 @@ my $img_root = "";
 sub extract_wiki_data {
     my ($self,$dba) = @_;   
     my $meta = $dba->get_MetaContainer();
-    my $data = {name=>$meta->get_production_name()};
+    my $data = {name=>$meta->get_production_name(),display_name=>$meta->get_display_name()};
     $self->{logger}->info("Retrieving information for ".$data->{name});
     my $wiki_url = $meta->single_value_by_key('species.wikipedia_url');
     if(defined $wiki_url) {
@@ -51,21 +51,6 @@ sub extract_wiki_data {
         $self->{logger}->debug("Processing page ".$page);
         my $page_obj = $self->{mediawiki}->get_page( { title => $page } );
         my $pt = $self->{parser}->from_string( $page_obj->{'*'});
-#        my $elem_aref = $pt->elements;
-        
-### In this case, the first element is the template we want (I wrote
-### some functions to 'find' templates by name I think, but it's simple
-### enough to loop through looking for the template you want).
-##print $elem_aref->[0], "\n";
-#
-### OK, lets grab what we want from the template...
-#        my $taxbox = $elem_aref->[0];
-#
-#        my $image_elem = $taxbox->field( "image" );
-#        if(defined $image_elem && scalar(@$image_elem)>0) {
-#            $self->{logger}->debug("Found image ".$image_elem->[0]);
-#            $data->{image_url} = $image_elem->[0];
-#        }
 
         my $wikitext = '';
         for my $elem (@{$pt->elements()}) {
@@ -80,10 +65,15 @@ sub extract_wiki_data {
 			    prop=>"imageinfo",
 			    format=>"json",
                             titles=>"File:$img_name",
+                            iiurlwidth=>512,
                             iiprop=>"url"});
-			my $image_url = $info->{query}{pages}{-1}{imageinfo}[0]{url};
+			my $image_url = $info->{query}{pages}{-1}{imageinfo}[0]{thumburl};
+			my $image_credit_url = $info->{query}{pages}{-1}{imageinfo}[0]{descriptionurl};
 if(defined $image_url) {
 $data->{image_url} = $image_url;
+}
+if(defined $image_credit_url) {
+$data->{image_credit_url} = $image_credit_url;
 }
                     }
                 }
