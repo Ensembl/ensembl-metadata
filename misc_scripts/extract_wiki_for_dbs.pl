@@ -99,7 +99,7 @@ if ($opts->{verbose}) {
 }
 my $logger = get_logger();
 
-my $header='<h2 id="about" class="first">About <em>%s</em></h2><a href="%s" ><img alt="Wikipedia" src="/sites/ensemblgenomes.org/files/wikipedia_logo_v2_en.png" style="float:left; height:73px; width:64px" /></a>';
+my $header='<h2 id="about" class="first">About <em>%s</em></h2><a href="%s" ><img id="wiki_icon" alt="Wikipedia" src="/sites/ensemblgenomes.org/files/wikipedia_logo_v2_en.png" style="float:left; height:73px; width:64px" /></a>';
 
 my $wex = Bio::EnsEMBL::Utils::MetaData::WikiExtractor->new();
 my $data = [];
@@ -113,10 +113,12 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
       $info->{description} = sprintf($header,$info->{display_name}, $info->{wiki_url}) . $info->{description};
       push @$data, $info;
       $logger->debug("Wikipedia information found for ".$dba->species());
+      $info->{description} .= '<p>(<a href="'.$info->{wiki_url}.'">Text</a>';
       if(defined $info->{image_credit_url}) {
-	  $info->{description} .= "<p>Image from <a href=".$info->{image_credit_url}.">Wikipedia</a></p>";
-	  $info->{image_credit} .= "<p>Image from <a href=".$info->{image_credit_url}.">Wikipedia</a></p>";
+	  $info->{description} .= " and <a href=".$info->{image_credit_url}.">image</a>";
+	  #$info->{image_credit} .= "<p>Image from <a href=".$info->{image_credit_url}.">Wikipedia</a></p>";
       }
+      $info->{description}.= ' from <a href="http://en.wikipedia.org/">Wikipedia</a>, the free encyclopaedia.)</p>';
   } else {
       $logger->debug("No wikipedia information found for ".$dba->species());
   }  
