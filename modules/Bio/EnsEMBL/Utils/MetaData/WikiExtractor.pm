@@ -94,19 +94,28 @@ $data->{image_credit_url} = $image_credit_url;
             } 
         }
         $wikitext =~ s/(.*?)==.*/$1/s;
-        # now strip out markup 
+	$wikitext =~ s/\[\[Category.*?\]\]//gs;
+        $self->{logger}->debug("WikiText: $wikitext");
 	my $html = wikiformat ($wikitext);
-	$html =~ s/&gt;/>/g;
-	$html =~ s/&lt;/</g;
-	$html =~ s/&quot;/"/g;
-	$html =~ s/<a href.*?>thumb.*?px<\/a>//g;
-	$html =~ s/<ref.*?\/>//g;
-	$html =~ s/<\/a.*?>//g;
-	$html =~ s/<a.*?\/>//g;
-	$html =~ s/<a.*?>//g;
-	$html =~ s/<img.*?\/>//g;
-	$html =~ s/<ref.*?>.*?<\/ref>//g;
-	$html =~ s/<img[^>]*>.*?<\/img>//g;
+        # decode any entities
+	$html =~ s/&gt;/>/gs;
+	$html =~ s/&lt;/</gs;
+	$html =~ s/&gt/>/gs; 
+	$html =~ s/&lt/</gs;
+	$html =~ s/&quot;/"/gs;
+        $self->{logger}->debug("HTML: $html");
+        # now strip out markup 
+	$html =~ s/<a href.*?>thumb.*?<\/a>//gs;
+	$html =~ s/<a href.*?>File:.*?<\/a>//gs;
+	$html =~ s/<ref.*?\/>//gs;
+	$html =~ s/<\/a.*?>//gs;
+	$html =~ s/<a.*?\/>//gs;
+	$html =~ s/<a.*?>//gs;
+	$html =~ s/<img.*?\/>//gs;
+	$html =~ s/<ref.*?>.*?<\/ref>//gs;
+	$html =~ s/<img[^>]*>.*?<\/img>//gs;
+	$html =~ s/\[\[.*?\]\]//gs;
+	$html =~ s/<p>\s*?<\/p>//gs;
 	$data->{description} = $html;
 return;
 }
