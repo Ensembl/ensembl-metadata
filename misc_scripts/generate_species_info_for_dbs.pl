@@ -36,7 +36,7 @@ generate_species_info_for_dbs.pl [arguments]
 
   --dbname=dbname                     single core database to process
   
-  --division                        division to restrict to
+  --outfile                           file to write to (default is species_info.json)
  
   --help                              print help (this message)
 
@@ -113,8 +113,8 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
   $logger->info("Processing ".$dba->species());
   my $info = $wex->extract_wiki_data($dba);
   if(defined $info && defined $info->{description}) {
+      $logger->info("Wikipedia information found for ".$dba->species());
       $info->{description} = sprintf($header,$info->{display_name}, $info->{wiki_url}) . $info->{description};
-      push @$data, $info;
       $logger->debug("Wikipedia information found for ".$dba->species());
       $info->{description} .= '<p>(<a href="'.$info->{wiki_url}.'">Text</a>';
       if(defined $info->{image_credit_url}) {
@@ -122,36 +122,46 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 	  $info->{image_credit} .= "<a href=".$info->{image_credit_url}.">Wikipedia</a>, the free encyclopedia";
       }
       $info->{description}.= ' from <a href="http://en.wikipedia.org/">Wikipedia</a>, the free encyclopaedia.)</p>';
-
-      # add genebuild info if its INSDC
+  } else {
+      $logger->info("No Wikipedia information found for ".$dba->species());
       my $meta = $dba->get_MetaContainer();
-      my $method = $meta->single_value_by_key('provider.name');
-      if(defined $method && $method eq 'European Nucleotide Archive') {
-          my $ass_id = $meta->single_value_by_key('assembly.accession');
-          my $ass_nom = $meta->single_value_by_key('assembly.name');
-          # add assembly
-          $info->{assembly} = sprintf($ass_template,$ass_nom,$ass_id,$ass_id);
-          # add annotation
-          $info->{annotation} = sprintf($ann_template,$ass_id,$ass_id);
-          # add references as pmids
-          $info->{references} = $dba->dbc()->sql_helper()->execute_simple(
-              -SQL=>q/select distinct(dbprimary_acc) from coord_system 
+      $info = {name=>$meta->get_production_name(),display_name=>$meta->get_display_name()};
+
+  }
+
+  # add genebuild info if its INSDC
+  my $meta = $dba->get_MetaContainer();
+  my $method = $meta->single_value_by_key('provider.name');
+  if(defined $method && $method eq 'European Nucleotide Archive') {
+      $logger->info("Adding assembly/annotation for ".$dba->species());
+      my $ass_id = $meta->single_value_by_key('assembly.accession');
+      my $ass_nom = $meta->single_value_by_key('assembly.name');
+      # add assembly
+      $info->{assembly} = sprintf($ass_template,$ass_nom,$ass_id,$ass_id);
+      # add annotation
+      $info->{annotation} = sprintf($ann_template,$ass_id,$ass_id);
+      # add references as pmids
+      $info->{references} = $dba->dbc()->sql_helper()->execute_simple(
+          -SQL=>q/select distinct(dbprimary_acc) from coord_system 
 join seq_region using (coord_system_id) 
 join seq_region_attrib using (seq_region_id) 
 join attrib_type using (attrib_type_id) 
 join xref on (xref_id=value) 
 join external_db using (external_db_id) 
-where code="xref_id" and db_name="PUBMED" and species_id=?/,
+              where code="xref_id" and db_name="PUBMED" and species_id=?
+/,
               -PARAMS=>[$dba->species_id()]);
-      }
+      
 
   } else {
-      $logger->debug("No wikipedia information found for ".$dba->species());
+      $logger->info("Not adding assembly/annotation for ".$dba->species());
   }  
+
+      push @$data, $info;
   $dba->dbc()->disconnect_if_idle();
 
 }
-$opts->{outfile} ||= "wikipedia.json";
+$opts->{outfile} ||= "species_info.json";
 $logger->info("Writing data to ".$opts->{outfile});
 open my $out, ">", $opts->{outfile} or croak "Could not open ".$opts->{outfile}/" for writing";
 print $out encode_json($data);

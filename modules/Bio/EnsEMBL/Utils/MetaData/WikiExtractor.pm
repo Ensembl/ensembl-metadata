@@ -46,21 +46,33 @@ sub extract_wiki_data {
     $self->{logger}->info("Retrieving information for ".$data->{name});
     my $wiki_url = $meta->single_value_by_key('species.wikipedia_url');
     if(defined $wiki_url) {
-        $data->{wiki_url} = $wiki_url;
-        (my $page = $wiki_url) =~ s/.+\/(.+)/$1/;
-        $self->{logger}->debug("Processing page ".$page);
-        my $page_obj = $self->{mediawiki}->get_page( { title => $page } );
-        my $pt = $self->{parser}->from_string( $page_obj->{'*'});
+        $self->add_wiki_data($data,$wiki_url);
+        if($data->{description} =~ m/REDIRECT ([^<]+)/) {
+            ($wiki_url = $1) =~ s/\s+/_/g;            
+            $wiki_url = "http://en.wikipedia.org/wiki/$wiki_url";
+            $self->{logger}->info("Redirecting to $wiki_url");
+            $self->add_wiki_data($data,$wiki_url);   
+        }
+    }
+    return $data;
+}
 
-        my $wikitext = '';
-        for my $elem (@{$pt->elements()}) {
-            if(ref($elem) eq 'MediaWiki::Template') {
-                if($elem->{title} eq 'Taxobox') {
-                    my $img = $elem->field("image");
-                    if(defined $img) {
-                        my $img_name = $img->[0];
-                        $img_name =~ s/^\s*(.+)\s*$/$1/g;
-			my $info = $self->{mediawiki}->api({
+sub add_wiki_data {
+    my ($self,$data,$wiki_url) = @_;
+    $data->{wiki_url} = $wiki_url;
+    (my $page = $wiki_url) =~ s/.+\/(.+)/$1/;
+    $self->{logger}->debug("Processing page ".$page);
+    my $page_obj = $self->{mediawiki}->get_page( { title => $page } );
+    my $pt = $self->{parser}->from_string( $page_obj->{'*'});
+    my $wikitext = '';
+    for my $elem (@{$pt->elements()}) {
+        if(ref($elem) eq 'MediaWiki::Template') {
+            if($elem->{title} eq 'Taxobox') {
+                my $img = $elem->field("image");
+                if(defined $img) {
+                    my $img_name = $img->[0];
+                    $img_name =~ s/^\s*(.+)\s*$/$1/g;
+                    my $info = $self->{mediawiki}->api({
 			    action=>"query",
 			    prop=>"imageinfo",
 			    format=>"json",
@@ -86,11 +98,17 @@ $data->{image_credit_url} = $image_credit_url;
 	my $html = wikiformat ($wikitext);
 	$html =~ s/&gt;/>/g;
 	$html =~ s/&lt;/</g;
-	$html =~ s/<\/?ref[^>]*>//g;
-	$html =~ s/<\/?a[^>]*>//g;
+	$html =~ s/&quot;/"/g;
+	$html =~ s/<a href.*?>thumb.*?px<\/a>//g;
+	$html =~ s/<ref.*?\/>//g;
+	$html =~ s/<\/a.*?>//g;
+	$html =~ s/<a.*?\/>//g;
+	$html =~ s/<a.*?>//g;
+	$html =~ s/<img.*?\/>//g;
+	$html =~ s/<ref.*?>.*?<\/ref>//g;
+	$html =~ s/<img[^>]*>.*?<\/img>//g;
 	$data->{description} = $html;
-    }
-    return $data;
+return;
 }
 
 1;
