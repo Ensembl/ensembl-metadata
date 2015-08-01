@@ -133,7 +133,7 @@ sub process_genome {
   $md->serotype( $meta->single_value_by_key('species.serotype') );
   $md->name( $meta->get_display_name() );
   $md->taxonomy_id( $meta->get_taxonomy_id() );
-  $md->species_taxonomy_id( $meta->single_value_by_key('species.species_taxonomy_id') );
+  $md->species_taxonomy_id( $meta->single_value_by_key('species.species_taxonomy_id') || $md->taxonomy_id());
   $md->assembly_id( $meta->single_value_by_key('assembly.accession') );
   $md->assembly_name( $meta->single_value_by_key('assembly.name') );
   $md->genebuild( $meta->single_value_by_key('genebuild.start_date') );
