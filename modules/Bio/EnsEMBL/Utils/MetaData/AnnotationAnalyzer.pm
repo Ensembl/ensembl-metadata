@@ -39,6 +39,7 @@ sub new {
 
 sub analyze_annotation {
   my ($self, $dba) = @_;
+  $self->{logger}->debug("Analysing annotation for ".$dba->species());
   return {
 	nProteinCoding => $self->count_by_biotype($dba, 'protein_coding'),
 	nProteinCodingGO =>
