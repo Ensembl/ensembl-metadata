@@ -112,6 +112,7 @@ my $species_dbas = {};
 my $n=0;
 
 for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
+    next if $db_args->{-DBNAME} =~ m/bacteria/;
 
   my $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%{$db_args});
   my $meta = $dba->get_MetaContainer();
@@ -130,6 +131,7 @@ for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
           is_species_level=>($meta->single_value_by_key("species.species_taxonomy_id") eq $taxid)?1:0,
           species_id=>$dba->species_id(),
           dbname=>$dba->dbc()->dbname(),
+          production_name=>$dba->dbc()->species(),
           is_ref=>($refs->{$taxid}||0)
       };
       push @{$species_dbas->{$species_id}}, $dba_details;
@@ -150,5 +152,5 @@ while(my ($taxid,$dbas) = each %$species_dbas) {
             $b->{is_species_level} eq $a->{is_species_level}
     } @$dbas;
     my $dba = $srt_dbas[0];
-    print join("\t",$taxid,$dba->{species},$dba->{dbname},$dba->{species_id})."\n";
+    print join("\t",$taxid,$dba->{species},$dba->{production_name},$dba->{dbname},$dba->{species_id})."\n";
 }
