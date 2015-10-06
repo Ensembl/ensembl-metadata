@@ -48,14 +48,16 @@ sub new {
 				   'SPECIES' ],
 				 @args );
   $self->{registry} ||= 'Bio::EnsEMBL::Registry';
+  $self->{logger} = get_logger();
   if ( defined $self->{regfile} ) {
+      $self->{logger}->info("Loading from registry file ".$self->{regfile});
 	$self->{registry}->load_all( $self->{regfile} );
   } else {
+      $self->{logger}->info("Loading registry from arguments");
       $self->registry()->load_registry_from_db(@args);
       $self->registry()->set_disconnect_when_inactive(1);
   }
-  print $self->{species}."\n";
-  $self->{logger} = get_logger();
+
   return $self;
 }
 
