@@ -123,9 +123,9 @@ write_to_file(
 write_to_file(
   $new_annotations,
   "updated_annotations.txt",
-  [qw/name assembly old_genebuild new_genebuild database species_id/],
+  [qw/name assembly new_genebuild old_genebuild new_genebuild_hash old_genebuild_hash database species_id/],
   sub {
-	return [$_[0]->{new}->{name}, $_[0]->{new}->{assembly}, $_[0]->{new}->{genebuild_version}, $_[0]->{old}->{genebuild_version}, $_[0]->{new}->{database}, $_[0]->{new}->{species_id}];
+	return [$_[0]->{new}->{name}, $_[0]->{new}->{assembly}, $_[0]->{new}->{genebuild_version}, $_[0]->{old}->{genebuild_version}, $_[0]->{new}->{genebuild}, $_[0]->{old}->{genebuild}, $_[0]->{new}->{database}, $_[0]->{new}->{species_id}];
   });
 
 # renamed genomes
@@ -205,6 +205,7 @@ sub genome_details {
 	  -CALLBACK => sub {
 		my ($database, $species_id, $assembly, $name, $full_name, $genebuild, $genebuild_version) = @{$_[0]};
 		$report->{genomes}++;
+                $genebuild_version =~ s/-EnsemblBacteria/-ENA/;
 		my ($set_chain, $version) = split ('\\.', $assembly);
 		$genomes->{$set_chain} = {set_chain         => $set_chain,
 								  version           => $version,
