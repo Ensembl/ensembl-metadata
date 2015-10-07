@@ -36,7 +36,7 @@ sub default_options {
 		%{ $self->SUPER::default_options()
 		  },    # inherit other stuff from the base class
 
-		pipeline_name => 'load_genomes',
+		pipeline_name => 'process_genomes',
 		species       => [],
 		division      => [],
 		run_all       => 0,
