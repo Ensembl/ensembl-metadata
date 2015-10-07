@@ -48,6 +48,8 @@ sub run {
 	my ($self)  = @_;
 	my $dbas    = {};
 	my $species = $self->param_required('species');
+	
+	return if $species eq 'Ancestral sequences';
 
 	$log->info("Finding DBAdaptors for $species");
 	for my $type (qw/core variation otherfeatures funcgen/) {
