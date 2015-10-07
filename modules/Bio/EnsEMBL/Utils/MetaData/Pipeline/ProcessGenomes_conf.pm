@@ -86,6 +86,7 @@ sub pipeline_analyses {
 			-module => 'Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessGenome',
 			-meadow_type       => 'LSF',
 			-analysis_capacity => 50,
+			-hive_capacity     => -1,      # turn off the reciprocal limiter
 			-parameters        => {
 				info_user       => $self->o('info_user'),
 				info_host       => $self->o('info_host'),
