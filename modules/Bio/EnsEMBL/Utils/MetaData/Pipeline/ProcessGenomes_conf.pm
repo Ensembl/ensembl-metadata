@@ -48,11 +48,6 @@ sub default_options {
 	};
 } ## end sub default_options
 
-sub resource_classes {
-	my ($self) = @_;
-	return { ' default ' => { ' LSF ' => ' - q production-rh6' } };
-}
-
 # Force an automatic loading of the registry in all workers.
 sub beekeeper_extra_cmdline_options {
 	my $self = shift;
@@ -79,14 +74,14 @@ sub pipeline_analyses {
 				variation_flow  => 0
 			},
 			-flow_into   => { '2' => ['ProcessGenome'], },
+			-hive_capacity => 1,
 			-meadow_type => 'LOCAL',
 		},
 		{
 			-logic_name => 'ProcessGenome',
 			-module => 'Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessGenome',
-			-meadow_type       => 'LSF',
-			-analysis_capacity => 50,
-			-hive_capacity     => -1,      # turn off the reciprocal limiter
+			-hive_capacity => 50,
+			-wait_for => ['SpeciesFactory'],
 			-parameters        => {
 				info_user       => $self->o('info_user'),
 				info_host       => $self->o('info_host'),
