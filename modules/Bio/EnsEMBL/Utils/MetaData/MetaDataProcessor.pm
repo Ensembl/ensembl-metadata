@@ -210,7 +210,7 @@ sub process_genome {
 	# get toplevel base count
 	$md->base_count(
 		$dba->dbc()->sql_helper()->execute_single_result(
-			-SQL => q/select value where statistic='ref_length' and species_id=?/,
+			-SQL => q/select value from genome_statistics where statistic='ref_length' and species_id=?/,
 			-PARAMS => [ $dba->species_id() ]
 		)
 	);
