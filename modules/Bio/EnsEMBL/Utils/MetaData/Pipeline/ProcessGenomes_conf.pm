@@ -57,7 +57,6 @@ sub beekeeper_extra_cmdline_options {
 sub pipeline_analyses {
 	my ($self) = @_;
 	return [
-
 		{
 			-logic_name => 'SpeciesFactory',
 			-module =>
@@ -73,26 +72,39 @@ sub pipeline_analyses {
 				chromosome_flow => 0,
 				variation_flow  => 0
 			},
-			-flow_into   => { '2' => ['ProcessGenome'], },
+			-flow_into     => { '2' => ['ProcessGenome'], '5' => ['ProcessCompara'] },
 			-hive_capacity => 1,
-			-meadow_type => 'LOCAL',
+			-meadow_type   => 'LOCAL',
 		},
 		{
 			-logic_name => 'ProcessGenome',
 			-module => 'Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessGenome',
 			-hive_capacity => 50,
-			-wait_for => ['SpeciesFactory'],
-			-parameters        => {
-				info_user       => $self->o('info_user'),
-				info_host       => $self->o('info_host'),
-				info_pass       => $self->o('info_pass'),
-				info_port       => $self->o('info_port'),
-				info_dbname     => $self->o('info_dbname'),
-				force_update    => $self->o('force_update'),
-				contigs         => $self->o('contigs'),
-				variation       => $self->o('variation'),
-			  }
-
+			-wait_for      => ['SpeciesFactory'],
+			-parameters    => {
+				info_user    => $self->o('info_user'),
+				info_host    => $self->o('info_host'),
+				info_pass    => $self->o('info_pass'),
+				info_port    => $self->o('info_port'),
+				info_dbname  => $self->o('info_dbname'),
+				force_update => $self->o('force_update'),
+				contigs      => $self->o('contigs'),
+				variation    => $self->o('variation')
+			}
+		},
+		{
+			-logic_name => 'ProcessCompara',
+			-module => 'Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessCompara',
+			-hive_capacity => 50,
+			-wait_for      => ['ProcessGenome'],
+			-parameters    => {
+				info_user    => $self->o('info_user'),
+				info_host    => $self->o('info_host'),
+				info_pass    => $self->o('info_pass'),
+				info_port    => $self->o('info_port'),
+				info_dbname  => $self->o('info_dbname'),
+				force_update => $self->o('force_update')
+			}
 		}
 	];
 } ## end sub pipeline_analyses

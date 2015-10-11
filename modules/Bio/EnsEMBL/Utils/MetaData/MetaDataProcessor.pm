@@ -35,6 +35,7 @@ use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Data::Dumper;
 use Log::Log4perl qw(get_logger);
+use Carp qw/confess croak/;
 use strict;
 use warnings;
 
@@ -86,7 +87,7 @@ sub process_metadata {
 	my $genome_infos = {};
 	my $n            = 0;
 	my $total        = scalar( keys %$dba_hash );
-	while ( my ( $genome, $dbas ) = each %$dba_hash ) {
+	while ( my ( $ genome, $dbas ) = each %$dba_hash ) {
 		$self->{logger}
 		  ->info( "Processing " . $genome . " (" . ++$n . "/$total)" );
 		$genome_infos->{$genome} = $self->process_genome($dbas);
@@ -103,6 +104,9 @@ sub process_metadata {
 sub process_genome {
 	my ( $self, $dbas ) = @_;
 	my $dba = $dbas->{core};
+	if(!defined $dba) {
+		confess "DBA not defined for processing";
+	}
 	$dba->dbc()->reconnect_when_lost(1);
 
 	# get metadata container
@@ -419,6 +423,9 @@ sub process_compara {
 						$genomeInfo =
 						  $self->{info_adaptor}
 						  ->fetch_by_species( $gdb->name() );
+						  if(!defined $genomeInfo) {
+						  	croak "Could not find genome info object for ".$gdb->name();
+						  }
 						$genomes->{ $gdb->name() } = $genomeInfo;
 					}
 
@@ -438,22 +445,15 @@ sub process_compara {
 							  $self->process_genome( { core => $dba } );
 						}
 						else {
-							$genomeInfo =
-							  Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
-								-NAME           => $gdb->name(),
-								-SPECIES        => $gdb->name(),
-								-DIVISION       => 'Ensembl',
-								-SPECIES_ID     => '1',
-								-ASSEMBLY_NAME  => $gdb->assembly(),
-								-ASSEMBLY_LEVEL => 'unknown',
-								-GENEBUILD      => $gdb->genebuild(),
-								-TAXONOMY_ID    => $gdb->taxon_id(),
-								-DBNAME         => $gdb->name() . '_core_n_n'
-							  );
+							croak "Could not find DBAdaptor for ".$gdb->name();
 						}
 						$genomeInfo->base_count(0);
+						if(!defined $genomeInfo) {
+							croak "Could not create a genome info object for ".$gdb->name();
+						}
 						$genomes->{ $gdb->name() } = $genomeInfo;
 					} ## end if ( !defined $genomeInfo)
+					croak "Could not find genome info for ".$gdb->name() unless defined $genomeInfo;
 					push @{ $compara_info->genomes() }, $genomeInfo;
 
 					if ( !defined $genomeInfo->compara() ) {
