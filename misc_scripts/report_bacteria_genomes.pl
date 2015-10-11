@@ -54,14 +54,14 @@ my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts("prev")}, @{$cli_helper->get_dba_opts()}];
+my $optsd = [@{$cli_helper->get_dba_opts("prev")}, @{$cli_helper->get_dba_opts()}, "division:s"];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 
-my $dbc      = Bio::EnsEMBL::DBSQL::DBConnection->new(-USER => $opts->{user},     -PASS => $opts->{pass},     -HOST => $opts->{host},     -PORT => $opts->{port});
-my $prev_dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(-USER => $opts->{prevuser}, -PASS => $opts->{prevpass}, -HOST => $opts->{prevhost}, -PORT => $opts->{prevport});
-my $genomes  = genome_details($dbc);
-my $prev_genomes = genome_details($prev_dbc);
+my $dbc      = Bio::EnsEMBL::DBSQL::DBConnection->new(-USER => $opts->{user},     -PASS => $opts->{pass},     -HOST => $opts->{host},     -PORT => $opts->{port}, -DBNAME=> $opts->{dbname});
+my $prev_dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(-USER => $opts->{prevuser}, -PASS => $opts->{prevpass}, -HOST => $opts->{prevhost}, -PORT => $opts->{prevport},-DBNAME=> $opts->{prevdbname});
+my $genomes  = genome_details($dbc,$opts->{division});
+my $prev_genomes = genome_details($prev_dbc,$opts->{division});
 
 # new genomes
 my $new_genomes = [];
@@ -85,7 +85,7 @@ while (my ($set_chain, $genome) = each %{$genomes->{genomes}}) {
 	}
 	if ($genome->{assembly} ne $prev_genome->{assembly}) {
 	  push @$new_assemblies, {new => $genome, old => $prev_genome};
-	} elsif ($genome->{genebuild_version} ne $prev_genome->{genebuild_version}) {
+	} elsif ($genome->{genebuild} ne $prev_genome->{genebuild}) {
 	  push @$new_annotations, {new => $genome, old => $prev_genome};
 	}
   }
@@ -123,9 +123,9 @@ write_to_file(
 write_to_file(
   $new_annotations,
   "updated_annotations.txt",
-  [qw/name assembly new_genebuild old_genebuild new_genebuild_hash old_genebuild_hash database species_id/],
+  [qw/name assembly new_genebuild old_genebuild database species_id/],
   sub {
-	return [$_[0]->{new}->{name}, $_[0]->{new}->{assembly}, $_[0]->{new}->{genebuild_version}, $_[0]->{old}->{genebuild_version}, $_[0]->{new}->{genebuild}, $_[0]->{old}->{genebuild}, $_[0]->{new}->{database}, $_[0]->{new}->{species_id}];
+      return [$_[0]->{new}->{name}, $_[0]->{new}->{assembly}, $_[0]->{new}->{genebuild}, $_[0]->{old}->{genebuild}, $_[0]->{new}->{database}, $_[0]->{new}->{species_id}];
   });
 
 # renamed genomes
@@ -145,8 +145,8 @@ write_to_file(
   "removed_genomes.txt",
   [qw/ name assembly database species_id /],
   sub {
-	return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
-  });
+      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
+    });
 
 my $report = $genomes->{report};
 $report->{new_genomes}     = scalar @$new_genomes;
@@ -155,16 +155,26 @@ $report->{new_annotations} = scalar @$new_annotations;
 $report->{renamed_genomes} = scalar @$renamed_genomes;
 $report->{removed_genomes} = scalar @$removed_genomes;
 
-my $summary_file = "summary.txt";
-$logger->info("Writing summary to $summary_file");
-my $news = <<END;
+    my $summary_file = "summary.txt";
+    $logger->info("Writing summary to $summary_file");
+my $news;
+if($opts->{division} eq 'EnsemblBacteria') {
+    my $news = <<END;
 Release $report->{eg_version} of Ensembl Bacteria has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes $report->{new_genomes} new genomes, $report->{new_assemblies} genomes with updated assemblies, $report->{new_annotations} genomes with updated annotation, $report->{renamed_genomes} genomes where the assigned name has changed, and $report->{removed_genomes} genomes removed since the last release.
 
 Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from the INSDC archives.
 END
+} else {
+    $division =~ s/Ensembl/Ensembl /;
+    my $news = <<END;
+Release $report->{eg_version} of Ensembl Bacteria has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes $report->{new_genomes} new genomes, $report->{new_assemblies} genomes with updated assemblies, $report->{new_annotations} genomes with updated annotation, $report->{renamed_genomes} genomes where the assigned name has changed, and $report->{removed_genomes} genomes removed since the last release.
+
+Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes.
+}
 open my $summary, ">", "$summary_file" || croak "Could not open $summary_file for writing";
 print $summary $news;
 close $summary;
+}
 
 sub write_to_file {
   my ($data, $file_name, $header, $callback) = @_;
@@ -178,67 +188,59 @@ sub write_to_file {
 }
 
 sub genome_details {
-  my ($dbc)   = @_;
+  my ($dbc,$division)   = @_;
   my $genomes = {};
   my $report  = {};
-  # get list of all databases
-  for my $db_name (grep { m/bacteria_[0-9]+_collection_core_/ } @{$dbc->sql_helper()->execute_simple(-SQL => "show databases")}) {
-	$logger->info("Querying $db_name");
-	$dbc->sql_helper()->execute_no_return(
-	  -SQL => qq/
-	 select '$db_name',
+  my $dbs = {};
+  $dbc->sql_helper()->execute_no_return(
+      -SQL => qq/
+	 select dbname,
    species_id,
-   a.meta_value,
-   n.meta_value,
-   n2.meta_value,
-   g.meta_value,
-   g2.meta_value from $db_name.meta a 
-   join $db_name.meta n using(species_id) 
-   join $db_name.meta n2 using(species_id) 
-   join $db_name.meta g using(species_id) 
-   join $db_name.meta g2 using(species_id) 
-   where a.meta_key = 'assembly.accession'
-	 and n.meta_key  = 'species.production_name'
-	 and n2.meta_key = 'species.display_name'
-	 and g.meta_key  = 'genebuild.hash'
-	 and g2.meta_key = 'genebuild.version'/,
-	  -CALLBACK => sub {
-		my ($database, $species_id, $assembly, $name, $full_name, $genebuild, $genebuild_version) = @{$_[0]};
-		$report->{genomes}++;
-                $genebuild_version =~ s/-EnsemblBacteria/-ENA/;
-		my ($set_chain, $version) = split ('\\.', $assembly);
-		$genomes->{$set_chain} = {set_chain         => $set_chain,
-								  version           => $version,
-								  assembly          => $assembly,
-								  name              => $name,
-								  full_name         => $full_name,
-								  genebuild         => $genebuild,
-								  genebuild_version => $genebuild_version,
-								  database          => $database,
-								  species_id        => $species_id};
-		return;
-	  });
-
-	$report->{databases}++;
-
-	if (!defined $report->{eg_version}) {
-	  $db_name =~ m/bacteria_[0-9]+_collection_core_([0-9]+)_([0-9]+)_[0-9]+/;
-	  $report->{eg_version}  = $1;
-	  $report->{ens_version} = $2;
-	}
-
-	# count eubacteria species.classification Bacteria
-	$report->{eubacteria} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.meta where meta_key='species.classification' and meta_value='Bacteria'");
-	# count archaea species.classification Archaea
-	$report->{archaea} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.meta where meta_key='species.classification' and meta_value='Archaea'");
-	# count genes by biotype
-	my $genes = $dbc->sql_helper()->execute_into_hash("select biotype,count(*) from $db_name.gene group by biotype");
-	for my $biotype (keys %$genes) {
-	  $report->{$biotype} += $genes->{$biotype};
-	}
-	# count seq_regions for ENA
-	$report->{seq_regions} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.seq_region join $db_name.seq_region_attrib using (seq_region_id) where value='ENA'");
-	$dbc->disconnect_if_idle();
-  } ## end for my $db_name (grep {...})
+   ifnull(assembly_id,assembly_name),
+   species,
+   name,
+   genebuild
+from genome where division=?/,
+      -CALLBACK => sub {
+          my ($database, $species_id, $assembly, $name, $full_name, $genebuild,$cnt) = @{$_[0]};
+          $report->{genomes}++;
+          $genebuild =~ s/-EnsemblBacteria/-ENA/;
+          my ($set_chain, $version) = split ('\\.', $assembly);
+          $genomes->{$set_chain} = {
+              set_chain         => $set_chain,
+              version           => $version,
+              assembly          => $assembly,
+              name              => $name,
+              full_name         => $full_name,
+              genebuild         => $genebuild,
+              database          => $database,
+              species_id        => $species_id};
+          if (!defined $report->{eg_version}) {
+              $database =~ m/.*_core_([0-9]+)_([0-9]+)_[0-9]+/;
+              $report->{eg_version}  = $1;
+              $report->{ens_version} = $2;
+          }
+          $dbs->{$database}+=1;
+          return;            
+      },
+      -PARAMS => [$division]);
+  
+  if($division eq 'EnsemblBacteria') {
+      for my $db_name (keys %$dbs) {
+          # count eubacteria species.classification Bacteria
+          $report->{eubacteria} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.meta where meta_key='species.classification' and meta_value='Bacteria'");
+          # count archaea species.classification Archaea
+          $report->{archaea} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.meta where meta_key='species.classification' and meta_value='Archaea'");
+          # count genes by biotype
+          my $genes = $dbc->sql_helper()->execute_into_hash("select biotype,count(*) from $db_name.gene group by biotype");
+          for my $biotype (keys %$genes) {
+              $report->{$biotype} += $genes->{$biotype};
+          }
+          # count seq_regions for ENA
+          $report->{seq_regions} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.seq_region join $db_name.seq_region_attrib using (seq_region_id) where value='ENA'");
+      }
+  }
+  
+  $report->{databases} = scalar(keys %$dbs);
   return {genomes => $genomes, report => $report};
 } ## end sub genome_details
