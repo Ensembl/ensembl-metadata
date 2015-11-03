@@ -166,7 +166,7 @@ my $url = "ftp://ftp.ensemblgenomes.org/pub/current/$division2/";
 
 if($opts->{division} eq 'EnsemblBacteria') {
     $news = <<"END_B";
-Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 
 Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from the INSDC archives.
 END_B
@@ -174,7 +174,7 @@ END_B
 } else {
 
     $news = <<"END";
-Release $report->{eg_version} of $division has been loaded into $report->{databases} Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $report->{eg_version} of $division has been loaded into $report->{databases} Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 END
 
 }
@@ -253,6 +253,8 @@ where genome_annotation.type='nProteinCoding' and division=?/,
         $report->{seq_regions} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.seq_region join $db_name.seq_region_attrib using (seq_region_id) where value='ENA'");
     }
     }
+    
+    $report->{species} =  $dbc->sql_helper()->execute_single_result(-SQL=>'select count(distinct(species_taxonomy_id)) from genome where division=?', -PARAMS=>[$division]);
     
   $report->{databases} = scalar(keys %$dbs);
   return {genomes => $genomes, report => $report};
