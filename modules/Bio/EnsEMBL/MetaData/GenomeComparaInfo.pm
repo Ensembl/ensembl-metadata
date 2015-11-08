@@ -21,12 +21,12 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+Bio::EnsEMBL::MetaData::GenomeComparaInfo
 
 =head1 SYNOPSIS
 
 	  my $compara_info =
-		Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(
+		Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(
 								   -DBNAME   => $compara->dbc()->dbname(),
 								   -DIVISION => $division,
 								   -METHOD   => $method,
@@ -43,7 +43,7 @@ Dan Staines
 
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
+package Bio::EnsEMBL::MetaData::GenomeComparaInfo;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
@@ -61,9 +61,9 @@ use warnings;
   Arg [-GENOMES]  : 
        arrayref - list of genomes involved in analysis
 
-  Example    : $info = Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(...);
+  Example    : $info = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(...);
   Description: Creates a new info object
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -257,7 +257,7 @@ sub to_string {
   Description: Gets/sets internal compara_analysis_id used as database primary key
   Returntype : dbID string
   Exceptions : none
-  Caller     : Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+  Caller     : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
   Status     : Stable
 =cut
 
@@ -272,7 +272,7 @@ sub dbID {
 =head2 adaptor
   Arg        : (optional) adaptor to set set
   Description: Gets/sets GenomeInfoAdaptor
-  Returntype : Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
   Exceptions : none
   Caller     : Internal
   Status     : Stable

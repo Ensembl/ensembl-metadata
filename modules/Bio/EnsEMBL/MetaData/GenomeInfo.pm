@@ -21,11 +21,11 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+Bio::EnsEMBL::MetaData::GenomeInfo
 
 =head1 SYNOPSIS
 
-  my $genome = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+  my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(
 	  -species    => $dba->species(),
 	  -species_id => $dba->species_id(),
 	  -division   => $meta->get_division() || 'Ensembl',
@@ -56,7 +56,7 @@ Dan Staines
 
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
+package Bio::EnsEMBL::MetaData::GenomeInfo;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
@@ -92,9 +92,9 @@ use warnings;
   Arg [-IS_REFERENCE]:
         bool - 1 if this genome is the reference for its species
 
-  Example    : $info = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(...);
+  Example    : $info = Bio::EnsEMBL::MetaData::GenomeInfo->new(...);
   Description: Creates a new info object
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -395,7 +395,7 @@ sub aliases {
 =head2 compara
   Arg        : (optional) arrayref of GenomeComparaInfo objects to set
   Description: Gets/sets GenomeComparaInfo describing comparative analyses applied to the genome
-  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -758,7 +758,7 @@ sub to_hash {
 	my $type = ref $in;
 	if (   defined $keen
 		&& $keen == 1
-		&& $type eq 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo' )
+		&& $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' )
 	{
 		$in->_preload();
 	}
@@ -769,7 +769,7 @@ sub to_hash {
 		}
 	}
 	elsif ($type eq 'HASH'
-		|| $type eq 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo' )
+		|| $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' )
 	{
 		$out = {};
 		while ( my ( $key, $val ) = each %$in ) {
@@ -784,7 +784,7 @@ sub to_hash {
 
 		}
 	}
-	elsif ( $type eq 'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo' ) {
+	elsif ( $type eq 'Bio::EnsEMBL::MetaData::GenomeComparaInfo' ) {
 		$out = $in->to_hash();
 	}
 	else {
@@ -840,7 +840,7 @@ sub count_hash_lengths {
   Description: Gets/sets internal genome_id used as database primary key
   Returntype : dbID string
   Exceptions : none
-  Caller     : Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+  Caller     : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
   Status     : Stable
 =cut
 
@@ -853,7 +853,7 @@ sub dbID {
 =head2 adaptor
   Arg        : (optional) adaptor to set set
   Description: Gets/sets GenomeInfoAdaptor
-  Returntype : Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
   Exceptions : none
   Caller     : Internal
   Status     : Stable

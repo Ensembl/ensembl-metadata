@@ -42,7 +42,7 @@ $dbas = $lookup->get_by_name_pattern("Escherichia.*");
 
 =head1 DESCRIPTION
 
-This module is an implementation of Bio::EnsEMBL::LookUp that uses Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor to
+This module is an implementation of Bio::EnsEMBL::LookUp that uses Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor to
 access a MySQL database containing information about Ensembl Genomes contents.
 
 The default constructor uses the public MySQL server and creates an info adaptor using the latest Ensembl Genomes release
@@ -78,9 +78,9 @@ use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Utils::Exception qw(throw warning);
 use Bio::EnsEMBL::Utils::Scalar qw(assert_ref check_ref);
-use Bio::EnsEMBL::Utils::EGPublicMySQLServer
+use Bio::EnsEMBL::Utils::PublicMySQLServer
   qw/eg_user eg_host eg_pass eg_port/;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 use Carp;
 use List::MoreUtils qw(uniq);
 
@@ -112,8 +112,8 @@ sub new {
 
   if (!defined $self->{_adaptor}) {
 	$self->{_adaptor} =
-	  Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
-	  ->build_adaptor();
+	  Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+	  ->build_eg_adaptor();
   }
   return $self;
 }
@@ -130,7 +130,7 @@ sub _adaptor {
 
 =head2 genome_to_dba
 	Description : Build a Bio::EnsEMBL::DBSQL::DBAdaptor instance with the supplied info object
-	Argument    : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+	Argument    : Bio::EnsEMBL::MetaData::GenomeInfo
 	Exceptions  : None
 	Return type : Bio::EnsEMBL::DBSQL::DBAdaptor
 =cut
@@ -140,7 +140,7 @@ sub genome_to_dba {
   my $dba;
   if (defined $genome_info) {
 	assert_ref($genome_info,
-			   'Bio::EnsEMBL::Utils::MetaData::GenomeInfo');
+			   'Bio::EnsEMBL::MetaData::GenomeInfo');
 	$dba = $self->_cache()->{$genome_info->species()};
 	if (!defined $dba) {
 	  $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
@@ -163,7 +163,7 @@ sub genome_to_dba {
 
 =head2 genomes_to_dbas
 	Description : Build a set of Bio::EnsEMBL::DBSQL::DBAdaptor instances with the supplied info objects
-	Argument    : array ref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+	Argument    : array ref of Bio::EnsEMBL::MetaData::GenomeInfo
 	Exceptions  : None
 	Return type : array ref of Bio::EnsEMBL::DBSQL::DBAdaptor
 =cut
@@ -181,7 +181,7 @@ sub genomes_to_dbas {
 
 =head2 compara_to_dba
 	Description : Build a Bio::EnsEMBL::Compara::DBSQL::DBAdaptor instance with the supplied info object
-	Argument    : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+	Argument    : Bio::EnsEMBL::MetaData::GenomeComparaInfo
 	Exceptions  : None
 	Return type : Arrayref of strings
 =cut
@@ -189,7 +189,7 @@ sub genomes_to_dbas {
 sub compara_to_dba {
   my ($self, $genome_info) = @_;
   assert_ref($genome_info,
-			 'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo');
+			 'Bio::EnsEMBL::MetaData::GenomeComparaInfo');
   my $dba = $self->_cache()->{$genome_info};
   if (!defined $dba) {
 	$dba =

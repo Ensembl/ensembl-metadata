@@ -25,7 +25,7 @@
 
 =head1 DESCRIPTION
 
-This script is an example of how to use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+This script is an example of how to use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 to find and print information about a given genome in release 21 of Ensembl Genomes in JSON format
 
 =head1 AUTHOR
@@ -45,7 +45,7 @@ use strict;
 use warnings;
 
 use Bio::EnsEMBL::DBSQL::DBConnection;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 use JSON;
 
 # open connection to desired database
@@ -56,7 +56,7 @@ my $dbc =
 										 -port   => 4157);
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new($dbc);
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new($dbc);
 
 # get the genome of interest and print some information
 my $genome = $gdba->fetch_by_species('arabidopsis_thaliana');

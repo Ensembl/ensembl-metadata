@@ -9,7 +9,7 @@
    		'core' => 'Bio::EnsEMBL::DBSQL::DBAdaptor'
    	},
     'eg' => {
-      'info' => 'Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor',
+      'info' => 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor',
       'tax' => 'Bio::EnsEMBL::DBSQL::TaxonomyDBAdaptor',
     },
   },

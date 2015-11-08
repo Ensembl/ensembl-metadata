@@ -21,11 +21,11 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 
 =head1 SYNOPSIS
 
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
 my $md = $gdba->fetch_by_species("arabidopsis_thaliana");
 
 =head1 DESCRIPTION
@@ -36,16 +36,16 @@ To start working with an adaptor:
 
 # getting an adaptor
 ## adaptor for latest public EG release
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor();
 ## adaptor for specified public EG release
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor(21);
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor(21);
 ## manually specify a given database
 my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
 -USER=>'anonymous',
 -PORT=>4157,
 -HOST=>'mysql-eg-publicsql.ebi.ac.uk',
 -DBNAME=>'genome_info_21');
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
 
 To find genomes, use the fetch methods e.g.
 
@@ -85,20 +85,20 @@ Dan Staines
 
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+package Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 use strict;
 use warnings;
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-use Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
+use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Scalar::Util qw(looks_like_number);
-use Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
+use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
 use Bio::EnsEMBL::DBSQL::DBConnection;
 use Data::Dumper;
 use List::MoreUtils qw/natatime/;
 use Scalar::Util qw(looks_like_number);
-use Bio::EnsEMBL::Utils::EGPublicMySQLServer
+use Bio::EnsEMBL::Utils::PublicMySQLServer
   qw/eg_user eg_host eg_pass eg_port/;
 use Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor;
 
@@ -107,9 +107,9 @@ use constant PUBLIC_DBNAME => 'ensemblgenomes_info_';
 =head1 CONSTRUCTORS
 =head2 new
   Arg        : Bio::EnsEMBL::DBSQL::DBConnection - info database to use
-  Example    : $adaptor = Bio::EnsEMBL::Utils::MetaData::GenomeInfoAdaptor->new(...);
+  Example    : $adaptor = Bio::EnsEMBL::MetaData::GenomeInfoAdaptor->new(...);
   Description: Creates a new adaptor object
-  Returntype : Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -140,15 +140,15 @@ sub new {
 
 =head2 build_adaptor
   Arg  : (optional) Ensembl Genomes release (e.g. 21)
-  Example    : $info = Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->build_adaptor();
+  Example    : $info = Bio::EnsEMBL::MetaData::GenomeComparaInfo->build_adaptor();
   Description: Creates a new adaptor using the Ensembl Genomes public MySQL instance (using the latest release if specified)
-  Returntype : Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
   Exceptions : croaks if suitable database cannot be found
   Caller     : general
   Status     : Stable
 =cut
 
-sub build_adaptor {
+sub build_eg_adaptor {
   my ( $self, $release ) = @_;
   my $dbname;
   if ( defined $release ) {
@@ -180,7 +180,7 @@ sub build_adaptor {
   }
 
   return
-    Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
                                -DBC =>
                                  Bio::EnsEMBL::DBSQL::DBConnection->new(
                                                      -user => eg_user(),
@@ -193,7 +193,7 @@ sub build_adaptor {
 =head1 METHODS
 
 =head2 store
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the supplied object and all associated child objects (includes other genomes attached by compara if not already stored)
   Returntype : None
   Exceptions : none
@@ -247,7 +247,7 @@ has_genome_alignments,has_synteny,has_other_alignments)
 } ## end sub store
 
 =head2 update
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Updates the supplied object and all associated child objects (includes other genomes attached by compara if not already stored)
   Returntype : None
   Exceptions : none
@@ -299,7 +299,7 @@ has_genome_alignments=?,has_synteny=?,has_other_alignments=? where genome_id=?/,
 } ## end sub update
 
 =head2 update_compara
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Description: Updates the supplied object and all associated  genomes
   Returntype : None
   Exceptions : none
@@ -341,7 +341,7 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
 } ## end sub update_compara
 
 =head2 store_compara
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Description: Stores the supplied object and all associated  genomes (if not already stored)
   Returntype : None
   Exceptions : none
@@ -437,7 +437,7 @@ q/update genome g join genome_compara_analysis gc using (genome_id)
 } ## end sub update_booleans
 
 =head2 _store_aliases
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the aliases for the supplied object
   Returntype : None
   Exceptions : none
@@ -462,7 +462,7 @@ sub _store_aliases {
 }
 
 =head2 _store_sequences
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the sequences for the supplied object
   Returntype : None
   Exceptions : none
@@ -493,7 +493,7 @@ sub _store_sequences {
 }
 
 =head2 _store_features
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the features for the supplied object
   Returntype : None
   Exceptions : none
@@ -521,7 +521,7 @@ sub _store_features {
 }
 
 =head2 _store_annotations
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the annotations for the supplied object
   Returntype : None
   Exceptions : none
@@ -546,7 +546,7 @@ sub _store_annotations {
 }
 
 =head2 _store_variations
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the variations for the supplied object
   Returntype : None
   Exceptions : none
@@ -574,7 +574,7 @@ sub _store_variations {
 }
 
 =head2 _store_alignments
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the alignments for the supplied object
   Returntype : None
   Exceptions : none
@@ -642,7 +642,7 @@ from genome
 =head2 fetch_all
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -657,7 +657,7 @@ sub fetch_all {
   Arg	     : ID of genome info
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified ID
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
@@ -675,7 +675,7 @@ sub fetch_by_dbID {
   Arg	     : IDs of genome info
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified ID
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
@@ -697,7 +697,7 @@ sub fetch_by_dbIDs {
   Arg	     : INSDC sequence accession e.g. U00096.1 or U00096
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified sequence accession
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -719,7 +719,7 @@ sub fetch_all_by_sequence_accession {
   Arg	     : INSDC sequence accession e.g. U00096
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified sequence accession
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -739,7 +739,7 @@ sub fetch_all_by_sequence_accession_unversioned {
   Arg	     : INSDC sequence accession e.g. U00096.1
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified sequence accession
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -759,7 +759,7 @@ sub fetch_all_by_sequence_accession_versioned {
   Arg	     : INSDC assembly accession
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly ID (versioned or unversioned)
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -779,7 +779,7 @@ sub fetch_by_assembly_id {
   Arg	     : INSDC assembly accession
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly ID
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -795,7 +795,7 @@ sub fetch_by_assembly_id_versioned {
   Arg	     : INSDC assembly set chain (unversioned accession)
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly set chain
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -813,7 +813,7 @@ sub fetch_by_assembly_id_unversioned {
   Arg	     : Taxonomy ID
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified taxonomy node
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -829,7 +829,7 @@ sub fetch_all_by_taxonomy_id {
   Arg	     : Arrayref of Taxonomy ID
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified taxonomy nodes (batch)
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -859,7 +859,7 @@ sub fetch_all_by_taxonomy_ids {
   Arg	     : Bio::EnsEMBL::TaxonomyNode
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified taxonomy node and its children
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -885,7 +885,7 @@ sub fetch_all_by_taxonomy_branch {
   Arg	     : Name of division
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome infos for specified division
-  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -901,7 +901,7 @@ sub fetch_all_by_division {
   Arg	     : Name of species
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -917,7 +917,7 @@ sub fetch_by_species {
   Arg	     : Display name of genome 
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -933,7 +933,7 @@ sub fetch_by_name {
   Arg	     : Name of genome (display, species, alias etc)
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -955,7 +955,7 @@ sub fetch_by_any_name {
   Arg	     : Name of database
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified database
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -970,7 +970,7 @@ sub fetch_all_by_dbname {
   Arg	     : Regular expression matching of genome
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
-  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -988,7 +988,7 @@ sub fetch_all_by_name_pattern {
   Arg	     : Alias of genome
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1008,7 +1008,7 @@ sub fetch_by_alias {
 =head2 fetch_all_with_variation
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info that have variation data
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1024,7 +1024,7 @@ sub fetch_all_with_variation {
 =head2 fetch_all_with_peptide_compara
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info that have peptide compara data
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1040,7 +1040,7 @@ sub fetch_all_with_peptide_compara {
 =head2 fetch_all_with_pan_compara
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info that have pan comapra data
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1056,7 +1056,7 @@ sub fetch_all_with_pan_compara {
 =head2 fetch_all_with_genome_alignments
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info that have whole genome alignment data
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1072,7 +1072,7 @@ sub fetch_all_with_genome_alignments {
 =head2 fetch_all_with_compara
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info that have any compara or whole genome alignment data
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1088,7 +1088,7 @@ q/ where has_genome_alignments=1 or has_pan_compara=1 or has_peptide_compara=1/
 =head2 fetch_with_other_alignments
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch all genome info that have other alignment data
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1102,7 +1102,7 @@ sub fetch_all_with_other_alignments {
 }
 
 =head2 _fetch_variations
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add variations to supplied object
   Returntype : none
   Exceptions : none
@@ -1131,7 +1131,7 @@ sub _fetch_variations {
 }
 
 =head2 _fetch_other_alignments
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add other_alignments to supplied object
   Returntype : none
   Exceptions : none
@@ -1160,7 +1160,7 @@ sub _fetch_other_alignments {
 }
 
 =head2 _fetch_annotations
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add annotations to supplied object
   Returntype : none
   Exceptions : none
@@ -1188,7 +1188,7 @@ sub _fetch_annotations {
 }
 
 =head2 _fetch_features
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add features to supplied object
   Returntype : none
   Exceptions : none
@@ -1216,7 +1216,7 @@ sub _fetch_features {
 }
 
 =head2 _fetch_publications
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add publications to supplied object
   Returntype : none
   Exceptions : none
@@ -1239,7 +1239,7 @@ sub _fetch_publications {
 }
 
 =head2 _fetch_aliases
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add aliases to supplied object
   Returntype : none
   Exceptions : none
@@ -1261,7 +1261,7 @@ sub _fetch_aliases {
 }
 
 =head2 _fetch_sequences
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add sequences to supplied object
   Returntype : none
   Exceptions : none
@@ -1284,7 +1284,7 @@ sub _fetch_sequences {
 }
 
 =head2 _fetch_comparas
-  Arg	     : Bio::EnsEMBL::Utils::MetaData::GenomeInfo 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add compara info to supplied object
   Returntype : none
   Exceptions : none
@@ -1314,7 +1314,7 @@ sub _fetch_comparas {
 
 =head2 fetch_all_comparas
   Description: Fetch all compara analyses
-  Returntype : array ref of Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : array ref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1328,7 +1328,7 @@ sub fetch_all_comparas {
 =head2 fetch_compara_by_dbID
   Arg	     : ID of compara analysis to retrieve
   Description: Fetch compara specified compara analysis
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1343,7 +1343,7 @@ sub fetch_compara_by_dbID {
 =head2 fetch_all_compara_by_division
   Arg	     : Division of compara analyses to retrieve
   Description: Fetch compara specified compara analysis
-  Returntype : array ref of Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : array ref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1357,7 +1357,7 @@ sub fetch_all_compara_by_division {
 =head2 fetch_all_compara_by_method
   Arg	     : Method of compara analyses to retrieve
   Description: Fetch compara specified compara analysis
-  Returntype : array ref of  Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : array ref of  Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1373,7 +1373,7 @@ sub fetch_all_compara_by_method {
   Arg	     : Method of compara analyses to retrieve
   Arg	     : Set of compara analyses to retrieve
   Description: Fetch specified compara analysis
-  Returntype : Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -1394,7 +1394,7 @@ q/select compara_analysis_id, division, method, set_name, dbname from compara_an
 =head2 _fetch_compara_with_args
   Arg	     : hashref of arguments by column
   Description: Fetch compara analyses by column value pairs
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
@@ -1415,7 +1415,7 @@ sub _fetch_compara_with_args {
   Arg	     : SQL
   Arg	     : array ref of bind params
   Description: Fetch compara analyses using supplied SQL
-  Returntype : arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
@@ -1434,10 +1434,10 @@ sub _fetch_compara_generic {
       my @row = @{ shift @_ };
       my $id  = $row[0];
       my $c = $self->_get_cached_obj(
-                     'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo',
+                     'Bio::EnsEMBL::MetaData::GenomeComparaInfo',
                      $id );
       if ( !defined $c ) {
-        $c = Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new();
+        $c = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new();
         $c->dbID($id);
         $c->division( $row[1] );
         $c->method( $row[2] );
@@ -1447,7 +1447,7 @@ sub _fetch_compara_generic {
         # cache the completed compara object
         $c->adaptor($self);
         $self->_store_cached_obj(
-                     'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo',
+                     'Bio::EnsEMBL::MetaData::GenomeComparaInfo',
                      $c );
       }
       return $c;
@@ -1473,7 +1473,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
 } ## end sub _fetch_compara_generic
 
 =head2 _fetch_children
-  Arg	     : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Arg	     : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Fetch all children of specified genome info object
   Returntype : none
   Exceptions : none
@@ -1498,7 +1498,7 @@ sub _fetch_children {
   Arg        : (optional) if set to 1, all children will be fetched
   Description: Instantiate a GenomeInfo from the database using a 
                generic method, with the supplied arguments
-  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
@@ -1520,7 +1520,7 @@ sub _fetch_generic_with_args {
   Arg	     : arrayref of bind parameters
   Arg        : (optional) if set to 1, all children will be fetched
   Description: Instantiate a GenomeInfo from the database using the specified SQL
-  Returntype : Arrayref of Bio::EnsEMBL::Utils::MetaData::GenomeInfo
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
@@ -1535,13 +1535,13 @@ sub _fetch_generic {
       my $row = shift @_;
       my $md =
         $self->_get_cached_obj(
-                            'Bio::EnsEMBL::Utils::MetaData::GenomeInfo',
+                            'Bio::EnsEMBL::MetaData::GenomeInfo',
                             $row->{dbID} );
       if ( !defined $md ) {
-        $md = bless $row, 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo';
+        $md = bless $row, 'Bio::EnsEMBL::MetaData::GenomeInfo';
         $md->adaptor($self);
         $self->_store_cached_obj(
-                            'Bio::EnsEMBL::Utils::MetaData::GenomeInfo',
+                            'Bio::EnsEMBL::MetaData::GenomeInfo',
                             $md );
       }
       return $md;

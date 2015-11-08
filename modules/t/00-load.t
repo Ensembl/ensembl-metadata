@@ -16,15 +16,13 @@
 use Test::More;
 
 BEGIN {
-	use_ok( 'Bio::EnsEMBL::TaxonomyNode' );
-	use_ok( 'Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor' );
 	use_ok( 'Bio::EnsEMBL::LookUp' );
 	use_ok( 'Bio::EnsEMBL::LookUp::LocalLookUp' );
 	use_ok( 'Bio::EnsEMBL::LookUp::RemoteLookUp' );
-	use_ok( 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo' );
-	use_ok( 'Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo' );
-	use_ok( 'Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor' );
+	use_ok( 'Bio::EnsEMBL::MetaData::GenomeInfo' );
+	use_ok( 'Bio::EnsEMBL::MetaData::GenomeComparaInfo' );
+	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor' );
 }
 
-diag( "Testing ensemblgenomes-api, Perl $], $^X" );
+diag( "Testing ensembl-metadata, Perl $], $^X" );
 done_testing;

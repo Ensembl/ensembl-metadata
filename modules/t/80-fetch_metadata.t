@@ -69,7 +69,7 @@ ok( defined $dba, "DBAdaptor exists" );
 
 diag("Creating a new GenomeInfo object");
 my $genome =
-  Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+  Bio::EnsEMBL::MetaData::GenomeInfo->new(
   -name    => $dba->species(),
   -species    => $dba->species(),
   -species_id => $dba->species_id(),

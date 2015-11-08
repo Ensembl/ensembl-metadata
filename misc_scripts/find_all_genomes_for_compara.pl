@@ -25,7 +25,7 @@
 
 =head1 DESCRIPTION
 
-This script is an example of how to use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+This script is an example of how to use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 to find and print information about all genomes in involved in a specific compara analysis
 from the latest release of Ensembl Genomes
 
@@ -45,10 +45,10 @@ $Revision$
 use strict;
 use warnings;
 
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
 
 # find all comparas for the division of interest
 my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');

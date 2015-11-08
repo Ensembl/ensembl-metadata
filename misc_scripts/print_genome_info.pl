@@ -25,7 +25,7 @@
 
 =head1 DESCRIPTION
 
-This script is an example of how to use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor
+This script is an example of how to use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 to find and print basic information about a given genome in release 21 of Ensembl Genomes
 
 =head1 AUTHOR
@@ -44,10 +44,10 @@ $Revision$
 use strict;
 use warnings;
 
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
 
 # get the genome of interest and print some information
 my $genome = $gdba->fetch_by_species('arabidopsis_thaliana');

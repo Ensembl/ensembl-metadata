@@ -18,7 +18,7 @@ use warnings;
 use Test::More;
 use Bio::EnsEMBL::LookUp::RemoteLookUp;
 use Bio::EnsEMBL::DBSQL::DBConnection;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 use Bio::EnsEMBL::Test::MultiTestDB;
 
@@ -47,7 +47,7 @@ ok( defined $dba, "DBAdaptor exists" );
 
 diag("Creating a new GenomeInfo object");
 my $genome =
-  Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+  Bio::EnsEMBL::MetaData::GenomeInfo->new(
   -name    => $dba->species(),
   -species    => $dba->species(),
   -species_id => $dba->species_id(),
@@ -69,7 +69,7 @@ $gdba->store($genome);
 my $name = $dba->species();
 my $info = $gdba->fetch_by_species($name);
 ok( defined $info, "genome info found for $name" );
-isa_ok( $info, 'Bio::EnsEMBL::Utils::MetaData::GenomeInfo' );
+isa_ok( $info, 'Bio::EnsEMBL::MetaData::GenomeInfo' );
 $dba = $helper->genome_to_dba($info);
 ok( defined $dba, "DBAdaptor built for $name" );
 isa_ok( $dba, 'Bio::EnsEMBL::DBSQL::DBAdaptor' );
