@@ -1,4 +1,3 @@
-=pod
 =head1 LICENSE
 
 Copyright [2009-2014] EMBL-European Bioinformatics Institute
@@ -29,59 +28,48 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::XMLMetaDataDumper;
-use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
-use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+package Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper;
+use base qw( Bio::EnsEMBL::MetaData::MetaDataDumper );
 use Carp;
-use XML::Simple;
+use JSON;
 use strict;
 use warnings;
+use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  $self->{file}     ||= "species_metadata.xml";
-  $self->{division} ||= 1;
+  $self->{file}     ||= "species_metadata.json";
   return $self;
-}
-
-sub do_dump {
-  my ($self, $metadata, $outfile) = @_;
-  $self->logger()->info("Writing XML to " . $outfile);
-  open(my $xml_file, '>', $outfile) ||
-	croak "Could not write to " . $outfile;
-  print $xml_file XML::Simple->new()
-	->XMLout($self->metadata_to_hash($metadata), RootName => 'genomes');
-  close $xml_file;
-  $self->logger()->info("Completed writing XML to " . $outfile);
-  return;
 }
 
 sub start {
   my ($self, $divisions, $file, $dump_all) = @_;
   $self->SUPER::start($divisions, $file, $dump_all);
   for my $fh (values %{$self->{files}}) {
-	print $fh "<genomes>";
+  	  print $fh "[\n";
   }
   return;
 }
 
 sub _write_metadata_to_file {
   my ($self, $md, $fh, $count) = @_;
-  print $fh XML::Simple->new()
-	->XMLout($md->to_hash(1), RootName => 'genome')
-	;
+  if($count>0) {
+  	print $fh ",\n";
+  }
+  print $fh to_json($md->to_hash(1), {pretty => 1});
   return;
 }
 
 sub end {
   my ($self) = @_;
   for my $fh (values %{$self->{files}}) {
-	print $fh "</genomes>\n";
+  	  print $fh "]\n";
   }
   $self->SUPER::end();
   return;
 }
+
 
 1;
 
@@ -91,13 +79,13 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::XMLMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-implementation to dump metadata details to an XML file
+implementation to dump metadata details to a JSON file
 
 =head1 SUBROUTINES/METHODS
 

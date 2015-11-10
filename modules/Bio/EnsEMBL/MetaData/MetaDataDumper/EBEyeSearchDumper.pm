@@ -29,8 +29,8 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::EBEyeSearchDumper;
-use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
+package Bio::EnsEMBL::MetaData::MetaDataDumper::EBEyeSearchDumper;
+use base qw( Bio::EnsEMBL::MetaData::MetaDataDumper );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Carp;
 use XML::Generator ':pretty';
@@ -162,7 +162,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::EBEyeSearchDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::EBEyeSearchDumper
 
 =head1 SYNOPSIS
 

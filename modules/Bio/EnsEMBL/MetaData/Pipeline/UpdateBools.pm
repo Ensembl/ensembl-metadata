@@ -20,13 +20,13 @@ limitations under the License.
 use warnings;
 use strict;
 
-package Bio::EnsEMBL::Utils::MetaData::Pipeline::UpdateBools;
+package Bio::EnsEMBL::MetaData::Pipeline::UpdateBools;
 
 use base qw/Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base/;
 
-use Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
-use Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::MetaData::MetaDataProcessor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 
 use Carp;
 use Data::Dumper;
@@ -47,7 +47,7 @@ sub fetch_input {
 sub run {
 	my ($self) = @_;
 	$log->info("Connecting to info database");
-	my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+	my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
 		-DBC => Bio::EnsEMBL::DBSQL::DBConnection->new(
 			-USER =>,
 			$self->param('info_user'),

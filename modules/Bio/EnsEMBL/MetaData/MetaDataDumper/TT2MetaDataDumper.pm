@@ -28,8 +28,8 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TT2MetaDataDumper;
-use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
+package Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper;
+use base qw( Bio::EnsEMBL::MetaData::MetaDataDumper );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Carp;
 use XML::Simple;
@@ -165,7 +165,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::XMLMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
 
 =head1 SYNOPSIS
 

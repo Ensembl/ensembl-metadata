@@ -32,9 +32,9 @@ limitations under the License.
 use strict;
 use warnings;
 
-package Bio::EnsEMBL::Utils::MetaData::DBAFinder::ProductionDBAFinder;
+package Bio::EnsEMBL::MetaData::DBAFinder::ProductionDBAFinder;
 use base
-  qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder );
+  qw( Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder );
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Registry;
@@ -132,7 +132,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder
+Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder
 
 =head1 SYNOPSIS
 

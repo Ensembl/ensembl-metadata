@@ -29,8 +29,8 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::DBAFinder::EnaDBAFinder;
-use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
+package Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder;
+use base qw( Bio::EnsEMBL::MetaData::DBAFinder );
 use Bio::EnsEMBL::LookUp;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
@@ -76,7 +76,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::DBAFinder::EnaDBAFinder
+Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder
 
 =head1 SYNOPSIS
 

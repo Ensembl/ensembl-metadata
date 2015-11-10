@@ -29,61 +29,69 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::UniProtReportDumper;
-use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
+package Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper;
+use base qw( Bio::EnsEMBL::MetaData::MetaDataDumper );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Carp;
 use XML::Simple;
-use Data::Dumper;
 use strict;
 use warnings;
 
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  $self->{file} ||= 'uniprot_report.txt';
+  $self->{file}     ||= "species_metadata.xml";
+  $self->{division} ||= 1;
   return $self;
+}
+
+sub do_dump {
+  my ($self, $metadata, $outfile) = @_;
+  $self->logger()->info("Writing XML to " . $outfile);
+  open(my $xml_file, '>', $outfile) ||
+	croak "Could not write to " . $outfile;
+  print $xml_file XML::Simple->new()
+	->XMLout($self->metadata_to_hash($metadata), RootName => 'genomes');
+  close $xml_file;
+  $self->logger()->info("Completed writing XML to " . $outfile);
+  return;
 }
 
 sub start {
   my ($self, $divisions, $file, $dump_all) = @_;
   $self->SUPER::start($divisions, $file, $dump_all);
   for my $fh (values %{$self->{files}}) {
-  	  print $fh '#'. join("\t",
-					   qw(name species division taxonomy_id assembly_id assembly_name genebuild nProteinCoding nProteinCodingUniProtKBSwissProt nProteinCodingUniProtKBTrEMBL uniprotCoverage)
-	) .
-	"\n";
+	print $fh "<genomes>";
   }
   return;
 }
 
 sub _write_metadata_to_file {
-  my ($self, $md, $fh) = @_; 
-  print $fh join(
-				"\t",
-				($md->name(),
-				 $md->species(),
-				 $md->division(),
-				 $md->taxonomy_id(),
-				 $md->assembly_id()   || '',
-				 $md->assembly_name() || '',
-				 $md->genebuild()     || '',
-				 $md->annotations()->{nProteinCoding},
-				 $md->annotations()->{nProteinCodingUniProtKBSwissProt},
-				 $md->annotations()->{nProteinCodingUniProtKBTrEMBL},
-				 sprintf("%.2f", $md->get_uniprot_coverage($md)),
-				 "\n"));
+  my ($self, $md, $fh, $count) = @_;
+  print $fh XML::Simple->new()
+	->XMLout($md->to_hash(1), RootName => 'genome')
+	;
+  return;
+}
+
+sub end {
+  my ($self) = @_;
+  for my $fh (values %{$self->{files}}) {
+	print $fh "</genomes>\n";
+  }
+  $self->SUPER::end();
   return;
 }
 
 1;
+
 __END__
 
 =pod
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::XMLMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
 
 =head1 SYNOPSIS
 

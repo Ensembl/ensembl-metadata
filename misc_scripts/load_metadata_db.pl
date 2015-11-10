@@ -27,12 +27,12 @@ This script is used to generate a summary of key metadata for ENA bacteria in JS
 To dump the metadata for a new Ensembl Genomes release as tt2:
 perl load_metadata_db.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro \
 	-mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro -mdbname ensembl_production \
-	-dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TT2MetaDataDumper
+	-dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper
 
 To dump the metadata for a new Ensembl Genomes release as txt:
 perl load_metadata_db.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro \
 	-mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro -mdbname ensembl_production \
-	-dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper
+	-dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper
 	
 =head1 USAGE
 
@@ -72,11 +72,11 @@ perl load_metadata_db.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ens
 
   --gdriver=dbname                  driver to use for metadata database
   
-  --url=url							ENA genomes registry URL (use with Bio::EnsEMBL::Utils::MetaData::DBAFinder::EnaDBAFinder)
+  --url=url							ENA genomes registry URL (use with Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder)
 
-  --finder=finder				     finder to use (must extend Bio::EnsEMBL::Utils::MetaData::DBAFinder)
+  --finder=finder				     finder to use (must extend Bio::EnsEMBL::MetaData::DBAFinder)
 
-  --processor=processor				     processor to use (must extend Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor)
+  --processor=processor				     processor to use (must extend Bio::EnsEMBL::MetaData::MetaDataProcessor)
 
   --force_update				     If information already exists for a species/database, replace
 
@@ -103,8 +103,8 @@ use Log::Log4perl qw(:easy);
 use Pod::Usage;
 use Data::Dumper;
 use Module::Load;
-use Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 use Bio::EnsEMBL::DBSQL::DBConnection;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
@@ -135,7 +135,7 @@ else {
 my $logger = get_logger();
 
 my $gdba =
-  Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+  Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
 							   -DBC =>
 								 Bio::EnsEMBL::DBSQL::DBConnection->new(
 														-USER =>,
@@ -155,7 +155,7 @@ my %processor_opts =
 
 # create DBAFinder
 $opts->{finder} ||=
-  'Bio::EnsEMBL::Utils::MetaData::DBAFinder::DbHostDBAFinder';
+  'Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder';
 $logger->info("Retrieving DBAs using $opts->{finder}");
 load $opts->{finder};
 my $finder = $opts->{finder}->new(%processor_opts);
@@ -164,12 +164,12 @@ $logger->info( "Retrieved " . scalar(@$dbas) . " DBAs" );
 
 # create processor
 $opts->{processor} ||=
-  'Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor';
+  'Bio::EnsEMBL::MetaData::MetaDataProcessor';
 load $opts->{processor};
 $logger->info("Processing DBAs using $opts->{processor}");
 if ( $opts->{annotation} ) {
   $processor_opts{-ANNOTATION_ANALYZER} =
-	Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer->new();
+	Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new();
 }
 $processor_opts{-INFO_ADAPTOR} = $gdba;
 my $processor = $opts->{processor}->new(%processor_opts);

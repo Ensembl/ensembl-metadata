@@ -20,13 +20,13 @@ limitations under the License.
 use warnings;
 use strict;
 
-package Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessGenome;
+package Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome;
 
 use base qw/Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base/;
 
-use Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
-use Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::MetaData::MetaDataProcessor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 
 use Carp;
 use Data::Dumper;
@@ -57,7 +57,7 @@ sub run {
 	}
 	print Dumper($dbas);
 	$log->info("Connecting to info database");
-	my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+	my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
 		-DBC => Bio::EnsEMBL::DBSQL::DBConnection->new(
 			-USER =>,
 			$self->param('info_user'),
@@ -77,7 +77,7 @@ sub run {
 	my $opts = {
 		-INFO_ADAPTOR => $gdba,
 		-ANNOTATION_ANALYZER =>
-		  Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer->new(),
+		  Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
 		-COMPARA      => 0,
 		-CONTIGS      => $self->param('contigs') || 1,
 		-FORCE_UPDATE => $upd,
@@ -85,7 +85,7 @@ sub run {
 	};
 
 	my $processor =
-	  Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor->new(%$opts);
+	  Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
 
 	$log->info("Processing $species");
 

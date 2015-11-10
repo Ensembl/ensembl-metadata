@@ -16,7 +16,7 @@ limitations under the License.
 
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::WikiExtractor;
+package Bio::EnsEMBL::MetaData::WikiExtractor;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use strict;
 use warnings;
@@ -127,7 +127,7 @@ __END__
 =pod
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::WikiExtractor
+Bio::EnsEMBL::MetaData::WikiExtractor
 
 =head1 SYNOPSIS
 
@@ -139,7 +139,7 @@ Class for extracting relevant data from Wikipedia
 
 =head2 new
 Description:	Return a new instance of WikiExtractor
-Return:			Bio::EnsEMBL::Utils::MetaData::WikiExtractor
+Return:			Bio::EnsEMBL::MetaData::WikiExtractor
 
 =head2 extract_wiki_data
 Description:	For a given core DBA, extract basic description and image from wikipedia if available

@@ -79,7 +79,7 @@ use Bio::EnsEMBL::Utils::CliHelper;
 use Pod::Usage;
 use JSON;
 
-use Bio::EnsEMBL::Utils::MetaData::WikiExtractor;
+use Bio::EnsEMBL::MetaData::WikiExtractor;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 
@@ -104,7 +104,7 @@ my $ass_template = q#<p><a name="assembly"></a></p><h2 id="assembly">Assembly</h
 my $ann_template = q#<p><a name="annotation"></a></p><h2 id="annotation">Annotation</h2>
 <p>The annotation presented is derived from annotation submitted to <a href="http://www.insdc.org">INSDC</a> with the assembly accession <a href="http://www.ebi.ac.uk/ena/data/view/%s">%s</a>, with additional non-coding genes derived from <a href="http://rfam.xfam.org/">Rfam</a>. For more details, please visit <a href="http://ensemblgenomes.org/info/data/insdc_annotation">INSDC annotation import</a>.</p>#;
 
-my $wex = Bio::EnsEMBL::Utils::MetaData::WikiExtractor->new();
+my $wex = Bio::EnsEMBL::MetaData::WikiExtractor->new();
 my $data = [];
 for my $db_args (@{$cli_helper->get_dba_args_for_opts($opts)}) {
 

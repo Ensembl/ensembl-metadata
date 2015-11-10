@@ -16,7 +16,7 @@ limitations under the License.
 
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer;
+package Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use strict;
 use warnings;
@@ -390,7 +390,7 @@ __END__
 =pod
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer
+Bio::EnsEMBL::MetaData::AnnotationAnalyzer
 
 =head1 SYNOPSIS
 
@@ -402,7 +402,7 @@ Utility class for counting xrefs etc.
 
 =head2 new
 Description:	Return a new instance of AnnotationAnalyzer
-Return:			Bio::EnsEMBL::Utils::MetaData::AnnotationAnalyzer
+Return:			Bio::EnsEMBL::MetaData::AnnotationAnalyzer
 
 =head2 analyze_annotation
 Description:	Analyzes annotation content of the supplied core DBA

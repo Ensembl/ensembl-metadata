@@ -27,9 +27,9 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor;
-use Bio::EnsEMBL::Utils::MetaData::GenomeInfo;
-use Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo;
+package Bio::EnsEMBL::MetaData::MetaDataProcessor;
+use Bio::EnsEMBL::MetaData::GenomeInfo;
+use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
@@ -118,7 +118,7 @@ sub process_genome {
 		  "select count(*) from information_schema.tables where table_schema=?",
 		-PARAMS => [$dbname]
 	);
-	my $md = Bio::EnsEMBL::Utils::MetaData::GenomeInfo->new(
+	my $md = Bio::EnsEMBL::MetaData::GenomeInfo->new(
 		-species    => $dba->species(),
 		-species_id => $dba->species_id(),
 		-division   => $meta->get_division() || 'Ensembl',
@@ -373,7 +373,7 @@ sub process_compara {
 					  . $compara->dbc()->dbname() );
 
 				my $compara_info =
-				  Bio::EnsEMBL::Utils::MetaData::GenomeComparaInfo->new(
+				  Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(
 					-DBNAME   => $compara->dbc()->dbname(),
 					-DIVISION => $division,
 					-METHOD   => $method,
@@ -493,7 +493,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::MetaDataProcessor
+Bio::EnsEMBL::MetaData::MetaDataProcessor
 
 =head1 SYNOPSIS
 

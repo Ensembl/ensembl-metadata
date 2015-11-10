@@ -30,14 +30,14 @@ This script is used to reggenerate metadata files using an existing JSON file (s
 =head1 EXAMPLE
 
 To redump the metadata for a new Ensembl Genomes release as tt2:
-perl redump_metadata.pl -json species_metadata.json -dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TT2MetaDataDumper
+perl redump_metadata.pl -json species_metadata.json -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper
 
-perl redump_metadata.pl -json species_metadata.json -dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper
+perl redump_metadata.pl -json species_metadata.json -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper
 	
 =head1 USAGE
 
   --json_file
-  --dumper=dumper				     dumper to use (must extend Bio::EnsEMBL::Utils::MetaData::MetaDataDumper)
+  --dumper=dumper				     dumper to use (must extend Bio::EnsEMBL::MetaData::MetaDataDumper)
 
 
 =head1 AUTHOR
@@ -90,7 +90,7 @@ $logger->info("Parsing JSON");
 my $metadata = from_json($json);
 
 # create dumper
-$opts->{dumper} ||= ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
+$opts->{dumper} ||= ['Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper'];
 for my $dumper_module (@{$opts->{dumper}}) {
   load $dumper_module;
   my $dumper = $dumper_module->new();

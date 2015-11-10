@@ -32,12 +32,12 @@ This script is used to generate a summary of key metadata for ENA bacteria in JS
 To dump the metadata for a new Ensembl Genomes release as tt2:
 perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro \
 	-mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro -mdbname ensembl_production \
-	-dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TT2MetaDataDumper
+	-dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper
 
 To dump the metadata for a new Ensembl Genomes release as txt:
 perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro \
 	-mhost mysql-eg-pan-1.ebi.ac.uk -mport 4276 -muser ensro -mdbname ensembl_production \
-	-dumper Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper
+	-dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper
 	
 =head1 USAGE
 
@@ -51,7 +51,7 @@ perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro 
 
   --dbname=dbname                     port for genome_info database server 
   
-  --dumper=dumper				     dumper to use (must extend Bio::EnsEMBL::Utils::MetaData::MetaDataDumper)
+  --dumper=dumper				     dumper to use (must extend Bio::EnsEMBL::MetaData::MetaDataDumper)
 
 =head1 AUTHOR
 
@@ -74,7 +74,7 @@ use Carp;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
 use Module::Load;
-use Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 use Bio::EnsEMBL::DBSQL::DBConnection;
 
 use Data::Dumper;
@@ -97,7 +97,7 @@ else {
 my $logger = get_logger();
 
 my ($dba) = @{$cli_helper->get_dbas_for_opts($opts, 1)};
-my $gdba = Bio::EnsEMBL::Utils::MetaData::DBSQL::GenomeInfoAdaptor->new(
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
 												   -DBC => $dba->dbc());
 
 # get all metadata
@@ -122,7 +122,7 @@ $logger->info("Retrieved metadata for ".scalar(@metadata)." genomes");
 
 # create dumper
 $opts->{dumper} ||=
-  ['Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::JsonMetaDataDumper'];
+  ['Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper'];
 
 my @dumpers = map { load $_; $_->new() } @{$opts->{dumper}};
 

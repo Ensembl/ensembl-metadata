@@ -17,7 +17,7 @@ limitations under the License.
 
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessGenomes_conf;
+package Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf;
 
 use strict;
 use warnings;
@@ -78,7 +78,7 @@ sub pipeline_analyses {
 		},
 		{
 			-logic_name => 'ProcessGenome',
-			-module => 'Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessGenome',
+			-module => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome',
 			-hive_capacity => 50,
 			-wait_for      => ['SpeciesFactory'],
 			-parameters    => {
@@ -94,7 +94,7 @@ sub pipeline_analyses {
 		},
 		{
 			-logic_name => 'ProcessCompara',
-			-module => 'Bio::EnsEMBL::Utils::MetaData::Pipeline::ProcessCompara',
+			-module => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara',
 			-hive_capacity => 50,
 			-wait_for      => ['ProcessGenome'],
 			-parameters    => {

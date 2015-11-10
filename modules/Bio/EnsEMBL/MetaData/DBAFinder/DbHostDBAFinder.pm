@@ -16,6 +16,7 @@ limitations under the License.
 
 =cut
 
+
 =pod
 
 =head1 CONTACT
@@ -28,22 +29,20 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::DBAFinder;
-use Bio::EnsEMBL::Utils::Exception qw/throw/;
+package Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder;
+use base
+  qw( Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder );
 use strict;
 use warnings;
 
 sub new {
-  my $caller = shift;
-  my $class  = ref($caller) || $caller;
-  my $self   = bless({}, $class);
+  my ($proto, @args) = @_;
+  my $self = $proto->SUPER::new(@args);
+  if(!defined $self->{regfile}) {
+      $self->registry()->load_registry_from_db(@args);
+      $self->registry()->set_disconnect_when_inactive(1);
+  }
   return $self;
-}
-
-sub get_dbas {
-  my ($self) = @_;
-  throw "Unimplemented subroutine get_dbas() in " .
-	ref($self) . ". Please implement";
 }
 
 1;
@@ -54,13 +53,13 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::DBAFinder
+Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-Base class for retrieving lists of DBAs to retrieve metadata from
+implementation using a registry built from a specified server to build a list of DBAs
 
 =head1 SUBROUTINES/METHODS
 

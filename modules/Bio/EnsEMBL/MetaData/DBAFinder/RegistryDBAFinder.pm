@@ -29,8 +29,8 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder;
-use base qw( Bio::EnsEMBL::Utils::MetaData::DBAFinder );
+package Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder;
+use base qw( Bio::EnsEMBL::MetaData::DBAFinder );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Utils::Exception qw(throw);
 use Data::Dumper;
@@ -118,7 +118,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::DBAFinder::RegistryDBAFinder
+Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder
 
 =head1 SYNOPSIS
 

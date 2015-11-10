@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+=pod
 =head1 LICENSE
 
 Copyright [2009-2014] EMBL-European Bioinformatics Institute
@@ -17,7 +17,6 @@ limitations under the License.
 
 =cut
 
-
 =pod
 
 =head1 CONTACT
@@ -30,19 +29,19 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::TextMetaDataDumper;
-use base qw( Bio::EnsEMBL::Utils::MetaData::MetaDataDumper );
+package Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper;
+use base qw( Bio::EnsEMBL::MetaData::MetaDataDumper );
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-use Data::Dumper;
 use Carp;
 use XML::Simple;
+use Data::Dumper;
 use strict;
 use warnings;
 
 sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
-  $self->{file} ||= 'species.txt';
+  $self->{file} ||= 'uniprot_report.txt';
   return $self;
 }
 
@@ -50,34 +49,30 @@ sub start {
   my ($self, $divisions, $file, $dump_all) = @_;
   $self->SUPER::start($divisions, $file, $dump_all);
   for my $fh (values %{$self->{files}}) {
-	print $fh '#'
-	  .
-	  join("\t",
-		   qw(name species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
-	  ) .
-	  "\n";
+  	  print $fh '#'. join("\t",
+					   qw(name species division taxonomy_id assembly_id assembly_name genebuild nProteinCoding nProteinCodingUniProtKBSwissProt nProteinCodingUniProtKBTrEMBL uniprotCoverage)
+	) .
+	"\n";
   }
   return;
 }
 
 sub _write_metadata_to_file {
-  my ($self, $md, $fh) = @_;
-  print $fh join("\t",
-				 ($md->name(),
-				  $md->species(),
-				  $md->division(),
-				  $md->taxonomy_id(),
-				  $md->assembly_name() || '',
-				  $md->assembly_id()   || '',
-				  $md->genebuild()     || '',
-				  $self->yesno($md->has_variations()),
-				  $self->yesno($md->has_pan_compara()),
-				  $self->yesno($md->has_peptide_compara()),
-				  $self->yesno($md->has_genome_alignments()),
-				  $self->yesno($md->has_other_alignments()),
-				  $md->dbname(),
-				  $md->species_id(),
-				  "\n"));
+  my ($self, $md, $fh) = @_; 
+  print $fh join(
+				"\t",
+				($md->name(),
+				 $md->species(),
+				 $md->division(),
+				 $md->taxonomy_id(),
+				 $md->assembly_id()   || '',
+				 $md->assembly_name() || '',
+				 $md->genebuild()     || '',
+				 $md->annotations()->{nProteinCoding},
+				 $md->annotations()->{nProteinCodingUniProtKBSwissProt},
+				 $md->annotations()->{nProteinCodingUniProtKBTrEMBL},
+				 sprintf("%.2f", $md->get_uniprot_coverage($md)),
+				 "\n"));
   return;
 }
 
@@ -88,7 +83,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::MetaDataDumper::XMLMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
 
 =head1 SYNOPSIS
 

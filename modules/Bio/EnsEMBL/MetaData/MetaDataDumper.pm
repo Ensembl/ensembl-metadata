@@ -29,7 +29,7 @@ limitations under the License.
  
 =cut
 
-package Bio::EnsEMBL::Utils::MetaData::MetaDataDumper;
+package Bio::EnsEMBL::MetaData::MetaDataDumper;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Log::Log4perl qw(get_logger);
@@ -153,7 +153,7 @@ __END__
 
 =head1 NAME
 
-Bio::EnsEMBL::Utils::MetaData::DetailsDumper
+Bio::EnsEMBL::MetaData::DetailsDumper
 
 =head1 SYNOPSIS
 
