@@ -21,6 +21,9 @@ BEGIN {
 	use_ok( 'Bio::EnsEMBL::LookUp::RemoteLookUp' );
 	use_ok( 'Bio::EnsEMBL::MetaData::GenomeInfo' );
 	use_ok( 'Bio::EnsEMBL::MetaData::GenomeComparaInfo' );
+	use_ok( 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' );
+	use_ok( 'Bio::EnsEMBL::MetaData::GenomeAssemblyInfo' );
+	use_ok( 'Bio::EnsEMBL::MetaData::ReleaseInfo' );
 	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor' );
 }
 

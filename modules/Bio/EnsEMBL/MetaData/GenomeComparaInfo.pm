@@ -44,6 +44,7 @@ Dan Staines
 =cut
 
 package Bio::EnsEMBL::MetaData::GenomeComparaInfo;
+use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
@@ -71,9 +72,8 @@ use warnings;
 =cut
 
 sub new {
-  my ( $proto, @args ) = @_;
-  my $class = ref($proto) || $proto;
-  my $self = bless( {}, $class );
+	my ( $class, @args ) = @_;
+	my $self = $class->SUPER::new(@args);
   ( $self->{division}, $self->{method}, $self->{dbname},
 	$self->{set_name}, $self->{genomes} )
 	= rearrange(
@@ -245,45 +245,17 @@ sub to_hash {
   return $out;
 }
 
+=head2 to_string
+  Description: Render as plain string
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub to_string {
   my ($self) = @_;
   return
 	join( '/', $self->division(), $self->method(), ($self->set_name()||'-') );
-}
-
-=head1 INTERNAL METHODS
-=head2 dbID
-  Arg        : (optional) dbID to set set
-  Description: Gets/sets internal compara_analysis_id used as database primary key
-  Returntype : dbID string
-  Exceptions : none
-  Caller     : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
-  Status     : Stable
-=cut
-
-sub dbID {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-	$self->{dbID} = $arg;
-  }
-  return $self->{dbID};
-}
-
-=head2 adaptor
-  Arg        : (optional) adaptor to set set
-  Description: Gets/sets GenomeInfoAdaptor
-  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
-  Exceptions : none
-  Caller     : Internal
-  Status     : Stable
-=cut
-
-sub adaptor {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-	$self->{adaptor} = $arg;
-  }
-  return $self->{adaptor};
 }
 
 1;

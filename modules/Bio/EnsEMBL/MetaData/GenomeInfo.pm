@@ -56,10 +56,15 @@ Dan Staines
 
 =cut
 
-package Bio::EnsEMBL::MetaData::GenomeInfo;
-use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
+
+package Bio::EnsEMBL::MetaData::GenomeInfo;
+use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
+use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Bio::EnsEMBL::MetaData::ReleaseInfo;
+use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
+use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 
 =head1 CONSTRUCTOR
 =head2 new
@@ -102,94 +107,56 @@ use warnings;
 =cut
 
 sub new {
-	my ( $proto, @args ) = @_;
-	my $class = ref($proto) || $proto;
-	my $self = bless( {}, $class );
-	(
-		$self->{name},           $self->{species},
-		$self->{dbname},         $self->{species_id},
-		$self->{taxonomy_id},    $self->{species_taxonomy_id},
-		$self->{assembly_name},  $self->{assembly_id},
-		$self->{assembly_level}, $self->{genebuild},
-		$self->{division},       $self->{strain},
-		$self->{serotype},       $self->{is_reference}
-	  )
-	  = rearrange(
-		[
-			'NAME',           'SPECIES',
-			'DBNAME',         'SPECIES_ID',
-			'TAXONOMY_ID',    'SPECIES_TAXONOMY_ID',
-			'ASSEMBLY_NAME',  'ASSEMBLY_ID',
-			'ASSEMBLY_LEVEL', 'GENEBUILD',
-			'DIVISION',       'STRAIN',
-			'SEROTYPE',       'IS_REFERENCE'
-		],
-		@args
-	  );
-	$self->{is_reference} ||= 0;
+	my ( $class, @args ) = @_;
+	my $self = $class->SUPER::new(@args);
+	my ( $name,                $species,       $taxonomy_id,
+		 $species_taxonomy_id, $assembly_name, $assembly_id,
+		 $assembly_level,      $strain,        $serotype,
+		 $is_reference );
+	(  $name,               $species,          $self->{dbname},
+	   $self->{species_id}, $taxonomy_id,      $species_taxonomy_id,
+	   $assembly_name,      $assembly_id,      $assembly_level,
+	   $self->{genebuild},  $self->{division}, $strain,
+	   $serotype,           $is_reference,     $self->{organism},
+	   $self->{assembly},   $self->{release} )
+	  = rearrange( [ 'NAME',           'SPECIES',
+					 'DBNAME',         'SPECIES_ID',
+					 'TAXONOMY_ID',    'SPECIES_TAXONOMY_ID',
+					 'ASSEMBLY_NAME',  'ASSEMBLY_ID',
+					 'ASSEMBLY_LEVEL', 'GENEBUILD',
+					 'DIVISION',       'STRAIN',
+					 'SEROTYPE',       'IS_REFERENCE',
+					 'ORGANISM',       'ASSEMBLY',
+					 'RELEASE' ],
+				   @args );
+	if ( !defined $self->organism() ) {
+		my $org =
+		  Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+								   -SPECIES             => $species,
+								   -NAME                => $name,
+								   -STRAIN              => $strain,
+								   -SEROTYPE            => $serotype,
+								   -TAXONOMY_ID         => $taxonomy_id,
+								   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+								   -IS_REFERENCE        => $is_reference );
+		$self->organism($org);
+		$org->adaptor( $self->adaptor() );
+	}
+	if ( !defined $self->assembly() ) {
+		my $ass =
+		  Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
+											  -ASSEMBLY_NAME  => $assembly_name,
+											  -ASSEMBLY_ID    => $assembly_id,
+											  -ASSEMBLY_LEVEL => $assembly_level
+		  );
+		$ass->adaptor( $self->adaptor() );
+		$self->assembly($ass);
+	}
+	$self->{release} ||= Bio::EnsEMBL::MetaData::ReleaseInfo->new();
 	return $self;
-}
+} ## end sub new
 
 =head1 ATTRIBUTE METHODS
-=head2 species
-  Arg        : (optional) species to set
-  Description: Gets/sets species (computationally safe name for species)
-  Returntype : string
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub species {
-	my ( $self, $species ) = @_;
-	$self->{species} = $species if ( defined $species );
-	return $self->{species};
-}
-
-=head2 strain
-  Arg        : (optional) strain to set
-  Description: Gets/sets strain of genome
-  Returntype : string
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub strain {
-	my ( $self, $arg ) = @_;
-	$self->{strain} = $arg if ( defined $arg );
-	return $self->{strain};
-}
-
-=head2 serotype
-  Arg        : (optional) serotype to set
-  Description: Gets/sets serotype
-  Returntype : string
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub serotype {
-	my ( $self, $arg ) = @_;
-	$self->{serotype} = $arg if ( defined $arg );
-	return $self->{serotype};
-}
-
-=head2 name
-  Arg        : (optional) name to set
-  Description: Gets/sets readable display name for genome
-  Returntype : string
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub name {
-	my ( $self, $arg ) = @_;
-	$self->{name} = $arg if ( defined $arg );
-	return $self->{name};
-}
 
 =head2 dbname
   Arg        : (optional) dbname to set
@@ -221,6 +188,92 @@ sub species_id {
 	return $self->{species_id};
 }
 
+=head2 release
+  Arg        : (optional) release object to set
+  Description: Gets/sets release to which genome belongs
+  Returntype : Bio::EnsEMBL::MetaData::ReleaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub release {
+	my ( $self, $release ) = @_;
+	$self->{release} = $release if ( defined $release );
+	return $self->{release};
+}
+
+=head2 organism
+  Arg        : (optional) organism object to set
+  Description: Gets/sets organism to which genome belongs
+  Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub organism {
+	my ( $self, $organism ) = @_;
+	$self->{organism} = $organism if ( defined $organism );
+	return $self->{organism};
+}
+
+=head2 species
+  Arg        : (optional) species to set
+  Description: Gets/sets species (computationally safe name for species)
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub species {
+	my ( $self, $species ) = @_;
+	return $self->organism()->species($species);
+}
+
+=head2 strain
+  Arg        : (optional) strain to set
+  Description: Gets/sets strain of genome
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub strain {
+	my ( $self, $arg ) = @_;
+	return $self->organism()->strain($arg);
+}
+
+=head2 serotype
+  Arg        : (optional) serotype to set
+  Description: Gets/sets serotype
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub serotype {
+	my ( $self, $arg ) = @_;
+	return $self->organism()->serotype($arg);
+}
+
+=head2 name
+  Arg        : (optional) name to set
+  Description: Gets/sets readable display name for genome
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub name {
+	my ( $self, $arg ) = @_;
+	return $self->organism()->name($arg);
+}
+
 =head2 taxonomy_id
   Arg        : (optional) taxonomy_id to set
   Description: Gets/sets NCBI taxonomy ID
@@ -232,8 +285,7 @@ sub species_id {
 
 sub taxonomy_id {
 	my ( $self, $taxonomy_id ) = @_;
-	$self->{taxonomy_id} = $taxonomy_id if ( defined $taxonomy_id );
-	return $self->{taxonomy_id};
+	return $self->organism()->taxonomy_id($taxonomy_id);
 }
 
 =head2 species_taxonomy_id
@@ -247,8 +299,22 @@ sub taxonomy_id {
 
 sub species_taxonomy_id {
 	my ( $self, $taxonomy_id ) = @_;
-	$self->{species_taxonomy_id} = $taxonomy_id if ( defined $taxonomy_id );
-	return $self->{species_taxonomy_id};
+	return $self->organism()->species_taxonomy_id($taxonomy_id);
+}
+
+=head2 assembly
+  Arg        : (optional) assembly to set
+  Description: Gets/sets assembly object
+  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub assembly {
+	my ( $self, $assembly ) = @_;
+	$self->{assembly} = $assembly if ( defined $assembly );
+	return $self->{assembly};
 }
 
 =head2 assembly_name
@@ -262,8 +328,7 @@ sub species_taxonomy_id {
 
 sub assembly_name {
 	my ( $self, $assembly_name ) = @_;
-	$self->{assembly_name} = $assembly_name if ( defined $assembly_name );
-	return $self->{assembly_name};
+	return $self->assembly()->assembly_name($assembly_name);
 }
 
 =head2 assembly_id
@@ -277,8 +342,7 @@ sub assembly_name {
 
 sub assembly_id {
 	my ( $self, $assembly_id ) = @_;
-	$self->{assembly_id} = $assembly_id if ( defined $assembly_id );
-	return $self->{assembly_id};
+	return $self->assembly()->assembly_id($assembly_id);
 }
 
 =head2 assembly_level
@@ -292,9 +356,7 @@ sub assembly_id {
 
 sub assembly_level {
 	my ( $self, $assembly_level ) = @_;
-	$self->{assembly_level} = $assembly_level
-	  if ( defined $assembly_level );
-	return $self->{assembly_level};
+	return $self->assembly()->assembly_level($assembly_level);
 }
 
 =head2 genebuild
@@ -338,8 +400,7 @@ sub division {
 
 sub is_reference {
 	my ( $self, $is_ref ) = @_;
-	$self->{is_reference} = $is_ref if ( defined $is_ref );
-	return $self->{is_reference};
+	return $self->organism()->is_reference($is_ref);
 }
 
 =head2 db_size
@@ -357,7 +418,7 @@ sub db_size {
 	return $self->{db_size};
 }
 
-=head2 dbID
+=head2 base_count
   Arg        : (optional) base_count to set
   Description: Gets/sets total number of bases in assembled genome
   Returntype : integer
@@ -368,8 +429,7 @@ sub db_size {
 
 sub base_count {
 	my ( $self, $base_count ) = @_;
-	$self->{base_count} = $base_count if ( defined $base_count );
-	return $self->{base_count};
+	return $self->assembly()->base_count($base_count);
 }
 
 =head2 aliases
@@ -383,13 +443,7 @@ sub base_count {
 
 sub aliases {
 	my ( $self, $aliases ) = @_;
-	if ( defined $aliases ) {
-		$self->{aliases} = $aliases;
-	}
-	elsif ( !defined $self->{aliases} && defined $self->adaptor() ) {
-		$self->adaptor()->_fetch_aliases($self);
-	}
-	return $self->{aliases};
+	return $self->organism()->aliases($aliases);
 }
 
 =head2 compara
@@ -427,13 +481,7 @@ sub compara {
 
 sub sequences {
 	my ( $self, $sequences ) = @_;
-	if ( defined $sequences ) {
-		$self->{sequences} = $sequences;
-	}
-	elsif ( !defined $self->{sequences} && defined $self->adaptor() ) {
-		$self->adaptor()->_fetch_sequences($self);
-	}
-	return $self->{sequences};
+	return $self->assembly()->sequences($sequences);
 }
 
 =head2 publications
@@ -447,13 +495,7 @@ sub sequences {
 
 sub publications {
 	my ( $self, $publications ) = @_;
-	if ( defined $publications ) {
-		$self->{publications} = $publications;
-	}
-	elsif ( !defined $self->{publications} && defined $self->adaptor() ) {
-		$self->adaptor()->_fetch_publications($self);
-	}
-	return $self->{publications};
+	return $self->organism()->publications($publications);
 }
 
 =head2 variations
@@ -538,9 +580,7 @@ sub other_alignments {
 		$self->{other_alignments}     = $other_alignments;
 		$self->{has_other_alignments} = undef;
 	}
-	elsif ( !defined $self->{other_alignments}
-		&& defined $self->adaptor() )
-	{
+	elsif ( !defined $self->{other_alignments} && defined $self->adaptor() ) {
 		$self->adaptor()->_fetch_other_alignments($self);
 	}
 	return $self->{other_alignments} || 0;
@@ -581,8 +621,8 @@ sub has_genome_alignments {
 	if ( defined $arg ) {
 		$self->{has_genome_alignments} = $arg;
 	}
-	elsif ( !defined( $self->{has_genome_alignments} )
-		&& defined $self->compara() )
+	elsif ( !defined( $self->{has_genome_alignments} ) &&
+			defined $self->compara() )
 	{
 		$self->{has_genome_alignments} = 0;
 		for my $compara ( @{ $self->compara() } ) {
@@ -635,8 +675,8 @@ sub has_peptide_compara {
 	if ( defined $arg ) {
 		$self->{has_peptide_compara} = $arg;
 	}
-	elsif ( !defined( $self->{has_peptide_compara} )
-		&& defined $self->compara() )
+	elsif ( !defined( $self->{has_peptide_compara} ) &&
+			defined $self->compara() )
 	{
 		$self->{has_peptide_compara} = 0;
 		for my $compara ( @{ $self->compara() } ) {
@@ -664,9 +704,7 @@ sub has_pan_compara {
 	if ( defined $arg ) {
 		$self->{has_pan_compara} = $arg;
 	}
-	elsif ( !defined( $self->{has_pan_compara} )
-		&& defined $self->compara() )
-	{
+	elsif ( !defined( $self->{has_pan_compara} ) && defined $self->compara() ) {
 		$self->{has_pan_compara} = 0;
 		for my $compara ( @{ $self->compara() } ) {
 			if ( $compara->is_pan_compara() ) {
@@ -724,7 +762,7 @@ sub count_alignments {
 	my ($self) = @_;
 	return $self->count_hash_values( $self->{other_alignments}{bam} ) +
 	  $self->count_hash_values(
-		$self->{other_alignments}{proteinAlignFeatures} ) +
+							 $self->{other_alignments}{proteinAlignFeatures} ) +
 	  $self->count_hash_values( $self->{other_alignments}{dnaAlignFeatures} );
 }
 
@@ -738,8 +776,8 @@ sub count_alignments {
 
 sub get_uniprot_coverage {
 	my ($self) = @_;
-	return 100.0 *
-	  ( $self->annotations()->{nProteinCodingUniProtKB} ) /
+	return 100.0*
+	  ( $self->annotations()->{nProteinCodingUniProtKB} )/
 	  $self->annotations()->{nProteinCoding};
 }
 
@@ -756,9 +794,9 @@ sub to_hash {
 	my ( $in, $keen ) = @_;
 	my $out;
 	my $type = ref $in;
-	if (   defined $keen
-		&& $keen == 1
-		&& $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' )
+	if ( defined $keen &&
+		 $keen == 1 &&
+		 $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
 	{
 		$in->_preload();
 	}
@@ -768,9 +806,7 @@ sub to_hash {
 			push @{$out}, to_hash( $item, $keen );
 		}
 	}
-	elsif ($type eq 'HASH'
-		|| $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' )
-	{
+	elsif ( $type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' ) {
 		$out = {};
 		while ( my ( $key, $val ) = each %$in ) {
 			if ( $key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger' ) {
@@ -784,13 +820,18 @@ sub to_hash {
 
 		}
 	}
-	elsif ( $type eq 'Bio::EnsEMBL::MetaData::GenomeComparaInfo' ) {
-		$out = $in->to_hash();
+	elsif ( $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ ) {
+		$out = $in->to_hash($keen);
 	}
 	else {
 		$out = $in;
 	}
-
+	if ( defined $keen &&
+		 $keen == 1 &&
+		 $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
+	{
+		$in->_preload();
+	}
 	return $out;
 } ## end sub to_hash
 
@@ -875,13 +916,10 @@ sub adaptor {
 
 sub _preload {
 	my ($self) = @_;
-	$self->aliases();
 	$self->annotations();
 	$self->compara();
 	$self->features();
 	$self->other_alignments();
-	$self->publications();
-	$self->sequences();
 	$self->variations();
 	return;
 }
@@ -896,13 +934,10 @@ sub _preload {
 
 sub _unload {
 	my ($self) = @_;
-	$self->{aliases}          = undef;
 	$self->{annotations}      = undef;
 	$self->{compara}          = undef;
 	$self->{features}         = undef;
 	$self->{other_alignments} = undef;
-	$self->{publications}     = undef;
-	$self->{sequences}        = undef;
 	$self->{variations}       = undef;
 	return;
 }
