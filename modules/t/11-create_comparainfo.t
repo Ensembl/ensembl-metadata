@@ -18,8 +18,8 @@ use warnings;
 use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 
-my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-my $gdba  = $multi->get_DBAdaptor('info');
+#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
+#my $gdba  = $multi->get_DBAdaptor('info');
 
 my %args = ( -DBNAME   => "my_little_compara",
 			 -DIVISION => "EnsemblVeggies",

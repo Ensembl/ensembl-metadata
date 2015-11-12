@@ -24,16 +24,6 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 #my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
 #my $gdba  = $multi->get_DBAdaptor('info');
 
-my %ass_args = ( '-ASSEMBLY_NAME'  => "v2.0",
-				 '-ASSEMBLY_ID'    => 'GCA_181818181',
-				 '-ASSEMBLY_LEVEL' => 'chromosome' );
-my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%ass_args);
-
-ok( defined $ass, "Assembly object exists" );
-ok( $ass->assembly_name()  eq $ass_args{-ASSEMBLY_NAME},  "ass name correct" );
-ok( $ass->assembly_id()    eq $ass_args{-ASSEMBLY_ID},    "ass ID correct" );
-ok( $ass->assembly_level() eq $ass_args{-ASSEMBLY_LEVEL}, "ass level correct" );
-
 my %org_args = ( '-NAME'                => "test",
 				 '-SPECIES'             => "Testus testa",
 				 '-TAXONOMY_ID'         => 999,
@@ -53,13 +43,32 @@ ok( $org->strain()       eq $org_args{-STRAIN},       "strain correct" );
 ok( $org->serotype()     eq $org_args{-SEROTYPE},     "serotype correct" );
 ok( $org->is_reference() eq $org_args{-IS_REFERENCE}, "is_ref correct" );
 
+my %ass_args = ( '-ASSEMBLY_NAME'  => "v2.0",
+				 '-ASSEMBLY_ID'    => 'GCA_181818181',
+				 '-ASSEMBLY_LEVEL' => 'chromosome',
+				 '-ORGANISM'       => $org );
+my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%ass_args);
+
+ok( defined $ass, "Assembly object exists" );
+ok( $ass->assembly_name()  eq $ass_args{-ASSEMBLY_NAME},  "ass name correct" );
+ok( $ass->assembly_id()    eq $ass_args{-ASSEMBLY_ID},    "ass ID correct" );
+ok( $ass->assembly_level() eq $ass_args{-ASSEMBLY_LEVEL}, "ass level correct" );
+ok( $ass->name()           eq $org_args{-NAME},           "name correct" );
+ok( $ass->species()     eq $org_args{-SPECIES},     "species ID correct" );
+ok( $ass->taxonomy_id() eq $org_args{-TAXONOMY_ID}, "taxid correct" );
+ok( $ass->species_taxonomy_id() eq $org_args{-SPECIES_TAXONOMY_ID},
+	"species taxid correct" );
+ok( $ass->strain()       eq $org_args{-STRAIN},       "strain correct" );
+ok( $ass->serotype()     eq $org_args{-SEROTYPE},     "serotype correct" );
+ok( $ass->is_reference() eq $org_args{-IS_REFERENCE}, "is_ref correct" );
+
 my %g_args = ( '-DBNAME'     => "test_species_core_27_80_1",
 			   '-SPECIES_ID' => 1,
 			   '-GENEBUILD'  => 'awesomeBuild1',
 			   '-DIVISION'   => 'EnsemblSomewhere',
-			   '-ORGANISM'   => $org,
 			   '-ASSEMBLY'   => $ass );
 my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(%g_args);
+
 ok( defined $genome, "Genome object exists" );
 ok( $genome->dbname()     eq $g_args{-DBNAME},     "dbname correct" );
 ok( $genome->species_id() eq $g_args{-SPECIES_ID}, "species_id correct" );
@@ -68,8 +77,8 @@ ok( $genome->assembly_name() eq $ass_args{-ASSEMBLY_NAME}, "ass name correct" );
 ok( $genome->assembly_id()   eq $ass_args{-ASSEMBLY_ID},   "ass ID correct" );
 ok( $genome->assembly_level() eq $ass_args{-ASSEMBLY_LEVEL},
 	"ass level correct" );
-ok( $genome->genebuild() eq $g_args{-GENEBUILD}, "genebuild correct" );
-ok( $genome->name()      eq $org_args{-NAME},    "name correct" );
+ok( $genome->genebuild()   eq $g_args{-GENEBUILD},     "genebuild correct" );
+ok( $genome->name()        eq $org_args{-NAME},        "name correct" );
 ok( $genome->species()     eq $org_args{-SPECIES},     "species ID correct" );
 ok( $genome->taxonomy_id() eq $org_args{-TAXONOMY_ID}, "taxid correct" );
 ok( $genome->species_taxonomy_id() eq $org_args{-SPECIES_TAXONOMY_ID},

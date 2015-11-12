@@ -112,13 +112,13 @@ sub new {
 	my ( $name,                $species,       $taxonomy_id,
 		 $species_taxonomy_id, $assembly_name, $assembly_id,
 		 $assembly_level,      $strain,        $serotype,
-		 $is_reference );
+		 $is_reference,        $organism );
 	(  $name,               $species,          $self->{dbname},
 	   $self->{species_id}, $taxonomy_id,      $species_taxonomy_id,
 	   $assembly_name,      $assembly_id,      $assembly_level,
 	   $self->{genebuild},  $self->{division}, $strain,
-	   $serotype,           $is_reference,     $self->{organism},
-	   $self->{assembly},   $self->{release} )
+	   $serotype,           $is_reference,     $self->{assembly},
+	   $organism,           $self->{release} )
 	  = rearrange( [ 'NAME',           'SPECIES',
 					 'DBNAME',         'SPECIES_ID',
 					 'TAXONOMY_ID',    'SPECIES_TAXONOMY_ID',
@@ -126,30 +126,26 @@ sub new {
 					 'ASSEMBLY_LEVEL', 'GENEBUILD',
 					 'DIVISION',       'STRAIN',
 					 'SEROTYPE',       'IS_REFERENCE',
-					 'ORGANISM',       'ASSEMBLY',
+					 'ASSEMBLY',       'ORGANISM',
 					 'RELEASE' ],
 				   @args );
-	if ( !defined $self->organism() ) {
-		my $org =
-		  Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+
+	if ( !defined $self->assembly() ) {
+		;
+		my $ass =
+		  Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
+								   -ASSEMBLY_NAME       => $assembly_name,
+								   -ASSEMBLY_ID         => $assembly_id,
+								   -ASSEMBLY_LEVEL      => $assembly_level,
 								   -SPECIES             => $species,
 								   -NAME                => $name,
 								   -STRAIN              => $strain,
 								   -SEROTYPE            => $serotype,
 								   -TAXONOMY_ID         => $taxonomy_id,
 								   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-								   -IS_REFERENCE        => $is_reference );
-		$self->organism($org);
-		$org->adaptor( $self->adaptor() );
-	}
-	if ( !defined $self->assembly() ) {
-		my $ass =
-		  Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
-											  -ASSEMBLY_NAME  => $assembly_name,
-											  -ASSEMBLY_ID    => $assembly_id,
-											  -ASSEMBLY_LEVEL => $assembly_level
-		  );
-		$ass->adaptor( $self->adaptor() );
+								   -IS_REFERENCE        => $is_reference,
+								   -ORGANISM            => $organism );
+		$ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
 		$self->assembly($ass);
 	}
 	$self->{release} ||= Bio::EnsEMBL::MetaData::ReleaseInfo->new();
@@ -214,8 +210,7 @@ sub release {
 
 sub organism {
 	my ( $self, $organism ) = @_;
-	$self->{organism} = $organism if ( defined $organism );
-	return $self->{organism};
+	return $self->assembly()->organism();
 }
 
 =head2 species

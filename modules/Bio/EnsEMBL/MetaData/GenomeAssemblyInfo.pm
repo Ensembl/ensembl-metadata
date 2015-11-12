@@ -43,10 +43,11 @@ Dan Staines
 =cut
 
 package Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
-use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
-use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use strict;
 use warnings;
+use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
+use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 
 =head1 CONSTRUCTOR
 =head2 new
@@ -69,13 +70,39 @@ use warnings;
 sub new {
 	my ( $class, @args ) = @_;
 	my $self = $class->SUPER::new(@args);
-	(  $self->{assembly_name},  $self->{assembly_id},
-	   $self->{assembly_level}, $self->{base_count} )
-	  = rearrange( [ 'ASSEMBLY_NAME',  'ASSEMBLY_ID',
-					 'ASSEMBLY_LEVEL', 'BASE_COUNT' ],
-				   @args );
+
+	my ( $name, $species, $taxonomy_id, $species_taxonomy_id, $strain,
+		 $serotype, $is_reference );
+
+	(  $self->{assembly_name}, $self->{assembly_id}, $self->{assembly_level},
+	   $self->{base_count},    $self->{organism},    $name,
+	   $species,               $taxonomy_id,         $species_taxonomy_id,
+	   $strain,                $serotype,            $is_reference,
+	   $self->{organism} )
+	  = rearrange( [
+		   'ASSEMBLY_NAME', 'ASSEMBLY_ID', 'ASSEMBLY_LEVEL', 'BASE_COUNT',
+		   'ORGANISM', 'NAME', 'SPECIES', 'TAXONOMY_ID', 'SPECIES_TAXONOMY_ID',
+		   'STRAIN', 'SEROTYPE', 'IS_REFERENCE', 'ORGANISM'
+		],
+		@args );
+
+	if ( !defined $self->{organism} ) {
+		my $organism =
+		  Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+								   -NAME                => $name,
+								   -SPECIES             => $species,
+								   -TAXONOMY_ID         => $taxonomy_id,
+								   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+								   -STRAIN              => $strain,
+								   -SEROTYPE            => $serotype,
+								   -IS_REFERENCE        => $is_reference
+		  );
+		$organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
+		$self->organism($organism);
+	}
+
 	return $self;
-}
+} ## end sub new
 
 =head1 ATTRIBUTE METHODS
 =head2 assembly_name
@@ -158,6 +185,122 @@ sub sequences {
 	return $self->{sequences};
 }
 
+=head2 organism
+  Arg        : (optional) organism object to set
+  Description: Gets/sets organism to which genome belongs
+  Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub organism {
+	my ( $self, $organism ) = @_;
+	if(defined $organism) {
+		$self->{organism} = $organism;
+	}
+	return $self->{organism};
+}
+
+=head2 species
+  Arg        : (optional) species to set
+  Description: Gets/sets species (computationally safe name for species)
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub species {
+	my ( $self, $species ) = @_;
+	return $self->organism()->species($species);
+}
+
+=head2 strain
+  Arg        : (optional) strain to set
+  Description: Gets/sets strain of genome
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub strain {
+	my ( $self, $arg ) = @_;
+	return $self->organism()->strain($arg);
+}
+
+=head2 serotype
+  Arg        : (optional) serotype to set
+  Description: Gets/sets serotype
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub serotype {
+	my ( $self, $arg ) = @_;
+	return $self->organism()->serotype($arg);
+}
+
+=head2 name
+  Arg        : (optional) name to set
+  Description: Gets/sets readable display name for genome
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub name {
+	my ( $self, $arg ) = @_;
+	return $self->organism()->name($arg);
+}
+
+=head2 taxonomy_id
+  Arg        : (optional) taxonomy_id to set
+  Description: Gets/sets NCBI taxonomy ID
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub taxonomy_id {
+	my ( $self, $taxonomy_id ) = @_;
+	return $self->organism()->taxonomy_id($taxonomy_id);
+}
+
+=head2 species_taxonomy_id
+  Arg        : (optional) taxonomy_id to set
+  Description: Gets/sets NCBI taxonomy ID for species to which this organism belongs
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub species_taxonomy_id {
+	my ( $self, $taxonomy_id ) = @_;
+	return $self->organism()->species_taxonomy_id($taxonomy_id);
+}
+
+=head2 is_reference
+  Arg        : (optional) value of is_reference
+  Description: Gets/sets whether this is a reference for the species
+  Returntype : bool
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub is_reference {
+	my ( $self, $is_ref ) = @_;
+	return $self->organism()->is_reference($is_ref);
+}
+
+
 =head1 UTILITY METHODS
 =head2 to_string
   Description: Render as plain string
@@ -173,7 +316,6 @@ sub to_string {
 	  join( '/',
 			$self->division(), $self->method(), ( $self->set_name() || '-' ) );
 }
-
 
 =head2 _preload
   Description: Ensure all children are loaded (used for hash transformation)

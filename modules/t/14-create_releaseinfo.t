@@ -18,8 +18,8 @@ use warnings;
 use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 
-my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-my $gdba  = $multi->get_DBAdaptor('info');
+#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
+#my $gdba  = $multi->get_DBAdaptor('info');
 
 my %args = ( -ENSEMBL_VERSION=>99,-EG_VERSION=>66,-DATE=>'2015-09-29' );
 my $genome = Bio::EnsEMBL::MetaData::ReleaseInfo->new(%args);
