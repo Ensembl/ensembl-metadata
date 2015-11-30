@@ -17,22 +17,24 @@ use warnings;
 
 use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
+use Bio::EnsEMBL::MetaData::ReleaseInfo;
 
-#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-#my $gdba  = $multi->get_DBAdaptor('info');
+my %args = ( -ENSEMBL_VERSION => 99, -EG_VERSION => 66, -DATE => '2015-09-29' );
+my $release = Bio::EnsEMBL::MetaData::ReleaseInfo->new(%args);
 
-my %args = ( -ENSEMBL_VERSION=>99,-EG_VERSION=>66,-DATE=>'2015-09-29' );
-my $genome = Bio::EnsEMBL::MetaData::ReleaseInfo->new(%args);
+ok( defined $release, "Release object exists" );
+ok( $release->ensembl_version() eq $args{-ENSEMBL_VERSION},
+	"e! Version correct" );
+ok( $release->eg_version() eq $args{-EG_VERSION}, "EG Version correct" );
+ok( $release->date()       eq $args{-DATE},       "Date correct" );
 
-ok( defined $genome, "Release object exists" );
-ok( $genome->ensembl_version()                eq $args{-ENSEMBL_VERSION} );
-ok( $genome->eg_version()             eq $args{-EG_VERSION} );
-ok( $genome->date()         eq $args{-DATE} );
+my $release2 = Bio::EnsEMBL::MetaData::ReleaseInfo->new();
+ok( defined $release2,                    "Release object exists" );
+ok( defined $release2->ensembl_version(), "Default version exists" );
+ok( !defined $release2->eg_version(),     "No EG version" );
+ok( defined $release2->date(),            "Date exists" );
 
-my $genome2 = Bio::EnsEMBL::MetaData::ReleaseInfo->new();
-ok( defined $genome2, "Release object exists" );
-ok( defined $genome2->ensembl_version() );
-ok( !defined $genome2->eg_version() );
-ok( defined $genome2->date() );
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+my $gdba  = $multi->get_DBAdaptor('empty_metadata');
 
 done_testing;

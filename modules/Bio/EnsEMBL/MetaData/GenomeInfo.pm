@@ -131,7 +131,6 @@ sub new {
 				   @args );
 
 	if ( !defined $self->assembly() ) {
-		;
 		my $ass =
 		  Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
 								   -ASSEMBLY_NAME       => $assembly_name,

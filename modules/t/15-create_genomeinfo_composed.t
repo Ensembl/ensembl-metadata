@@ -21,9 +21,6 @@ use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 
-#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-#my $gdba  = $multi->get_DBAdaptor('info');
-
 my %org_args = ( '-NAME'                => "test",
 				 '-SPECIES'             => "Testus testa",
 				 '-TAXONOMY_ID'         => 999,
@@ -87,5 +84,8 @@ ok( $genome->strain()   eq $org_args{-STRAIN},   "strain correct" );
 ok( $genome->serotype() eq $org_args{-SEROTYPE}, "serotype correct" );
 ok( $genome->is_reference() eq $org_args{-IS_REFERENCE},
 	"is_reference correct" );
+
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+my $gdba  = $multi->get_DBAdaptor('empty_metadata');
 
 done_testing;

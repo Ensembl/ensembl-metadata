@@ -19,9 +19,6 @@ use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 
-#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-#my $gdba  = $multi->get_DBAdaptor('info');
-
 my %args = ( '-ASSEMBLY_NAME'       => "v2.0",
 			 '-ASSEMBLY_ID'         => 'GCA_181818181',
 			 '-ASSEMBLY_LEVEL'      => 'chromosome' );
@@ -31,5 +28,8 @@ ok( defined $genome, "Assembly object exists" );
 ok( $genome->assembly_name()       eq $args{-ASSEMBLY_NAME} );
 ok( $genome->assembly_id()         eq $args{-ASSEMBLY_ID} );
 ok( $genome->assembly_level()      eq $args{-ASSEMBLY_LEVEL} );
+
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+my $gdba  = $multi->get_DBAdaptor('empty_metadata');
 
 done_testing;

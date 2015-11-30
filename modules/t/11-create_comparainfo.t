@@ -17,22 +17,58 @@ use warnings;
 
 use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
-
-#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-#my $gdba  = $multi->get_DBAdaptor('info');
+use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
 
 my %args = ( -DBNAME   => "my_little_compara",
 			 -DIVISION => "EnsemblVeggies",
 			 -METHOD   => "myway",
-			 -SET_NAME => "cassette",
-			 -GENOMES  => [ "A", "B" ] );
-my $genome = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(%args);
+			 -SET_NAME => "cassette" );
+my $compara = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(%args);
 
-ok( defined $genome, "Compara object exists" );
-ok( $genome->dbname()                 eq $args{-DBNAME},   "dbname exists" );
-ok( $genome->division()               eq $args{-DIVISION}, "division exists" );
-ok( $genome->method()                 eq $args{-METHOD},   "method exists" );
-ok( $genome->set_name()               eq $args{-SET_NAME}, "set_name exists" );
-ok( scalar( @{ $genome->genomes() } ) eq 2,                "genomes correct" );
+ok( defined $compara, "Compara object exists" );
+ok( $compara->dbname()                 eq $args{-DBNAME},   "dbname exists" );
+ok( $compara->division()               eq $args{-DIVISION}, "division exists" );
+ok( $compara->method()                 eq $args{-METHOD},   "method exists" );
+ok( $compara->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+my $gdba  = $multi->get_DBAdaptor('empty_metadata');
+
+ok(!defined $compara->dbID(),"No DBID");
+$gdba->store_compara($compara);
+ok(defined $compara->dbID(),"DBID");
+ok( $compara->dbname()                 eq $args{-DBNAME},   "dbname exists" );
+ok( $compara->division()               eq $args{-DIVISION}, "division exists" );
+ok( $compara->method()                 eq $args{-METHOD},   "method exists" );
+ok( $compara->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
+my $compara2 = $gdba->fetch_compara_by_dbID($compara->dbID());
+ok( $compara2->dbname()                 eq $args{-DBNAME},   "dbname exists" );
+ok( $compara2->division()               eq $args{-DIVISION}, "division exists" );
+ok( $compara2->method()                 eq $args{-METHOD},   "method exists" );
+ok( $compara2->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
+$gdba->_clear_cache();
+my $compara2a = $gdba->fetch_compara_by_dbID($compara->dbID());
+ok( $compara2a->dbname()                 eq $args{-DBNAME},   "dbname exists" );
+ok( $compara2a->division()               eq $args{-DIVISION}, "division exists" );
+ok( $compara2a->method()                 eq $args{-METHOD},   "method exists" );
+ok( $compara2a->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
+my $c2 = "my_big_fat_compara";
+$compara->dbname($c2);
+$gdba->store_compara($compara);
+ok( $compara->dbname()                 eq $c2,   "dbname exists" );
+ok( $compara->division()               eq $args{-DIVISION}, "division exists" );
+ok( $compara->method()                 eq $args{-METHOD},   "method exists" );
+ok( $compara->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
+$gdba->_clear_cache();
+my $compara3 = $gdba->fetch_compara_by_dbID($compara->dbID());
+ok( $compara3->dbname()                 eq $c2,   "dbname exists" );
+ok( $compara3->division()               eq $args{-DIVISION}, "division exists" );
+ok( $compara3->method()                 eq $args{-METHOD},   "method exists" );
+ok( $compara3->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
 
 done_testing;

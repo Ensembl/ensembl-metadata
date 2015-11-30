@@ -8,9 +8,8 @@
 	'escherichia_coli' => {
    		'core' => 'Bio::EnsEMBL::DBSQL::DBAdaptor'
    	},
-    'eg' => {
-      'info' => 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor',
-      'tax' => 'Bio::EnsEMBL::DBSQL::TaxonomyDBAdaptor',
+    'multi' => {
+      'empty_metadata' => 'Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor'
     },
   },
 }

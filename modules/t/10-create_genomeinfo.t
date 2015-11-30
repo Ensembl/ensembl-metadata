@@ -19,9 +19,6 @@ use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 use Bio::EnsEMBL::MetaData::GenomeInfo;
 
-#my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('eg');
-#my $gdba  = $multi->get_DBAdaptor('info');
-
 my %args = ( '-NAME'                => "test",
 			 '-SPECIES'             => "Testus testa",
 			 '-DBNAME'              => "test_species_core_27_80_1",
@@ -53,5 +50,8 @@ ok( $genome->species_taxonomy_id() eq $args{-SPECIES_TAXONOMY_ID},
 ok( $genome->strain()       eq $args{-STRAIN},       "strain correct" );
 ok( $genome->serotype()     eq $args{-SEROTYPE},     "serotype correct" );
 ok( $genome->is_reference() eq $args{-IS_REFERENCE}, "is_reference correct" );
+
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+my $gdba  = $multi->get_DBAdaptor('empty_metadata');
 
 done_testing;
