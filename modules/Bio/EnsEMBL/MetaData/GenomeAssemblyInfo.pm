@@ -27,9 +27,9 @@ Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
 
 	  my $assembly_info =
 		Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
-											  -ASSEMBLY_NAME   => $assembly_name,
-											  -ASSEMBLY_ID     => $assembly_id,
-											  -ASSEMBLY_LEVEL => $assembly_level
+											  -ASSEMBLY_NAME      => $assembly_name,
+											  -ASSEMBLY_ACCESSION => $assembly_accession,
+											  -ASSEMBLY_LEVEL     => $assembly_level
 		);
 
 =head1 DESCRIPTION
@@ -74,13 +74,13 @@ sub new {
 	my ( $name, $species, $taxonomy_id, $species_taxonomy_id, $strain,
 		 $serotype, $is_reference );
 
-	(  $self->{assembly_name}, $self->{assembly_id}, $self->{assembly_level},
+	(  $self->{assembly_name}, $self->{assembly_accession}, $self->{assembly_level},
 	   $self->{base_count},    $self->{organism},    $name,
 	   $species,               $taxonomy_id,         $species_taxonomy_id,
 	   $strain,                $serotype,            $is_reference,
 	   $self->{organism} )
 	  = rearrange( [
-		   'ASSEMBLY_NAME', 'ASSEMBLY_ID', 'ASSEMBLY_LEVEL', 'BASE_COUNT',
+		   'ASSEMBLY_NAME', 'ASSEMBLY_ACCESSION', 'ASSEMBLY_LEVEL', 'BASE_COUNT',
 		   'ORGANISM', 'NAME', 'SPECIES', 'TAXONOMY_ID', 'SPECIES_TAXONOMY_ID',
 		   'STRAIN', 'SEROTYPE', 'IS_REFERENCE', 'ORGANISM'
 		],
@@ -120,8 +120,8 @@ sub assembly_name {
 	return $self->{assembly_name};
 }
 
-=head2 assembly_id
-  Arg        : (optional) assembly_id to set
+=head2 assembly_accession
+  Arg        : (optional) assembly_accession to set
   Description: Gets/sets INSDC accession for assembly
   Returntype : string
   Exceptions : none
@@ -129,10 +129,10 @@ sub assembly_name {
   Status     : Stable
 =cut
 
-sub assembly_id {
-	my ( $self, $assembly_id ) = @_;
-	$self->{assembly_id} = $assembly_id if ( defined $assembly_id );
-	return $self->{assembly_id};
+sub assembly_accession {
+	my ( $self, $assembly_accession ) = @_;
+	$self->{assembly_accession} = $assembly_accession if ( defined $assembly_accession );
+	return $self->{assembly_accession};
 }
 
 =head2 assembly_level
@@ -346,3 +346,4 @@ sub _unload {
 }
 
 1;
+
