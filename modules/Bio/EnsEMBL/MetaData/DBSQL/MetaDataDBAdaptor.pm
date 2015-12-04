@@ -64,8 +64,6 @@ use warnings;
 use base qw ( Bio::EnsEMBL::DBSQL::DBAdaptor );
 use Data::Dumper;
 
-use Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor;
-use Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor;
 use Bio::EnsEMBL::Utils::Exception qw(throw);
 
 =head1 SUBROUTINES/METHODS
@@ -80,38 +78,9 @@ sub get_available_adaptors {
 	return {
 		GenomeInfo => 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor',
 		GenomeOrganismInfo =>
-		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor'
-	};
-}
-
-use vars '$AUTOLOAD';
-
-sub AUTOLOAD {
-	my ( $self, @args ) = @_;
-
-	my $type;
-	if ( $AUTOLOAD =~ /^.*::get_(\w+)Adaptor$/ ) {
-		$type = $1;
-	}
-	elsif ( $AUTOLOAD =~ /^.*::get_(\w+)$/ ) {
-		$type = $1;
-	}
-	else {
-		throw( sprintf( "Could not work out type for %s\n", $AUTOLOAD ) );
-	}
-	my $adaptor = $self->get_available_adaptors()->{$type};
-	if ( defined $adaptor ) {
-#	    print "Getting $type $adaptor\n";
-#	    print Dumper(@INC);
-#		require $adaptor;
-#		print "Reqd\n";
-#		$adaptor->import();
-#		print "Importd\n";
-		return $adaptor->new($self);
-	}
-	else {
-		throw "Cannot find adaptor for type $type";
-	}
+		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor',
+		GenomeAssemblyInfo =>
+		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor' };
 }
 
 1;
