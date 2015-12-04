@@ -94,8 +94,6 @@ use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-use Scalar::Util qw(looks_like_number);
-use Bio::EnsEMBL::DBSQL::DBConnection;
 use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 use List::MoreUtils qw(natatime);
 
