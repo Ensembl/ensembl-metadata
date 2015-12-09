@@ -77,6 +77,8 @@ use Bio::EnsEMBL::Utils::Exception qw(throw);
 sub get_available_adaptors {
 	return {
 		GenomeInfo => 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor',
+		GenomeComparaInfo =>
+		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor',
 		GenomeOrganismInfo =>
 		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor',
 		GenomeAssemblyInfo =>
