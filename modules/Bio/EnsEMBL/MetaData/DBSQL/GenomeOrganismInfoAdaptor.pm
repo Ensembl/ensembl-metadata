@@ -252,7 +252,7 @@ sub fetch_all_by_taxonomy_ids {
 	my %ids = map { $_ => 1 } @$ids;
 	my @tids = grep { defined $ids{$_} }
 	  @{$self->dbc()->sql_helper()->execute_simple(
-							  -SQL => q/select distinct taxonomy_id from genome/
+							  -SQL => q/select distinct taxonomy_id from organism/
 		) };
 	my @genomes = ();
 	my $it = natatime 1000, @tids;
