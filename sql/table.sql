@@ -69,7 +69,8 @@ CREATE TABLE `compara_analysis` (
   `method` varchar(50) NOT NULL,
   `set_name` varchar(128) DEFAULT NULL,
   `dbname` varchar(64) NOT NULL,
-  PRIMARY KEY (`compara_analysis_id`)
+  PRIMARY KEY (`compara_analysis_id`),
+  UNIQUE KEY `division_method_set_name_dbname` (`division`,`method`,`set_name`,`dbname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

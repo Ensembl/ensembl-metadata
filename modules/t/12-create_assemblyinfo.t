@@ -64,6 +64,10 @@ ok( $aa->db()->dbc()->sql_helper()->execute_single_result(
 							   -SQL => "select count(*) from assembly_sequence"
 	  )
 	  eq '2' );
+
+my $assa = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%args);
+$aa->store($assa);
+ok($assembly->dbID() eq $assa->dbID(), "dbID reuse");
 	  
 my $ass2 = $aa->fetch_by_dbID($assembly->dbID());
 ok( defined $ass2, "Assembly object exists" );

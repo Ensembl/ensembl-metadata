@@ -69,9 +69,8 @@ sub store {
 		  @{$self->dbc()->sql_helper()->execute_simple(
 				-SQL =>
 "select assembly_id from assembly where organism_id=? and assembly_name=?",
-				-PARAMS => [ $assembly->organism()->dbID(), $assembly->name() ]
+				-PARAMS => [ $assembly->organism()->dbID(), $assembly->assembly_name() ]
 			) };
-
 		if ( defined $dbID ) {
 			$assembly->dbID($dbID);
 			$assembly->adaptor($self);

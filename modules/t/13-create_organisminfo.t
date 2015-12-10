@@ -60,6 +60,10 @@ ok( $odba->db()->dbc()->sql_helper()
 	->execute_single_result( -SQL => "select count(*) from organism_alias" )
 	eq '2' );
 
+my $orga = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
+$odba->store($orga);
+ok( $org->dbID() eq $orga->dbID(),    "dbID reuse" );
+
 my $org2 = $odba->fetch_by_dbID( $org->dbID() );
 ok( $org2->name()                     eq $args{-NAME} );
 ok( $org2->species()                  eq $args{-SPECIES} );

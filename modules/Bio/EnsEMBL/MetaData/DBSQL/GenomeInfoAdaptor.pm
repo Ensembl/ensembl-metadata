@@ -196,8 +196,7 @@ sub update {
 	$self->dbc()->sql_helper()->execute_update(
 		-SQL => q/update genome set division=?,
 genebuild=?,dbname=?,species_id=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
-has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,data_release_id=?) where genome_id=?
-		values(?,?,?,?,?,?,?,?,?,?,?)/,
+has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,data_release_id=? where genome_id=?/,
 		-PARAMS => [ $genome->division(),
                              $genome->genebuild(),
                              $genome->dbname(),

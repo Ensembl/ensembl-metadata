@@ -178,6 +178,19 @@ sub update {
 
 sub store {
 	my ( $self, $compara ) = @_;
+        # check if it already exists
+        if ( !defined $compara->dbID() ) {
+            # find out if compara exists first
+            my ($dbID) =
+                @{$self->dbc()->sql_helper()->execute_simple(
+                      -SQL => q/select compara_analysis_id from compara_analysis where division=? and method=? and set_name=? and dbname=?/,
+                      -PARAMS => [ $compara->division(), $compara->method(), $compara->set_name(), $compara->dbname() ]
+                      ) };            
+		if ( defined $dbID ) {                   
+                    $compara->dbID($dbID);
+                    $compara->adaptor($self);
+		}
+        }
 	if ( defined $compara->dbID() ) {
 		return $self->update($compara);
 	}

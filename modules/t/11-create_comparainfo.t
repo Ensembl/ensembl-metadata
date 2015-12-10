@@ -42,6 +42,15 @@ ok( $compara->division()               eq $args{-DIVISION}, "division exists" );
 ok( $compara->method()                 eq $args{-METHOD},   "method exists" );
 ok( $compara->set_name()               eq $args{-SET_NAME}, "set_name exists" );
 
+my $compara1a = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(
+-DBNAME   => $compara->dbname(),      
+			 -DIVISION => $compara->division(),
+			 -METHOD   => $compara->method(),
+			 -SET_NAME => $compara->set_name()
+);
+$gdba->store($compara1a);
+ok($compara1a->dbID() eq $compara->dbID(),"DBID reuse");
+
 my $compara2 = $gdba->fetch_by_dbID($compara->dbID());
 ok( $compara2->dbname()                 eq $args{-DBNAME},   "dbname exists" );
 ok( $compara2->division()               eq $args{-DIVISION}, "division exists" );
@@ -69,5 +78,6 @@ ok( $compara3->dbname()                 eq $c2,   "dbname exists" );
 ok( $compara3->division()               eq $args{-DIVISION}, "division exists" );
 ok( $compara3->method()                 eq $args{-METHOD},   "method exists" );
 ok( $compara3->set_name()               eq $args{-SET_NAME}, "set_name exists" );
+
 
 done_testing;

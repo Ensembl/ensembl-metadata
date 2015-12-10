@@ -121,4 +121,8 @@ ok( $genome3->species_taxonomy_id() eq $oargs{-SPECIES_TAXONOMY_ID},
 ok( $genome3->strain()       eq $oargs{-STRAIN},       "strain correct" );
 ok( $genome3->serotype()     eq $oargs{-SEROTYPE},     "serotype correct" );
 
+my $genome4 = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
+$gdba->store($genome4);
+ok($genome4->dbID() eq $genome->dbID(),"DBID reuse");
+
 done_testing;
