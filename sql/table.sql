@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS `genome`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `genome` (
   `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `release_id` int(10) unsigned NOT NULL,
+  `data_release_id` int(10) unsigned NOT NULL,
   `assembly_id` int(10) unsigned NOT NULL,
   `genebuild` varchar(64) NOT NULL,
   `division` varchar(32) NOT NULL,
@@ -95,11 +95,11 @@ CREATE TABLE `genome` (
   `has_synteny` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_other_alignments` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`genome_id`),
-  UNIQUE KEY `release_genome` (`release_id`,`genome_id`),
+  UNIQUE KEY `release_genome` (`data_release_id`,`genome_id`),
   UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
   KEY `genome_ibfk_1` (`assembly_id`),
   CONSTRAINT `genome_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`),
-  CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+  CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -258,16 +258,16 @@ CREATE TABLE `organism_publication` (
 -- Table structure for table `release`
 --
 
-DROP TABLE IF EXISTS `release`;
+DROP TABLE IF EXISTS `data_release`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `release` (
-  `release_id` int(10) unsigned NOT NULL,
+CREATE TABLE `data_release` (
+  `data_release_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ensembl_version` int(10) unsigned NOT NULL,
   `ensembl_genomes_version` int(10) unsigned DEFAULT NULL,
   `release_date` date NOT NULL,
   `is_current` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`release_id`),
+  PRIMARY KEY (`data_release_id`),
   UNIQUE KEY `ensembl_version` (`ensembl_version`,`ensembl_genomes_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
