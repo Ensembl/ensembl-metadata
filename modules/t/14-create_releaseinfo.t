@@ -43,5 +43,4 @@ $gdba->store($release2);
 ok( defined( $release2->dbID() ),    "dbID" );
 ok( defined( $release2->adaptor() ), "Adaptor" );
 
-
 done_testing;

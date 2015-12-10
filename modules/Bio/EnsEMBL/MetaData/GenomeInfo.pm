@@ -62,7 +62,7 @@ use warnings;
 package Bio::EnsEMBL::MetaData::GenomeInfo;
 use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-use Bio::EnsEMBL::MetaData::ReleaseInfo;
+use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 
@@ -118,36 +118,44 @@ sub new {
 	   $assembly_name,      $assembly_id,      $assembly_level,
 	   $self->{genebuild},  $self->{division}, $strain,
 	   $serotype,           $is_reference,     $self->{assembly},
-	   $organism,           $self->{release} )
-	  = rearrange( [ 'NAME',           'SPECIES',
-					 'DBNAME',         'SPECIES_ID',
-					 'TAXONOMY_ID',    'SPECIES_TAXONOMY_ID',
-					 'ASSEMBLY_NAME',  'ASSEMBLY_ID',
-					 'ASSEMBLY_LEVEL', 'GENEBUILD',
-					 'DIVISION',       'STRAIN',
-					 'SEROTYPE',       'IS_REFERENCE',
-					 'ASSEMBLY',       'ORGANISM',
-					 'RELEASE' ],
+	   $organism,           $self->{data_release} )
+	  = rearrange( [ 'NAME',
+                         'SPECIES',
+                         'DBNAME',
+                         'SPECIES_ID',
+                         'TAXONOMY_ID',
+                         'SPECIES_TAXONOMY_ID',
+                         'ASSEMBLY_NAME',
+                         'ASSEMBLY_ID',
+                         'ASSEMBLY_LEVEL',
+                         'GENEBUILD',
+                         'DIVISION',
+                         'STRAIN',
+                         'SEROTYPE',
+                         'IS_REFERENCE',
+                         'ASSEMBLY',
+                         'ORGANISM',
+                         'DATA_RELEASE' ],
 				   @args );
 
 	if ( !defined $self->assembly() ) {
 		my $ass =
-		  Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
-								   -ASSEMBLY_NAME       => $assembly_name,
-								   -ASSEMBLY_ID         => $assembly_id,
-								   -ASSEMBLY_LEVEL      => $assembly_level,
-								   -SPECIES             => $species,
-								   -NAME                => $name,
-								   -STRAIN              => $strain,
-								   -SEROTYPE            => $serotype,
-								   -TAXONOMY_ID         => $taxonomy_id,
-								   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-								   -IS_REFERENCE        => $is_reference,
-								   -ORGANISM            => $organism );
+                    Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
+                        -ASSEMBLY_NAME       => $assembly_name,
+                        -ASSEMBLY_ID         => $assembly_id,
+                        -ASSEMBLY_LEVEL      => $assembly_level,
+                        -SPECIES             => $species,
+                        -NAME                => $name,
+                        -STRAIN              => $strain,
+                        -SEROTYPE            => $serotype,
+                        -TAXONOMY_ID         => $taxonomy_id,
+                        -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+                        -IS_REFERENCE        => $is_reference,
+                        -ORGANISM            => $organism );
 		$ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
 		$self->assembly($ass);
 	}
-	$self->{release} ||= Bio::EnsEMBL::MetaData::ReleaseInfo->new();
+	$self->{data_release} ||= Bio::EnsEMBL::MetaData::DataReleaseInfo->new();
 	return $self;
 } ## end sub new
 
@@ -183,19 +191,19 @@ sub species_id {
 	return $self->{species_id};
 }
 
-=head2 release
-  Arg        : (optional) release object to set
-  Description: Gets/sets release to which genome belongs
-  Returntype : Bio::EnsEMBL::MetaData::ReleaseInfo
+=head2 data_release
+  Arg        : (optional) data_release object to set
+  Description: Gets/sets data_release to which genome belongs
+  Returntype : Bio::EnsEMBL::MetaData::Data_ReleaseInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub release {
-	my ( $self, $release ) = @_;
-	$self->{release} = $release if ( defined $release );
-	return $self->{release};
+sub data_release {
+	my ( $self, $data_release ) = @_;
+	$self->{data_release} = $data_release if ( defined $data_release );
+	return $self->{data_release};
 }
 
 =head2 organism
@@ -325,7 +333,7 @@ sub assembly_name {
 	return $self->assembly()->assembly_name($assembly_name);
 }
 
-=head2 assembly_id
+=head2 assembly_accession
   Arg        : (optional) assembly_id to set
   Description: Gets/sets INSDC accession for assembly
   Returntype : string
@@ -334,9 +342,9 @@ sub assembly_name {
   Status     : Stable
 =cut
 
-sub assembly_id {
+sub assembly_accession {
 	my ( $self, $assembly_id ) = @_;
-	return $self->assembly()->assembly_id($assembly_id);
+	return $self->assembly()->assembly_accession($assembly_id);
 }
 
 =head2 assembly_level

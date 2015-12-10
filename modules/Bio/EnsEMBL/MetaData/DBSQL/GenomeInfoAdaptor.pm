@@ -89,46 +89,16 @@ package Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 use strict;
 use warnings;
+
+use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
+
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Scalar::Util qw(looks_like_number);
-use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
-use Bio::EnsEMBL::DBSQL::DBConnection;
 use Data::Dumper;
 use List::MoreUtils qw/natatime/;
 use Scalar::Util qw(looks_like_number);
-use Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor;
-
-=head1 CONSTRUCTORS
-=head2 new
-  Arg        : Bio::EnsEMBL::DBSQL::DBConnection - info database to use
-  Example    : $adaptor = Bio::EnsEMBL::MetaData::GenomeInfoAdaptor->new(...);
-  Description: Creates a new adaptor object
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-
-=cut
-
-sub new {
-	my ( $proto, @args ) = @_;
-	my $self = bless {}, $proto;
-	(  $self->{user}, $self->{pass}, $self->{host}, $self->{port},
-	   $self->{dbname}, $self->{dbc}, $self->{taxonomy_adaptor} )
-	  = rearrange( [ 'USER',   'PASS', 'HOST', 'PORT',
-					 'DBNAME', 'DBC',  'TAXONOMY_ADAPTOR' ],
-				   @args );
-	if ( !defined $self->{dbc} ) {
-		$self->{dbc} =
-		  Bio::EnsEMBL::DBSQL::DBConnection->new( -USER   => $self->{user},
-												  -PASS   => $self->{pass},
-												  -HOST   => $self->{host},
-												  -PORT   => $self->{port},
-												  -DBNAME => $self->{dbname} );
-	}
-	return $self;
-}
 
 =head1 METHODS
 
@@ -143,35 +113,67 @@ sub new {
 
 sub store {
 	my ( $self, $genome ) = @_;
+	if ( !defined $genome->data_release() ) {
+		throw("Genome must be associated with a release");
+	}
+	if ( !defined $genome->data_release()->dbID() ) {
+		$self->db()->get_DataReleaseInfoAdaptor()
+		  ->store( $genome->data_release() );
+	}        
+	if ( !defined $genome->assembly() ) {
+		throw("Genome must be associated with an assembly");
+	}
+	if ( !defined $genome->assembly()->dbID() ) {
+            $self->db()->get_GenomeAssemblyInfoAdaptor()
+                ->store( $genome->assembly() );
+	}
+        if ( !defined $genome->dbID() ) {
+		# find out if genome exists first
+		my ($dbID) =
+                    @{$self->dbc()->sql_helper()->execute_simple(
+                          -SQL =>
+                          "select genome_id from genome where data_release_id=? and assembly_id=?",
+                          -PARAMS => [ $genome->data_release()->dbID(), $genome->assembly()->dbID() ]
+                          ) };
+                
+		if ( defined $dbID ) {                   
+                    $genome->dbID($dbID);
+                    $genome->adaptor($self);
+		}
+	}
+
 	if ( defined $genome->dbID() ) {
 		return $self->update($genome);
 	}
-	$self->store_assembly( $genome->assembly() );
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->db()->get_GenomeAssemblyInfoAdaptor()->store( $genome->assembly() );
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL => q/insert into genome(division,
 genebuild,dbname,species_id,has_pan_compara,has_variations,has_peptide_compara,
-has_genome_alignments,has_synteny,has_other_alignments,assembly_id)
-		values(?,?,?,?,?,?,?,?,?,?)/,
+has_genome_alignments,has_synteny,has_other_alignments,assembly_id,data_release_id)
+		values(?,?,?,?,?,?,?,?,?,?,?,?)/,
 		-PARAMS => [ $genome->division(),
-					 $genome->genebuild(),
-					 $genome->dbname(),
-					 $genome->species_id(),
-					 $genome->has_pan_compara(),
-					 $genome->has_variations(),
-					 $genome->has_peptide_compara(),
-					 $genome->has_genome_alignments(),
-					 $genome->has_synteny(),
-					 $genome->has_other_alignments(),
-					 $genome->assembly_id() ],
-		-CALLBACK => sub {
+                             $genome->genebuild(),
+                             $genome->dbname(),
+                             $genome->species_id(),
+                             $genome->has_pan_compara(),
+                             $genome->has_variations(),
+                             $genome->has_peptide_compara(),
+                             $genome->has_genome_alignments(),
+                             $genome->has_synteny(),
+                             $genome->has_other_alignments(),
+                             $genome->assembly()->dbID(),
+                             $genome->data_release()->dbID()
+            ],
+            -CALLBACK => sub {
 			my ( $sth, $dbh, $rv ) = @_;
 			$genome->dbID( $dbh->{mysql_insertid} );
-		} );
+            } );
 	$genome->adaptor($self);
 	$self->_store_annotations($genome);
 	$self->_store_features($genome);
 	$self->_store_variations($genome);
 	$self->_store_alignments($genome);
+	$self->_store_compara($genome);
 	$self->_store_cached_obj($genome);
 	return;
 } ## end sub store
@@ -190,228 +192,33 @@ sub update {
 	if ( !defined $genome->dbID() ) {
 		croak "Cannot update an object that has not already been stored";
 	}
-	$self->update_assembly( $genome->assembly() );
-	$self->{dbc}->sql_helper()->execute_update(
-		-SQL =>
-q/update genome set name=?,species=?,strain=?,serotype=?,division=?,taxonomy_id=?,species_taxonomy_id=?,
-assembly_id=?,assembly_name=?,assembly_level=?,base_count=?,
-genebuild=?,dbname=?,species_id=?,is_reference=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
-has_genome_alignments=?,has_synteny=?,has_other_alignments=? where genome_id=?/,
-		-PARAMS => [ $genome->name(),
-					 $genome->species(),
-					 $genome->strain(),
-					 $genome->serotype(),
-					 $genome->division(),
-					 $genome->taxonomy_id(),
-					 $genome->species_taxonomy_id(),
-					 $genome->assembly_id(),
-					 $genome->assembly_name(),
-					 $genome->assembly_level(),
-					 $genome->base_count(),
-					 $genome->genebuild(),
-					 $genome->dbname(),
-					 $genome->species_id(),
-					 $genome->is_reference(),
-					 $genome->has_pan_compara(),
-					 $genome->has_variations(),
-					 $genome->has_peptide_compara(),
-					 $genome->has_genome_alignments(),
-					 $genome->has_synteny(),
-					 $genome->has_other_alignments(),
-					 $genome->dbID() ] );
+	$self->db()->get_GenomeAssemblyInfoAdaptor()->update( $genome->assembly() );
+	$self->dbc()->sql_helper()->execute_update(
+		-SQL => q/update genome set division=?,
+genebuild=?,dbname=?,species_id=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
+has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,data_release_id=?) where genome_id=?
+		values(?,?,?,?,?,?,?,?,?,?,?)/,
+		-PARAMS => [ $genome->division(),
+                             $genome->genebuild(),
+                             $genome->dbname(),
+                             $genome->species_id(),
+                             $genome->has_pan_compara(),
+                             $genome->has_variations(),
+                             $genome->has_peptide_compara(),
+                             $genome->has_genome_alignments(),
+                             $genome->has_synteny(),
+                             $genome->has_other_alignments(),
+                             $genome->assembly()->dbID(),
+                             $genome->data_release()->dbID(),
+                             $genome->dbID()] );
 	$genome->adaptor($self);
 	$self->_store_annotations($genome);
 	$self->_store_features($genome);
 	$self->_store_variations($genome);
 	$self->_store_alignments($genome);
+	$self->_store_compara($genome);
 	return;
 } ## end sub update
-
-sub store_assembly {
-	my ( $self, $assembly ) = @_;
-	# take care of organism first
-	$self->store_organism( $assembly->organism() );
-	if ( defined $assembly->dbID() ) {
-
-		$self->update_assembly($assembly);
-
-	}
-	$self->_store_sequences($assembly);
-	$assembly->adaptor($self);
-	$self->_store_cached_obj($assembly);
-	return;
-}
-
-sub update_assembly {
-	my ( $self, $assembly ) = @_;
-	$self->update_organism( $assembly->organism() );
-	if ( !defined $assembly->dbID() ) {
-		croak "Cannot update an object that has not already been stored";
-	}
-	$self->_store_sequences($assembly);
-	return;
-}
-
-sub store_organism {
-	my ( $self, $organism ) = @_;
-	if ( !defined $organism->dbID() ) {
-		# find out if organism exists first
-		my ($dbID) =
-		  @{$self->{dbc}->sql_helper()->execute_simple(
-						-SQL => "select organism_id from organism where name=?",
-						-PARAMS => [ $organism->name() ] ) };
-
-		if ( defined $dbID ) {
-			$organism->dbID($dbID);
-			$organism->adaptor($self);
-		}
-	}
-	if ( defined $organism->dbID() ) {
-		$self->update_organism($organism);
-	}
-	$self->{dbc}->sql_helper()->execute_update(
-		-SQL => q/insert into organism(name,species,strain,serotype,taxonomy_id,
-species_taxonomy_id,is_reference)
-		values(?,?,?,?,?,?,?)/,
-		-PARAMS => [ $organism->name(),
-					 $organism->species(),
-					 $organism->strain(),
-					 $organism->serotype(),
-					 $organism->taxonomy_id(),
-					 $organism->species_taxonomy_id(),
-					 $organism->is_reference() ],
-		-CALLBACK => sub {
-			my ( $sth, $dbh, $rv ) = @_;
-			$organism->dbID( $dbh->{mysql_insertid} );
-		} );
-	$self->_store_aliases($organism);
-	$self->_store_publications($organism);
-	$organism->adaptor($self);
-	$self->_store_cached_obj($organism);
-	return;
-} ## end sub store_organism
-
-sub update_organism {
-	my ( $self, $organism ) = @_;
-	if ( !defined $organism->dbID() ) {
-		croak "Cannot update an object that has not already been stored";
-	}
-
-	$self->{dbc}->sql_helper()->execute_update(
-		-SQL =>
-q/update organism set name=?,species=?,strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
-is_reference=? where genome_id=?/,
-		-PARAMS => [ $organism->name(),
-					 $organism->species(),
-					 $organism->strain(),
-					 $organism->serotype(),
-					 $organism->taxonomy_id(),
-					 $organism->species_taxonomy_id(),
-					 $organism->is_reference(),
-					 $organism->dbID() ] );
-
-	$self->_store_aliases($organism);
-	$self->_store_publications($organism);
-	return;
-}
-
-sub store_release {
-	my ( $self, $release ) = @_;
-	if ( defined $release->dbID() ) {
-		$self->update_release($release);
-	}
-	return;
-}
-
-sub update_release {
-	my ( $self, $release ) = @_;
-	if ( !defined $release->dbID() ) {
-		croak "Cannot update an object that has not already been stored";
-	}
-	return;
-}
-
-=head2 update_compara
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Description: Updates the supplied object and all associated  genomes
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub update_compara {
-	my ( $self, $compara ) = @_;
-	if ( !defined $compara->dbID() ) {
-		croak "Cannot update compara object with no dbID";
-	}
-	$self->{dbc}->sql_helper()->execute_update(
-		-SQL => q/update compara_analysis 
-	  set method=?,division=?,set_name=?,dbname=? 
-	  where compara_analysis_id=?/,
-		-PARAMS => [ $compara->method(),   $compara->division(),
-					 $compara->set_name(), $compara->dbname(),
-					 $compara->dbID() ] );
-
-	$self->{dbc}->sql_helper()->execute_update(
-		   -SQL =>
-			 q/delete from genome_compara_analysis where compara_analysis_id=?/,
-		   -PARAMS => [ $compara->dbID() ] );
-	if ( defined $compara->genomes() ) {
-		for my $genome ( @{ $compara->genomes() } ) {
-			if ( defined $genome->dbID() ) {
-				$self->update($genome);
-			}
-			else {
-				$self->store($genome);
-			}
-			$self->{dbc}->sql_helper()->execute_update(
-				-SQL =>
-q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
-		values(?,?)/,
-				-PARAMS => [ $genome->dbID(), $compara->dbID() ] );
-		}
-	}
-	$self->_store_cached_obj($compara);
-	return;
-} ## end sub update_compara
-
-=head2 store_compara
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Description: Stores the supplied object and all associated  genomes (if not already stored)
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub store_compara {
-	my ( $self, $compara ) = @_;
-	if ( defined $compara->dbID() ) {
-		return $self->update_compara($compara);
-	}
-	$self->{dbc}->sql_helper()->execute_update(
-		-SQL => q/insert into compara_analysis(method,division,set_name,dbname)
-		values(?,?,?,?)/,
-		-PARAMS => [ $compara->method(),   $compara->division(),
-					 $compara->set_name(), $compara->dbname() ],
-		-CALLBACK => sub {
-			my ( $sth, $dbh, $rv ) = @_;
-			$compara->dbID( $dbh->{mysql_insertid} );
-		} );
-	if ( defined $compara->genomes() ) {
-		for my $genome ( @{ $compara->genomes() } ) {
-			$self->store($genome);
-			$self->{dbc}->sql_helper()->execute_update(
-				-SQL =>
-q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
-		values(?,?)/,
-				-PARAMS => [ $genome->dbID(), $compara->dbID() ] );
-		}
-	}
-	$self->_store_cached_obj($compara);
-	return;
-} ## end sub store_compara
 
 =head2 update_booleans
   Description: Updates boolean genome attributes for all genomes
@@ -425,7 +232,7 @@ sub update_booleans {
 	my ($self) = @_;
 
 	#has_peptide_compara
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL =>
 		  q/update genome g join genome_compara_analysis gc using (genome_id) 
 	  join compara_analysis c using (compara_analysis_id) 
@@ -434,7 +241,7 @@ sub update_booleans {
 	);
 
 	#has_pan_compara
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL =>
 		  q/update genome g join genome_compara_analysis gc using (genome_id) 
 	  join compara_analysis c using (compara_analysis_id) 
@@ -443,7 +250,7 @@ sub update_booleans {
 	);
 
 	#has_genome_alignments
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL =>
 		  q/update genome g join genome_compara_analysis gc using (genome_id) 
 	  join compara_analysis c using (compara_analysis_id) 
@@ -452,7 +259,7 @@ sub update_booleans {
 	);
 
 	#has_synteny
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL =>
 		  q/update genome g join genome_compara_analysis gc using (genome_id) 
 	  join compara_analysis c using (compara_analysis_id) 
@@ -460,76 +267,19 @@ sub update_booleans {
 	);
 
 	#has_other_alignments
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL => q/update genome g join genome_alignment a using (genome_id) 
 	  set g.has_other_alignments=1/
 	);
 
 	#has_variations
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 		-SQL => q/update genome g join genome_variation a using (genome_id)
 	  set g.has_variations=1/
 	);
 
 	return;
 } ## end sub update_booleans
-
-=head2 _store_aliases
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
-  Description: Stores the aliases for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_aliases {
-	my ( $self, $organism ) = @_;
-
-	$self->{dbc}->sql_helper()->execute_update(
-					  -SQL => q/delete from organism_alias where organism_id=?/,
-					  -PARAMS => [ $organism->dbID() ] );
-	if ( defined $organism->aliases() ) {
-		for my $alias ( @{ $organism->aliases() } ) {
-			$self->{dbc}->sql_helper()->execute_update(
-				-SQL => q/insert into organism_alias(organism_id,alias)
-		values(?,?)/,
-				-PARAMS => [ $organism->dbID(), $alias ] );
-		}
-	}
-	return;
-}
-
-=head2 _store_sequences
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
-  Description: Stores the sequences for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_sequences {
-	my ( $self, $genome ) = @_;
-
-	$self->{dbc}->sql_helper()->execute_update(
-					   -SQL => q/delete from genome_sequence where genome_id=?/,
-					   -PARAMS => [ $genome->dbID() ] );
-
-	my $it = natatime 1000, @{ $genome->sequences() };
-	while ( my @vals = $it->() ) {
-		my $sql =
-		  'insert ignore into genome_sequence(genome_id,name,acc) values ' .
-		  join(
-			',',
-			map {
-				'(' . $genome->dbID() . ',"' . $_->{name} . '",' .
-				  ( $_->{acc} ? ( '"' . $_->{acc} . '"' ) : ('NULL') ) . ')'
-			} @vals );
-		$self->{dbc}->sql_helper()->execute_update( -SQL => $sql );
-	}
-	return;
-}
 
 =head2 _store_features
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
@@ -543,13 +293,13 @@ sub _store_sequences {
 sub _store_features {
 	my ( $self, $genome ) = @_;
 
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 						-SQL => q/delete from genome_feature where genome_id=?/,
 						-PARAMS => [ $genome->dbID() ] );
 
 	while ( my ( $type, $f ) = each %{ $genome->features() } ) {
 		while ( my ( $analysis, $count ) = each %$f ) {
-			$self->{dbc}->sql_helper()->execute_update(
+			$self->dbc()->sql_helper()->execute_update(
 				-SQL =>
 				  q/insert into genome_feature(genome_id,type,analysis,count)
 		values(?,?,?,?)/,
@@ -571,43 +321,15 @@ sub _store_features {
 sub _store_annotations {
 	my ( $self, $genome ) = @_;
 
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 					 -SQL => q/delete from genome_annotation where genome_id=?/,
 					 -PARAMS => [ $genome->dbID() ] );
 
 	while ( my ( $type, $count ) = each %{ $genome->annotations() } ) {
-		$self->{dbc}->sql_helper()->execute_update(
+		$self->dbc()->sql_helper()->execute_update(
 			-SQL => q/insert into genome_annotation(genome_id,type,count)
 		values(?,?,?)/,
 			-PARAMS => [ $genome->dbID(), $type, $count ] );
-	}
-	return;
-}
-
-=head2 _store_publications
-  Arg	     : Bio::EnsEMBL::MetaData::OrganismInfo
-  Description: Stores the publications for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_publications {
-	my ( $self, $organism ) = @_;
-
-	$self->{dbc}->sql_helper()->execute_update(
-				-SQL => q/delete from organism_publication where organism_id=?/,
-				-PARAMS => [ $organism->dbID() ] );
-
-	if ( defined $organism->publications() ) {
-		for my $pub ( @{ $organism->publications() } ) {
-			$self->{dbc}->sql_helper()->execute_update(
-				-SQL =>
-				  q/insert into organism_publication(organism_id,publication)
-		values(?,?)/,
-				-PARAMS => [ $organism->dbID(), $pub ] );
-		}
 	}
 	return;
 }
@@ -624,13 +346,13 @@ sub _store_publications {
 sub _store_variations {
 	my ( $self, $genome ) = @_;
 
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 					  -SQL => q/delete from genome_variation where genome_id=?/,
 					  -PARAMS => [ $genome->dbID() ] );
 
 	while ( my ( $type, $f ) = each %{ $genome->variations() } ) {
 		while ( my ( $key, $count ) = each %$f ) {
-			$self->{dbc}->sql_helper()->execute_update(
+			$self->dbc()->sql_helper()->execute_update(
 				-SQL =>
 				  q/insert into genome_variation(genome_id,type,name,count)
 		values(?,?,?,?)/,
@@ -652,13 +374,13 @@ sub _store_variations {
 sub _store_alignments {
 	my ( $self, $genome ) = @_;
 
-	$self->{dbc}->sql_helper()->execute_update(
+	$self->dbc()->sql_helper()->execute_update(
 					  -SQL => q/delete from genome_alignment where genome_id=?/,
 					  -PARAMS => [ $genome->dbID() ] );
 
 	while ( my ( $type, $f ) = each %{ $genome->other_alignments() } ) {
 		while ( my ( $key, $count ) = each %$f ) {
-			$self->{dbc}->sql_helper()->execute_update(
+			$self->dbc()->sql_helper()->execute_update(
 				-SQL =>
 				  q/insert into genome_alignment(genome_id,type,name,count)
 		values(?,?,?,?)/,
@@ -668,17 +390,36 @@ sub _store_alignments {
 	return;
 }
 
-sub taxonomy_adaptor {
-	my ( $self, $adaptor ) = @_;
-	if ( defined $adaptor ) {
-		$self->{taxonomy_adaptor} = $adaptor;
+sub _store_compara {
+	my ( $self, $genome ) = @_;
+
+	$self->dbc()->sql_helper()->execute_update(
+					  -SQL => q/delete from genome_compara_analysis where genome_id=?/,
+					  -PARAMS => [ $genome->dbID() ] );
+        if(defined $genome->compara()) {
+            for my $compara (@{$genome->compara()}) {
+                if(!defined $compara->dbID()) {
+                    $self->db()->get_GenomeComparaInfoAdaptor()->store($compara);
+                }
+                $self->dbc()->sql_helper()->execute_update(
+                    -SQL=>q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)/,
+                    -PARAMS=>[$genome->dbID(), $compara->dbID()]
+                    );
+            }
+        }
+	while ( my ( $type, $f ) = each %{ $genome->other_alignments() } ) {
+		while ( my ( $key, $count ) = each %$f ) {
+			$self->dbc()->sql_helper()->execute_update(
+				-SQL =>
+				  q/insert into genome_alignment(genome_id,type,name,count)
+		values(?,?,?,?)/,
+				-PARAMS => [ $genome->dbID(), $type, $key, $count ] );
+		}
 	}
-	elsif ( !defined $self->{taxonomy_adaptor} ) {
-		$self->{taxonomy_adaptor} =
-		  Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor->new_public();
-	}
-	return $self->{taxonomy_adaptor};
+	return;
+
 }
+
 
 =head2 list_divisions
   Description: Get list of all Ensembl Genomes divisions for which information is available
@@ -690,73 +431,12 @@ sub taxonomy_adaptor {
 
 sub list_divisions {
 	my ($self) = @_;
-	return $self->{dbc}->sql_helper()
+	return $self->dbc()->sql_helper()
 	  ->execute_simple( -SQL =>
 			q/select distinct division from genome where division<>'Ensembl'/ );
 }
 
-my $base_fetch_sql = q/
-select 
-genome_id as dbID,species,name,strain,serotype,division,taxonomy_id,
-species_taxonomy_id,assembly_id,assembly_name,assembly_level,base_count,
-genebuild,dbname,species_id,is_reference,
-has_pan_compara,has_variations,has_peptide_compara,
-has_genome_alignments,has_other_alignments
-from genome
-/;
 
-=head2 fetch_all
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch all genome info
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all {
-	my ( $self, $keen ) = @_;
-	return $self->_fetch_generic_with_args( {}, $keen );
-}
-
-=head2 fetch_by_dbID
-  Arg	     : ID of genome info
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified ID
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub fetch_by_dbID {
-	my ( $self, $id, $keen ) = @_;
-	return
-	  _first_element( $self->_fetch_generic_with_args( { 'genome_id', $id } ),
-					  $keen );
-}
-
-=head2 fetch_by_dbIDs
-  Arg	     : IDs of genome info
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified ID
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub fetch_by_dbIDs {
-	my ( $self, $ids, $keen ) = @_;
-	my @genomes = ();
-	my $it = natatime 1000, @{$ids};
-	while ( my @vals = $it->() ) {
-		my $sql =
-		  $base_fetch_sql . ' where genome_id in (' . join( ',', @vals ) . ')';
-		@genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
-	}
-	return \@genomes;
-}
 
 =head2 fetch_all_by_sequence_accession
   Arg	     : INSDC sequence accession e.g. U00096.1 or U00096
@@ -792,7 +472,7 @@ sub fetch_all_by_sequence_accession_unversioned {
 	my ( $self, $id, $keen ) = @_;
 	return
 	  $self->_fetch_generic(
-		$base_fetch_sql .
+		$self->_get_base_sql() .
 ' where genome_id in (select distinct(genome_id) from genome_sequence where acc like ? or name like ?)',
 		[ $id . '.%', $id . '.%' ],
 		$keen );
@@ -812,7 +492,7 @@ sub fetch_all_by_sequence_accession_versioned {
 	my ( $self, $id, $keen ) = @_;
 	return
 	  $self->_fetch_generic(
-		$base_fetch_sql .
+		$self->_get_base_sql() .
 ' where genome_id in (select distinct(genome_id) from genome_sequence where acc=? or name=?)',
 		[ $id, $id ],
 		$keen );
@@ -868,78 +548,10 @@ sub fetch_by_assembly_id_unversioned {
 	my ( $self, $id, $keen ) = @_;
 	return
 	  _first_element( $self->_fetch_generic(
-								  $base_fetch_sql . ' where assembly_id like ?',
+								  $self->_get_base_sql() . ' where assembly_id like ?',
 								  [ $id . '.%' ], $keen ) );
 }
 
-=head2 fetch_by_taxonomy_id
-  Arg	     : Taxonomy ID
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified taxonomy node
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_by_taxonomy_id {
-	my ( $self, $id, $keen ) = @_;
-	return $self->_fetch_generic_with_args( { 'taxonomy_id', $id }, $keen );
-}
-
-=head2 fetch_by_taxonomy_ids
-  Arg	     : Arrayref of Taxonomy ID
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified taxonomy nodes (batch)
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_by_taxonomy_ids {
-	my ( $self, $ids, $keen ) = @_;
-
-	# filter list down
-	my %ids = map { $_ => 1 } @$ids;
-	my @tids = grep { defined $ids{$_} }
-	  @{$self->{dbc}->sql_helper()->execute_simple(
-							  -SQL => q/select distinct taxonomy_id from genome/
-		) };
-	my @genomes = ();
-	my $it = natatime 1000, @tids;
-	while ( my @vals = $it->() ) {
-		my $sql = $base_fetch_sql . ' where taxonomy_id in (' .
-		  join( ',', @vals ) . ')';
-		@genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
-	}
-	return \@genomes;
-}
-
-=head2 fetch_all_by_taxonomy_branch
-  Arg	     : Bio::EnsEMBL::TaxonomyNode
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified taxonomy node and its children
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_by_taxonomy_branch {
-	my ( $self, $root, $keen ) = @_;
-	if ( ref($root) ne 'Bio::EnsEMBL::TaxonomyNode' ) {
-		if ( looks_like_number($root) ) {
-			$root = $self->taxonomy_adaptor()->fetch_by_taxon_id($root);
-		}
-		else {
-			($root) = @{ $self->taxonomy_adaptor()->fetch_all_by_name($root) };
-		}
-	}
-	my @taxids =
-	  ( $root->taxon_id(), @{ $root->adaptor()->fetch_descendant_ids($root) } );
-	return $self->fetch_all_by_taxonomy_ids( \@taxids );
-}
 
 =head2 fetch_all_by_division
   Arg	     : Name of division
@@ -954,22 +566,6 @@ sub fetch_all_by_taxonomy_branch {
 sub fetch_all_by_division {
 	my ( $self, $division, $keen ) = @_;
 	return $self->_fetch_generic_with_args( { 'division', $division }, $keen );
-}
-
-=head2 fetch_by_species
-  Arg	     : Name of species
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified species
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_by_species {
-	my ( $self, $species, $keen ) = @_;
-	return _first_element(
-			$self->_fetch_generic_with_args( { 'species', $species }, $keen ) );
 }
 
 =head2 fetch_by_name
@@ -1039,7 +635,7 @@ sub fetch_all_by_name_pattern {
 	my ( $self, $name, $keen ) = @_;
 	return
 	  $self->_fetch_generic(
-				 $base_fetch_sql . q/ where species REGEXP ? or name REGEXP ? /,
+				 $self->_get_base_sql() . q/ where species REGEXP ? or name REGEXP ? /,
 				 [ $name, $name ], $keen );
 }
 
@@ -1058,7 +654,7 @@ sub fetch_by_alias {
 	return
 	  _first_element(
 					$self->_fetch_generic(
-						$base_fetch_sql .
+						$self->_get_base_sql() .
 						  q/ join genome_alias using (genome_id) where alias=?/,
 						[$name],
 						$keen ) );
@@ -1136,7 +732,7 @@ sub fetch_all_with_genome_alignments {
 
 sub fetch_all_with_compara {
 	my ( $self, $keen ) = @_;
-	return $self->_fetch_generic( $base_fetch_sql .
+	return $self->_fetch_generic( $self->_get_base_sql() .
 q/ where has_genome_alignments=1 or has_pan_compara=1 or has_peptide_compara=1/
 	);
 }
@@ -1172,7 +768,7 @@ sub _fetch_variations {
 	  "Cannot fetch variations for a GenomeInfo object that has not been stored"
 	  if !defined $genome->dbID();
 	my $variations = {};
-	$self->{dbc}->sql_helper()->execute_no_return(
+	$self->dbc()->sql_helper()->execute_no_return(
 		-SQL =>
 		  'select type,name,count from genome_variation where genome_id=?',
 		-CALLBACK => sub {
@@ -1201,7 +797,7 @@ sub _fetch_other_alignments {
 	  "Cannot fetch alignments for a GenomeInfo object that has not been stored"
 	  if !defined $genome->dbID();
 	my $alignments = {};
-	$self->{dbc}->sql_helper()->execute_no_return(
+	$self->dbc()->sql_helper()->execute_no_return(
 		-SQL =>
 		  'select type,name,count from genome_alignment where genome_id=?',
 		-CALLBACK => sub {
@@ -1230,7 +826,7 @@ sub _fetch_annotations {
 "Cannot fetch annotations for a GenomeInfo object that has not been stored"
 	  if !defined $genome->dbID();
 	my $annotations = {};
-	$self->{dbc}->sql_helper()->execute_no_return(
+	$self->dbc()->sql_helper()->execute_no_return(
 		-SQL => 'select type,count from genome_annotation where genome_id=?',
 		-CALLBACK => sub {
 			my @row = @{ shift @_ };
@@ -1257,7 +853,7 @@ sub _fetch_features {
 	  "Cannot fetch features  for a GenomeInfo object that has not been stored"
 	  if !defined $genome->dbID();
 	my $features = {};
-	$self->{dbc}->sql_helper()->execute_no_return(
+	$self->dbc()->sql_helper()->execute_no_return(
 		-SQL =>
 		  'select type,analysis,count from genome_feature where genome_id=?',
 		-CALLBACK => sub {
@@ -1267,73 +863,6 @@ sub _fetch_features {
 		},
 		-PARAMS => [ $genome->dbID() ] );
 	$genome->features($features);
-	return;
-}
-
-=head2 _fetch_publications
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
-  Description: Add publications to supplied object
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_publications {
-	my ( $self, $org ) = @_;
-	croak "Cannot fetch publications for an object that has not been stored"
-	  if !defined $org->dbID();
-	my $pubs =
-	  $self->{dbc}->sql_helper()->execute_simple(
-		   -SQL =>
-			 'select publication from organism_publication where organism_id=?',
-		   -PARAMS => [ $org->dbID() ] );
-	$org->publications($pubs);
-	return;
-}
-
-=head2 _fetch_aliases
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
-  Description: Add aliases to supplied object
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_aliases {
-	my ( $self, $org ) = @_;
-	croak
-	  "Cannot fetch aliases for a GenomeInfo object that has not been stored"
-	  if !defined $org->dbID();
-	my $aliases =
-	  $self->{dbc}->sql_helper()->execute_simple(
-				 -SQL => 'select alias from organism_alias where organism_id=?',
-				 -PARAMS => [ $org->dbID() ] );
-	$org->aliases($aliases);
-	return;
-}
-
-=head2 _fetch_sequences
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
-  Description: Add sequences to supplied object
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_sequences {
-	my ( $self, $genome ) = @_;
-	croak
-	  "Cannot fetch sequences for a GenomeInfo object that has not been stored"
-	  if !defined $genome->dbID();
-	my $sequences =
-	  $self->{dbc}->sql_helper()->execute(
-			   -USE_HASHREFS => 1,
-			   -SQL => 'select name,acc from genome_sequence where genome_id=?',
-			   -PARAMS => [ $genome->dbID() ] );
-	$genome->sequences($sequences);
 	return;
 }
 
@@ -1350,249 +879,20 @@ sub _fetch_comparas {
 	my ( $self, $genome ) = @_;
 	my $comparas = [];
 	for my $id (
-		@{  $self->{dbc}->sql_helper()->execute_simple(
+		@{  $self->dbc()->sql_helper()->execute_simple(
 				-SQL =>
 				  q/select distinct compara_analysis_id from compara_analysis 
   join genome_compara_analysis using (compara_analysis_id)
   where genome_id=? and method in ('BLASTZ_NET','LASTZ_NET','TRANSLATED_BLAT_NET', 'PROTEIN_TREES', 'ATAC')/,
 				-PARAMS => [ $genome->dbID() ] ) } )
 	{
-		push @$comparas, $self->fetch_compara_by_dbID($id);
+		push @$comparas, $self->db()->get_GenomeComparaInfoAdaptor()->fetch_compara_by_dbID($id);
 	}
 	$genome->compara($comparas);
 	$genome->has_pan_compara();
 	$genome->has_genome_alignments();
 	$genome->has_peptide_compara();
 	return;
-}
-
-=head2 fetch_all_comparas
-  Description: Fetch all compara analyses
-  Returntype : array ref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_comparas {
-	my ( $self, $id ) = @_;
-	return $self->_fetch_compara_with_args();
-}
-
-=head2 fetch_compara_by_dbID
-  Arg	     : ID of compara analysis to retrieve
-  Description: Fetch compara specified compara analysis
-  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_compara_by_dbID {
-	my ( $self, $id ) = @_;
-	return _first_element(
-			$self->_fetch_compara_with_args( { compara_analysis_id => $id } ) );
-}
-
-=head2 fetch_all_compara_by_division
-  Arg	     : Division of compara analyses to retrieve
-  Description: Fetch compara specified compara analysis
-  Returntype : array ref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_compara_by_division {
-	my ( $self, $division ) = @_;
-	return $self->_fetch_compara_with_args( { division => $division } );
-}
-
-=head2 fetch_all_compara_by_method
-  Arg	     : Method of compara analyses to retrieve
-  Description: Fetch compara specified compara analysis
-  Returntype : array ref of  Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_compara_by_method {
-	my ( $self, $method ) = @_;
-	return $self->_fetch_compara_with_args( { method => $method } );
-}
-
-=head2 fetch_compara_by_dbname_method_set
-  Arg	     : DBName of compara analyses to retrieve
-  Arg	     : Method of compara analyses to retrieve
-  Arg	     : Set of compara analyses to retrieve
-  Description: Fetch specified compara analysis
-  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_compara_by_dbname_method_set {
-	my ( $self, $dbname, $method, $set_name ) = @_;
-	return
-	  _first_element(
-			 $self->_fetch_compara_with_args(
-				 { dbname => $dbname, method => $method, set_name => $set_name }
-			 ) );
-}
-
-my $base_compara_fetch_sql =
-q/select compara_analysis_id, division, method, set_name, dbname from compara_analysis/;
-
-=head2 _fetch_compara_with_args
-  Arg	     : hashref of arguments by column
-  Description: Fetch compara analyses by column value pairs
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_compara_with_args {
-	my ( $self, $args ) = @_;
-	my $sql    = $base_compara_fetch_sql;
-	my $params = [ values %$args ];
-	my $clause = join( ' AND ', map { $_ . '=?' } keys %$args );
-	if ( $clause ne '' ) {
-		$sql .= ' where ' . $clause;
-	}
-	return $self->_fetch_compara_generic( $sql, $params );
-}
-
-=head2 _fetch_compara_generic
-  Arg	     : SQL
-  Arg	     : array ref of bind params
-  Description: Fetch compara analyses using supplied SQL
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_compara_generic {
-	my ( $self, $sql, $params ) = @_;
-
-	# check to see if we've cached this already
-
-	# build the main object first
-	my $comparas = $self->{dbc}->sql_helper()->execute(
-		-SQL      => $sql,
-		-PARAMS   => $params,
-		-CALLBACK => sub {
-			my @row = @{ shift @_ };
-			my $id  = $row[0];
-			my $c =
-			  $self->_get_cached_obj(
-									'Bio::EnsEMBL::MetaData::GenomeComparaInfo',
-									$id );
-			if ( !defined $c ) {
-				$c = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new();
-				$c->dbID($id);
-				$c->division( $row[1] );
-				$c->method( $row[2] );
-				$c->set_name( $row[3] );
-				$c->dbname( $row[4] );
-
-				# cache the completed compara object
-				$c->adaptor($self);
-				$self->_store_cached_obj($c);
-			}
-			return $c;
-		} );
-	for my $compara (@$comparas) {
-
-# add genomes on one by one (don't nest the fetch here as could run of connections)
-		if ( !defined $compara->{genomes} ) {
-			my $genomes = [];
-			for my $genome_id (
-				@{  $self->{dbc}->sql_helper()->execute_simple(
-						-SQL =>
-q/select distinct(genome_id) from genome_compara_analysis where compara_analysis_id=?/,
-						-PARAMS => [ $compara->dbID() ] );
-				} )
-			{
-				push @$genomes, $self->fetch_by_dbID($genome_id);
-			}
-			$compara->genomes($genomes);
-		}
-	}
-	return $comparas;
-} ## end sub _fetch_compara_generic
-
-=head2 fetch_all_comparas
-  Description: Fetch all compara analyses
-  Returntype : array ref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_organisms {
-	my ( $self, $id ) = @_;
-	return $self->_fetch_organism_with_args();
-}
-
-=head2 fetch_compara_by_dbID
-  Arg	     : ID of compara analysis to retrieve
-  Description: Fetch compara specified compara analysis
-  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_organism_by_dbID {
-	my ( $self, $id ) = @_;
-	return _first_element(
-				   $self->_fetch_organism_with_args( { organism_id => $id } ) );
-}
-
-=head2 fetch_compara_by_dbname_method_set
-  Arg	     : DBName of compara analyses to retrieve
-  Arg	     : Method of compara analyses to retrieve
-  Arg	     : Set of compara analyses to retrieve
-  Description: Fetch specified compara analysis
-  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_organsim_by_name {
-	my ( $self, $name ) = @_;
-	return _first_element(
-						$self->_fetch_organism_with_args( { name => $name } ) );
-}
-
-my $base_organism_fetch_sql =
-q/select organism_id as dbID, name, species, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
-
-=head2 _fetch_compara_with_args
-  Arg	     : hashref of arguments by column
-  Description: Fetch compara analyses by column value pairs
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_organism_with_args {
-	my ( $self, $args ) = @_;
-	my ( $sql, $params ) = _args_to_sql( $base_organism_fetch_sql, $args );
-	my $orgs = $self->_fetch_generic( $sql, $params,
-								 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' );
-	for my $org (@$orgs)
-	{
-		$self->_fetch_publications($org);
-		$self->_fetch_aliases($org);
-	}
-	return $orgs;
 }
 
 =head2 _fetch_children
@@ -1605,171 +905,39 @@ sub _fetch_organism_with_args {
 =cut
 
 sub _fetch_children {
-	my ( $self, $md ) = @_;
-	$self->_fetch_variations($md);
-	$self->_fetch_sequences($md);
-	#$self->_fetch_aliases($md);
-	#$self->_fetch_publications($md);
-	$self->_fetch_annotations($md);
-	$self->_fetch_other_alignments($md);
-	$self->_fetch_comparas($md);
+	my ( $self, $genome ) = @_;
+	if ( defined $genome->{assembly_id} ) {
+		$genome->assembly( $self->db()->get_GenomeAssemblyInfoAdaptor()
+					   ->fetch_by_dbID( $genome->{assembly_id} ) );
+	}
+	if ( defined $genome->{data_release_id} ) {
+		$genome->data_release( $self->db()->get_DataReleaseInfoAdaptor()
+					   ->fetch_by_dbID( $genome->{data_release_id} ) );
+	}
+	$self->_fetch_variations($genome);
+	$self->_fetch_annotations($genome);
+	$self->_fetch_other_alignments($genome);
+	$self->_fetch_comparas($genome);
 	return;
 }
 
-=head2 _fetch_generic_with_args
-  Arg	     : hashref of arguments by column
-  Arg        : (optional) if set to 1, all children will be fetched
-  Description: Instantiate a GenomeInfo from the database using a 
-               generic method, with the supplied arguments
-  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
+my $base_genome_fetch_sql =
+q/select genome_id as dbID, division, genebuild, dbname,species_id,
+has_pan_compara, has_variations, has_peptide_compara, 
+has_genome_alignments, has_synteny, has_other_alignments, 
+assembly_id, data_release_id
+from genome/;
 
-sub _fetch_generic_with_args {
-	my ( $self, $args, $type, $keen ) = @_;
-	my ( $sql, $params ) = _args_to_sql( $base_fetch_sql, $args );
-	my $info =
-	  $self->_fetch_generic( $sql, $params,
-							 'Bio::EnsEMBL::MetaData::GenomeInfo',
-							 $keen );
-	# add assembly and release
-	return $info;
+sub _get_base_sql {
+	return $base_genome_fetch_sql;
 }
 
-sub _args_to_sql {
-	my ( $sql_in, $args ) = @_;
-	my $sql    = $sql_in;
-	my $params = [ values %$args ];
-	my $clause = join( ',', map { $_ . '=?' } keys %$args );
-	if ( $clause ne '' ) {
-		$sql .= ' where ' . $clause;
-	}
-	return ( $sql, $params );
+sub _get_id_field {
+	return 'genome_id';
 }
 
-=head2 _fetch_generic
-  Arg	     : SQL to use to fetch object
-  Arg	     : arrayref of bind parameters
-  Arg        : (optional) if set to 1, all children will be fetched
-  Description: Instantiate a GenomeInfo from the database using the specified SQL
-  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _fetch_generic {
-	my ( $self, $sql, $params, $type, $keen ) = @_;
-	my $mds = $self->{dbc}->sql_helper()->execute(
-		-SQL          => $sql,
-		-USE_HASHREFS => 1,
-		-CALLBACK     => sub {
-			my $row = shift @_;
-			my $md = $self->_get_cached_obj( $type, $row->{dbID} );
-			if ( !defined $md ) {
-				$md = bless $row, $type;
-				$md->adaptor($self);
-				$self->_store_cached_obj($md);
-			}
-			return $md;
-		},
-		-PARAMS => $params );
-	if ( defined $keen && $keen == 1 ) {
-		for my $md ( @{$mds} ) {
-			$self->_fetch_children($md);
-		}
-	}
-	return $mds;
-}
-
-=head2 _cache
-  Arg	     : type of object for cache
-  Description: Return internal cache for given type
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _cache {
-	my ( $self, $type ) = @_;
-	if ( !defined $self->{cache} || !defined $self->{cache}{$type} ) {
-		$self->{cache}{$type} = {};
-	}
-	return $self->{cache}{$type};
-}
-
-=head2 _clear_cache
-  Arg	     : (optional) type of object to clear
-  Description: Clear internal cache (optionally just one type)
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _clear_cache {
-	my ( $self, $type ) = @_;
-	if ( defined $type ) {
-		$self->{cache}{$type} = {};
-	}
-	else {
-		$self->{cache} = {};
-	}
-	return;
-}
-
-=head2 _get_cached_obj
-  Arg	     : type of object to retrieve
-  Arg	     : ID of object to retrieve
-  Description: Retrieve object from internal cache
-  Returntype : object
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _get_cached_obj {
-	my ( $self, $type, $id ) = @_;
-	return $self->_cache($type)->{$id};
-}
-
-=head2 _store_cached_obj
-  Arg	     : type of object to store
-  Arg	     : object to store
-  Description: Store object in internal cache
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_cached_obj {
-	my ( $self, $obj ) = @_;
-	my $type = ref $obj;
-	$self->_cache($type)->{ $obj->dbID() } = $obj;
-	return;
-}
-
-=head2 _first_element
-  Arg	     : arrayref
-  Description: Utility method to return the first element in a list, undef if empty
-  Returntype : arrayref element
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _first_element {
-	my ($arr) = @_;
-	if ( defined $arr && scalar(@$arr) > 0 ) {
-		return $arr->[0];
-	}
-	else {
-		return undef;
-	}
+sub _get_obj_class {
+	return 'Bio::EnsEMBL::MetaData::GenomeInfo';
 }
 
 1;
