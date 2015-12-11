@@ -160,6 +160,16 @@ q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_
 	return;
 }
 
+sub fetch_current_ensembl_release {
+    my ($self) = @_;
+    return $self->_first_element($self->_fetch_generic(_get_base_sql().' where is_current=1 and ensembl_genomes_version is null'));
+}
+
+sub fetch_current_ensembl_genomes_release {
+    my ($self) = @_;
+    return $self->_first_element($self->_fetch_generic(_get_base_sql().' where is_current=1 and ensembl_genomes_version is not null'));
+}
+
 =head2 _fetch_children
   Arg	     : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Fetch all children of specified genome info object
@@ -177,7 +187,7 @@ sub _fetch_children {
 my $base_data_release_fetch_sql =
 q/select data_release_id as dbID, ensembl_version, ensembl_genomes_version, release_date, is_current from data_release/;
 
-sub _get_base_sql {
+sub _get_base_sql{ 
 	return $base_data_release_fetch_sql;
 }
 

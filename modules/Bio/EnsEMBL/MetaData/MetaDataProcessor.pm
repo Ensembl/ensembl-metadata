@@ -46,16 +46,18 @@ sub new {
 	(
 		$self->{contigs}, $self->{annotation_analyzer},
 		$self->{variation}, $self->{compara}, $self->{info_adaptor},
-		$self->{force_update}
+         $self->{force_update}, $self->{release}, $self->{eg_release}
 	  )
 	  = rearrange(
 		[
 			'CONTIGS',      'ANNOTATION_ANALYZER',
 			'VARIATION',    'COMPARA',
-			'INFO_ADAPTOR', 'FORCE_UPDATE'
+			'INFO_ADAPTOR', 'FORCE_UPDATE',
+                 'RELEASE', 'EG_RELEASE'
 		],
 		@args
 	  );
+        $self->{data_release} = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(-release=>$self->{release}, -ensembl_genomes_release=>$self->{eg_release});
 	$self->{logger} = get_logger();
 	return $self;
 }
@@ -118,52 +120,64 @@ sub process_genome {
 		  "select count(*) from information_schema.tables where table_schema=?",
 		-PARAMS => [$dbname]
 	);
-	my $md = Bio::EnsEMBL::MetaData::GenomeInfo->new(
-		-species    => $dba->species(),
-		-species_id => $dba->species_id(),
-		-division   => $meta->get_division() || 'Ensembl',
-		-dbname     => $dbname
-	);
-	if ( defined $self->{info_adaptor} ) {
-		my $extant_md =
-		  $self->{info_adaptor}->fetch_by_species( $md->species() );
-		if ( defined $extant_md ) {
-			if ( defined $self->{force_update} ) {
-				$self->{logger}->info( "Reusing existing genome_id "
-					  . $extant_md->dbID() . " for "
-					  . $md->species() );
-				$md->dbID( $extant_md->dbID() );
-				$md->adaptor( $extant_md->adaptor() );
-			}
-			else {
-				$self->{logger}->info( $md->species() . " already stored" );
 
-				# reuse existing, unused
-				return $extant_md;
-			}
-		}
-	}
-	$md->strain( $meta->single_value_by_key('species.strain') );
-	$md->serotype( $meta->single_value_by_key('species.serotype') );
-	$md->name( $meta->get_display_name() );
-	$md->taxonomy_id( $meta->get_taxonomy_id() );
-	$md->species_taxonomy_id(
-		     $meta->single_value_by_key('species.species_taxonomy_id')
-		  || $md->taxonomy_id() );
-	$md->assembly_id( $meta->single_value_by_key('assembly.accession') );
-	$md->assembly_name( $meta->single_value_by_key('assembly.name') );
-	$md->genebuild( $meta->single_value_by_key('genebuild.start_date') );
+	my $strain = $meta->single_value_by_key('species.strain');
+	my $serotype = $meta->single_value_by_key('species.serotype');
+	my $name = $meta->get_display_name();
+	my $taxonomy_id = $meta->get_taxonomy_id();
+	my $species_taxonomy_id =
+	         $meta->single_value_by_key('species.species_taxonomy_id')
+	      || $taxonomy_id;
+	my $assembly_accession = $meta->single_value_by_key('assembly.accession');
+	my $assembly_name = $meta->single_value_by_key('assembly.name');
+	my $genebuild = $meta->single_value_by_key('genebuild.start_date');
 
 	# get highest assembly level
-	$md->assembly_level(
-		@{
+	my ($assembly_level) = @{
 			$dba->dbc()->sql_helper()->execute_simple(
 				-SQL =>
 'select name from coord_system where species_id=? order by rank asc',
 				-PARAMS => [ $dba->species_id() ]
 			)
-		  }[0]
-	);
+            };
+
+	my $md = Bio::EnsEMBL::MetaData::GenomeInfo->new(
+            -species    => $dba->species(),
+            -species_id => $dba->species_id(),
+            -division   => $meta->get_division() || 'Ensembl',
+            -dbname     => $dbname,
+            -data_release => $self->{data_release},
+            -strain=> $strain,
+            -serotype=> $serotype,
+            -name=> $name,
+            -taxonomy_id=> $taxonomy_id,
+            -species_taxonomy_id=> $species_taxonomy_id,
+            -assembly_accession=> $assembly_accession,
+            -assembly_name => $assembly_name,
+            -genebuild=> $genebuild,
+            -assembly_level=>$assembly_level,
+            -release=>$self->{data_release}
+            );
+#	if ( defined $self->{info_adaptor} ) {
+#		my $extant_md =
+#		  $self->{info_adaptor}->fetch_by_species( $md->species() );
+#		if ( defined $extant_md ) {
+#			if ( defined $self->{force_update} ) {
+#				$self->{logger}->info( "Reusing existing genome_id "
+#					  . $extant_md->dbID() . " for "
+#					  . $md->species() );
+#				$md->dbID( $extant_md->dbID() );
+#				$md->adaptor( $extant_md->adaptor() );
+#			}
+#			else {
+#				$self->{logger}->info( $md->species() . " already stored" );
+#
+#				# reuse existing, unused
+#				return $extant_md;
+#			}
+#		}
+#	}
+
 
 	# get list of seq names
 	my $seqs_arr = [];
@@ -381,32 +395,32 @@ sub process_compara {
 					-GENOMES  => []
 				  );
 
-				if ( defined $self->{info_adaptor} ) {
-					my $extant_compara_info =
-					  $self->{info_adaptor}->fetch_compara_by_dbname_method_set(
-						$compara->dbc()->dbname(),
-						$method, $ss_name );
-					if ( defined $extant_compara_info ) {
-						if ( defined $self->{force_update} ) {
-							$self->{logger}->info(
-								    "Reusing ID for existing compara analysis "
-								  . $extant_compara_info->dbname() . "/"
-								  . $method . "/"
-								  . $ss_name );
-							$compara_info->dbID( $extant_compara_info->dbID() );
-							$compara_info->adaptor(
-								$extant_compara_info->adaptor() );
-						}
-						else {
-							$self->{logger}
-							  ->info( "Reusing existing compara analysis "
-								  . $extant_compara_info->dbname() . "/"
-								  . $method . "/"
-								  . $ss_name );
-							$compara_info = $extant_compara_info;
-						}
-					}
-				}
+#				if ( defined $self->{info_adaptor} ) {
+#					my $extant_compara_info =
+#					  $self->{info_adaptor}->fetch_compara_by_dbname_method_set(
+#						$compara->dbc()->dbname(),
+#						$method, $ss_name );
+#					if ( defined $extant_compara_info ) {
+#						if ( defined $self->{force_update} ) {
+#							$self->{logger}->info(
+#								    "Reusing ID for existing compara analysis "
+#								  . $extant_compara_info->dbname() . "/"
+#								  . $method . "/"
+#								  . $ss_name );
+#							$compara_info->dbID( $extant_compara_info->dbID() );
+#							$compara_info->adaptor(
+#								$extant_compara_info->adaptor() );
+#						}
+#						else {
+#							$self->{logger}
+#							  ->info( "Reusing existing compara analysis "
+#								  . $extant_compara_info->dbname() . "/"
+#								  . $method . "/"
+#								  . $ss_name );
+#							$compara_info = $extant_compara_info;
+#						}
+#					}
+#				}
 
 				for my $gdb ( values %{$dbs} ) {
 

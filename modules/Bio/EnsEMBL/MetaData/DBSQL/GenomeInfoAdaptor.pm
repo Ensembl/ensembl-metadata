@@ -102,6 +102,29 @@ use Scalar::Util qw(looks_like_number);
 
 =head1 METHODS
 
+=head2 release
+  Arg	     : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Description: Default release to use when querying 
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub data_release {
+    my ( $self, $release ) = @_;
+    if(defined $release) {
+        $self->{data_release} = $release;
+    }
+    if(!defined $self->{data_release}) {
+        # default to current Ensembl release
+        $self->{data_release} = $self->db()->get_DataReleaseInfoAdaptor()->fetch_current_ensembl_release();
+    }
+    if(!defined $self->{release}->dbID()) {
+        $self->db()->get_DataReleaseInfoAdaptor()->store($self->{data_release});
+    }
+    return $self->{data_release};
+}
+
 =head2 store
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the supplied object and all associated child objects (includes other genomes attached by compara if not already stored)
@@ -114,11 +137,11 @@ use Scalar::Util qw(looks_like_number);
 sub store {
 	my ( $self, $genome ) = @_;
 	if ( !defined $genome->data_release() ) {
-		throw("Genome must be associated with a release");
+            $genome->data_release($self->release());
 	}
 	if ( !defined $genome->data_release()->dbID() ) {
-		$self->db()->get_DataReleaseInfoAdaptor()
-		  ->store( $genome->data_release() );
+            $self->db()->get_DataReleaseInfoAdaptor()
+                ->store( $genome->data_release() );
 	}        
 	if ( !defined $genome->assembly() ) {
 		throw("Genome must be associated with an assembly");
@@ -937,6 +960,19 @@ sub _get_id_field {
 
 sub _get_obj_class {
 	return 'Bio::EnsEMBL::MetaData::GenomeInfo';
+}
+
+# override to add release clause
+sub _args_to_sql {
+	my ( $self, $sql_in, $args ) = @_;
+	my $sql    = $sql_in;
+        if(!defined $args->{_get_id_field()}) {
+            # if we're not searching by dbID, add release as a clause
+            if(defined $self->release()->dbID()) {
+                $args->{data_release_id} = $self->release()->dbID();
+            }
+        }
+        return $self->SUPER::_args_to_sql($sql_in,$args);
 }
 
 1;

@@ -74,7 +74,7 @@ sub fetch_all {
 sub fetch_by_dbID {
 	my ( $self, $id, $keen ) = @_;
 	return
-	  _first_element( $self->_fetch_generic_with_args( { $self->_get_id_field(), $id } ),
+	  $self->_first_element( $self->_fetch_generic_with_args( { $self->_get_id_field(), $id } ),
 					  $keen );
 }
 
@@ -167,6 +167,9 @@ sub _args_to_sql {
 
 sub _fetch_generic {
 	my ( $self, $sql, $params, $type, $keen ) = @_;
+        if(!defined $type) {
+            $type = $self->_get_obj_class();
+        }
 	my $mds = $self->{dbc}->sql_helper()->execute(
 		-SQL          => $sql,
 		-USE_HASHREFS => 1,
@@ -268,7 +271,7 @@ sub _store_cached_obj {
 =cut
 
 sub _first_element {
-	my ($arr) = @_;
+	my ($self,$arr) = @_;
 	if ( defined $arr && scalar(@$arr) > 0 ) {
 		return $arr->[0];
 	}
