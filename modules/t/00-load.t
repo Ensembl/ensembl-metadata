@@ -16,15 +16,16 @@
 use Test::More;
 
 BEGIN {
-	use_ok( 'Bio::EnsEMBL::LookUp' );
-	use_ok( 'Bio::EnsEMBL::LookUp::LocalLookUp' );
-	use_ok( 'Bio::EnsEMBL::LookUp::RemoteLookUp' );
 	use_ok( 'Bio::EnsEMBL::MetaData::GenomeInfo' );
 	use_ok( 'Bio::EnsEMBL::MetaData::GenomeComparaInfo' );
 	use_ok( 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' );
 	use_ok( 'Bio::EnsEMBL::MetaData::GenomeAssemblyInfo' );
-	use_ok( 'Bio::EnsEMBL::MetaData::ReleaseInfo' );
+	use_ok( 'Bio::EnsEMBL::MetaData::DataReleaseInfo' );
 	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor' );
+	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor' );
+	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor' );
+	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor' );
+	use_ok( 'Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor' );
 }
 
 diag( "Testing ensembl-metadata, Perl $], $^X" );
