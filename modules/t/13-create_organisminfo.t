@@ -61,6 +61,8 @@ ok( $odba->db()->dbc()->sql_helper()
 	eq '2' );
 
 my $orga = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
+$orga->publications( [ 1, 2, 3, 4 ] );
+$orga->aliases( [ "one", "two" ] );
 $odba->store($orga);
 ok( $org->dbID() eq $orga->dbID(),    "dbID reuse" );
 
