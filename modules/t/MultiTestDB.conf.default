@@ -5,7 +5,10 @@
 
 {
   'databases' => {
-	'escherichia_coli' => {
+	'campylobacter_jejuni' => {
+ 		'core' => 'Bio::EnsEMBL::DBSQL::DBAdaptor'
+   	},
+	'homo_sapiens' => {
    		'core' => 'Bio::EnsEMBL::DBSQL::DBAdaptor'
    	},
     'multi' => {

@@ -104,7 +104,7 @@ use Pod::Usage;
 use Data::Dumper;
 use Module::Load;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
-use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::DBSQL::DBConnection;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
@@ -122,6 +122,8 @@ push( @{$optsd}, "registry:s" );
 push( @{$optsd}, "species:s" );
 push( @{$optsd}, "division:s" );
 push( @{$optsd}, "verbose" );
+push( @{$optsd}, "eg_release" );
+push( @{$optsd}, "release" );
 push( @{$optsd}, "force_update" );
 
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
@@ -134,21 +136,19 @@ else {
 }
 my $logger = get_logger();
 
-my $gdba =
-  Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-							   -DBC =>
-								 Bio::EnsEMBL::DBSQL::DBConnection->new(
-														-USER =>,
-														$opts->{guser},
-														-PASS =>,
-														$opts->{gpass},
-														-HOST =>,
-														$opts->{ghost},
-														-PORT =>,
-														$opts->{gport},
-														-DBNAME =>,
-														$opts->{gdbname}
-								 ) );
+my $mdb = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
+    -USER =>,
+    $opts->{guser},
+    -PASS =>,
+    $opts->{gpass},
+    -HOST =>,
+    $opts->{ghost},
+    -PORT =>,
+    $opts->{gport},
+    -DBNAME =>,
+    $opts->{gdbname}
+    );
+my $gdba = $mdb->get_GenomeInfoAdaptor();
 
 my %processor_opts =
   map { my $key = '-' . uc($_); $key => $opts->{$_} } keys %$opts;
@@ -178,27 +178,27 @@ $logger->info("Completed processing");
 for my $md ( @{$details} ) {
 	# if the species has been stored and we want to force an update, update it
 	# otherwise only store if its not been seen already
-  if ( defined $md->dbID() && defined $opts->{force_update} ) {
-	$logger->info( "Updating " . $md->species() );
-	$gdba->update($md);
-  }
-  elsif ( !defined $md->dbID() ) {
-	$logger->info( "Storing " . $md->species() );
+#  if ( defined $md->dbID() && defined $opts->{force_update} ) {
+#	$logger->info( "Updating " . $md->species() );
+#	$gdba->update($md);
+#  }
+#  elsif ( !defined $md->dbID() ) {
+#	$logger->info( "Storing " . $md->species() );
 	$gdba->store($md);
-  }
-  # if we're not just updating a single species, update compara too
-  if ( !defined $opts->{species} && defined $md->compara() ) {
-	for my $compara ( @{ $md->compara() } ) {
-	  if ( defined $compara->dbID() && defined $opts->{force_update} ) {
-		$logger->info( "Updating compara " . $compara->to_string() );
-		$gdba->update_compara($compara);
-	  }
-	  elsif ( !defined $compara->dbID() ) {
-		$logger->info( "Storing " . $compara->to_string() );
-		$gdba->store_compara($compara);
-	  }
-	}
-  }
+#  }
+#  # if we're not just updating a single species, update compara too
+#  if ( !defined $opts->{species} && defined $md->compara() ) {
+#	for my $compara ( @{ $md->compara() } ) {
+#	  if ( defined $compara->dbID() && defined $opts->{force_update} ) {
+#		$logger->info( "Updating compara " . $compara->to_string() );
+#		$gdba->update_compara($compara);
+#	  }
+#	  elsif ( !defined $compara->dbID() ) {
+#		$logger->info( "Storing " . $compara->to_string() );
+#		$gdba->store_compara($compara);
+#	  }
+#	}
+#  }
 }
 
 $logger->info("Metadata load complete");

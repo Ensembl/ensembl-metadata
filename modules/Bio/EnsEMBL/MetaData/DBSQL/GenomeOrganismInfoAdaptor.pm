@@ -183,6 +183,7 @@ sub _store_aliases {
 					  -PARAMS => [ $organism->dbID() ] );
 	if ( defined $organism->aliases() ) {
 		for my $alias ( @{ $organism->aliases() } ) {
+
 			$self->dbc()->sql_helper()->execute_update(
 				-SQL => q/insert into organism_alias(organism_id,alias)
 		values(?,?)/,
