@@ -234,7 +234,7 @@ sub process_genome {
 	);
 
 	# get associated PMIDs
-	$md->{publications} = $dba->dbc()->sql_helper()->execute_simple(
+        $md->publications($dba->dbc()->sql_helper()->execute_simple(
 		-SQL => q/select distinct dbprimary_acc from 
 	  xref
 	  join external_db using (external_db_id)
@@ -244,7 +244,7 @@ sub process_genome {
 	  join coord_system using (coord_system_id)
 	  where species_id=? and code='xref_id' and db_name in ('PUBMED')/,
 		-PARAMS => [ $dba->species_id() ]
-	);
+	));
 
 	# add aliases
 	$md->aliases(
@@ -299,7 +299,7 @@ sub process_genome {
 		  ->info( "Processing " . $dba->species() . " read aligments" );
 		my $read_ali =
 		  $self->{annotation_analyzer}
-		  ->analyze_tracks( $md->{species}, $md->{division} );
+		  ->analyze_tracks( $md->species(), $md->division() );
 		my %all_ali = ( %{$core_ali}, %{$other_ali} );
 
 		# add bam tracks by count - use source name
