@@ -97,7 +97,7 @@ use Bio::EnsEMBL::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Utils::Scalar qw(assert_ref check_ref);
 use Bio::EnsEMBL::Utils::Exception qw(throw warning);
-use Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor;
+use Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor;
 use List::MoreUtils qw(uniq);
 use Scalar::Util qw(looks_like_number);
 use DBI;
@@ -231,7 +231,7 @@ sub taxonomy_adaptor {
   }
   elsif ( !defined $self->{taxonomy_adaptor} ) {
 	$self->{taxonomy_adaptor} =
-	  Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor->new_public();
+	  Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor->new_public();
   }
   return $self->{taxonomy_adaptor};
 }
@@ -658,7 +658,7 @@ sub get_all {
 
 sub get_all_by_taxon_branch {
   my ( $self, $root ) = @_;
-  if ( ref($root) ne 'Bio::EnsEMBL::TaxonomyNode' ) {
+  if ( ref($root) ne 'Bio::EnsEMBL::Taxonomy::TaxonomyNode' ) {
 	if ( looks_like_number($root) ) {
 	  $root = $self->taxonomy_adaptor()->fetch_by_taxon_id($root);
 	}
