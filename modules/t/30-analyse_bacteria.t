@@ -34,5 +34,6 @@ my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(
 
 
 my $details = $processor->process_metadata([$core]);
+ok( defined $details, "Metadata exists" );
 done_testing;
 
