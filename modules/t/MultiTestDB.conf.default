@@ -11,8 +11,12 @@
 	'homo_sapiens' => {
    		'core' => 'Bio::EnsEMBL::DBSQL::DBAdaptor'
    	},
-    'multi' => {
-      'empty_metadata' => 'Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor'
-    },
+        'meleagris_gallopavo' => {
+                 'variation' => 'Bio::EnsEMBL::Variation::DBSQL::DBAdaptor'
+        },
+        'multi' => {
+                  'empty_metadata' => 'Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor',
+                  'compara' => 'Bio::EnsEMBL::Compara::DBSQL::DBAdaptor'
+        },
   },
 }
