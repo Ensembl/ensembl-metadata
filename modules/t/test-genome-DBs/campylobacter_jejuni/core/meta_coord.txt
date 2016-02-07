@@ -1,0 +1,4 @@
+simple_feature	3	3154
+gene	3	2907
+exon	3	2907
+transcript	3	2907

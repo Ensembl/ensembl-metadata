@@ -1,0 +1,67 @@
+1	\N	schema_type	core
+2	\N	schema_version	83
+3	\N	patch	patch_82_83_a.sql|schema_version
+113	1	species.species_name	Campylobacter jejuni
+112	1	simple_featurebuild.level	toplevel
+111	1	exonbuild.level	toplevel
+110	1	transcriptbuild.level	toplevel
+109	1	genebuild.level	toplevel
+108	1	genebuild.hash	a546c14b83fd314320e2a09e27e58848
+107	1	assembly.mapping	supercontig:GCA_000172355.1#contig
+106	1	provider.url	http://www.ebi.ac.uk/ena/data/view/GCA_000172355
+105	1	provider.name	European Nucleotide Archive
+104	1	species.division	EnsemblBacteria
+103	1	species.taxonomy_id	482628
+102	1	species.db_name	campylobacter_jejuni_subsp_jejuni_bh_01_0142
+101	1	species.alias	Campylobacter jejuni subsp. jejuni BH0142
+100	1	species.alias	Campylobacter jejuni subsp. jejuni str. BH-01-0142
+99	1	species.alias	campylobacter_jejuni_subsp_jejuni_bh_01_0142
+98	1	species.alias	Campylobacter jejuni subsp. jejuni BH-01-0142
+97	1	species.alias	Campylobacter jejuni subsp. jejuni strain BH-01-0142
+96	1	species.strain	BH-01-0142
+95	1	species.display_name	Campylobacter jejuni subsp. jejuni BH-01-0142
+94	1	species.scientific_name	Campylobacter jejuni subsp. jejuni BH-01-0142
+93	1	species.url	Campylobacter_jejuni_subsp_jejuni_bh_01_0142
+92	1	species.production_name	campylobacter_jejuni_subsp_jejuni_bh_01_0142
+91	1	species.classification	cellular organisms
+90	1	species.classification	Bacteria
+89	1	species.classification	Proteobacteria
+88	1	species.classification	delta/epsilon subdivisions
+87	1	species.classification	Epsilonproteobacteria
+86	1	species.classification	Campylobacterales
+85	1	species.classification	Campylobacteraceae
+84	1	species.classification	Campylobacter
+83	1	species.classification	Campylobacter jejuni
+82	1	species.classification	Campylobacter jejuni subsp. jejuni
+81	1	species.classification	Campylobacter jejuni subsp. jejuni BH-01-0142
+80	1	assembly.master_accession	ABKD01000053
+79	1	genebuild.method	Generated from ENA annotation
+78	1	genebuild.last_geneset_update	2014-01
+77	1	genebuild.initial_release_date	2008-09-EnsemblBacteria
+76	1	genebuild.start_date	2008-09-EnsemblBacteria
+75	1	genebuild.version	2014-01-ENA
+74	1	assembly.description	Clinical isolate from Thailand with potential as a human challenge model
+73	1	assembly.date	2014-01
+72	1	assembly.name	ASM17235v1
+71	1	assembly.accession	GCA_000172355.1
+70	1	assembly.default	GCA_000172355.1
+69	1	schema.load_started	2015-09-06 14:35:45
+68	1	schema.load_started	2015-09-06 14:35:26
+114	1	species.species_taxonomy_id	197
+115	1	species.wikipedia_url	http://en.wikipedia.org/wiki/Campylobacter_jejuni
+116	1	species.wikipedia_name	Campylobacter jejuni
+117	1	schema.load_complete	2015-09-06 14:36:45
+118	1	interpro.version	53.0
+119	1	schema.load_complete	2015-09-08 04:33:50
+120	1	sample.location_param	cBHLOS:4358-5595
+121	1	sample.location_text	cBHLOS:4358-5595
+122	1	sample.gene_param	CJBH_L06
+123	1	sample.gene_text	rlmB
+124	1	sample.transcript_param	EDZ05026
+125	1	sample.transcript_text	rlmB-1
+126	1	sample.search_text	synthetase
+127	1	sample.vep_hgvs	EDZ05022.1:c.4T>A\\nEDZ05010.1:c.5delA
+128	1	sample.vep_vcf	cBHLOS 1404 . T A . . .\\nc512 209 . GA G . . .
+129	1	sample.vep_pileup	cBHLOS 1404 T A\\nc512 209 * -A
+130	1	sample.vep_ensembl	cBHLOS 1404 1404 T/A 1\\nc512 210 210 A/- 1
+131	1	schema.copy_src	bacteria_17_collection_core_30_83_1/1
