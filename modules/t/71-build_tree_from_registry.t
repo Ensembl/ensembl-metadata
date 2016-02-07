@@ -17,9 +17,9 @@ use warnings;
 
 use Test::More;
 
-use Bio::EnsEMBL::TaxonomyNode;
-use Bio::EnsEMBL::DBSQL::TaxonomyDBAdaptor;
-use Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor;
+use Bio::EnsEMBL::Taxonomy::TaxonomyNode;
+use Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor;
+use Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor;
 use Bio::EnsEMBL::LookUp::LocalLookUp;
 
 my $conf_file = 'db.conf';
@@ -40,7 +40,7 @@ my $dba =
 									   -group   => 'taxonomy',
 									   -species => 'ena' );
 
-my $node_adaptor = Bio::EnsEMBL::DBSQL::TaxonomyNodeAdaptor->new($dba);
+my $node_adaptor = Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor->new($dba);
 ok( defined $node_adaptor, "Taxonomy Node Adaptor exists" );
 
 my $econf = $conf->{ena};
