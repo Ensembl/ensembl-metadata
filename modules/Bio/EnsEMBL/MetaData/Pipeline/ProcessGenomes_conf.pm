@@ -22,7 +22,7 @@ package Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf;
 use strict;
 use warnings;
 use Data::Dumper;
-use base qw/Bio::EnsEMBL::EGPipeline::PipeConfig::EGGeneric_conf/;
+use base qw/Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf/;
 
 =head2 default_options
 
