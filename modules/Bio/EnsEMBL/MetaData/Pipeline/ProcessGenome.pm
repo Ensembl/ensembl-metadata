@@ -25,7 +25,7 @@ package Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome;
 use base qw/Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base/;
 
 use Bio::EnsEMBL::MetaData::MetaDataProcessor;
-use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 
 use Carp;
@@ -57,8 +57,8 @@ sub run {
 	}
 	print Dumper($dbas);
 	$log->info("Connecting to info database");
-	my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-		-DBC => Bio::EnsEMBL::DBSQL::DBConnection->new(
+	print Dumper($self);
+	my $dba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
 			-USER =>,
 			$self->param('info_user'),
 			-PASS =>,
@@ -68,9 +68,9 @@ sub run {
 			-PORT =>,
 			$self->param('info_port'),
 			-DBNAME =>,
-			$self->param('info_dbname'),
-		  )
+			$self->param('info_dbname')
 	);
+	my $gdba = $dba->get_GenomeInfoAdaptor();
 
 	my $upd = $self->param('force_update') || 0;
 
