@@ -29,7 +29,6 @@ use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 
 use Carp;
-use Data::Dumper;
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($INFO);
 my $log = get_logger();
@@ -55,9 +54,7 @@ sub run {
 	for my $type (qw/core variation otherfeatures funcgen/) {
 		$dbas->{$type} = $self->get_DBAdaptor($type);
 	}
-	print Dumper($dbas);
 	$log->info("Connecting to info database");
-	print Dumper($self);
 	my $dba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
 			-USER =>,
 			$self->param('info_user'),
