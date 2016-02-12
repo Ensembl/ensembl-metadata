@@ -192,7 +192,7 @@ sub process_genome {
 	  join seq_region s using (coord_system_id)  
 	  left join seq_region_synonym ss on 
 	  	(ss.seq_region_id=s.seq_region_id and ss.external_db_id in 
-	  		(select external_db_id from external_db where db_name='EMBL')) 
+	  		(select external_db_id from external_db where db_name='INSDC')) 
 	  where c.species_id=? and attrib like '%default_version%'/,
 			-PARAMS   => [ $dba->species_id() ],
 			-CALLBACK => sub {
