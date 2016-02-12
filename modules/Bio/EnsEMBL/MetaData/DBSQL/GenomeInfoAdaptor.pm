@@ -429,15 +429,6 @@ sub _store_compara {
                     );
             }
         }
-	while ( my ( $type, $f ) = each %{ $genome->other_alignments() } ) {
-		while ( my ( $key, $count ) = each %$f ) {
-			$self->dbc()->sql_helper()->execute_update(
-				-SQL =>
-				  q/insert into genome_alignment(genome_id,type,name,count)
-		values(?,?,?,?)/,
-				-PARAMS => [ $genome->dbID(), $type, $key, $count ] );
-		}
-	}
 	return;
 
 }
