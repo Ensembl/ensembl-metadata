@@ -21,8 +21,9 @@ package Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf;
 
 use strict;
 use warnings;
-use Data::Dumper;
 use base qw/Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf/;
+
+use Bio::EnsEMBL::ApiVersion;
 
 =head2 default_options
 
@@ -31,82 +32,92 @@ use base qw/Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf/;
 =cut
 
 sub default_options {
-	my ($self) = @_;
-	return {
-		%{ $self->SUPER::default_options()
-		  },    # inherit other stuff from the base class
+  my ($self) = @_;
+  return {
+    %{ $self->SUPER::default_options()
+      },    # inherit other stuff from the base class
 
-		pipeline_name => 'process_genomes',
-		species       => [],
-		division      => [],
-		run_all       => 0,
-		antispecies   => [],
-		meta_filters  => {},
-		force_update  => 0,
-		contigs       => 1,
-		variation     => 1
-	};
-} ## end sub default_options
+    pipeline_name => 'process_genomes',
+    species       => [],
+    division      => [],
+    run_all       => 0,
+    antispecies   => [],
+    meta_filters  => {},
+    force_update  => 0,
+    contigs       => 1,
+    variation     => 1,
+    release       => software_version(),
+    eg_release    => undef };
+}
 
 # Force an automatic loading of the registry in all workers.
 sub beekeeper_extra_cmdline_options {
-	my $self = shift;
-	return "-reg_conf " . $self->o("registry");
+  my $self = shift;
+  return "-reg_conf " . $self->o("registry");
 }
 
 sub pipeline_analyses {
-	my ($self) = @_;
-	return [
-		{
-			-logic_name => 'SpeciesFactory',
-			-module =>
-			  'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
-			-max_retry_count => 1,
-			-input_ids       => [ {} ],
-			-parameters      => {
-				species         => $self->o('species'),
-				antispecies     => $self->o('antispecies'),
-				division        => $self->o('division'),
-				run_all         => $self->o('run_all'),
-				meta_filters    => $self->o('meta_filters'),
-				chromosome_flow => 0,
-				variation_flow  => 0
-			},
-			-flow_into     => { '2' => ['ProcessGenome'], '5' => ['ProcessCompara'] },
-			-hive_capacity => 1,
-			-meadow_type   => 'LOCAL',
-		},
-		{
-			-logic_name => 'ProcessGenome',
-			-module => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome',
-			-hive_capacity => 50,
-			-wait_for      => ['SpeciesFactory'],
-			-parameters    => {
-				info_user    => $self->o('info_user'),
-				info_host    => $self->o('info_host'),
-				info_pass    => $self->o('info_pass'),
-				info_port    => $self->o('info_port'),
-				info_dbname  => $self->o('info_dbname'),
-				force_update => $self->o('force_update'),
-				contigs      => $self->o('contigs'),
-				variation    => $self->o('variation')
-			}
-		},
-		{
-			-logic_name => 'ProcessCompara',
-			-module => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara',
-			-hive_capacity => 50,
-			-wait_for      => ['ProcessGenome'],
-			-parameters    => {
-				info_user    => $self->o('info_user'),
-				info_host    => $self->o('info_host'),
-				info_pass    => $self->o('info_pass'),
-				info_port    => $self->o('info_port'),
-				info_dbname  => $self->o('info_dbname'),
-				force_update => $self->o('force_update')
-			}
-		}
-	];
+  my ($self) = @_;
+  return [ {
+      -logic_name => 'SpeciesFactory',
+      -module =>
+'Bio::EnsEMBL::EGPipeline::Common::RunnableDB::EGSpeciesFactory',
+      -max_retry_count => 1,
+      -input_ids       => [ {} ],
+      -parameters      => {
+                       species         => $self->o('species'),
+                       antispecies     => $self->o('antispecies'),
+                       division        => $self->o('division'),
+                       run_all         => $self->o('run_all'),
+                       meta_filters    => $self->o('meta_filters'),
+                       chromosome_flow => 0,
+                       variation_flow  => 0 },
+      -flow_into =>
+        { '2' => ['ProcessGenome'], '5' => ['ProcessCompara'] },
+      -hive_capacity => 1,
+      -meadow_type   => 'LOCAL', }, {
+      -logic_name => 'ProcessGenome',
+      -module     => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome',
+      -hive_capacity => 50,
+      -wait_for      => ['SpeciesFactory'],
+      -parameters    => {
+                       info_user    => $self->o('info_user'),
+                       info_host    => $self->o('info_host'),
+                       info_pass    => $self->o('info_pass'),
+                       info_port    => $self->o('info_port'),
+                       info_dbname  => $self->o('info_dbname'),
+                       release      => $self->o('release'),
+                       eg_release   => $self->o('eg_release'),
+                       force_update => $self->o('force_update'),
+                       contigs      => $self->o('contigs'),
+                       variation    => $self->o('variation') } }, {
+      -logic_name => 'ProcessCompara',
+      -module     => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara',
+      -hive_capacity => 50,
+      -wait_for      => ['ProcessGenome'],
+      -parameters    => {
+                       info_user    => $self->o('info_user'),
+                       info_host    => $self->o('info_host'),
+                       info_pass    => $self->o('info_pass'),
+                       info_port    => $self->o('info_port'),
+                       info_dbname  => $self->o('info_dbname'),
+                       release      => $self->o('release'),
+                       eg_release   => $self->o('eg_release'),
+                       force_update => $self->o('force_update') } }, {
+      -logic_name    => 'UpdateBools',
+      -module        => 'Bio::EnsEMBL::MetaData::Pipeline::UpdateBools',
+      -hive_capacity => 1,
+      -input_ids     => [ {} ],
+      -wait_for      => [ 'ProcessGenome', 'ProcessCompara' ],
+      -parameters    => {
+                       info_user    => $self->o('info_user'),
+                       info_host    => $self->o('info_host'),
+                       info_pass    => $self->o('info_pass'),
+                       info_port    => $self->o('info_port'),
+                       info_dbname  => $self->o('info_dbname'),
+                       release      => $self->o('release'),
+                       eg_release   => $self->o('eg_release'),
+                       force_update => $self->o('force_update') } } ];
 } ## end sub pipeline_analyses
 
 1;

@@ -22,11 +22,11 @@ use strict;
 
 package Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara;
 
-use base qw/Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base/;
+use base ('Bio::EnsEMBL::Production::Pipeline::Base');
 
 use Bio::EnsEMBL::MetaData::MetaDataProcessor;
-use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 use Carp;
 use Data::Dumper;
@@ -35,74 +35,73 @@ Log::Log4perl->easy_init($INFO);
 my $log = get_logger();
 
 sub param_defaults {
-	my ($self) = @_;
-	return {};
+  my ($self) = @_;
+  return {};
 }
 
 sub fetch_input {
-	my ($self) = @_;
-	return;
+  my ($self) = @_;
+  return;
 }
 
 sub run {
-	my ($self)       = @_;
-	my $dbas         = {};
-	my $compara_name = $self->param_required('species');
-	$log->info("Processing compara $compara_name");
+  my ($self)       = @_;
+  my $dbas         = {};
+  my $compara_name = $self->param_required('species');
+  $log->info("Processing compara $compara_name");
 
-	# TODO
-	my $compara_dba = $self->get_DBAdaptor("compara");
-	$log->info("Connecting to info database");
-	my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-		-DBC => Bio::EnsEMBL::DBSQL::DBConnection->new(
-			-USER =>,
-			$self->param('info_user'),
-			-PASS =>,
-			$self->param('info_pass'),
-			-HOST =>,
-			$self->param('info_host'),
-			-PORT =>,
-			$self->param('info_port'),
-			-DBNAME =>,
-			$self->param('info_dbname'),
-		)
-	);
+  # TODO
+  my $compara_dba = $self->get_DBAdaptor("compara");
 
-	my $upd = $self->param('force_update') || 0;
+  $log->info("Connecting to info database");
+  my $dba =
+    Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
+                                             -USER =>,
+                                             $self->param('info_user'),
+                                             -PASS =>,
+                                             $self->param('info_pass'),
+                                             -HOST =>,
+                                             $self->param('info_host'),
+                                             -PORT =>,
+                                             $self->param('info_port'),
+                                             -DBNAME =>,
+                                             $self->param('info_dbname')
+    );
+  my $gdba = $dba->get_GenomeInfoAdaptor();
 
-	my $opts = {
-		-INFO_ADAPTOR => $gdba,
-		-ANNOTATION_ANALYZER =>
-		  Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
-		-COMPARA      => 0,
-		-CONTIGS      => 0,
-		-FORCE_UPDATE => $upd,
-		-VARIATION    => 0
-	};
-	$log->info("Processing $compara_name");
-	my $processor =
-	  Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
-	my $compara_infos = $processor->process_compara( $compara_dba, {} );
+  my $upd = $self->param('force_update') || 0;
 
-	for my $compara_info (@$compara_infos) {
-		my $nom = $compara_info->method() . "/" . $compara_info->set_name();
-		if ( defined $compara_info->dbID() ) {
-			$log->info( "Updating compara info for " . $nom );
-			$gdba->update_compara($compara_info);
-		}
-		else {
-			$log->info( "Storing compara info for " . $nom );
-			$gdba->store_compara($compara_info);
-		}
-	}
+  my $opts = { -INFO_ADAPTOR => $gdba,
+               -ANNOTATION_ANALYZER =>
+                 Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
+               -COMPARA      => 0,
+               -CONTIGS      => 0,
+               -FORCE_UPDATE => $upd,
+               -VARIATION    => 0 };
+  $log->info("Processing $compara_name");
+  my $processor =
+    Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
+  my $compara_infos = $processor->process_compara( $compara_dba, {} );
 
-	$log->info("Completed processing compara $compara_name");
-	return;
-}
+  for my $compara_info (@$compara_infos) {
+    my $nom = $compara_info->method() . "/" . $compara_info->set_name();
+    if ( defined $compara_info->dbID() ) {
+      $log->info( "Updating compara info for " . $nom );
+      $gdba->update_compara($compara_info);
+    }
+    else {
+      $log->info( "Storing compara info for " . $nom );
+      $gdba->store_compara($compara_info);
+    }
+  }
+
+  $log->info("Completed processing compara $compara_name");
+  return;
+} ## end sub run
 
 sub write_output {
-	my ($self) = @_;
-	return;
+  my ($self) = @_;
+  return;
 }
 
 1;

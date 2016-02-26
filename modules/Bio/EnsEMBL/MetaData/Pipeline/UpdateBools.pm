@@ -22,11 +22,11 @@ use strict;
 
 package Bio::EnsEMBL::MetaData::Pipeline::UpdateBools;
 
-use base qw/Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base/;
+use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
 
-use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 use Carp;
 use Data::Dumper;
@@ -35,41 +35,41 @@ Log::Log4perl->easy_init($INFO);
 my $log = get_logger();
 
 sub param_defaults {
-	my ($self) = @_;
-	return {};
+    my ($self) = @_;
+    return {};
 }
 
 sub fetch_input {
-	my ($self) = @_;
-	return;
+    my ($self) = @_;
+    return;
 }
 
 sub run {
-	my ($self) = @_;
-	$log->info("Connecting to info database");
-	my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-		-DBC => Bio::EnsEMBL::DBSQL::DBConnection->new(
-			-USER =>,
-			$self->param('info_user'),
-			-PASS =>,
-			$self->param('info_pass'),
-			-HOST =>,
-			$self->param('info_host'),
-			-PORT =>,
-			$self->param('info_port'),
-			-DBNAME =>,
-			$self->param('info_dbname'),
-		)
+    my ($self) = @_;
+    $log->info("Connecting to info database");
+    $log->info("Connecting to info database");
+    my $dba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
+	-USER =>,
+	$self->param('info_user'),
+	-PASS =>,
+	$self->param('info_pass'),
+	-HOST =>,
+	$self->param('info_host'),
+	-PORT =>,
+	$self->param('info_port'),
+	-DBNAME =>,
+	$self->param('info_dbname')
 	);
-	$log->info("Updating booleans");
-	$gdba->update_booleans();
-	$log->info("Completed updating booleans");
-	return;
+    my $gdba = $dba->get_GenomeInfoAdaptor();
+    $log->info("Updating booleans");
+    $gdba->update_booleans();
+    $log->info("Completed updating booleans");
+    return;
 }
 
 sub write_output {
-	my ($self) = @_;
-	return;
+    my ($self) = @_;
+    return;
 }
 
 1;

@@ -22,7 +22,7 @@ use strict;
 
 package Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome;
 
-use base qw/Bio::EnsEMBL::EGPipeline::Common::RunnableDB::Base/;
+use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
 
 use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
