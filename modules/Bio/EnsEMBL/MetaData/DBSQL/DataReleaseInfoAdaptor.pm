@@ -101,73 +101,109 @@ use List::MoreUtils qw(natatime);
 =cut
 
 sub store {
-	my ( $self, $data_release ) = @_;
-	if ( !defined $data_release->dbID() ) {
-            # find out if organism exists first
-            my $dbID;
-            if(defined $data_release->ensembl_genomes_version()) {
-                ($dbID) =
-                    @{$self->dbc()->sql_helper()->execute_simple(
-                          -SQL => "select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version=?",
-                          -PARAMS => [ $data_release->ensembl_version(), $data_release->ensembl_genomes_version() ] ) };
-            } else {
-                ($dbID) =
-                    @{$self->dbc()->sql_helper()->execute_simple(
-                          -SQL => "select data_release_id from data_release where ensembl_version=?",
-                          -PARAMS => [ $data_release->ensembl_version() ] ) };
-            }
+  my ( $self, $data_release ) = @_;
+  if ( !defined $data_release->dbID() ) {
+    # find out if organism exists first
+    my $dbID;
+    if ( defined $data_release->ensembl_genomes_version() ) {
+      ($dbID) =
+        @{
+        $self->dbc()->sql_helper()->execute_simple(
+          -SQL =>
+"select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version=?",
+          -PARAMS => [ $data_release->ensembl_version(),
+                       $data_release->ensembl_genomes_version() ] ) };
+    }
+    else {
+      ($dbID) =
+        @{
+        $self->dbc()->sql_helper()->execute_simple(
+           -SQL =>
+             "select data_release_id from data_release where ensembl_version=?",
+           -PARAMS => [ $data_release->ensembl_version() ] ) };
+    }
 
-            if ( defined $dbID ) {
-                $data_release->dbID($dbID);
-                $data_release->adaptor($self);
-            }
-	}
-	if ( defined $data_release->dbID() ) {
-            $self->update($data_release);
-	} else {
-		$self->dbc()->sql_helper()->execute_update(
-                    -SQL =>q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,is_current) values (?,?,?,?)/,
-                    -PARAMS => [ 
-                         $data_release->ensembl_version(),
-                         $data_release->ensembl_genomes_version(),
-                         $data_release->release_date(),
-                         $data_release->is_current()
-                    ],
-                    -CALLBACK => sub {
-                        my ( $sth, $dbh, $rv ) = @_;
-                        $data_release->dbID( $dbh->{mysql_insertid} );
-                    } );
-		$data_release->adaptor($self);
-		$self->_store_cached_obj($data_release);
-	}
-	return;
+    if ( defined $dbID ) {
+      $data_release->dbID($dbID);
+      $data_release->adaptor($self);
+    }
+  } ## end if ( !defined $data_release...)
+  if ( defined $data_release->dbID() ) {
+    $self->update($data_release);
+  }
+  else {
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,is_current) values (?,?,?,?)/,
+      -PARAMS => [ $data_release->ensembl_version(),
+                   $data_release->ensembl_genomes_version(),
+                   $data_release->release_date(),
+                   $data_release->is_current() ],
+      -CALLBACK => sub {
+        my ( $sth, $dbh, $rv ) = @_;
+        $data_release->dbID( $dbh->{mysql_insertid} );
+      } );
+    $data_release->adaptor($self);
+    $self->_store_cached_obj($data_release);
+  }
+  return;
 } ## end sub store
 
 sub update {
-	my ( $self, $data_release ) = @_;
-	if ( !defined $data_release->dbID() ) {
-		croak "Cannot update an object that has not already been stored";
-	}
+  my ( $self, $data_release ) = @_;
+  if ( !defined $data_release->dbID() ) {
+    croak "Cannot update an object that has not already been stored";
+  }
 
-	$self->dbc()->sql_helper()->execute_update(
-		-SQL =>
+  $self->dbc()->sql_helper()->execute_update(
+    -SQL =>
 q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=?, is_current=? where data_release_id=?/,
-		-PARAMS => [ $data_release->ensembl_version(),
-					 $data_release->ensembl_genomes_version(),
-					 $data_release->release_date(),
-					 $data_release->is_current(),
-					 $data_release->dbID() ] );
-	return;
+    -PARAMS => [ $data_release->ensembl_version(),
+                 $data_release->ensembl_genomes_version(),
+                 $data_release->release_date(),
+                 $data_release->is_current(),
+                 $data_release->dbID() ] );
+  return;
+}
+
+sub fetch_by_ensembl_release {
+  my ($self, $release) = @_;
+  return
+    $self->_first_element(
+                   $self->_fetch_generic(
+                     _get_base_sql() .
+                       ' where ensembl_version=? and ensembl_genomes_version is null', [$release]
+                   ) );
+}
+
+sub fetch_by_ensembl_genomes_release {
+  my ($self, $release) = @_;
+  return
+    $self->_first_element(
+                   $self->_fetch_generic(
+                     _get_base_sql() .
+                       ' where ensembl_genomes_version=?', [$release]
+                   ) );
 }
 
 sub fetch_current_ensembl_release {
-    my ($self) = @_;
-    return $self->_first_element($self->_fetch_generic(_get_base_sql().' where is_current=1 and ensembl_genomes_version is null'));
+  my ($self) = @_;
+  return
+    $self->_first_element(
+                   $self->_fetch_generic(
+                     _get_base_sql() .
+                       ' where is_current=1 and ensembl_genomes_version is null'
+                   ) );
 }
 
 sub fetch_current_ensembl_genomes_release {
-    my ($self) = @_;
-    return $self->_first_element($self->_fetch_generic(_get_base_sql().' where is_current=1 and ensembl_genomes_version is not null'));
+  my ($self) = @_;
+  return
+    $self->_first_element(
+               $self->_fetch_generic(
+                 _get_base_sql() .
+                   ' where is_current=1 and ensembl_genomes_version is not null'
+               ) );
 }
 
 =head2 _fetch_children
@@ -180,23 +216,23 @@ sub fetch_current_ensembl_genomes_release {
 =cut
 
 sub _fetch_children {
-	my ( $self, $md ) = @_;
-	return;
+  my ( $self, $md ) = @_;
+  return;
 }
 
 my $base_data_release_fetch_sql =
 q/select data_release_id as dbID, ensembl_version, ensembl_genomes_version, release_date, is_current from data_release/;
 
-sub _get_base_sql{ 
-	return $base_data_release_fetch_sql;
+sub _get_base_sql {
+  return $base_data_release_fetch_sql;
 }
 
 sub _get_id_field {
-	return 'data_release_id';
+  return 'data_release_id';
 }
 
 sub _get_obj_class {
-	return 'Bio::EnsEMBL::MetaData::DataReleaseInfo';
+  return 'Bio::EnsEMBL::MetaData::DataReleaseInfo';
 }
 
 1;
