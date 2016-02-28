@@ -119,7 +119,7 @@ sub data_release {
         # default to current Ensembl release
         $self->{data_release} = $self->db()->get_DataReleaseInfoAdaptor()->fetch_current_ensembl_release();
     }
-    if(!defined $self->{release}->dbID()) {
+    if(!defined $self->{data_release}->dbID()) {
         $self->db()->get_DataReleaseInfoAdaptor()->store($self->{data_release});
     }
     return $self->{data_release};
@@ -137,7 +137,7 @@ sub data_release {
 sub store {
 	my ( $self, $genome ) = @_;
 	if ( !defined $genome->data_release() ) {
-            $genome->data_release($self->release());
+            $genome->data_release($self->data_release());
 	}
 	if ( !defined $genome->data_release()->dbID() ) {
             $self->db()->get_DataReleaseInfoAdaptor()
