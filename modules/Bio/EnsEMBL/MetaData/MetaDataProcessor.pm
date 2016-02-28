@@ -40,202 +40,170 @@ use strict;
 use warnings;
 
 sub new {
-	my ( $caller, @args ) = @_;
-	my $class = ref($caller) || $caller;
-	my $self = bless( {}, $class );
-	(
-		$self->{contigs}, $self->{annotation_analyzer},
-		$self->{variation}, $self->{compara}, $self->{info_adaptor},
-         $self->{force_update}, $self->{release}, $self->{eg_release}
-	  )
-	  = rearrange(
-		[
-			'CONTIGS',      'ANNOTATION_ANALYZER',
-			'VARIATION',    'COMPARA',
-			'INFO_ADAPTOR', 'FORCE_UPDATE',
-                 'RELEASE', 'EG_RELEASE'
-		],
-		@args
-	  );
-        $self->{data_release} = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(-release=>$self->{release}, -ensembl_genomes_release=>$self->{eg_release});
-	$self->{logger} = get_logger();
-	return $self;
+  my ( $caller, @args ) = @_;
+  my $class = ref($caller) || $caller;
+  my $self = bless( {}, $class );
+  ( $self->{contigs},      $self->{annotation_analyzer},
+    $self->{variation},    $self->{compara},
+    $self->{info_adaptor}, $self->{force_update},
+    $self->{release},      $self->{eg_release} )
+    = rearrange( [
+      'CONTIGS', 'ANNOTATION_ANALYZER', 'VARIATION', 'COMPARA', 'INFO_ADAPTOR',
+      'FORCE_UPDATE'
+    ],
+    @args );
+  $self->{logger} = get_logger();
+  return $self;
 }
 
 sub process_metadata {
-	my ( $self, $dbas ) = @_;
+  my ( $self, $dbas ) = @_;
 
-	# 1. create hash of DBAs
-	my $dba_hash = {};
-	my $comparas = [];
-	for my $dba ( grep { $_->dbc()->dbname() !~ /ancestral/ } @{$dbas} ) {
-		my $type;
-		my $species = $dba->species();
-		for my $t (qw(core otherfeatures variation funcgen)) {
-			if ( $dba->dbc()->dbname() =~ m/$t/ ) {
-				$type = $t;
-				last;
-			}
-		}
-		if ( defined $type ) {
-			$dba_hash->{$species}{$type} = $dba if defined $type;
-		}
-		elsif ( $dba->dbc()->dbname() =~ m/_compara_/ ) {
-			push @$comparas, $dba;
-		}
-	}
+  # 1. create hash of DBAs
+  my $dba_hash = {};
+  my $comparas = [];
+  for my $dba ( grep { $_->dbc()->dbname() !~ /ancestral/ } @{$dbas} ) {
+    my $type;
+    my $species = $dba->species();
+    for my $t (qw(core otherfeatures variation funcgen)) {
+      if ( $dba->dbc()->dbname() =~ m/$t/ ) {
+        $type = $t;
+        last;
+      }
+    }
+    if ( defined $type ) {
+      $dba_hash->{$species}{$type} = $dba if defined $type;
+    }
+    elsif ( $dba->dbc()->dbname() =~ m/_compara_/ ) {
+      push @$comparas, $dba;
+    }
+  }
 
-	# 2. iterate through each genome
-	my $genome_infos = {};
-	my $n            = 0;
-	my $total        = scalar( keys %$dba_hash );
-	while ( my ( $ genome, $dbas ) = each %$dba_hash ) {
-		$self->{logger}
-		  ->info( "Processing " . $genome . " (" . ++$n . "/$total)" );
-		$genome_infos->{$genome} = $self->process_genome($dbas);
-	}
+  # 2. iterate through each genome
+  my $genome_infos = {};
+  my $n            = 0;
+  my $total        = scalar( keys %$dba_hash );
+  while ( my ( $genome, $dbas ) = each %$dba_hash ) {
+    $self->{logger}->info( "Processing " . $genome . " (" . ++$n . "/$total)" );
+    $genome_infos->{$genome} = $self->process_genome($dbas);
+  }
 
-	# 3. apply compara
-	for my $compara (@$comparas) {
-		$self->process_compara( $compara, $genome_infos );
-	}
+  # 3. apply compara
+  for my $compara (@$comparas) {
+    $self->process_compara( $compara, $genome_infos );
+  }
 
-	return [ values(%$genome_infos) ];
+  return [ values(%$genome_infos) ];
 } ## end sub process_metadata
 
 sub process_genome {
-	my ( $self, $dbas ) = @_;
-	my $dba = $dbas->{core};
-	if(!defined $dba) {
-		confess "DBA not defined for processing";
-	}
-	$dba->dbc()->reconnect_when_lost(1);
+  my ( $self, $dbas ) = @_;
+  my $dba = $dbas->{core};
+  if ( !defined $dba ) {
+    confess "DBA not defined for processing";
+  }
+  $dba->dbc()->reconnect_when_lost(1);
 
-	# get metadata container
-	my $meta   = $dba->get_MetaContainer();
-	my $dbname = $dba->dbc()->dbname();
-	my $size   = get_dbsize($dba);
-	my $tableN = $dba->dbc()->sql_helper()->execute_single_result(
-		-SQL =>
-		  "select count(*) from information_schema.tables where table_schema=?",
-		-PARAMS => [$dbname]
-	);
+  # get metadata container
+  my $meta   = $dba->get_MetaContainer();
+  my $dbname = $dba->dbc()->dbname();
+  my $size   = get_dbsize($dba);
+  my $tableN =
+    $dba->dbc()->sql_helper()->execute_single_result(
+        -SQL =>
+          "select count(*) from information_schema.tables where table_schema=?",
+        -PARAMS => [$dbname] );
 
-	my $strain = $meta->single_value_by_key('species.strain');
-	my $serotype = $meta->single_value_by_key('species.serotype');
-	my $name = $meta->get_display_name();
-	my $taxonomy_id = $meta->get_taxonomy_id();
-	my $species_taxonomy_id =
-	         $meta->single_value_by_key('species.species_taxonomy_id')
-	      || $taxonomy_id;
-	my $assembly_accession = $meta->single_value_by_key('assembly.accession');
-	my $assembly_name = $meta->single_value_by_key('assembly.name');
-	my $genebuild = $meta->single_value_by_key('genebuild.start_date');
+  my $strain      = $meta->single_value_by_key('species.strain');
+  my $serotype    = $meta->single_value_by_key('species.serotype');
+  my $name        = $meta->get_display_name();
+  my $taxonomy_id = $meta->get_taxonomy_id();
+  my $species_taxonomy_id =
+    $meta->single_value_by_key('species.species_taxonomy_id') || $taxonomy_id;
+  my $assembly_accession = $meta->single_value_by_key('assembly.accession');
+  my $assembly_name      = $meta->single_value_by_key('assembly.name');
+  my $genebuild          = $meta->single_value_by_key('genebuild.start_date');
 
-	# get highest assembly level
-	my ($assembly_level) = @{
-			$dba->dbc()->sql_helper()->execute_simple(
-				-SQL =>
-'select name from coord_system where species_id=? order by rank asc',
-				-PARAMS => [ $dba->species_id() ]
-			)
-            };
+  # get highest assembly level
+  my ($assembly_level) =
+    @{
+    $dba->dbc()->sql_helper()->execute_simple(
+         -SQL =>
+           'select name from coord_system where species_id=? order by rank asc',
+         -PARAMS => [ $dba->species_id() ] ) };
 
-	my $md = Bio::EnsEMBL::MetaData::GenomeInfo->new(
-            -species    => $dba->species(),
-            -species_id => $dba->species_id(),
-            -division   => $meta->get_division() || 'Ensembl',
-            -dbname     => $dbname,
-            -data_release => $self->{data_release},
-            -strain=> $strain,
-            -serotype=> $serotype,
-            -name=> $name,
-            -taxonomy_id=> $taxonomy_id,
-            -species_taxonomy_id=> $species_taxonomy_id,
-            -assembly_accession=> $assembly_accession,
-            -assembly_name => $assembly_name,
-            -genebuild=> $genebuild,
-            -assembly_level=>$assembly_level,
-            -release=>$self->{data_release}
-            );
-#	if ( defined $self->{info_adaptor} ) {
-#		my $extant_md =
-#		  $self->{info_adaptor}->fetch_by_species( $md->species() );
-#		if ( defined $extant_md ) {
-#			if ( defined $self->{force_update} ) {
-#				$self->{logger}->info( "Reusing existing genome_id "
-#					  . $extant_md->dbID() . " for "
-#					  . $md->species() );
-#				$md->dbID( $extant_md->dbID() );
-#				$md->adaptor( $extant_md->adaptor() );
-#			}
-#			else {
-#				$self->{logger}->info( $md->species() . " already stored" );
-#
-#				# reuse existing, unused
-#				return $extant_md;
-#			}
-#		}
-#	}
+  my $md =
+    Bio::EnsEMBL::MetaData::GenomeInfo->new(
+                                -species    => $dba->species(),
+                                -species_id => $dba->species_id(),
+                                -division => $meta->get_division() || 'Ensembl',
+                                -dbname   => $dbname,
+                                -data_release        => $self->{data_release},
+                                -strain              => $strain,
+                                -serotype            => $serotype,
+                                -name                => $name,
+                                -taxonomy_id         => $taxonomy_id,
+                                -species_taxonomy_id => $species_taxonomy_id,
+                                -assembly_accession  => $assembly_accession,
+                                -assembly_name       => $assembly_name,
+                                -genebuild           => $genebuild,
+                                -assembly_level      => $assembly_level );
 
+  # get list of seq names
+  my $seqs_arr = [];
 
-	# get list of seq names
-	my $seqs_arr = [];
+  if ( defined $self->{contigs} ) {
+    my $seqs = {};
 
-	if ( defined $self->{contigs} ) {
-		my $seqs = {};
-
-		# 1. get complete list of seq_regions as a hash vs. ENA synonyms
-		$dba->dbc()->sql_helper()->execute_no_return(
-			-SQL => q/select distinct s.name, ss.synonym 
+    # 1. get complete list of seq_regions as a hash vs. ENA synonyms
+    $dba->dbc()->sql_helper()->execute_no_return(
+      -SQL => q/select distinct s.name, ss.synonym 
 	  from coord_system c  
 	  join seq_region s using (coord_system_id)  
 	  left join seq_region_synonym ss on 
 	  	(ss.seq_region_id=s.seq_region_id and ss.external_db_id in 
 	  		(select external_db_id from external_db where db_name='INSDC')) 
 	  where c.species_id=? and attrib like '%default_version%'/,
-			-PARAMS   => [ $dba->species_id() ],
-			-CALLBACK => sub {
-				my ( $name, $acc ) = @{ shift @_ };
-				$seqs->{$name} = $acc;
-				return;
-			}
-		);
+      -PARAMS   => [ $dba->species_id() ],
+      -CALLBACK => sub {
+        my ( $name, $acc ) = @{ shift @_ };
+        $seqs->{$name} = $acc;
+        return;
+      } );
 
-		# 2. add accessions where the name is flagged as being in ENA
-		$dba->dbc()->sql_helper()->execute_no_return(
-			-SQL => q/
+    # 2. add accessions where the name is flagged as being in ENA
+    $dba->dbc()->sql_helper()->execute_no_return(
+      -SQL => q/
 	  select s.name 
 	  from coord_system c  
 	  join seq_region s using (coord_system_id)  	  
 	  join seq_region_attrib sa using (seq_region_id)  
 	  where sa.value='ENA' and c.species_id=? and attrib like '%default_version%'/,
-			-PARAMS   => [ $dba->species_id() ],
-			-CALLBACK => sub {
-				my ($acc) = @{ shift @_ };
-				$seqs->{$acc} = $acc;
-				return;
-			}
-		);
+      -PARAMS   => [ $dba->species_id() ],
+      -CALLBACK => sub {
+        my ($acc) = @{ shift @_ };
+        $seqs->{$acc} = $acc;
+        return;
+      } );
 
-		while ( my ( $key, $acc ) = each %$seqs ) {
-			push @$seqs_arr, { name => $key, acc => $acc };
-		}
-	} ## end if ( defined $self->{contigs...})
+    while ( my ( $key, $acc ) = each %$seqs ) {
+      push @$seqs_arr, { name => $key, acc => $acc };
+    }
+  } ## end if ( defined $self->{contigs...})
 
-	$md->sequences($seqs_arr);
+  $md->sequences($seqs_arr);
 
-	# get toplevel base count
-	$md->base_count(
-		$dba->dbc()->sql_helper()->execute_single_result(
-			-SQL => q/select value from genome_statistics where statistic='ref_length' and species_id=?/,
-			-PARAMS => [ $dba->species_id() ]
-		)
-	);
+  # get toplevel base count
+  $md->base_count(
+    $dba->dbc()->sql_helper()->execute_single_result(
+      -SQL =>
+q/select value from genome_statistics where statistic='ref_length' and species_id=?/,
+      -PARAMS => [ $dba->species_id() ] ) );
 
-	# get associated PMIDs
-        $md->publications($dba->dbc()->sql_helper()->execute_simple(
-		-SQL => q/select distinct dbprimary_acc from 
+  # get associated PMIDs
+  $md->publications(
+    $dba->dbc()->sql_helper()->execute_simple(
+      -SQL => q/select distinct dbprimary_acc from 
 	  xref
 	  join external_db using (external_db_id)
 	  join seq_region_attrib sa on (xref.xref_id=sa.value)
@@ -243,260 +211,241 @@ sub process_genome {
 	  join seq_region using (seq_region_id)
 	  join coord_system using (coord_system_id)
 	  where species_id=? and code='xref_id' and db_name in ('PUBMED')/,
-		-PARAMS => [ $dba->species_id() ]
-	));
+      -PARAMS => [ $dba->species_id() ] ) );
 
-	# add aliases
-	$md->aliases(
-		$dba->dbc()->sql_helper()->execute_simple(
-			-SQL => q/select distinct meta_value from meta
+  # add aliases
+  $md->aliases(
+    $dba->dbc()->sql_helper()->execute_simple(
+      -SQL => q/select distinct meta_value from meta
 	  where species_id=? and meta_key='species.alias'/,
-			-PARAMS => [ $dba->species_id() ]
-		)
-	);
+      -PARAMS => [ $dba->species_id() ] ) );
 
-	if ( defined $self->{annotation_analyzer} ) {
+  if ( defined $self->{annotation_analyzer} ) {
 
-		# core annotation
-		$self->{logger}
-		  ->info( "Processing " . $dba->species() . " core annotation" );
-		$md->annotations(
-			$self->{annotation_analyzer}->analyze_annotation($dba) );
+    # core annotation
+    $self->{logger}
+      ->info( "Processing " . $dba->species() . " core annotation" );
+    $md->annotations( $self->{annotation_analyzer}->analyze_annotation($dba) );
 
-		# features
-		my $core_ali  = $self->{annotation_analyzer}->analyze_alignments($dba);
-		my $other_ali = {};
-		$md->features( $self->{annotation_analyzer}->analyze_features($dba) );
-		my $other_features = $dbas->{otherfeatures};
-		if ( defined $other_features ) {
-			$self->{logger}->info(
-				"Processing " . $dba->species() . " otherfeatures annotation" );
-			my %features = (
-				%{ $md->features() },
-				%{
-					$self->{annotation_analyzer}
-					  ->analyze_features($other_features)
-				  }
-			);
-			$other_ali =
-			  $self->{annotation_analyzer}->analyze_alignments($other_features);
-			$size += get_dbsize($other_features);
-			$md->features( \%features );
-		}
-		my $variation = $dbas->{variation};
+    # features
+    my $core_ali  = $self->{annotation_analyzer}->analyze_alignments($dba);
+    my $other_ali = {};
+    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
+    my $other_features = $dbas->{otherfeatures};
+    if ( defined $other_features ) {
+      $self->{logger}
+        ->info( "Processing " . $dba->species() . " otherfeatures annotation" );
+      my %features = ( %{ $md->features() },
+                       %{$self->{annotation_analyzer}
+                           ->analyze_features($other_features) } );
+      $other_ali =
+        $self->{annotation_analyzer}->analyze_alignments($other_features);
+      $size += get_dbsize($other_features);
+      $md->features( \%features );
+    }
+    my $variation = $dbas->{variation};
 
-		# variation
-		if ( defined $variation ) {
-			$self->{logger}->info(
-				"Processing " . $dba->species() . " variation annotation" );
-			$md->variations(
-				$self->{annotation_analyzer}->analyze_variation($variation) );
-			$size += get_dbsize($variation);
-		}
+    # variation
+    if ( defined $variation ) {
+      $self->{logger}
+        ->info( "Processing " . $dba->species() . " variation annotation" );
+      $md->variations(
+                  $self->{annotation_analyzer}->analyze_variation($variation) );
+      $size += get_dbsize($variation);
+    }
 
-		# BAM
-		$self->{logger}
-		  ->info( "Processing " . $dba->species() . " read aligments" );
-		my $read_ali =
-		  $self->{annotation_analyzer}
-		  ->analyze_tracks( $md->species(), $md->division() );
-		my %all_ali = ( %{$core_ali}, %{$other_ali} );
+    # BAM
+    $self->{logger}
+      ->info( "Processing " . $dba->species() . " read aligments" );
+    my $read_ali =
+      $self->{annotation_analyzer}
+      ->analyze_tracks( $md->species(), $md->division() );
+    my %all_ali = ( %{$core_ali}, %{$other_ali} );
 
-		# add bam tracks by count - use source name
-		for my $bam ( @{ $read_ali->{bam} } ) {
-			$all_ali{bam}{ $bam->{id} }++;
-		}
-		$md->other_alignments( \%all_ali );
-		$md->db_size($size);
+    # add bam tracks by count - use source name
+    for my $bam ( @{ $read_ali->{bam} } ) {
+      $all_ali{bam}{ $bam->{id} }++;
+    }
+    $md->other_alignments( \%all_ali );
+    $md->db_size($size);
 
-	} ## end if ( defined $self->{annotation_analyzer...})
-	$dba->dbc()->disconnect_if_idle();
-	return $md;
+  } ## end if ( defined $self->{annotation_analyzer...})
+  $dba->dbc()->disconnect_if_idle();
+  return $md;
 } ## end sub process_genome
 
-my $DIVISION_NAMES = {
-	'bacteria'     => 'EnsemblBacteria',
-	'plants'       => 'EnsemblPlants',
-	'protists'     => 'EnsemblProtists',
-	'fungi'        => 'EnsemblFungi',
-	'metazoa'      => 'EnsemblMetazoa',
-	'pan_homology' => 'EnsemblPan'
-};
+my $DIVISION_NAMES = { 'bacteria'     => 'EnsemblBacteria',
+                       'plants'       => 'EnsemblPlants',
+                       'protists'     => 'EnsemblProtists',
+                       'fungi'        => 'EnsemblFungi',
+                       'metazoa'      => 'EnsemblMetazoa',
+                       'pan_homology' => 'EnsemblPan' };
 
 sub compara_to_info {
-	my ( $self, $compara, $genomes ) = @_;
-	my $compara_info;
-	return $compara_info;	
+  my ( $self, $compara, $genomes ) = @_;
+  my $compara_info;
+  return $compara_info;
 }
 
 sub process_compara {
-	my ( $self, $compara, $genomes ) = @_;
-	if(!defined $genomes) {
-		$genomes = {};
-	}
-	my $comparas = [];
-	eval {
-		$self->{logger}
-		  ->info( "Processing compara database " . $compara->dbc()->dbname() );
+  my ( $self, $compara, $genomes ) = @_;
+  if ( !defined $genomes ) {
+    $genomes = {};
+  }
+  my $comparas = [];
+  eval {
+    $self->{logger}
+      ->info( "Processing compara database " . $compara->dbc()->dbname() );
 
-		( my $division = $compara->dbc()->dbname() ) =~
-		  s/ensembl_compara_([a-z_]+)_[0-9]+_[0-9]+/$1/;
+    ( my $division = $compara->dbc()->dbname() ) =~
+      s/ensembl_compara_([a-z_]+)_[0-9]+_[0-9]+/$1/;
 
-		$division = $DIVISION_NAMES->{$division} || $division;
+    $division = $DIVISION_NAMES->{$division} || $division;
 
-		my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
+    my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
-		for my $method (
-			qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
-		  )
-		{
+    for my $method (
+      qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
+      )
+    {
 
-			$self->{logger}
-			  ->info( "Processing method type $method from compara database "
-				  . $compara->dbc()->dbname() );
+      $self->{logger}
+        ->info( "Processing method type $method from compara database " .
+                $compara->dbc()->dbname() );
 
-			# group by species_set
-			my $mlss_by_ss = {};
-			for
-			  my $mlss ( @{ $adaptor->fetch_all_by_method_link_type($method) } )
-			{
-				push @{ $mlss_by_ss->{ $mlss->species_set_obj()->dbID() } },
-				  $mlss;
-			}
+      # group by species_set
+      my $mlss_by_ss = {};
+      for my $mlss ( @{ $adaptor->fetch_all_by_method_link_type($method) } ) {
+        push @{ $mlss_by_ss->{ $mlss->species_set_obj()->dbID() } }, $mlss;
+      }
 
-			for my $mlss_list ( values %$mlss_by_ss ) {
+      for my $mlss_list ( values %$mlss_by_ss ) {
 
-				my $dbs = {};
-				my $ss_name;
-				for my $mlss ( @{$mlss_list} ) {
-					$ss_name ||= $mlss->species_set_obj()->get_tagvalue('name');
-					for my $gdb ( @{ $mlss->species_set_obj()->genome_dbs() } )
-					{
-						$dbs->{ $gdb->name() } = $gdb;
-					}
-					if ( !defined $ss_name ) {
-						$ss_name = $mlss->name();
-					}
-					if ( defined $ss_name ) {
-						last;
-					}
-				}
+        my $dbs = {};
+        my $ss_name;
+        for my $mlss ( @{$mlss_list} ) {
+          $ss_name ||= $mlss->species_set_obj()->get_tagvalue('name');
+          for my $gdb ( @{ $mlss->species_set_obj()->genome_dbs() } ) {
+            $dbs->{ $gdb->name() } = $gdb;
+          }
+          if ( !defined $ss_name ) {
+            $ss_name = $mlss->name();
+          }
+          if ( defined $ss_name ) {
+            last;
+          }
+        }
 
-				$self->{logger}->info(
+        $self->{logger}->info(
 "Processing species set $ss_name for method $method from compara database "
-					  . $compara->dbc()->dbname() );
+            . $compara->dbc()->dbname() );
 
-				my $compara_info =
-				  Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(
-					-DBNAME   => $compara->dbc()->dbname(),
-					-DIVISION => $division,
-					-METHOD   => $method,
-					-SET_NAME => $ss_name,
-					-GENOMES  => []
-				  );
+        my $compara_info =
+          Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(
+                                           -DBNAME => $compara->dbc()->dbname(),
+                                           -DIVISION => $division,
+                                           -METHOD   => $method,
+                                           -SET_NAME => $ss_name,
+                                           -GENOMES  => [] );
 
-#				if ( defined $self->{info_adaptor} ) {
-#					my $extant_compara_info =
-#					  $self->{info_adaptor}->fetch_compara_by_dbname_method_set(
-#						$compara->dbc()->dbname(),
-#						$method, $ss_name );
-#					if ( defined $extant_compara_info ) {
-#						if ( defined $self->{force_update} ) {
-#							$self->{logger}->info(
-#								    "Reusing ID for existing compara analysis "
-#								  . $extant_compara_info->dbname() . "/"
-#								  . $method . "/"
-#								  . $ss_name );
-#							$compara_info->dbID( $extant_compara_info->dbID() );
-#							$compara_info->adaptor(
-#								$extant_compara_info->adaptor() );
-#						}
-#						else {
-#							$self->{logger}
-#							  ->info( "Reusing existing compara analysis "
-#								  . $extant_compara_info->dbname() . "/"
-#								  . $method . "/"
-#								  . $ss_name );
-#							$compara_info = $extant_compara_info;
-#						}
-#					}
-#				}
+        #				if ( defined $self->{info_adaptor} ) {
+        #					my $extant_compara_info =
+        #					  $self->{info_adaptor}->fetch_compara_by_dbname_method_set(
+        #						$compara->dbc()->dbname(),
+        #						$method, $ss_name );
+        #					if ( defined $extant_compara_info ) {
+        #						if ( defined $self->{force_update} ) {
+        #							$self->{logger}->info(
+        #								    "Reusing ID for existing compara analysis "
+        #								  . $extant_compara_info->dbname() . "/"
+        #								  . $method . "/"
+        #								  . $ss_name );
+        #							$compara_info->dbID( $extant_compara_info->dbID() );
+        #							$compara_info->adaptor(
+        #								$extant_compara_info->adaptor() );
+        #						}
+        #						else {
+        #							$self->{logger}
+        #							  ->info( "Reusing existing compara analysis "
+        #								  . $extant_compara_info->dbname() . "/"
+        #								  . $method . "/"
+        #								  . $ss_name );
+        #							$compara_info = $extant_compara_info;
+        #						}
+        #					}
+        #				}
 
-				for my $gdb ( values %{$dbs} ) {
+        for my $gdb ( values %{$dbs} ) {
 
-					$self->{logger}->info( "Processing species "
-						  . $gdb->name()
-						  . " from species set $ss_name for method $method from compara database "
-						  . $compara->dbc()->dbname() );
+          $self->{logger}->info( "Processing species " . $gdb->name() .
+" from species set $ss_name for method $method from compara database "
+            . $compara->dbc()->dbname() );
 
-					my $genomeInfo = $genomes->{ $gdb->name() };
+          my $genomeInfo = $genomes->{ $gdb->name() };
 
-					# have we got one in the database already?
-					if ( !defined $genomeInfo && defined $self->{info_adaptor} )
-					{
-						$genomeInfo =
-						  $self->{info_adaptor}
-						  ->fetch_by_species( $gdb->name() );
-						  if(!defined $genomeInfo) {
-						  	croak "Could not find genome info object for ".$gdb->name();
-						  }
-						$genomes->{ $gdb->name() } = $genomeInfo;
-					}
+          # have we got one in the database already?
+          if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
+            $genomeInfo =
+              $self->{info_adaptor}->fetch_by_species( $gdb->name() );
+            if ( !defined $genomeInfo ) {
+              croak "Could not find genome info object for " . $gdb->name();
+            }
+            $genomes->{ $gdb->name() } = $genomeInfo;
+          }
 
-					# last attempt, create one
-					if ( !defined $genomeInfo ) {
-						$self->{logger}
-						  ->info( "Creating info object for " . $gdb->name() );
+          # last attempt, create one
+          if ( !defined $genomeInfo ) {
+            $self->{logger}->info( "Creating info object for " . $gdb->name() );
 
-						# get core dba
-						my $dba;
-						eval {
-							$dba = Bio::EnsEMBL::Registry->get_DBAdaptor(
-								$gdb->name(), 'core' );
-						};
-						if ( defined $dba ) {
-							$genomeInfo =
-							  $self->process_genome( { core => $dba } );
-						}
-						else {
-							croak "Could not find DBAdaptor for ".$gdb->name();
-						}
-						$genomeInfo->base_count(0);
-						if(!defined $genomeInfo) {
-							croak "Could not create a genome info object for ".$gdb->name();
-						}
-						$genomes->{ $gdb->name() } = $genomeInfo;
-					} ## end if ( !defined $genomeInfo)
-					croak "Could not find genome info for ".$gdb->name() unless defined $genomeInfo;
-					push @{ $compara_info->genomes() }, $genomeInfo;
+            # get core dba
+            my $dba;
+            eval {
+              $dba =
+                Bio::EnsEMBL::Registry->get_DBAdaptor( $gdb->name(), 'core' );
+            };
+            if ( defined $dba ) {
+              $genomeInfo = $self->process_genome( { core => $dba } );
+            }
+            else {
+              croak "Could not find DBAdaptor for " . $gdb->name();
+            }
+            $genomeInfo->base_count(0);
+            if ( !defined $genomeInfo ) {
+              croak "Could not create a genome info object for " . $gdb->name();
+            }
+            $genomes->{ $gdb->name() } = $genomeInfo;
+          }
+          croak "Could not find genome info for " . $gdb->name()
+            unless defined $genomeInfo;
+          push @{ $compara_info->genomes() }, $genomeInfo;
 
-					if ( !defined $genomeInfo->compara() ) {
-						$genomeInfo->compara( [$compara_info] );
-					}
-					else {
-						push @{ $genomeInfo->compara() }, $compara_info;
-					}
-				} ## end for my $gdb ( values %{...})
-			push @$comparas, $compara_info if defined $compara_info;
-			} ## end for my $mlss_list ( values...)
-		} ## end for my $method ( ...)
+          if ( !defined $genomeInfo->compara() ) {
+            $genomeInfo->compara( [$compara_info] );
+          }
+          else {
+            push @{ $genomeInfo->compara() }, $compara_info;
+          }
+        } ## end for my $gdb ( values %{...})
+        push @$comparas, $compara_info if defined $compara_info;
+      } ## end for my $mlss_list ( values...)
+    } ## end for my $method ( ...)
 
-		$self->{logger}->info( "Completed processing compara database "
-			  . $compara->dbc()->dbname() );
-	};
-	if ($@) {
-		$self->{logger}->warn( "Could not process compara: " . $@ );
-	}
-	return $comparas;
+    $self->{logger}->info(
+         "Completed processing compara database " . $compara->dbc()->dbname() );
+  };
+  if ($@) {
+    $self->{logger}->warn( "Could not process compara: " . $@ );
+  }
+  return $comparas;
 } ## end sub process_compara
 
 sub get_dbsize {
-	my ($dba) = @_;
-	return $dba->dbc()->sql_helper()->execute_single_result(
-		-SQL =>
+  my ($dba) = @_;
+  return
+    $dba->dbc()->sql_helper()->execute_single_result(
+    -SQL =>
 "select SUM(data_length + index_length) from information_schema.tables where table_schema=?",
-		-PARAMS => [ $dba->dbc()->dbname() ]
-	);
+    -PARAMS => [ $dba->dbc()->dbname() ] );
 }
 
 1;
