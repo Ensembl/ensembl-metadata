@@ -155,7 +155,6 @@ sub new {
 		$ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
 		$self->assembly($ass);
 	}
-	$self->{data_release} ||= Bio::EnsEMBL::MetaData::DataReleaseInfo->new();
 	return $self;
 } ## end sub new
 
