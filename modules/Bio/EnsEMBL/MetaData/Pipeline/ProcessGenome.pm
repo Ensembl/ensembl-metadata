@@ -34,76 +34,86 @@ Log::Log4perl->easy_init($INFO);
 my $log = get_logger();
 
 sub param_defaults {
-	my ($self) = @_;
-	return {};
+  my ($self) = @_;
+  return {};
 }
 
 sub fetch_input {
-	my ($self) = @_;
-	return;
+  my ($self) = @_;
+  return;
 }
 
 sub run {
-	my ($self)  = @_;
-	my $dbas    = {};
-	my $species = $self->param_required('species');
-	
-	return if $species eq 'Ancestral sequences';
+  my ($self)  = @_;
+  my $dbas    = {};
+  my $species = $self->param_required('species');
 
-	$log->info("Finding DBAdaptors for $species");
-	for my $type (qw/core variation otherfeatures funcgen/) {
-		$dbas->{$type} = $self->get_DBAdaptor($type);
-	}
-	$log->info("Connecting to info database");
-	my $dba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
-			-USER =>,
-			$self->param('info_user'),
-			-PASS =>,
-			$self->param('info_pass'),
-			-HOST =>,
-			$self->param('info_host'),
-			-PORT =>,
-			$self->param('info_port'),
-			-DBNAME =>,
-			$self->param('info_dbname')
-	);
-	my $gdba = $dba->get_GenomeInfoAdaptor();
+  return if $species eq 'Ancestral sequences';
 
-	my $upd = $self->param('force_update') || 0;
+  $log->info("Finding DBAdaptors for $species");
+  for my $type (qw/core variation otherfeatures funcgen/) {
+    $dbas->{$type} = $self->get_DBAdaptor($type);
+  }
+  $log->info("Connecting to info database");
+  my $dba =
+    Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
+                                                     -USER =>,
+                                                     $self->param('info_user'),
+                                                     -PASS =>,
+                                                     $self->param('info_pass'),
+                                                     -HOST =>,
+                                                     $self->param('info_host'),
+                                                     -PORT =>,
+                                                     $self->param('info_port'),
+                                                     -DBNAME =>,
+                                                     $self->param('info_dbname')
+    );
+  my $gdba = $dba->get_GenomeInfoAdaptor();
 
-	my $opts = {
-		-INFO_ADAPTOR => $gdba,
-		-ANNOTATION_ANALYZER =>
-		  Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
-		-COMPARA      => 0,
-		-CONTIGS      => $self->param('contigs') || 1,
-		-FORCE_UPDATE => $upd,
-		-VARIATION    => $self->param('variation') || 1
-	};
+  # set the release to use when storing genomes
+  my $rdba = $dba->get_DataReleaseInfoAdaptor();
+  my $release;
+  if ( defined $self->param('eg_release') ) {
+    $release =
+      $rdba->fetch_by_ensembl_genomes_release( $self->param('eg_release') );
+  }
+  else {
+    $release = $rdba->fetch_by_ensembl_release( $self->param('release') );
+  }
+  $gdba->data_release($release);
 
-	my $processor =
-	  Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
+  my $upd = $self->param('force_update') || 0;
 
-	$log->info("Processing $species");
+  my $opts = {
+      -INFO_ADAPTOR        => $gdba,
+      -ANNOTATION_ANALYZER => Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
+      -COMPARA             => 0,
+      -CONTIGS             => $self->param('contigs') || 1,
+      -FORCE_UPDATE        => $upd,
+      -VARIATION           => $self->param('variation') || 1 };
 
-	my $md = $processor->process_genome($dbas);
+  my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
 
-	if ( defined $md->dbID() && $upd == 1 ) {
-		$log->info( "Updating " . $md->species() );
-		$gdba->update($md);
-	}
-	elsif ( !defined $md->dbID() ) {
-		$log->info( "Storing " . $md->species() );
-		$gdba->store($md);
-	}
+  $log->info("Processing $species");
 
-	$log->info("Completed processing $species");
-	return;
-}
+  my $md = $processor->process_genome($dbas);
+
+  if ( defined $md->dbID() && $upd == 1 ) {
+    $log->info( "Updating " . $md->species() );
+    $gdba->update($md);
+  }
+  elsif ( !defined $md->dbID() ) {
+    $log->info( "Storing " . $md->species() );
+    $gdba->store($md);
+  }
+
+  $log->info("Completed processing $species");
+  return;
+} ## end sub run
 
 sub write_output {
-	my ($self) = @_;
-	return;
+  my ($self) = @_;
+  return;
 }
 
 1;

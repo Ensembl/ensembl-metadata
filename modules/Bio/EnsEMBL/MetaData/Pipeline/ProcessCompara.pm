@@ -56,31 +56,40 @@ sub run {
   $log->info("Connecting to info database");
   my $dba =
     Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
-                                             -USER =>,
-                                             $self->param('info_user'),
-                                             -PASS =>,
-                                             $self->param('info_pass'),
-                                             -HOST =>,
-                                             $self->param('info_host'),
-                                             -PORT =>,
-                                             $self->param('info_port'),
-                                             -DBNAME =>,
-                                             $self->param('info_dbname')
+                                                     -USER =>,
+                                                     $self->param('info_user'),
+                                                     -PASS =>,
+                                                     $self->param('info_pass'),
+                                                     -HOST =>,
+                                                     $self->param('info_host'),
+                                                     -PORT =>,
+                                                     $self->param('info_port'),
+                                                     -DBNAME =>,
+                                                     $self->param('info_dbname')
     );
   my $gdba = $dba->get_GenomeInfoAdaptor();
 
+  # set the release to use when storing genomes 
+  my $rdba = $dba->get_DataReleaseInfoAdaptor();
+  my $release;
+  if(defined $self->param('eg_release')) {
+    $release = $rdba->fetch_by_ensembl_genomes_release($self->param('eg_release'));    
+  } else {
+    $release = $rdba->fetch_by_ensembl_genomes_release($self->param('eg_release'));        
+  }
+  $gdba->data_release($release);
+
   my $upd = $self->param('force_update') || 0;
 
-  my $opts = { -INFO_ADAPTOR => $gdba,
-               -ANNOTATION_ANALYZER =>
-                 Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
-               -COMPARA      => 0,
-               -CONTIGS      => 0,
-               -FORCE_UPDATE => $upd,
-               -VARIATION    => 0 };
+  my $opts = {
+      -INFO_ADAPTOR        => $gdba,
+      -ANNOTATION_ANALYZER => Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
+      -COMPARA             => 0,
+      -CONTIGS             => 0,
+      -FORCE_UPDATE        => $upd,
+      -VARIATION           => 0 };
   $log->info("Processing $compara_name");
-  my $processor =
-    Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
+  my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
   my $compara_infos = $processor->process_compara( $compara_dba, {} );
 
   for my $compara_info (@$compara_infos) {
