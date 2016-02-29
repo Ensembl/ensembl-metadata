@@ -968,7 +968,6 @@ sub _get_obj_class {
 # override to add release clause
 sub _args_to_sql {
   my ( $self, $sql_in, $args ) = @_;
-  my $sql = $sql_in;
   if ( !defined $args->{ _get_id_field() } ) {
     # if we're not searching by dbID, add release as a clause
     if ( defined $self->data_release()->dbID() ) {
