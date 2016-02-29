@@ -57,8 +57,8 @@ use base qw/Bio::EnsEMBL::DBSQL::BaseAdaptor/;
 =cut
 
 sub fetch_all {
-	my ( $self, $keen ) = @_;
-	return $self->_fetch_generic_with_args( {}, $keen );
+  my ( $self, $keen ) = @_;
+  return $self->_fetch_generic_with_args( {}, $keen );
 }
 
 =head2 fetch_by_dbID
@@ -72,10 +72,12 @@ sub fetch_all {
 =cut
 
 sub fetch_by_dbID {
-	my ( $self, $id, $keen ) = @_;
-	return
-	  $self->_first_element( $self->_fetch_generic_with_args( { $self->_get_id_field(), $id } ),
-					  $keen );
+  my ( $self, $id, $keen ) = @_;
+  return
+    $self->_first_element( $self->_fetch_generic_with_args(
+                                         { $self->_get_id_field(), $id }
+                           ),
+                           $keen );
 }
 
 =head2 fetch_by_dbIDs
@@ -89,27 +91,29 @@ sub fetch_by_dbID {
 =cut
 
 sub fetch_by_dbIDs {
-	my ( $self, $ids, $keen ) = @_;
-	my @genomes = ();
-	my $it = natatime 1000, @{$ids};
-	while ( my @vals = $it->() ) {
-		my $sql =
-		  $self->_get_base_sql() . ' where '.$self->_get_id_field().' in (' . join( ',', @vals ) . ')';
-		@genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
-	}
-	return \@genomes;
+  my ( $self, $ids, $keen ) = @_;
+  my @genomes = ();
+  my $it = natatime 1000, @{$ids};
+  while ( my @vals = $it->() ) {
+    my $sql =
+      $self->_get_base_sql() . ' where ' . $self->_get_id_field() .
+      ' in (' .
+      join( ',', @vals ) . ')';
+    @genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
+  }
+  return \@genomes;
 }
 
 sub _get_base_sql {
-	throw("Method not implemented in base class");
-} 
+  throw("Method not implemented in base class");
+}
 
 sub _get_id_field {
-	throw("Method not implemented in base class");
-} 
+  throw("Method not implemented in base class");
+}
 
 sub _get_obj_class {
-	throw("Method not implemented in base class");
+  throw("Method not implemented in base class");
 }
 
 =head2 _fetch_generic_with_args
@@ -124,34 +128,34 @@ sub _get_obj_class {
 =cut
 
 sub _fetch_generic_with_args {
-	my ( $self, $args, $type, $keen ) = @_;
-	my ( $sql, $params ) = $self->_args_to_sql( $self->_get_base_sql(), $args );
-	my $info =
-	  $self->_fetch_generic( $sql, $params,
-							 $self->_get_obj_class(),
-							 $keen );
-	# add assembly and release
-	for my $i (@{$info}) {
-		$self->_fetch_children($i);
-	}	
-	return $info;
+  my ( $self, $args, $type, $keen ) = @_;
+  my ( $sql, $params ) =
+    $self->_args_to_sql( $self->_get_base_sql(), $args );
+  my $info =
+    $self->_fetch_generic( $sql, $params, $self->_get_obj_class(),
+                           $keen );
+  # add assembly and release
+  for my $i ( @{$info} ) {
+    $self->_fetch_children($i);
+  }
+  return $info;
 }
 
 sub _fetch_children {
-	my ($self,$i) = @_;
-	# do nothing
-	return;
+  my ( $self, $i ) = @_;
+  # do nothing
+  return;
 }
 
 sub _args_to_sql {
-	my ( $self, $sql_in, $args ) = @_;
-	my $sql    = $sql_in;
-	my $params = [ values %$args ];
-	my $clause = join( ',', map { $_ . '=?' } keys %$args );
-	if ( $clause ne '' ) {
-		$sql .= ' where ' . $clause;
-	}
-	return ( $sql, $params );
+  my ( $self, $sql_in, $args ) = @_;
+  my $sql    = $sql_in;
+  my $params = [ values %$args ];
+  my $clause = join( ' AND ', map { $_ . '=?' } keys %$args );
+  if ( $clause ne '' ) {
+    $sql .= ' where ' . $clause;
+  }
+  return ( $sql, $params );
 }
 
 =head2 _fetch_generic
@@ -166,31 +170,31 @@ sub _args_to_sql {
 =cut
 
 sub _fetch_generic {
-	my ( $self, $sql, $params, $type, $keen ) = @_;
-        if(!defined $type) {
-            $type = $self->_get_obj_class();
-        }
-	my $mds = $self->{dbc}->sql_helper()->execute(
-		-SQL          => $sql,
-		-USE_HASHREFS => 1,
-		-CALLBACK     => sub {
-			my $row = shift @_;
-			my $md = $self->_get_cached_obj( $type, $row->{dbID} );
-			if ( !defined $md ) {
-				$md = bless $row, $type;
-				$md->adaptor($self);
-				$self->_store_cached_obj($md);
-			}
-			return $md;
-		},
-		-PARAMS => $params );
-	if ( defined $keen && $keen == 1 ) {
-		for my $md ( @{$mds} ) {
-			$self->_fetch_children($md);
-		}
-	}
-	return $mds;
-}
+  my ( $self, $sql, $params, $type, $keen ) = @_;
+  if ( !defined $type ) {
+    $type = $self->_get_obj_class();
+  }
+  my $mds = $self->{dbc}->sql_helper()->execute(
+    -SQL          => $sql,
+    -USE_HASHREFS => 1,
+    -CALLBACK     => sub {
+      my $row = shift @_;
+      my $md = $self->_get_cached_obj( $type, $row->{dbID} );
+      if ( !defined $md ) {
+        $md = bless $row, $type;
+        $md->adaptor($self);
+        $self->_store_cached_obj($md);
+      }
+      return $md;
+    },
+    -PARAMS => $params );
+  if ( defined $keen && $keen == 1 ) {
+    for my $md ( @{$mds} ) {
+      $self->_fetch_children($md);
+    }
+  }
+  return $mds;
+} ## end sub _fetch_generic
 
 =head2 _cache
   Arg	     : type of object for cache
@@ -202,11 +206,11 @@ sub _fetch_generic {
 =cut
 
 sub _cache {
-	my ( $self, $type ) = @_;
-	if ( !defined $self->{cache} || !defined $self->{cache}{$type} ) {
-		$self->{cache}{$type} = {};
-	}
-	return $self->{cache}{$type};
+  my ( $self, $type ) = @_;
+  if ( !defined $self->{cache} || !defined $self->{cache}{$type} ) {
+    $self->{cache}{$type} = {};
+  }
+  return $self->{cache}{$type};
 }
 
 =head2 _clear_cache
@@ -219,14 +223,14 @@ sub _cache {
 =cut
 
 sub _clear_cache {
-	my ( $self, $type ) = @_;
-	if ( defined $type ) {
-		$self->{cache}{$type} = {};
-	}
-	else {
-		$self->{cache} = {};
-	}
-	return;
+  my ( $self, $type ) = @_;
+  if ( defined $type ) {
+    $self->{cache}{$type} = {};
+  }
+  else {
+    $self->{cache} = {};
+  }
+  return;
 }
 
 =head2 _get_cached_obj
@@ -240,8 +244,8 @@ sub _clear_cache {
 =cut
 
 sub _get_cached_obj {
-	my ( $self, $type, $id ) = @_;
-	return $self->_cache($type)->{$id};
+  my ( $self, $type, $id ) = @_;
+  return $self->_cache($type)->{$id};
 }
 
 =head2 _store_cached_obj
@@ -255,10 +259,10 @@ sub _get_cached_obj {
 =cut
 
 sub _store_cached_obj {
-	my ( $self, $obj ) = @_;
-	my $type = ref $obj;
-	$self->_cache($type)->{ $obj->dbID() } = $obj;
-	return;
+  my ( $self, $obj ) = @_;
+  my $type = ref $obj;
+  $self->_cache($type)->{ $obj->dbID() } = $obj;
+  return;
 }
 
 =head2 _first_element
@@ -271,13 +275,13 @@ sub _store_cached_obj {
 =cut
 
 sub _first_element {
-	my ($self,$arr) = @_;
-	if ( defined $arr && scalar(@$arr) > 0 ) {
-		return $arr->[0];
-	}
-	else {
-		return undef;
-	}
+  my ( $self, $arr ) = @_;
+  if ( defined $arr && scalar(@$arr) > 0 ) {
+    return $arr->[0];
+  }
+  else {
+    return undef;
+  }
 }
 
 1;
