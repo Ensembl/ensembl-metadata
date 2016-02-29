@@ -19,6 +19,8 @@ use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 
+use Data::Dumper;
+
 my %oargs = ( '-NAME'                => "test",
 			  '-SPECIES'             => "Testus testa",
 			  '-TAXONOMY_ID'         => 999,
@@ -29,14 +31,15 @@ my %oargs = ( '-NAME'                => "test",
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
 
 my %args = ( '-ASSEMBLY_NAME'      => "v2.0",
-			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181',
+			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
 			 '-ASSEMBLY_LEVEL'     => 'chromosome',
 			 '-BASE_COUNT'         => 99,
 			 '-ORGANISM'           => $org );
 
+diag "Testing creation";
 my $assembly = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%args);
 $assembly->sequences(
-				 [ { name => 'a', acc => 'b' }, { name => 'c', acc => 'd' } ] );
+				 [ { name => 'a', acc => 'b.1' }, { name => 'c', acc => 'd.2' } ] );
 
 ok( defined $assembly, "Assembly object exists" );
 ok( $assembly->assembly_name()            eq $args{-ASSEMBLY_NAME} );
@@ -46,6 +49,7 @@ ok( $assembly->base_count()               eq $args{-BASE_COUNT} );
 ok( $assembly->organism()->name()         eq $args{-ORGANISM}->name() );
 ok( scalar( @{ $assembly->sequences() } ) eq 2 );
 
+diag "Testing storage";
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
 my $gdba  = $multi->get_DBAdaptor('empty_metadata');
 my $aa    = $gdba->get_GenomeAssemblyInfoAdaptor();
@@ -65,10 +69,15 @@ ok( $aa->db()->dbc()->sql_helper()->execute_single_result(
 	  )
 	  eq '2' );
 
+diag "Testing storage with reuse";
 my $assa = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%args);
+$assa->sequences(
+				 [ { name => 'a', acc => 'b.1' }, { name => 'c', acc => 'd.2' } ] );
+
 $aa->store($assa);
 ok($assembly->dbID() eq $assa->dbID(), "dbID reuse");
-	  
+
+diag "Testing retrieval with cache";	  
 my $ass2 = $aa->fetch_by_dbID($assembly->dbID());
 ok( defined $ass2, "Assembly object exists" );
 ok( $ass2->dbID()            eq $assembly->dbID() );
@@ -78,6 +87,8 @@ ok( $ass2->assembly_level()           eq $args{-ASSEMBLY_LEVEL} );
 ok( $ass2->base_count()               eq $args{-BASE_COUNT} );
 ok( $ass2->organism()->name()         eq $args{-ORGANISM}->name() );
 $aa->_clear_cache();
+
+diag "Testing retrieval without cache";
 my $ass3 = $aa->fetch_by_dbID($assembly->dbID());
 ok( defined $ass3, "Assembly object exists" );
 ok( $ass3->dbID()            eq $assembly->dbID() );
@@ -86,5 +97,43 @@ ok( $ass3->assembly_accession()       eq $args{-ASSEMBLY_ACCESSION} );
 ok( $ass3->assembly_level()           eq $args{-ASSEMBLY_LEVEL} );
 ok( $ass3->base_count()               eq $args{-BASE_COUNT} );
 ok( $ass3->organism()->name()         eq $args{-ORGANISM}->name() );
+
+diag "Testing fetch methods";
+{
+  diag "Testing fetch by fetch_all_by_sequence_accession";
+  my $asses = $aa->fetch_all_by_sequence_accession("b");
+  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0");
+}
+{
+  diag "Testing fetch by fetch_all_by_sequence_accession";
+  my $asses = $aa->fetch_all_by_sequence_accession("b.1");
+  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0");
+}
+{
+  diag "Testing fetch by fetch_all_by_sequence_accession_unversioned";
+  my $asses = $aa->fetch_all_by_sequence_accession_unversioned("b");
+  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0");
+}
+{
+  diag "Testing fetch by fetch_all_by_sequence_accession_versioned";
+    my $asses = $aa->fetch_all_by_sequence_accession_versioned("b.1");
+  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0");
+}
+{
+  diag "Testing fetch by fetch_by_assembly_accession";
+  my $ass = $aa->fetch_by_assembly_accession("GCA_181818181.1");
+  ok(defined $ass && $ass->assembly_name() eq "v2.0")
+}
+{
+  diag "Testing fetch by fetch_all_by_assembly_set_chain";
+  my $asses = $aa->fetch_all_by_assembly_set_chain("GCA_181818181");
+  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0")
+}
+{
+  diag "Testing fetch_all_by_organism";
+  my $org    = $gdba->get_GenomeOrganismInfoAdaptor()->fetch_by_name("test");
+  my $asses = $aa->fetch_all_by_organism($org);
+  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0")  
+}
 
 done_testing;

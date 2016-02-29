@@ -120,7 +120,7 @@ q/update assembly set assembly_accession=?,assembly_name=?,assembly_level=?,base
 }
 
 =head2 _store_sequences
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
   Description: Stores the sequences for the supplied object
   Returntype : None
   Exceptions : none
@@ -156,7 +156,7 @@ sub _store_sequences {
   Arg	     : INSDC sequence accession e.g. U00096.1 or U00096
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified sequence accession
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -176,7 +176,7 @@ sub fetch_all_by_sequence_accession {
   Arg	     : INSDC sequence accession e.g. U00096
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified sequence accession
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -186,8 +186,8 @@ sub fetch_all_by_sequence_accession_unversioned {
 	my ( $self, $id, $keen ) = @_;
 	return
 	  $self->_fetch_generic(
-		$self->get_base_sql() .
-' where assembly_id in (select distinct(assembly_id) from genome_sequence where acc like ? or name like ?)',
+		$self->_get_base_sql() .
+' where assembly_id in (select distinct(assembly_id) from assembly_sequence where acc like ? or name like ?)',
 		[ $id . '.%', $id . '.%' ],
 		$keen );
 }
@@ -206,8 +206,8 @@ sub fetch_all_by_sequence_accession_versioned {
 	my ( $self, $id, $keen ) = @_;
 	return
 	  $self->_fetch_generic(
-		$self->get_base_sql() .
-' where genome_id in (select distinct(genome_id) from assembly_sequence where acc=? or name=?)',
+		$self->_get_base_sql() .
+' where assembly_id in (select distinct(assembly_id) from assembly_sequence where acc=? or name=?)',
 		[ $id, $id ],
 		$keen );
 }
@@ -216,7 +216,7 @@ sub fetch_all_by_sequence_accession_versioned {
   Arg	     : INSDC assembly accession
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly ID (versioned or unversioned)
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -224,51 +224,43 @@ sub fetch_all_by_sequence_accession_versioned {
 
 sub fetch_by_assembly_accession {
 	my ( $self, $id, $keen ) = @_;
-	if ( $id =~ m/\.[0-9]+$/ ) {
-		return $self->fetch_by_assembly_accession_versioned( $id, $keen );
-	}
-	else {
-		return $self->fetch_by_assembly_accession_unversioned( $id, $keen );
-	}
+	return
+	  $self->_first_element( $self->_fetch_generic(
+							 $self->_get_base_sql . ' where assembly_accession=?',
+							 [ $id ], $keen ) );
+
 }
 
-=head2 fetch_by_assembly_accession_versioned
-  Arg	     : INSDC assembly accession
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified assembly ID
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_by_assembly_accession_versioned {
-	my ( $self, $id, $keen ) = @_;
-	return _first_element(
-			 $self->_fetch_generic_with_args( { 'assembly_accession', $id }, $keen ) );
-}
-
-=head2 fetch_by_assembly_accession_unversioned
-  Arg	     : INSDC assembly set chain (unversioned accession)
+=head2 fetch_all_by_assembly_set_chain
+  Arg	       : INSDC assembly set chain (unversioned accession)
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly set chain
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub fetch_by_assembly_accession_unversioned {
+sub fetch_all_by_assembly_set_chain {
 	my ( $self, $id, $keen ) = @_;
-	return
-	  _first_element( $self->_fetch_generic(
-							 $self->_get_base_sql . ' where assembly_id like ?',
-							 [ $id . '.%' ], $keen ) );
+	return $self->_fetch_generic(
+							 $self->_get_base_sql . ' where assembly_accession like ?',
+							 [ $id . '.%' ], $keen );
 }
+
+=head2 fetch_all_by_organism
+  Arg	       : GenomeOrganismInfo object
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified organism
+  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub fetch_all_by_organism {
 	my ( $self, $organism_id, $keen ) = @_;
-	if ($organism_id->isa('Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfo') )
+	if (ref($organism_id) eq 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo')
 	{
 		$organism_id = $organism_id->dbID();
 	}
