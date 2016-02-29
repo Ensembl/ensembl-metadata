@@ -85,6 +85,7 @@ CREATE TABLE `genome` (
   `genome_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `data_release_id` int(10) unsigned NOT NULL,
   `assembly_id` int(10) unsigned NOT NULL,
+  `organism_id` int(10) unsigned NOT NULL,
   `genebuild` varchar(64) NOT NULL,
   `division` varchar(32) NOT NULL,
   `dbname` varchar(64) NOT NULL,
@@ -100,7 +101,8 @@ CREATE TABLE `genome` (
   UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
   KEY `genome_ibfk_1` (`assembly_id`),
   CONSTRAINT `genome_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`),
-  CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`)
+  CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
+  CONSTRAINT `genome_ibfk_3` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
