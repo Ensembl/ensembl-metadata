@@ -119,7 +119,7 @@ sub store {
         @{
         $self->dbc()->sql_helper()->execute_simple(
            -SQL =>
-             "select data_release_id from data_release where ensembl_version=?",
+             "select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version is null",
            -PARAMS => [ $data_release->ensembl_version() ] ) };
     }
 
@@ -137,8 +137,7 @@ sub store {
 q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,is_current) values (?,?,?,?)/,
       -PARAMS => [ $data_release->ensembl_version(),
                    $data_release->ensembl_genomes_version(),
-                   $data_release->release_date(),
-                   $data_release->is_current() ],
+                   $data_release->release_date() ],
       -CALLBACK => sub {
         my ( $sth, $dbh, $rv ) = @_;
         $data_release->dbID( $dbh->{mysql_insertid} );
@@ -157,53 +156,50 @@ sub update {
 
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=?, is_current=? where data_release_id=?/,
+q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=? where data_release_id=?/,
     -PARAMS => [ $data_release->ensembl_version(),
                  $data_release->ensembl_genomes_version(),
                  $data_release->release_date(),
-                 $data_release->is_current(),
                  $data_release->dbID() ] );
   return;
 }
 
 sub fetch_by_ensembl_release {
-  my ($self, $release) = @_;
+  my ( $self, $release ) = @_;
   return
     $self->_first_element(
-                   $self->_fetch_generic(
-                     _get_base_sql() .
-                       ' where ensembl_version=? and ensembl_genomes_version is null', [$release]
-                   ) );
+             $self->_fetch_generic(
+               _get_base_sql() .
+                 ' where ensembl_version=? and ensembl_genomes_version is null',
+               [$release] ) );
 }
 
 sub fetch_by_ensembl_genomes_release {
-  my ($self, $release) = @_;
+  my ( $self, $release ) = @_;
   return
     $self->_first_element(
-                   $self->_fetch_generic(
-                     _get_base_sql() .
-                       ' where ensembl_genomes_version=?', [$release]
-                   ) );
+                         $self->_fetch_generic(
+                           _get_base_sql() . ' where ensembl_genomes_version=?',
+                           [$release] ) );
 }
 
 sub fetch_current_ensembl_release {
   my ($self) = @_;
   return
     $self->_first_element(
-                   $self->_fetch_generic(
-                     _get_base_sql() .
-                       ' where is_current=1 and ensembl_genomes_version is null'
-                   ) );
+    $self->_fetch_generic(
+      _get_base_sql() .
+' where ensembl_genomes_version is null order by release_date desc limit 1' ) );
 }
 
 sub fetch_current_ensembl_genomes_release {
   my ($self) = @_;
   return
     $self->_first_element(
-               $self->_fetch_generic(
-                 _get_base_sql() .
-                   ' where is_current=1 and ensembl_genomes_version is not null'
-               ) );
+    $self->_fetch_generic(
+      _get_base_sql() .
+' where ensembl_genomes_version is not null order by release_date desc limit 1'
+    ) );
 }
 
 =head2 _fetch_children
@@ -221,7 +217,7 @@ sub _fetch_children {
 }
 
 my $base_data_release_fetch_sql =
-q/select data_release_id as dbID, ensembl_version, ensembl_genomes_version, release_date, is_current from data_release/;
+q/select data_release_id as dbID, ensembl_version, ensembl_genomes_version, release_date from data_release/;
 
 sub _get_base_sql {
   return $base_data_release_fetch_sql;
