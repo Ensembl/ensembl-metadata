@@ -75,7 +75,7 @@ sub fetch_by_dbID {
   my ( $self, $id, $keen ) = @_;
   return
     $self->_first_element( $self->_fetch_generic_with_args(
-                                         { $self->_get_id_field(), $id }
+                                                 { $self->_get_id_field(), $id }
                            ),
                            $keen );
 }
@@ -96,8 +96,7 @@ sub fetch_by_dbIDs {
   my $it = natatime 1000, @{$ids};
   while ( my @vals = $it->() ) {
     my $sql =
-      $self->_get_base_sql() . ' where ' . $self->_get_id_field() .
-      ' in (' .
+      $self->_get_base_sql() . ' where ' . $self->_get_id_field() . ' in (' .
       join( ',', @vals ) . ')';
     @genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
   }
@@ -129,11 +128,9 @@ sub _get_obj_class {
 
 sub _fetch_generic_with_args {
   my ( $self, $args, $type, $keen ) = @_;
-  my ( $sql, $params ) =
-    $self->_args_to_sql( $self->_get_base_sql(), $args );
+  my ( $sql, $params ) = $self->_args_to_sql( $self->_get_base_sql(), $args );
   my $info =
-    $self->_fetch_generic( $sql, $params, $self->_get_obj_class(),
-                           $keen );
+    $self->_fetch_generic( $sql, $params, $self->_get_obj_class(), $keen );
   # add assembly and release
   for my $i ( @{$info} ) {
     $self->_fetch_children($i);
@@ -150,8 +147,21 @@ sub _fetch_children {
 sub _args_to_sql {
   my ( $self, $sql_in, $args ) = @_;
   my $sql    = $sql_in;
-  my $params = [ values %$args ];
-  my $clause = join( ' AND ', map { $_ . '=?' } keys %$args );
+  my $params = [];
+  my $clause = '';
+  while ( my ( $k, $v ) = each %$args ) {
+    if ( $clause ne '' ) {
+      $clause .= ' AND ';
+    }
+    if ( ref($v) eq 'ARRAY' ) {
+      $clause .= "$k in (" . join( ',', map { '?' } @$v ) . ")";
+      $params = [ @$params, @$v ];
+    }
+    else {
+      $clause .= "$k = ?";
+      push @$params, $v;
+    }
+  }
   if ( $clause ne '' ) {
     $sql .= ' where ' . $clause;
   }
