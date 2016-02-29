@@ -27,14 +27,16 @@ my %oargs = ( '-NAME'                => "test",
 			  '-SEROTYPE'            => 'icky',
 			  '-IS_REFERENCE'        => 1 );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
+$org->aliases(["alias"]);
 
 my %aargs = ( '-ASSEMBLY_NAME'      => "v2.0",
-			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181',
+			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
 			 '-ASSEMBLY_LEVEL'     => 'chromosome',
 			 '-BASE_COUNT'         => 99,
 			 '-ORGANISM'           => $org );
 
 my $assembly = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%aargs);
+$assembly->sequences([{name=>"a",acc=>"xyz.1"}]);
 
 my %rargs = ( -ENSEMBL_VERSION => 99, -ENSEMBL_GENOMES_VERSION => 66, -RELEASE_DATE => '2015-09-29' );
 my $release = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(%rargs);
@@ -69,6 +71,9 @@ ok( $genome->serotype()     eq $oargs{-SEROTYPE},     "serotype correct" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
 my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
+$gdba->data_release($release);
+my $odba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeOrganismInfoAdaptor();
+my $adba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeAssemblyInfoAdaptor();
 
 $gdba->store($genome);
 ok(defined $genome->dbID(),"DBID");
@@ -124,5 +129,58 @@ ok( $genome3->serotype()     eq $oargs{-SEROTYPE},     "serotype correct" );
 my $genome4 = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 $gdba->store($genome4);
 ok($genome4->dbID() eq $genome->dbID(),"DBID reuse");
+
+diag "Testing organism-related retrieval";
+{
+  diag "Testing by direct organism retrieval";
+  my $org = $odba->fetch_by_name("test");
+  my $info = $gdba->fetch_by_organism($org);
+  ok(defined $info && $info->name() eq 'test');
+  my $infos = $gdba->fetch_all_by_organisms([$org]);
+  ok(defined $infos && $infos->[0]->name() eq 'test');
+}
+{
+  diag "Testing by organism name retrieval";
+  my $info = $gdba->fetch_by_name("test");
+  ok(defined $info && $info->name() eq 'test');
+}
+{
+  diag "Testing by organism any name retrieval";
+  my $info = $gdba->fetch_by_any_name("test");
+  ok(defined $info && $info->name() eq 'test');
+}
+{
+  diag "Testing by organism any name retrieval";
+  my $infos = $gdba->fetch_all_by_name_pattern("t.*");
+  ok(defined $infos && $infos->[0]->name() eq 'test');
+}
+
+diag "Testing assembly related retrieval";
+{
+  diag "Testing by direct assembly retrieval";
+  my $ass = $adba->fetch_by_assembly_accession("GCA_181818181.1");
+  my $info = $gdba->fetch_by_assembly($ass);
+  ok(defined $info && $info->name() eq 'test');
+}
+{
+  diag "Testing by assembly accession retrieval";
+  my $info = $gdba->fetch_by_assembly_accession("GCA_181818181.1");
+  ok(defined $info && $info->name() eq 'test');
+}
+{
+  diag "Testing by assembly set chain retrieval";
+  my $infos = $gdba->fetch_all_by_assembly_set_chain("GCA_181818181");
+  ok(defined $infos && $infos->[0]->name() eq 'test');
+}
+{
+  diag "Testing by sequence acc retrieval";
+  my $infos = $gdba->fetch_all_by_sequence_accession("xyz.1");
+  ok(defined $infos && $infos->[0]->name() eq 'test');
+}
+{
+  diag "Testing by sequence acc retrieval";
+  my $infos = $gdba->fetch_all_by_sequence_accession("xyz");
+  ok(defined $infos && $infos->[0]->name() eq 'test');
+}
 
 done_testing;

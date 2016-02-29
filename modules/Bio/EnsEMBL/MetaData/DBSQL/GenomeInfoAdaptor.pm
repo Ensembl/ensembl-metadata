@@ -460,14 +460,35 @@ sub fetch_by_organism {
   if ( ref($organism) eq 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' ) {
     $organism = $organism->dbID();
   }
-  return _first_element(
+  return $self->_first_element(
        $self->_fetch_generic_with_args( { 'organism_id', $organism }, $keen ) );
 }
 
-=head2 fetch_by_organism 
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+=head2 fetch_all_by_organisms
+  Arg	     : Array ref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
   Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified organism
+  Description: Fetch genome info for specified organisms
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_by_organisms {
+  my ( $self, $organisms, $keen ) = @_;
+  if ( !defined $organisms || scalar($organisms) == 0 ) {
+    return [];
+  }
+  return
+    $self->_fetch_generic_with_args( { 'organism_id',
+                                       [ map { $_->dbID() } @$organisms ] },
+                                     $keen );
+}
+
+=head2 fetch_by_assembly 
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified assembly
   Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
@@ -479,8 +500,29 @@ sub fetch_by_assembly {
   if ( ref($assembly) eq 'Bio::EnsEMBL::MetaData::GenomeAssemblyInfo' ) {
     $assembly = $assembly->dbID();
   }
-  return _first_element(
+  return $self->_first_element(
        $self->_fetch_generic_with_args( { 'assembly_id', $assembly }, $keen ) );
+}
+
+=head2 fetch_all_by_assemblies 
+  Arg	     : array of Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified assembly
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_by_assemblies {
+  my ( $self, $assemblies, $keen ) = @_;
+  if ( !defined $assemblies || scalar(@$assemblies) == 0 ) {
+    return [];
+  }
+  return
+    $self->_fetch_generic_with_args( { 'assembly_id',
+                                       [ map { $_->dbID() } @$assemblies ] },
+                                     $keen );
 }
 
 =head2 fetch_all_by_sequence_accession
@@ -495,12 +537,16 @@ sub fetch_by_assembly {
 
 sub fetch_all_by_sequence_accession {
   my ( $self, $id, $keen ) = @_;
-  if ( $id =~ m/\.[0-9]+$/ ) {
-    return $self->fetch_all_by_sequence_accession_versioned( $id, $keen );
+  my $ass =
+    $self->_assembly_adaptor()->fetch_all_by_sequence_accession_versioned($id);
+  my $infos = $self->fetch_all_by_assemblies( $ass, $keen );
+  if ( !defined $infos || scalar(@$infos) == 0 ) {
+    $ass =
+      $self->_assembly_adaptor()
+      ->fetch_all_by_sequence_accession_unversioned($id);
+    $infos = $self->fetch_all_by_assemblies( $ass, $keen );
   }
-  else {
-    return $self->fetch_all_by_sequence_accession_unversioned( $id, $keen );
-  }
+  return $infos;
 }
 
 =head2 fetch_all_by_sequence_accession_unversioned
@@ -515,12 +561,9 @@ sub fetch_all_by_sequence_accession {
 
 sub fetch_all_by_sequence_accession_unversioned {
   my ( $self, $id, $keen ) = @_;
-  return
-    $self->_fetch_generic(
-    $self->_get_base_sql() .
-' where genome_id in (select distinct(genome_id) from genome_sequence where acc like ? or name like ?)',
-    [ $id . '.%', $id . '.%' ],
-    $keen );
+  my $ass =
+    $self->_assembly_adaptor()->fetch_all_sequence_accession_unversioned($id);
+  return $self->fetch_all_by_assemblies( $ass, $keen );
 }
 
 =head2 fetch_all_by_sequence_accession_versioned
@@ -535,15 +578,12 @@ sub fetch_all_by_sequence_accession_unversioned {
 
 sub fetch_all_by_sequence_accession_versioned {
   my ( $self, $id, $keen ) = @_;
-  return
-    $self->_fetch_generic(
-    $self->_get_base_sql() .
-' where genome_id in (select distinct(genome_id) from genome_sequence where acc=? or name=?)',
-    [ $id, $id ],
-    $keen );
+  my $ass =
+    $self->_assembly_adaptor()->fetch_all_sequence_accession_versioned($id);
+  return $self->fetch_all_by_assemblies( $ass, $keen );
 }
 
-=head2 fetch_by_assembly_id
+=head2 fetch_by_assembly_accession
   Arg	     : INSDC assembly accession
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly ID (versioned or unversioned)
@@ -553,33 +593,13 @@ sub fetch_all_by_sequence_accession_versioned {
   Status     : Stable
 =cut
 
-sub fetch_by_assembly_id {
+sub fetch_by_assembly_accession {
   my ( $self, $id, $keen ) = @_;
-  if ( $id =~ m/\.[0-9]+$/ ) {
-    return $self->fetch_by_assembly_id_versioned( $id, $keen );
-  }
-  else {
-    return $self->fetch_by_assembly_id_unversioned( $id, $keen );
-  }
+  my $ass = $self->_assembly_adaptor()->fetch_by_assembly_accession($id);
+  return $self->fetch_by_assembly( $ass, $keen );
 }
 
-=head2 fetch_by_assembly_id_versioned
-  Arg	     : INSDC assembly accession
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified assembly ID
-  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_by_assembly_id_versioned {
-  my ( $self, $id, $keen ) = @_;
-  return _first_element(
-             $self->_fetch_generic_with_args( { 'assembly_id', $id }, $keen ) );
-}
-
-=head2 fetch_by_assembly_id_unversioned
+=head2 fetch_all_by_assembly_set_chain
   Arg	     : INSDC assembly set chain (unversioned accession)
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified assembly set chain
@@ -589,12 +609,10 @@ sub fetch_by_assembly_id_versioned {
   Status     : Stable
 =cut
 
-sub fetch_by_assembly_id_unversioned {
+sub fetch_all_by_assembly_set_chain {
   my ( $self, $id, $keen ) = @_;
-  return
-    _first_element( $self->_fetch_generic(
-                           $self->_get_base_sql() . ' where assembly_id like ?',
-                           [ $id . '.%' ], $keen ) );
+  my $ass = $self->_assembly_adaptor()->fetch_all_by_assembly_set_chain($id);
+  return $self->fetch_all_by_assemblies( $ass, $keen );
 }
 
 =head2 fetch_all_by_division
@@ -624,12 +642,11 @@ sub fetch_all_by_division {
 
 sub fetch_by_name {
   my ( $self, $name, $keen ) = @_;
-  my $organism =
-    $self->_first_element(
-                  $self->_fetch_generic_with_args( { 'name', $name }, $keen ) );
+  my $org = $self->_organism_adaptor()->fetch_by_name($name);
+  return $self->fetch_by_organism( $org, $keen );
 }
 
-=head2 fetch_any_by_name
+=head2 fetch_by_any_name
   Arg	     : Name of genome (display, species, alias etc)
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
@@ -641,11 +658,11 @@ sub fetch_by_name {
 
 sub fetch_by_any_name {
   my ( $self, $name, $keen ) = @_;
-  my $dba = $self->fetch_by_name( $name, $keen );
-  if ( !defined $dba ) {
-    $dba = $self->fetch_by_alias( $name, $keen );
+  my $org = $self->_organism_adaptor()->fetch_by_name($name);
+  if ( !defined $org ) {
+    $org = $self->_organism_adaptor()->fetch_by_alias($name);
   }
-  return $dba;
+  return $self->fetch_by_organism( $org, $keen );
 }
 
 =head2 fetch_all_by_dbname
@@ -675,10 +692,8 @@ sub fetch_all_by_dbname {
 
 sub fetch_all_by_name_pattern {
   my ( $self, $name, $keen ) = @_;
-  return
-    $self->_fetch_generic(
-          $self->_get_base_sql() . q/ where species REGEXP ? or name REGEXP ? /,
-          [ $name, $name ], $keen );
+  my $orgs = $self->_organism_adaptor()->fetch_all_by_name_pattern($name);
+  return $self->fetch_all_by_organisms( $orgs, $keen );
 }
 
 =head2 fetch_by_alias
@@ -693,12 +708,8 @@ sub fetch_all_by_name_pattern {
 
 sub fetch_by_alias {
   my ( $self, $name, $keen ) = @_;
-  return
-    _first_element( $self->_fetch_generic(
-                        $self->_get_base_sql() .
-                          q/ join genome_alias using (genome_id) where alias=?/,
-                        [$name],
-                        $keen ) );
+  my $org = $self->_organism_adaptor()->fetch_all_by_name_pattern($name);
+  return $self->fetch_by_organism( $org, $keen );
 }
 
 =head2 fetch_all_with_variation
@@ -984,6 +995,22 @@ sub _args_to_sql {
     }
   }
   return $self->SUPER::_args_to_sql( $sql_in, $args );
+}
+
+sub _organism_adaptor {
+  my ($self) = @_;
+  if ( !defined $self->{organism_adaptor} ) {
+    $self->{organism_adaptor} = $self->db()->get_GenomeOrganismInfoAdaptor();
+  }
+  return $self->{organism_adaptor};
+}
+
+sub _assembly_adaptor {
+  my ($self) = @_;
+  if ( !defined $self->{assembly_adaptor} ) {
+    $self->{assembly_adaptor} = $self->db()->get_GenomeAssemblyInfoAdaptor();
+  }
+  return $self->{assembly_adaptor};
 }
 
 1;
