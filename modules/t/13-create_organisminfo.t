@@ -21,12 +21,12 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 my %args = ( '-NAME'                => "test",
-			 '-SPECIES'             => "Testus testa",
-			 '-TAXONOMY_ID'         => 999,
-			 '-SPECIES_TAXONOMY_ID' => 99,
-			 '-STRAIN'              => 'stress',
-			 '-SEROTYPE'            => 'icky',
-			 '-IS_REFERENCE'        => 1 );
+             '-SPECIES'             => "Testus testa",
+             '-TAXONOMY_ID'         => 999,
+             '-SPECIES_TAXONOMY_ID' => 99,
+             '-STRAIN'              => 'stress',
+             '-SEROTYPE'            => 'icky',
+             '-IS_REFERENCE'        => 1 );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
 
 ok( defined $org, "Organism object exists" );
@@ -51,21 +51,22 @@ ok( defined( $org->dbID() ),    "dbID" );
 ok( defined( $org->adaptor() ), "Adaptor" );
 
 ok( $odba->db()->dbc()->sql_helper()
-	->execute_single_result( -SQL => "select count(*) from organism" ) eq
-	'1' );
+    ->execute_single_result( -SQL => "select count(*) from organism" ) eq '1' );
 ok( $odba->db()->dbc()->sql_helper()->execute_single_result(
-							 -SQL => "select count(*) from organism_publication"
-	) eq '4' );
+                             -SQL => "select count(*) from organism_publication"
+    ) eq '4' );
 ok( $odba->db()->dbc()->sql_helper()
-	->execute_single_result( -SQL => "select count(*) from organism_alias" )
-	eq '2' );
+    ->execute_single_result( -SQL => "select count(*) from organism_alias" ) eq
+    '2' );
 
+diag "Testing storage";
 my $orga = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
 $orga->publications( [ 1, 2, 3, 4 ] );
 $orga->aliases( [ "one", "two" ] );
 $odba->store($orga);
-ok( $org->dbID() eq $orga->dbID(),    "dbID reuse" );
+ok( $org->dbID() eq $orga->dbID(), "dbID reuse" );
 
+diag "Testing retrieval";
 my $org2 = $odba->fetch_by_dbID( $org->dbID() );
 ok( $org2->name()                     eq $args{-NAME} );
 ok( $org2->species()                  eq $args{-SPECIES} );
@@ -78,6 +79,7 @@ ok( scalar @{ $org2->publications() } eq 4 );
 ok( scalar @{ $org2->aliases() }      eq 2 );
 $odba->_clear_cache();
 
+diag "Testing retrieval with no cache";
 $org2 = $odba->fetch_by_dbID( $org->dbID() );
 ok( $org2->name()                     eq $args{-NAME} );
 ok( $org2->species()                  eq $args{-SPECIES} );
@@ -89,15 +91,70 @@ ok( $org2->is_reference()             eq $args{-IS_REFERENCE} );
 ok( scalar @{ $org2->publications() } eq 4 );
 ok( scalar @{ $org2->aliases() }      eq 2 );
 
+diag "Testing update";
 $org2->serotype("zerotype");
 $odba->store($org2);
 my $org3 = $odba->fetch_by_dbID( $org->dbID() );
 ok( $org3->serotype() eq "zerotype" );
+ok( scalar @{ $org3->publications() } eq 4 );
+ok( scalar @{ $org3->aliases() }      eq 2 );
 
 # see if we get the same one back by storing the same thing
+diag "Testing store of same organism";
 my $org4 = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
-ok(!defined $org4->dbID());
+$org4->publications( [ 1, 2, 3, 4 ] );
+$org4->aliases( [ "one", "two" ] );
+ok( !defined $org4->dbID() );
 $odba->store($org4);
-ok($org4->dbID() eq $org->dbID());
+ok( $org4->dbID() eq $org->dbID() );
 
+# do some testing of retrieval
+{
+  diag("testing name retrieval");
+  my $org = $odba->fetch_by_name("test");
+  ok( defined $org );
+  is( $org->name(), "test" );
+}
+{
+  diag("testing species retrieval");
+  my $org = $odba->fetch_by_species("Testus testa");
+  ok( defined $org );
+  is( $org->name(), "test" )
+}
+{
+  diag("testing any name retrieval");
+  my $org = $odba->fetch_by_any_name("test");
+  ok( defined $org );
+  is( $org->name(), "test" )
+}
+{
+  diag("testing any name retrieval");
+  my $org = $odba->fetch_by_any_name("Testus testa");
+  ok( defined $org );
+  is( $org->name(), "test" )
+}
+{
+  diag("testing taxid retrieval");
+  my $orgs = $odba->fetch_all_by_taxonomy_id(999);
+  ok( defined $orgs );
+  is( $orgs->[0]->name(), "test" )
+}
+{
+  diag("testing taxids retrieval");
+  my $orgs = $odba->fetch_all_by_taxonomy_ids( [ 999, 1000, 1001 ] );
+  ok( defined $orgs );
+  is( $orgs->[0]->name(), "test" )
+}
+{
+  diag("testing name pattern retrieval");
+  my $orgs = $odba->fetch_all_by_name_pattern("t.*");
+  ok( defined $orgs );
+  is( $orgs->[0]->name(), "test" )
+}
+{
+  diag("testing alias retrieval");
+  my $org = $odba->fetch_by_alias("one");
+  ok( defined $org );
+  is( $org->name(), "test" )
+}
 done_testing;

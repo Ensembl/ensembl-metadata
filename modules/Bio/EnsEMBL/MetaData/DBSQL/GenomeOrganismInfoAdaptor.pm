@@ -303,7 +303,7 @@ sub fetch_all_by_taxonomy_branch {
 
 sub fetch_by_species {
 	my ( $self, $species, $keen ) = @_;
-	return _first_element(
+	return $self->_first_element(
 			$self->_fetch_generic_with_args( { 'species', $species }, $keen ) );
 }
 
@@ -319,7 +319,7 @@ sub fetch_by_species {
 
 sub fetch_by_name {
 	my ( $self, $name, $keen ) = @_;
-	return _first_element(
+	return $self->_first_element(
 				  $self->_fetch_generic_with_args( { 'name', $name }, $keen ) );
 }
 
@@ -343,21 +343,6 @@ sub fetch_by_any_name {
 		$dba = $self->fetch_by_alias( $name, $keen );
 	}
 	return $dba;
-}
-
-=head2 fetch_all_by_dbname
-  Arg	     : Name of database
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified database
-  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_by_dbname {
-	my ( $self, $name, $keen ) = @_;
-	return $self->_fetch_generic_with_args( { 'dbname', $name }, $keen );
 }
 
 =head2 fetch_all_by_name_pattern
@@ -391,10 +376,10 @@ sub fetch_all_by_name_pattern {
 sub fetch_by_alias {
 	my ( $self, $name, $keen ) = @_;
 	return
-	  _first_element(
-					$self->_fetch_generic_with_args(
+	  $self->_first_element(
+					$self->_fetch_generic(
 						_get_base_sql() .
-						  q/ join genome_alias using (genome_id) where alias=?/,
+						  q/ join organism_alias using (organism_id) where alias=?/,
 						[$name],
 						$keen ) );
 }
