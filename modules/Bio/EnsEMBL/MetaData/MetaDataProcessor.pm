@@ -395,7 +395,7 @@ sub process_compara {
           # have we got one in the database already?
           if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
             $genomeInfo =
-              $self->{info_adaptor}->fetch_by_name( $gdb->name() );
+              $self->{info_adaptor}->fetch_by_species( $gdb->name() );
             if ( !defined $genomeInfo ) {
               croak "Could not find genome info object for " .
                 $gdb->name();
