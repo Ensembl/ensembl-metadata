@@ -68,6 +68,7 @@ sub run {
                                              $self->param('info_dbname')
     );
   my $gdba = $dba->get_GenomeInfoAdaptor();
+  my $cdba = $dba->get_GenomeComparaInfoAdaptor();
 
   # set the release to use when storing genomes
   my $rdba = $dba->get_DataReleaseInfoAdaptor();
@@ -82,6 +83,7 @@ sub run {
       $rdba->fetch_by_ensembl_release( $self->param('release') );
   }
   $gdba->data_release($release);
+  #$cdba->data_release($release);
 
   my $upd = $self->param('force_update') || 0;
 
@@ -101,11 +103,11 @@ sub run {
     my $nom = $compara_info->method() . "/" . $compara_info->set_name();
     if ( defined $compara_info->dbID() ) {
       $log->info( "Updating compara info for " . $nom );
-      $gdba->update_compara($compara_info);
+      $cdba->update($compara_info);
     }
     else {
       $log->info( "Storing compara info for " . $nom );
-      $gdba->store_compara($compara_info);
+      $cdba->store($compara_info);
     }
   }
 
