@@ -133,23 +133,29 @@ sub process_genome {
       -SQL =>
 'select name from coord_system where species_id=? order by rank asc',
       -PARAMS => [ $dba->species_id() ] ) };
+  my $division = 'Ensembl';
+  my @divisions =
+    sort @{ $meta->list_value_by_key('species.division') };
+  if ( scalar @divisions > 0 ) {
+    $division = $divisions[-1];
+  }
 
   my $md =
     Bio::EnsEMBL::MetaData::GenomeInfo->new(
-                        -species    => $dba->species(),
-                        -species_id => $dba->species_id(),
-                        -division => $meta->get_division() || 'Ensembl',
-                        -dbname   => $dbname,
-                        -data_release        => $self->{data_release},
-                        -strain              => $strain,
-                        -serotype            => $serotype,
-                        -name                => $name,
-                        -taxonomy_id         => $taxonomy_id,
-                        -species_taxonomy_id => $species_taxonomy_id,
-                        -assembly_accession  => $assembly_accession,
-                        -assembly_name       => $assembly_name,
-                        -genebuild           => $genebuild,
-                        -assembly_level      => $assembly_level );
+                           -species      => $dba->species(),
+                           -species_id   => $dba->species_id(),
+                           -division     => $division,
+                           -dbname       => $dbname,
+                           -data_release => $self->{data_release},
+                           -strain       => $strain,
+                           -serotype     => $serotype,
+                           -name         => $name,
+                           -taxonomy_id  => $taxonomy_id,
+                           -species_taxonomy_id => $species_taxonomy_id,
+                           -assembly_accession  => $assembly_accession,
+                           -assembly_name       => $assembly_name,
+                           -genebuild           => $genebuild,
+                           -assembly_level      => $assembly_level );
 
   # get list of seq names
   my $seqs_arr = [];
