@@ -28,7 +28,7 @@ CREATE TABLE `assembly` (
   `assembly_accession` varchar(16) DEFAULT NULL,
   `assembly_name` varchar(200) NOT NULL,
   `assembly_level` varchar(50) NOT NULL,
-  `base_count` int(10) unsigned NOT NULL,
+  `base_count` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`assembly_id`),
   UNIQUE KEY `assembly_organism_idx` (`organism_id`,`assembly_name`),
   UNIQUE KEY `assembly_accession_idx` (`assembly_accession`),
