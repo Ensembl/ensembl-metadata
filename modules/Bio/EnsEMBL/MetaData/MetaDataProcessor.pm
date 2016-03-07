@@ -202,11 +202,23 @@ sub process_genome {
   $md->sequences($seqs_arr);
 
   # get toplevel base count
-  $md->base_count(
-    $dba->dbc()->sql_helper()->execute_single_result(
-      -SQL =>
+  my $base_counts =
+    $dba->dbc()->sql_helper()->execute_simple(
+    -SQL =>
 q/select value from genome_statistics where statistic='ref_length' and species_id=?/,
-      -PARAMS => [ $dba->species_id() ] ) );
+    -PARAMS => [ $dba->species_id() ] );
+
+  if ( scalar @$base_counts == 0 ) {
+    $base_counts = $dba->dbc()->sql_helper()->execute_simple(
+      -SQL => q/select sum(s.length) from seq_region s 
+join coord_system c using (coord_system_id) 
+join seq_region_attrib sa using (seq_region_id) 
+join attrib_type a using (attrib_type_id) 
+where a.code='toplevel' and species_id=?/,
+      -PARAMS => [ $dba->species_id() ] );
+  }
+
+  $md->base_count( $base_counts->[0] );
 
   # get associated PMIDs
   $md->publications(
