@@ -219,7 +219,7 @@ CREATE TABLE `organism` (
   `description` text,
   `image` blob,
   PRIMARY KEY (`organism_id`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `species` (`species`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
