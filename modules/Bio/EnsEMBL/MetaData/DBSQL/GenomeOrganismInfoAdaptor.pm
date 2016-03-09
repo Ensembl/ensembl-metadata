@@ -50,7 +50,7 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
 To find genomes, use the fetch methods e.g.
 
 # find a genome by name
-my $genome = $gdba->fetch_by_species('arabidopsis_thaliana');
+my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
 
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
@@ -107,8 +107,8 @@ sub store {
     my ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
-             -SQL => "select organism_id from organism where species=?",
-             -PARAMS => [ $organism->species() ] ) };
+             -SQL => "select organism_id from organism where name=?",
+             -PARAMS => [ $organism->name() ] ) };
 
     if ( defined $dbID ) {
       $organism->dbID($dbID);
@@ -121,11 +121,11 @@ sub store {
   else {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
-        q/insert into organism(name,species,strain,serotype,taxonomy_id,
+        q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
 species_taxonomy_id,is_reference)
 		values(?,?,?,?,?,?,?)/,
       -PARAMS => [ $organism->name(),
-                   $organism->species(),
+                   $organism->display_name(),
                    $organism->strain(),
                    $organism->serotype(),
                    $organism->taxonomy_id(),
@@ -151,10 +151,10 @@ sub update {
 
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update organism set name=?,species=?,strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
+q/update organism set name=?,display_name=?,strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
 is_reference=? where organism_id=?/,
     -PARAMS => [ $organism->name(),
-                 $organism->species(),
+                 $organism->display_name(),
                  $organism->strain(),
                  $organism->serotype(),
                  $organism->taxonomy_id(),
@@ -295,7 +295,7 @@ sub fetch_all_by_taxonomy_branch {
   return $self->fetch_all_by_taxonomy_ids( \@taxids );
 }
 
-=head2 fetch_by_species
+=head2 fetch_by_display_name
   Arg	     : Name of species
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
@@ -305,10 +305,10 @@ sub fetch_all_by_taxonomy_branch {
   Status     : Stable
 =cut
 
-sub fetch_by_species {
-  my ( $self, $species, $keen ) = @_;
+sub fetch_by_display_name {
+  my ( $self, $display_name, $keen ) = @_;
   return $self->_first_element(
-    $self->_fetch_generic_with_args( { 'species', $species }, $keen ) );
+    $self->_fetch_generic_with_args( { 'display_name', $display_name }, $keen ) );
 }
 
 =head2 fetch_by_name
@@ -341,7 +341,7 @@ sub fetch_by_any_name {
   my ( $self, $name, $keen ) = @_;
   my $dba = $self->fetch_by_name( $name, $keen );
   if ( !defined $dba ) {
-    $dba = $self->fetch_by_species( $name, $keen );
+    $dba = $self->fetch_by_display_name( $name, $keen );
   }
   if ( !defined $dba ) {
     $dba = $self->fetch_by_alias( $name, $keen );
@@ -363,7 +363,7 @@ sub fetch_all_by_name_pattern {
   my ( $self, $name, $keen ) = @_;
   return
     $self->_fetch_generic(
-         _get_base_sql() . q/ where species REGEXP ? or name REGEXP ? /,
+         _get_base_sql() . q/ where display_name REGEXP ? or name REGEXP ? /,
          [ $name, $name ], $keen );
 }
 
@@ -450,7 +450,7 @@ sub _fetch_children {
 }
 
 my $base_organism_fetch_sql =
-q/select organism_id as dbID, name, species, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
+q/select organism_id as dbID, name, display_name, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
 
 sub _get_base_sql {
   return $base_organism_fetch_sql;

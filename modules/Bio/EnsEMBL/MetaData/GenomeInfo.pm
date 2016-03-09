@@ -228,9 +228,9 @@ sub organism {
   Status     : Stable
 =cut
 
-sub species {
-	my ( $self, $species ) = @_;
-	return $self->organism()->species($species);
+sub display_name {
+	my ( $self, $name ) = @_;
+	return $self->organism()->display_name($name);
 }
 
 =head2 strain

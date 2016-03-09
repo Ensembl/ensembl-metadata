@@ -68,40 +68,44 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 =cut
 
 sub new {
-	my ( $class, @args ) = @_;
-	my $self = $class->SUPER::new(@args);
+  my ( $class, @args ) = @_;
+  my $self = $class->SUPER::new(@args);
 
-	my ( $name, $species, $taxonomy_id, $species_taxonomy_id, $strain,
-		 $serotype, $is_reference );
+  my (
+    $name, $display_name, $taxonomy_id, $species_taxonomy_id, $strain,
+    $serotype, $is_reference );
 
-	(  $self->{assembly_name}, $self->{assembly_accession}, $self->{assembly_level},
-	   $self->{base_count},    $self->{organism},    $name,
-	   $species,               $taxonomy_id,         $species_taxonomy_id,
-	   $strain,                $serotype,            $is_reference,
-	   $self->{organism} )
-	  = rearrange( [
-		   'ASSEMBLY_NAME', 'ASSEMBLY_ACCESSION', 'ASSEMBLY_LEVEL', 'BASE_COUNT',
-		   'ORGANISM', 'NAME', 'SPECIES', 'TAXONOMY_ID', 'SPECIES_TAXONOMY_ID',
-		   'STRAIN', 'SEROTYPE', 'IS_REFERENCE', 'ORGANISM'
-		],
-		@args );
+  ( $self->{assembly_name},  $self->{assembly_accession},
+    $self->{assembly_level}, $self->{base_count},
+    $self->{organism},       $name,
+    $display_name,           $taxonomy_id,
+    $species_taxonomy_id,    $strain,
+    $serotype,               $is_reference,
+    $self->{organism} )
+    = rearrange( [ 'ASSEMBLY_NAME',       'ASSEMBLY_ACCESSION',
+                   'ASSEMBLY_LEVEL',      'BASE_COUNT',
+                   'ORGANISM',            'NAME',
+                   'DISPLAY_NAME',        'TAXONOMY_ID',
+                   'SPECIES_TAXONOMY_ID', 'STRAIN',
+                   'SEROTYPE',            'IS_REFERENCE',
+                   'ORGANISM' ],
+                 @args );
 
-	if ( !defined $self->{organism} ) {
-		my $organism =
-		  Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
-								   -NAME                => $name,
-								   -SPECIES             => $species,
-								   -TAXONOMY_ID         => $taxonomy_id,
-								   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-								   -STRAIN              => $strain,
-								   -SEROTYPE            => $serotype,
-								   -IS_REFERENCE        => $is_reference
-		  );
-		$organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
-		$self->organism($organism);
-	}
+  if ( !defined $self->{organism} ) {
+    my $organism =
+      Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+                                   -NAME                => $name,
+                                   -DISPLAY_NAME        => $display_name,
+                                   -TAXONOMY_ID         => $taxonomy_id,
+                                   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+                                   -STRAIN              => $strain,
+                                   -SEROTYPE            => $serotype,
+                                   -IS_REFERENCE        => $is_reference );
+    $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
+    $self->organism($organism);
+  }
 
-	return $self;
+  return $self;
 } ## end sub new
 
 =head1 ATTRIBUTE METHODS
@@ -115,9 +119,9 @@ sub new {
 =cut
 
 sub assembly_name {
-	my ( $self, $assembly_name ) = @_;
-	$self->{assembly_name} = $assembly_name if ( defined $assembly_name );
-	return $self->{assembly_name};
+  my ( $self, $assembly_name ) = @_;
+  $self->{assembly_name} = $assembly_name if ( defined $assembly_name );
+  return $self->{assembly_name};
 }
 
 =head2 assembly_accession
@@ -130,9 +134,10 @@ sub assembly_name {
 =cut
 
 sub assembly_accession {
-	my ( $self, $assembly_accession ) = @_;
-	$self->{assembly_accession} = $assembly_accession if ( defined $assembly_accession );
-	return $self->{assembly_accession};
+  my ( $self, $assembly_accession ) = @_;
+  $self->{assembly_accession} = $assembly_accession
+    if ( defined $assembly_accession );
+  return $self->{assembly_accession};
 }
 
 =head2 assembly_level
@@ -145,9 +150,9 @@ sub assembly_accession {
 =cut
 
 sub assembly_level {
-	my ( $self, $assembly_level ) = @_;
-	$self->{assembly_level} = $assembly_level if ( defined $assembly_level );
-	return $self->{assembly_level};
+  my ( $self, $assembly_level ) = @_;
+  $self->{assembly_level} = $assembly_level if ( defined $assembly_level );
+  return $self->{assembly_level};
 }
 
 =head2 base_count
@@ -160,9 +165,9 @@ sub assembly_level {
 =cut
 
 sub base_count {
-	my ( $self, $base_count ) = @_;
-	$self->{base_count} = $base_count if ( defined $base_count );
-	return $self->{base_count};
+  my ( $self, $base_count ) = @_;
+  $self->{base_count} = $base_count if ( defined $base_count );
+  return $self->{base_count};
 }
 
 =head2 sequences
@@ -175,14 +180,14 @@ sub base_count {
 =cut
 
 sub sequences {
-	my ( $self, $sequences ) = @_;
-	if ( defined $sequences ) {
-		$self->{sequences} = $sequences;
-	}
-	elsif ( !defined $self->{sequences} && defined $self->adaptor() ) {
-		$self->adaptor()->_fetch_sequences($self);
-	}
-	return $self->{sequences};
+  my ( $self, $sequences ) = @_;
+  if ( defined $sequences ) {
+    $self->{sequences} = $sequences;
+  }
+  elsif ( !defined $self->{sequences} && defined $self->adaptor() ) {
+    $self->adaptor()->_fetch_sequences($self);
+  }
+  return $self->{sequences};
 }
 
 =head2 organism
@@ -195,25 +200,25 @@ sub sequences {
 =cut
 
 sub organism {
-	my ( $self, $organism ) = @_;
-	if(defined $organism) {
-		$self->{organism} = $organism;
-	}
-	return $self->{organism};
+  my ( $self, $organism ) = @_;
+  if ( defined $organism ) {
+    $self->{organism} = $organism;
+  }
+  return $self->{organism};
 }
 
-=head2 species
-  Arg        : (optional) species to set
-  Description: Gets/sets species (computationally safe name for species)
+=head2 display_name
+  Arg        : (optional) display_name to set
+  Description: Gets/sets display_name
   Returntype : string
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub species {
-	my ( $self, $species ) = @_;
-	return $self->organism()->species($species);
+sub display_name {
+  my ( $self, $display_name ) = @_;
+  return $self->organism()->display_name($display_name);
 }
 
 =head2 strain
@@ -226,8 +231,8 @@ sub species {
 =cut
 
 sub strain {
-	my ( $self, $arg ) = @_;
-	return $self->organism()->strain($arg);
+  my ( $self, $arg ) = @_;
+  return $self->organism()->strain($arg);
 }
 
 =head2 serotype
@@ -240,13 +245,13 @@ sub strain {
 =cut
 
 sub serotype {
-	my ( $self, $arg ) = @_;
-	return $self->organism()->serotype($arg);
+  my ( $self, $arg ) = @_;
+  return $self->organism()->serotype($arg);
 }
 
 =head2 name
-  Arg        : (optional) name to set
-  Description: Gets/sets readable display name for genome
+  Arg        : (optional) name (computationally safe) for species to set
+  Description: Gets/sets name for genome
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -254,8 +259,8 @@ sub serotype {
 =cut
 
 sub name {
-	my ( $self, $arg ) = @_;
-	return $self->organism()->name($arg);
+  my ( $self, $arg ) = @_;
+  return $self->organism()->name($arg);
 }
 
 =head2 taxonomy_id
@@ -268,8 +273,8 @@ sub name {
 =cut
 
 sub taxonomy_id {
-	my ( $self, $taxonomy_id ) = @_;
-	return $self->organism()->taxonomy_id($taxonomy_id);
+  my ( $self, $taxonomy_id ) = @_;
+  return $self->organism()->taxonomy_id($taxonomy_id);
 }
 
 =head2 species_taxonomy_id
@@ -282,8 +287,8 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-	my ( $self, $taxonomy_id ) = @_;
-	return $self->organism()->species_taxonomy_id($taxonomy_id);
+  my ( $self, $taxonomy_id ) = @_;
+  return $self->organism()->species_taxonomy_id($taxonomy_id);
 }
 
 =head2 is_reference
@@ -296,10 +301,9 @@ sub species_taxonomy_id {
 =cut
 
 sub is_reference {
-	my ( $self, $is_ref ) = @_;
-	return $self->organism()->is_reference($is_ref);
+  my ( $self, $is_ref ) = @_;
+  return $self->organism()->is_reference($is_ref);
 }
-
 
 =head1 UTILITY METHODS
 =head2 to_string
@@ -311,10 +315,10 @@ sub is_reference {
 =cut
 
 sub to_string {
-	my ($self) = @_;
-	return
-	  join( '/',
-			$self->division(), $self->method(), ( $self->set_name() || '-' ) );
+  my ($self) = @_;
+  return
+    join( '/',
+          $self->division(), $self->method(), ( $self->set_name() || '-' ) );
 }
 
 =head2 _preload
@@ -326,9 +330,9 @@ sub to_string {
 =cut
 
 sub _preload {
-	my ($self) = @_;
-	$self->sequences();
-	return;
+  my ($self) = @_;
+  $self->sequences();
+  return;
 }
 
 =head2 _preload
@@ -340,9 +344,9 @@ sub _preload {
 =cut
 
 sub _unload {
-	my ($self) = @_;
-	$self->{sequences} = undef;
-	return;
+  my ($self) = @_;
+  $self->{sequences} = undef;
+  return;
 }
 
 1;

@@ -22,7 +22,7 @@ use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 use Data::Dumper;
 
 my %oargs = ( '-NAME'                => "test",
-			  '-SPECIES'             => "Testus testa",
+			  '-DISPLAY_NAME'             => "Testus testa",
 			  '-TAXONOMY_ID'         => 999,
 			  '-SPECIES_TAXONOMY_ID' => 99,
 			  '-STRAIN'              => 'stress',

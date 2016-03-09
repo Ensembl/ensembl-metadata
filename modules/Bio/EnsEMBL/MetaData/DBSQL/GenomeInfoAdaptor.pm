@@ -655,7 +655,7 @@ sub fetch_all_by_division {
                                           $keen );
 }
 
-=head2 fetch_by_species
+=head2 fetch_by_display_name
   Arg	     : Production name of genome 
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified species
@@ -665,9 +665,9 @@ sub fetch_all_by_division {
   Status     : Stable
 =cut
 
-sub fetch_by_species {
+sub fetch_by_display_name {
   my ( $self, $name, $keen ) = @_;
-  my $org = $self->_organism_adaptor()->fetch_by_species($name);
+  my $org = $self->_organism_adaptor()->fetch_by_display_name($name);
   return $self->fetch_by_organism( $org, $keen );
 }
 
