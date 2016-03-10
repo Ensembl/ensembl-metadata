@@ -26,7 +26,7 @@ Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 =head1 SYNOPSIS
 
 my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
-my $md = $gdba->fetch_by_species("arabidopsis_thaliana");
+my $md = $gdba->fetch_by_name("arabidopsis_thaliana");
 
 =head1 DESCRIPTION
 
@@ -50,7 +50,7 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
 To find genomes, use the fetch methods e.g.
 
 # find a genome by name
-my $genome = $gdba->fetch_by_species('arabidopsis_thaliana');
+my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
 
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
@@ -118,9 +118,9 @@ sub store {
       ($dbID) =
         @{
         $self->dbc()->sql_helper()->execute_simple(
-           -SQL =>
-             "select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version is null",
-           -PARAMS => [ $data_release->ensembl_version() ] ) };
+          -SQL =>
+"select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version is null",
+          -PARAMS => [ $data_release->ensembl_version() ] ) };
     }
 
     if ( defined $dbID ) {
@@ -168,19 +168,19 @@ sub fetch_by_ensembl_release {
   my ( $self, $release ) = @_;
   return
     $self->_first_element(
-             $self->_fetch_generic(
-               _get_base_sql() .
-                 ' where ensembl_version=? and ensembl_genomes_version is null',
-               [$release] ) );
+     $self->_fetch_generic(
+       _get_base_sql() .
+         ' where ensembl_version=? and ensembl_genomes_version is null',
+       [$release] ) );
 }
 
 sub fetch_by_ensembl_genomes_release {
   my ( $self, $release ) = @_;
   return
     $self->_first_element(
-                         $self->_fetch_generic(
-                           _get_base_sql() . ' where ensembl_genomes_version=?',
-                           [$release] ) );
+                 $self->_fetch_generic(
+                   _get_base_sql() . ' where ensembl_genomes_version=?',
+                   [$release] ) );
 }
 
 sub fetch_current_ensembl_release {
@@ -189,7 +189,8 @@ sub fetch_current_ensembl_release {
     $self->_first_element(
     $self->_fetch_generic(
       _get_base_sql() .
-' where ensembl_genomes_version is null order by release_date desc limit 1' ) );
+' where ensembl_genomes_version is null order by release_date desc limit 1'
+    ) );
 }
 
 sub fetch_current_ensembl_genomes_release {

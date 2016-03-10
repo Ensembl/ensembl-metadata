@@ -50,17 +50,19 @@ use JSON;
 
 # open connection to desired database
 my $dbc =
-  Bio::EnsEMBL::DBSQL::DBConnection->new(-user   => 'anonymous',
-										 -dbname => 'ensemblgenomes_info_21',
-										 -host   => 'mysql-eg-publicsql.ebi.ac.uk',
-										 -port   => 4157);
+  Bio::EnsEMBL::DBSQL::DBConnection->new(
+                                -user   => 'anonymous',
+                                -dbname => 'ensemblgenomes_info_21',
+                                -host => 'mysql-eg-publicsql.ebi.ac.uk',
+                                -port => 4157 );
 
 # create an adaptor to work with genomes
 my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new($dbc);
 
 # get the genome of interest and print some information
-my $genome = $gdba->fetch_by_species('arabidopsis_thaliana');
+my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
 
-my $genome_as_hash = $genome->to_hash(1); # create a simplified hash representation (1 forces expansion of child attributes)
+my $genome_as_hash = $genome->to_hash(1)
+  ; # create a simplified hash representation (1 forces expansion of child attributes)
 # render as json
-print to_json($genome_as_hash, {pretty => 1});
+print to_json( $genome_as_hash, { pretty => 1 } );

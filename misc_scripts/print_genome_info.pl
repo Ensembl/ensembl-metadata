@@ -47,17 +47,18 @@ use warnings;
 use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba =
+  Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
 
 # get the genome of interest and print some information
-my $genome = $gdba->fetch_by_species('arabidopsis_thaliana');
-print $genome->name()." (".$genome->species.")\n";
-print "Sequences: ".scalar(@{$genome->sequences()})."\n";
-if($genome->has_variations()) {
-	print "Variations: \n";
-	# variations is a hash with type as the key
-	while(my ($type,$value) = each %{$genome->variations()}) {
-		print "- $type\n";
-	}
+my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
+print $genome->name() . " (" . $genome->species . ")\n";
+print "Sequences: " . scalar( @{ $genome->sequences() } ) . "\n";
+if ( $genome->has_variations() ) {
+  print "Variations: \n";
+  # variations is a hash with type as the key
+  while ( my ( $type, $value ) = each %{ $genome->variations() } ) {
+    print "- $type\n";
+  }
 }
-print "Compara analyses: ".scalar(@{$genome->compara()})."\n";
+print "Compara analyses: " . scalar( @{ $genome->compara() } ) . "\n";

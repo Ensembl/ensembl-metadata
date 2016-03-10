@@ -378,7 +378,7 @@ sub process_compara {
           if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
             $self->{logger}->debug("Checking in the database");
             $genomeInfo =
-              $self->{info_adaptor}->fetch_by_species( $gdb->name() );
+              $self->{info_adaptor}->fetch_by_name( $gdb->name() );
 
             if ( !defined $genomeInfo ) {
               my $current_release =
@@ -393,8 +393,7 @@ sub process_compara {
                                   $current_release->ensembl_version() );
                 $self->{info_adaptor}->data_release($ensembl_release);
                 $genomeInfo =
-                  $self->{info_adaptor}
-                  ->fetch_by_species( $gdb->name() );
+                  $self->{info_adaptor}->fetch_by_name( $gdb->name() );
                 $self->{info_adaptor}->data_release($current_release);
               }
             }

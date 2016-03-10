@@ -26,7 +26,7 @@ Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 =head1 SYNOPSIS
 
 my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
-my $md = $gdba->fetch_by_species("arabidopsis_thaliana");
+my $md = $gdba->fetch_by_name("arabidopsis_thaliana");
 
 =head1 DESCRIPTION
 
@@ -107,8 +107,8 @@ sub store {
     my ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
-             -SQL => "select organism_id from organism where name=?",
-             -PARAMS => [ $organism->name() ] ) };
+                -SQL => "select organism_id from organism where name=?",
+                -PARAMS => [ $organism->name() ] ) };
 
     if ( defined $dbID ) {
       $organism->dbID($dbID);
@@ -121,16 +121,14 @@ sub store {
   else {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
-        q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
+q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
 species_taxonomy_id,is_reference)
 		values(?,?,?,?,?,?,?)/,
-      -PARAMS => [ $organism->name(),
-                   $organism->display_name(),
-                   $organism->strain(),
-                   $organism->serotype(),
-                   $organism->taxonomy_id(),
-                   $organism->species_taxonomy_id(),
-                   $organism->is_reference() ],
+      -PARAMS => [
+             $organism->name(),        $organism->display_name(),
+             $organism->strain(),      $organism->serotype(),
+             $organism->taxonomy_id(), $organism->species_taxonomy_id(),
+             $organism->is_reference() ],
       -CALLBACK => sub {
         my ( $sth, $dbh, $rv ) = @_;
         $organism->dbID( $dbh->{mysql_insertid} );
@@ -307,8 +305,10 @@ sub fetch_all_by_taxonomy_branch {
 
 sub fetch_by_display_name {
   my ( $self, $display_name, $keen ) = @_;
-  return $self->_first_element(
-    $self->_fetch_generic_with_args( { 'display_name', $display_name }, $keen ) );
+  return
+    $self->_first_element( $self->_fetch_generic_with_args(
+                                { 'display_name', $display_name }, $keen
+                           ) );
 }
 
 =head2 fetch_by_name
@@ -363,8 +363,10 @@ sub fetch_all_by_name_pattern {
   my ( $self, $name, $keen ) = @_;
   return
     $self->_fetch_generic(
-         _get_base_sql() . q/ where display_name REGEXP ? or name REGEXP ? /,
-         [ $name, $name ], $keen );
+                    _get_base_sql() .
+                      q/ where display_name REGEXP ? or name REGEXP ? /,
+                    [ $name, $name ],
+                    $keen );
 }
 
 =head2 fetch_by_alias
