@@ -75,7 +75,7 @@ sub fetch_by_dbID {
   my ( $self, $id, $keen ) = @_;
   return
     $self->_first_element( $self->_fetch_generic_with_args(
-                                                 { $self->_get_id_field(), $id }
+                                         { $self->_get_id_field(), $id }
                            ),
                            $keen );
 }
@@ -96,7 +96,8 @@ sub fetch_by_dbIDs {
   my $it = natatime 1000, @{$ids};
   while ( my @vals = $it->() ) {
     my $sql =
-      $self->_get_base_sql() . ' where ' . $self->_get_id_field() . ' in (' .
+      $self->_get_base_sql() . ' where ' . $self->_get_id_field() .
+      ' in (' .
       join( ',', @vals ) . ')';
     @genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
   }
@@ -128,13 +129,11 @@ sub _get_obj_class {
 
 sub _fetch_generic_with_args {
   my ( $self, $args, $type, $keen ) = @_;
-  my ( $sql, $params ) = $self->_args_to_sql( $self->_get_base_sql(), $args );
+  my ( $sql, $params ) =
+    $self->_args_to_sql( $self->_get_base_sql(), $args );
   my $info =
-    $self->_fetch_generic( $sql, $params, $self->_get_obj_class(), $keen );
-  # add assembly and release
-  for my $i ( @{$info} ) {
-    $self->_fetch_children($i);
-  }
+    $self->_fetch_generic( $sql, $params, $self->_get_obj_class(),
+                           $keen );
   return $info;
 }
 
