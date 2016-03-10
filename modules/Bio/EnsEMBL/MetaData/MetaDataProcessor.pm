@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2014] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,16 +15,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
-
-=pod
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
- 
 =cut
 
 package Bio::EnsEMBL::MetaData::MetaDataProcessor;
@@ -351,6 +341,7 @@ sub process_compara {
         my $dbs = {};
         my $ss_name;
         for my $mlss ( @{$mlss_list} ) {
+
           $ss_name ||= $mlss->species_set_obj()->get_tagvalue('name');
           for my $gdb ( @{ $mlss->species_set_obj()->genome_dbs() } ) {
             $dbs->{ $gdb->name() } = $gdb;
@@ -375,33 +366,6 @@ sub process_compara {
                                    -SET_NAME => $ss_name,
                                    -GENOMES  => [] );
 
-      #				if ( defined $self->{info_adaptor} ) {
-      #					my $extant_compara_info =
-      #					  $self->{info_adaptor}->fetch_compara_by_dbname_method_set(
-      #						$compara->dbc()->dbname(),
-      #						$method, $ss_name );
-      #					if ( defined $extant_compara_info ) {
-      #						if ( defined $self->{force_update} ) {
-      #							$self->{logger}->info(
-      #								    "Reusing ID for existing compara analysis "
-      #								  . $extant_compara_info->dbname() . "/"
-      #								  . $method . "/"
-      #								  . $ss_name );
-      #							$compara_info->dbID( $extant_compara_info->dbID() );
-      #							$compara_info->adaptor(
-      #								$extant_compara_info->adaptor() );
-      #						}
-      #						else {
-      #							$self->{logger}
-      #							  ->info( "Reusing existing compara analysis "
-      #								  . $extant_compara_info->dbname() . "/"
-      #								  . $method . "/"
-      #								  . $ss_name );
-      #							$compara_info = $extant_compara_info;
-      #						}
-      #					}
-      #				}
-
         for my $gdb ( values %{$dbs} ) {
 
           $self->{logger}->info( "Processing species " . $gdb->name() .
@@ -412,14 +376,36 @@ sub process_compara {
 
           # have we got one in the database already?
           if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
+            $self->{logger}->debug("Checking in the database");
             $genomeInfo =
               $self->{info_adaptor}->fetch_by_species( $gdb->name() );
+
+            if ( !defined $genomeInfo ) {
+              my $current_release =
+                $self->{info_adaptor}->data_release();
+              if ( defined $current_release->ensembl_genomes_version() )
+              {
+                # try the ensembl release
+                my $ensembl_release =
+                  $self->{info_adaptor}->db()
+                  ->get_DataReleaseInfoAdaptor()
+                  ->fetch_by_ensembl_release(
+                                  $current_release->ensembl_version() );
+                $self->{info_adaptor}->data_release($ensembl_release);
+                $genomeInfo =
+                  $self->{info_adaptor}
+                  ->fetch_by_species( $gdb->name() );
+                $self->{info_adaptor}->data_release($current_release);
+              }
+            }
+
             if ( !defined $genomeInfo ) {
               croak "Could not find genome info object for " .
                 $gdb->name();
             }
+            $self->{logger}->debug("Got one from the database");
             $genomes->{ $gdb->name() } = $genomeInfo;
-          }
+          } ## end if ( !defined $genomeInfo...)
 
           # last attempt, create one
           if ( !defined $genomeInfo ) {
@@ -448,6 +434,7 @@ sub process_compara {
           }
           croak "Could not find genome info for " . $gdb->name()
             unless defined $genomeInfo;
+
           push @{ $compara_info->genomes() }, $genomeInfo;
 
           if ( !defined $genomeInfo->compara() ) {
@@ -457,13 +444,15 @@ sub process_compara {
             push @{ $genomeInfo->compara() }, $compara_info;
           }
         } ## end for my $gdb ( values %{...})
+        $self->{logger}
+          ->info("Adding compara info to list of analyses to store");
         push @$comparas, $compara_info if defined $compara_info;
       } ## end for my $mlss_list ( values...)
     } ## end for my $method ( ...)
 
     $self->{logger}->info( "Completed processing compara database " .
                            $compara->dbc()->dbname() );
-  };
+  };    ## end eval
   if ($@) {
     $self->{logger}->warn( "Could not process compara: " . $@ );
   }
