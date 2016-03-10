@@ -986,8 +986,7 @@ sub _fetch_comparas {
         -PARAMS => [ $genome->dbID() ] ) } )
   {
     push @$comparas,
-      $self->db()->get_GenomeComparaInfoAdaptor()
-      ->fetch_compara_by_dbID($id);
+      $self->db()->get_GenomeComparaInfoAdaptor()->fetch_by_dbID($id);
   }
   $genome->compara($comparas);
   $genome->has_pan_compara();
