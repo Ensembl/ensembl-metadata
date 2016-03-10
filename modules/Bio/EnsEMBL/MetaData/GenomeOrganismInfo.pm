@@ -27,7 +27,7 @@ Bio::EnsEMBL::MetaData::GenomeOrganismInfo
 
 	  my $info =
 		Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
-		-SPECIES=>$species, -NAME=>$name, -STRAIN=>$strain, -SEROTYPE=>$serotype, -IS_REFERENCE=>$is_reference
+		-DISPLAY_NAME=>$display_name, -NAME=>$name, -STRAIN=>$strain, -SEROTYPE=>$serotype, -IS_REFERENCE=>$is_reference
       );
 
 =head1 DESCRIPTION
@@ -75,9 +75,9 @@ use warnings;
 sub new {
 	my ( $class, @args ) = @_;
 	my $self = $class->SUPER::new(@args);
-	(  $self->{species},  $self->{name}, $self->{strain},
+	(  $self->{display_name},  $self->{name}, $self->{strain},
 	   $self->{serotype}, $self->{is_reference}, $self->{taxonomy_id}, $self->{species_taxonomy_id} )
-	  = rearrange( [ 'SPECIES', 'NAME', 'STRAIN', 'SEROTYPE', 'IS_REFERENCE', 'TAXONOMY_ID', 'SPECIES_TAXONOMY_ID' ],
+	  = rearrange( [ 'DISPLAY_NAME', 'NAME', 'STRAIN', 'SEROTYPE', 'IS_REFERENCE', 'TAXONOMY_ID', 'SPECIES_TAXONOMY_ID' ],
 				   @args );
 	$self->{is_reference} ||= 0;
 	return $self;
@@ -85,19 +85,34 @@ sub new {
 
 =head1 ATTRIBUTE METHODS
 
-=head2 species
-  Arg        : (optional) species to set
-  Description: Gets/sets species (computationally safe name for species)
+=head2 name
+  Arg        : (optional) computationally safe name for species name to set
+  Description: Gets/sets computationally safe name for species name for genome
   Returntype : string
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub species {
-	my ( $self, $species ) = @_;
-	$self->{species} = $species if ( defined $species );
-	return $self->{species};
+sub name {
+	my ( $self, $arg ) = @_;
+	$self->{name} = $arg if ( defined $arg );
+	return $self->{name};
+}
+
+=head2 display_name
+  Arg        : (optional) display_name to set
+  Description: Gets/sets display_name 
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub display_name {
+	my ( $self, $display_name ) = @_;
+	$self->{display_name} = $display_name if ( defined $display_name );
+	return $self->{display_name};
 }
 
 =head2 strain
@@ -130,20 +145,6 @@ sub serotype {
 	return $self->{serotype};
 }
 
-=head2 name
-  Arg        : (optional) name to set
-  Description: Gets/sets readable display name for genome
-  Returntype : string
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub name {
-	my ( $self, $arg ) = @_;
-	$self->{name} = $arg if ( defined $arg );
-	return $self->{name};
-}
 
 =head2 taxonomy_id
   Arg        : (optional) taxonomy_id to set

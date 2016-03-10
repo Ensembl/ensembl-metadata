@@ -21,7 +21,7 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 my %args = ( '-NAME'                => "test",
-             '-SPECIES'             => "Testus testa",
+             '-DISPLAY_NAME'        => "Testus testa",
              '-TAXONOMY_ID'         => 999,
              '-SPECIES_TAXONOMY_ID' => 99,
              '-STRAIN'              => 'stress',
@@ -31,7 +31,7 @@ my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
 
 ok( defined $org, "Organism object exists" );
 ok( $org->name()                eq $args{-NAME} );
-ok( $org->species()             eq $args{-SPECIES} );
+ok( $org->display_name()        eq $args{-DISPLAY_NAME} );
 ok( $org->taxonomy_id()         eq $args{-TAXONOMY_ID} );
 ok( $org->species_taxonomy_id() eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org->strain()              eq $args{-STRAIN} );
@@ -69,7 +69,7 @@ ok( $org->dbID() eq $orga->dbID(), "dbID reuse" );
 diag "Testing retrieval";
 my $org2 = $odba->fetch_by_dbID( $org->dbID() );
 ok( $org2->name()                     eq $args{-NAME} );
-ok( $org2->species()                  eq $args{-SPECIES} );
+ok( $org2->display_name()             eq $args{-DISPLAY_NAME} );
 ok( $org2->taxonomy_id()              eq $args{-TAXONOMY_ID} );
 ok( $org2->species_taxonomy_id()      eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org2->strain()                   eq $args{-STRAIN} );
@@ -82,7 +82,7 @@ $odba->_clear_cache();
 diag "Testing retrieval with no cache";
 $org2 = $odba->fetch_by_dbID( $org->dbID() );
 ok( $org2->name()                     eq $args{-NAME} );
-ok( $org2->species()                  eq $args{-SPECIES} );
+ok( $org2->display_name()             eq $args{-DISPLAY_NAME} );
 ok( $org2->taxonomy_id()              eq $args{-TAXONOMY_ID} );
 ok( $org2->species_taxonomy_id()      eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org2->strain()                   eq $args{-STRAIN} );
@@ -95,7 +95,7 @@ diag "Testing update";
 $org2->serotype("zerotype");
 $odba->store($org2);
 my $org3 = $odba->fetch_by_dbID( $org->dbID() );
-ok( $org3->serotype() eq "zerotype" );
+ok( $org3->serotype()                 eq "zerotype" );
 ok( scalar @{ $org3->publications() } eq 4 );
 ok( scalar @{ $org3->aliases() }      eq 2 );
 
@@ -116,8 +116,8 @@ ok( $org4->dbID() eq $org->dbID() );
   is( $org->name(), "test" );
 }
 {
-  diag("testing species retrieval");
-  my $org = $odba->fetch_by_species("Testus testa");
+  diag("testing display_name retrieval");
+  my $org = $odba->fetch_by_display_name("Testus testa");
   ok( defined $org );
   is( $org->name(), "test" )
 }

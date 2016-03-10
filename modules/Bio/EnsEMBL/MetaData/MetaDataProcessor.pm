@@ -132,14 +132,14 @@ sub process_genome {
 
   my $md =
     Bio::EnsEMBL::MetaData::GenomeInfo->new(
-                           -species      => $dba->species(),
+                           -name         => $dba->species(),
                            -species_id   => $dba->species_id(),
                            -division     => $division,
                            -dbname       => $dbname,
                            -data_release => $self->{data_release},
                            -strain       => $strain,
                            -serotype     => $serotype,
-                           -name         => $name,
+                           -display_name => $name,
                            -taxonomy_id  => $taxonomy_id,
                            -species_taxonomy_id => $species_taxonomy_id,
                            -assembly_accession  => $assembly_accession,

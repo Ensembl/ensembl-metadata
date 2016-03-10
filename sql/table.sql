@@ -212,14 +212,14 @@ CREATE TABLE `organism` (
   `taxonomy_id` int(10) unsigned NOT NULL,
   `is_reference` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `species_taxonomy_id` int(10) unsigned NOT NULL,
-  `species` varchar(128) NOT NULL,
   `name` varchar(128) NOT NULL,
+  `display_name` varchar(128) NOT NULL,
   `strain` varchar(128) DEFAULT NULL,
   `serotype` varchar(128) DEFAULT NULL,
   `description` text,
   `image` blob,
   PRIMARY KEY (`organism_id`),
-  UNIQUE KEY `species` (`species`)
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
