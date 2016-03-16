@@ -273,7 +273,7 @@ where a.code='toplevel' and species_id=?/,
       ->info( "Processing " . $dba->species() . " read aligments" );
     my $read_ali =
       $self->{annotation_analyzer}
-      ->analyze_tracks( $md->species(), $md->division() );
+      ->analyze_tracks( $md->name(), $md->division() );
     my %all_ali = ( %{$core_ali}, %{$other_ali} );
 
     # add bam tracks by count - use source name
