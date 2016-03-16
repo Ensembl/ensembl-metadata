@@ -167,6 +167,7 @@ sub _args_to_sql {
   return ( $sql, $params );
 }
 
+
 =head2 _fetch_generic
   Arg	     : SQL to use to fetch object
   Arg	     : arrayref of bind parameters
@@ -197,10 +198,8 @@ sub _fetch_generic {
       return $md;
     },
     -PARAMS => $params );
-  if ( defined $keen && $keen == 1 ) {
-    for my $md ( @{$mds} ) {
-      $self->_fetch_children($md);
-    }
+  for my $md ( @{$mds} ) {
+      $self->_fetch_children($md,$keen);
   }
   return $mds;
 } ## end sub _fetch_generic
