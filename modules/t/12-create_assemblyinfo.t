@@ -65,7 +65,8 @@ ok( $aa->db()->dbc()->sql_helper()
 	->execute_single_result( -SQL => "select count(*) from assembly" ) eq
 	'1' );
 ok( $aa->db()->dbc()->sql_helper()->execute_single_result(
-							   -SQL => "select count(*) from assembly_sequence"
+							   -SQL => "select count(*) from assembly_sequence where assembly_id=?", 
+                                                           -PARAMS=>[$assembly->dbID()]
 	  )
 	  eq '2' );
 
