@@ -156,6 +156,7 @@ sub division {
 sub genomes {
   my ( $self, $arg ) = @_;
   $self->{genomes} = $arg if ( defined $arg );
+  $self->_load_child("genomes","_fetch_compara_genomes");
   return $self->{genomes};
 }
 

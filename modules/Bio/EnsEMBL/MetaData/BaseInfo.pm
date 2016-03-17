@@ -49,12 +49,12 @@ use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 =cut
 
 sub new {
-	my ( $proto, @args ) = @_;
-	my $class = ref($proto) || $proto;
-	my $self = bless( {}, $class );
-	( $self->{dbID}, $self->{adaptor} ) =
-	  rearrange( [ 'DBID', 'ADAPTOR' ], @args );
-	return $self;
+  my ( $proto, @args ) = @_;
+  my $class = ref($proto) || $proto;
+  my $self = bless( {}, $class );
+  ( $self->{dbID}, $self->{adaptor} ) =
+    rearrange( [ 'DBID', 'ADAPTOR' ], @args );
+  return $self;
 }
 
 =head1
@@ -69,48 +69,48 @@ sub new {
 =cut
 
 sub to_hash {
-	my ( $in, $keen ) = @_;
-	my $out;
-	my $type = ref $in;
-	if ( defined $keen &&
-		 $keen == 1 &&
-		 $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
-	{
-		$in->_preload();
-	}
-	if ( $type eq 'ARRAY' ) {
-		$out = [];
-		for my $item ( @{$in} ) {
-			push @{$out}, to_hash( $item, $keen );
-		}
-	}
-	elsif ( $type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' ) {
-		$out = {};
-		while ( my ( $key, $val ) = each %$in ) {
-			if ( $key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger' ) {
+  my ( $in, $keen ) = @_;
+  my $out;
+  my $type = ref $in;
+  if ( defined $keen &&
+       $keen == 1 &&
+       $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
+  {
+    $in->_preload();
+  }
+  if ( $type eq 'ARRAY' ) {
+    $out = [];
+    for my $item ( @{$in} ) {
+      push @{$out}, to_hash( $item, $keen );
+    }
+  }
+  elsif ( $type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' ) {
+    $out = {};
+    while ( my ( $key, $val ) = each %$in ) {
+      if ( $key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger' ) {
 
 # deal with keys starting with numbers, which are not valid element names in XML
-				if ( $key =~ m/^[0-9].*/ ) {
-					$key = '_' . $key;
-				}
-				$out->{$key} = to_hash( $val, $keen );
-			}
+        if ( $key =~ m/^[0-9].*/ ) {
+          $key = '_' . $key;
+        }
+        $out->{$key} = to_hash( $val, $keen );
+      }
 
-		}
-	}
-	elsif ( $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ ) {
-		$out = $in->to_hash($keen);
-	}
-	else {
-		$out = $in;
-	}
-	if ( defined $keen &&
-		 $keen == 1 &&
-		 $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
-	{
-		$in->_preload();
-	}
-	return $out;
+    }
+  }
+  elsif ( $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ ) {
+    $out = $in->to_hash($keen);
+  }
+  else {
+    $out = $in;
+  }
+  if ( defined $keen &&
+       $keen == 1 &&
+       $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
+  {
+    $in->_preload();
+  }
+  return $out;
 } ## end sub to_hash
 
 =head1 INTERNAL METHODS
@@ -124,14 +124,14 @@ sub to_hash {
 =cut
 
 sub count_hash_values {
-	my ( $self, $hash ) = @_;
-	my $tot = 0;
-	if ( defined $hash ) {
-		for my $v ( values %{$hash} ) {
-			$tot += $v;
-		}
-	}
-	return $tot;
+  my ( $self, $hash ) = @_;
+  my $tot = 0;
+  if ( defined $hash ) {
+    for my $v ( values %{$hash} ) {
+      $tot += $v;
+    }
+  }
+  return $tot;
 }
 
 =head2 count_hash_lengths
@@ -144,14 +144,14 @@ sub count_hash_values {
 =cut
 
 sub count_hash_lengths {
-	my ( $self, $hash ) = @_;
-	my $tot = 0;
-	if ( defined $hash ) {
-		for my $v ( values %{$hash} ) {
-			$tot += scalar(@$v);
-		}
-	}
-	return $tot;
+  my ( $self, $hash ) = @_;
+  my $tot = 0;
+  if ( defined $hash ) {
+    for my $v ( values %{$hash} ) {
+      $tot += scalar(@$v);
+    }
+  }
+  return $tot;
 }
 
 =head2 dbID
@@ -164,9 +164,9 @@ sub count_hash_lengths {
 =cut
 
 sub dbID {
-	my ( $self, $id ) = @_;
-	$self->{dbID} = $id if ( defined $id );
-	return $self->{dbID};
+  my ( $self, $id ) = @_;
+  $self->{dbID} = $id if ( defined $id );
+  return $self->{dbID};
 }
 
 =head2 adaptor
@@ -179,9 +179,9 @@ sub dbID {
 =cut
 
 sub adaptor {
-	my ( $self, $adaptor ) = @_;
-	$self->{adaptor} = $adaptor if ( defined $adaptor );
-	return $self->{adaptor};
+  my ( $self, $adaptor ) = @_;
+  $self->{adaptor} = $adaptor if ( defined $adaptor );
+  return $self->{adaptor};
 }
 
 =head2 _preload
@@ -193,8 +193,8 @@ sub adaptor {
 =cut
 
 sub _preload {
-	my ($self) = @_;
-	return;
+  my ($self) = @_;
+  return;
 }
 
 =head2 _preload
@@ -206,8 +206,19 @@ sub _preload {
 =cut
 
 sub _unload {
-	my ($self) = @_;
-	return;
+  my ($self) = @_;
+  return;
+}
+
+sub _load_child {
+  my ( $self, $key, $method ) = @_;
+  if ( !defined $self->{$key} &&
+       defined $self->dbID() &&
+       defined $self->adaptor() )
+  {
+    $self->adaptor()->$method($self);
+  }
+  return;
 }
 
 1;

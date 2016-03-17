@@ -299,6 +299,15 @@ sub _fetch_sequences {
   return;
 }
 
+sub _fetch_organism {
+  my ( $self, $md ) = @_;
+  if ( defined $md->{organism_id} ) {
+    $md->organism( $self->db()->get_GenomeOrganismInfoAdaptor()
+                   ->fetch_by_dbID( $md->{organism_id} ) );
+  }
+  return;
+}
+
 =head2 _fetch_children
   Arg	     : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Fetch all children of specified genome info object
@@ -311,10 +320,7 @@ sub _fetch_sequences {
 sub _fetch_children {
   my ( $self, $md ) = @_;
   $self->_fetch_sequences($md);
-  if ( defined $md->{organism_id} ) {
-    $md->organism( $self->db()->get_GenomeOrganismInfoAdaptor()
-                   ->fetch_by_dbID( $md->{organism_id} ) );
-  }
+  $self->_fetch_organism($md);
   return;
 }
 

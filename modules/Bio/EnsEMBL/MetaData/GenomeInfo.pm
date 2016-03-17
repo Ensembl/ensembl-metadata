@@ -197,6 +197,7 @@ sub species_id {
 sub data_release {
   my ( $self, $data_release ) = @_;
   $self->{data_release} = $data_release if ( defined $data_release );
+  $self->_load_child('data_release','_fetch_data_release');
   return $self->{data_release};
 }
 
@@ -310,6 +311,7 @@ sub species_taxonomy_id {
 sub assembly {
   my ( $self, $assembly ) = @_;
   $self->{assembly} = $assembly if ( defined $assembly );
+  $self->_load_child('assembly','_fetch_assembly');
   return $self->{assembly};
 }
 
@@ -460,9 +462,7 @@ sub compara {
     $self->{has_genome_alignments} = undef;
     $self->{has_pan_compara}       = undef;
   }
-  elsif ( !defined $self->{compara} && defined $self->adaptor() ) {
-    $self->adaptor()->_fetch_comparas($self);
-  }
+    $self->_load_child('compara','_fetch_comparas');
   return $self->{compara};
 }
 
@@ -511,9 +511,7 @@ sub variations {
     $self->{variations}     = $variations;
     $self->{has_variations} = undef;
   }
-  elsif ( !defined $self->{variations} && defined $self->adaptor() ) {
-    $self->adaptor()->_fetch_variations($self);
-  }
+  $self->_load_child('variations','_fetch_variations');
   return $self->{variations};
 }
 
@@ -533,9 +531,7 @@ sub features {
   if ( defined $features ) {
     $self->{features} = $features;
   }
-  elsif ( !defined $self->{features} && defined $self->adaptor() ) {
-    $self->adaptor()->_fetch_features($self);
-  }
+  $self->_load_child('features','_fetch_features');
   return $self->{features};
 }
 
@@ -554,9 +550,7 @@ sub annotations {
   if ( defined $annotation ) {
     $self->{annotations} = $annotation;
   }
-  elsif ( !defined $self->{annotations} && defined $self->adaptor() ) {
-    $self->adaptor()->_fetch_annotations($self);
-  }
+  $self->_load_child('annotations','_fetch_annotations');
   return $self->{annotations};
 }
 
@@ -576,11 +570,7 @@ sub other_alignments {
     $self->{other_alignments}     = $other_alignments;
     $self->{has_other_alignments} = undef;
   }
-  elsif ( !defined $self->{other_alignments} &&
-          defined $self->adaptor() )
-  {
-    $self->adaptor()->_fetch_other_alignments($self);
-  }
+  $self->_load_child('other_alignments','_fetch_other_alignments');
   return $self->{other_alignments} || 0;
 }
 

@@ -71,9 +71,8 @@ sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
 
-  my (
-    $name, $display_name, $taxonomy_id, $species_taxonomy_id, $strain,
-    $serotype, $is_reference );
+  my ( $name, $display_name, $taxonomy_id, $species_taxonomy_id, $strain,
+       $serotype, $is_reference );
 
   ( $self->{assembly_name},  $self->{assembly_accession},
     $self->{assembly_level}, $self->{base_count},
@@ -184,9 +183,7 @@ sub sequences {
   if ( defined $sequences ) {
     $self->{sequences} = $sequences;
   }
-  elsif ( !defined $self->{sequences} && defined $self->adaptor() ) {
-    $self->adaptor()->_fetch_sequences($self);
-  }
+  $self->_load_child( 'sequences', '_fetch_sequences' );
   return $self->{sequences};
 }
 
@@ -204,6 +201,7 @@ sub organism {
   if ( defined $organism ) {
     $self->{organism} = $organism;
   }
+  $self->_load_child( 'organism', '_fetch_organism' );
   return $self->{organism};
 }
 

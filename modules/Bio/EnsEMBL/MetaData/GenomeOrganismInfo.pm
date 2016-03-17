@@ -73,14 +73,19 @@ use warnings;
 =cut
 
 sub new {
-	my ( $class, @args ) = @_;
-	my $self = $class->SUPER::new(@args);
-	(  $self->{display_name},  $self->{name}, $self->{strain},
-	   $self->{serotype}, $self->{is_reference}, $self->{taxonomy_id}, $self->{species_taxonomy_id} )
-	  = rearrange( [ 'DISPLAY_NAME', 'NAME', 'STRAIN', 'SEROTYPE', 'IS_REFERENCE', 'TAXONOMY_ID', 'SPECIES_TAXONOMY_ID' ],
-				   @args );
-	$self->{is_reference} ||= 0;
-	return $self;
+  my ( $class, @args ) = @_;
+  my $self = $class->SUPER::new(@args);
+  ( $self->{display_name}, $self->{name},
+    $self->{strain},       $self->{serotype},
+    $self->{is_reference}, $self->{taxonomy_id},
+    $self->{species_taxonomy_id} )
+    = rearrange( [ 'DISPLAY_NAME', 'NAME',
+                   'STRAIN',       'SEROTYPE',
+                   'IS_REFERENCE', 'TAXONOMY_ID',
+                   'SPECIES_TAXONOMY_ID' ],
+                 @args );
+  $self->{is_reference} ||= 0;
+  return $self;
 }
 
 =head1 ATTRIBUTE METHODS
@@ -95,9 +100,9 @@ sub new {
 =cut
 
 sub name {
-	my ( $self, $arg ) = @_;
-	$self->{name} = $arg if ( defined $arg );
-	return $self->{name};
+  my ( $self, $arg ) = @_;
+  $self->{name} = $arg if ( defined $arg );
+  return $self->{name};
 }
 
 =head2 display_name
@@ -110,9 +115,9 @@ sub name {
 =cut
 
 sub display_name {
-	my ( $self, $display_name ) = @_;
-	$self->{display_name} = $display_name if ( defined $display_name );
-	return $self->{display_name};
+  my ( $self, $display_name ) = @_;
+  $self->{display_name} = $display_name if ( defined $display_name );
+  return $self->{display_name};
 }
 
 =head2 strain
@@ -125,9 +130,9 @@ sub display_name {
 =cut
 
 sub strain {
-	my ( $self, $arg ) = @_;
-	$self->{strain} = $arg if ( defined $arg );
-	return $self->{strain};
+  my ( $self, $arg ) = @_;
+  $self->{strain} = $arg if ( defined $arg );
+  return $self->{strain};
 }
 
 =head2 serotype
@@ -140,11 +145,10 @@ sub strain {
 =cut
 
 sub serotype {
-	my ( $self, $arg ) = @_;
-	$self->{serotype} = $arg if ( defined $arg );
-	return $self->{serotype};
+  my ( $self, $arg ) = @_;
+  $self->{serotype} = $arg if ( defined $arg );
+  return $self->{serotype};
 }
-
 
 =head2 taxonomy_id
   Arg        : (optional) taxonomy_id to set
@@ -156,9 +160,9 @@ sub serotype {
 =cut
 
 sub taxonomy_id {
-	my ( $self, $taxonomy_id ) = @_;
-	$self->{taxonomy_id} = $taxonomy_id if ( defined $taxonomy_id );
-	return $self->{taxonomy_id};
+  my ( $self, $taxonomy_id ) = @_;
+  $self->{taxonomy_id} = $taxonomy_id if ( defined $taxonomy_id );
+  return $self->{taxonomy_id};
 }
 
 =head2 species_taxonomy_id
@@ -171,9 +175,9 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-	my ( $self, $taxonomy_id ) = @_;
-	$self->{species_taxonomy_id} = $taxonomy_id if ( defined $taxonomy_id );
-	return $self->{species_taxonomy_id};
+  my ( $self, $taxonomy_id ) = @_;
+  $self->{species_taxonomy_id} = $taxonomy_id if ( defined $taxonomy_id );
+  return $self->{species_taxonomy_id};
 }
 
 =head2 aliases
@@ -186,14 +190,12 @@ sub species_taxonomy_id {
 =cut
 
 sub aliases {
-	my ( $self, $aliases ) = @_;
-	if ( defined $aliases ) {
-		$self->{aliases} = $aliases;
-	}
-	elsif ( !defined $self->{aliases} && defined $self->adaptor() ) {
-		$self->adaptor()->_fetch_aliases($self);
-	}
-	return $self->{aliases};
+  my ( $self, $aliases ) = @_;
+  if ( defined $aliases ) {
+    $self->{aliases} = $aliases;
+  }
+  $self->_load_child( 'aliases', '_fetch_aliases' );
+  return $self->{aliases};
 }
 
 =head2 publications
@@ -206,14 +208,12 @@ sub aliases {
 =cut
 
 sub publications {
-	my ( $self, $publications ) = @_;
-	if ( defined $publications ) {
-		$self->{publications} = $publications;
-	}
-	elsif ( !defined $self->{publications} && defined $self->adaptor() ) {
-		$self->adaptor()->_fetch_publications($self);
-	}
-	return $self->{publications};
+  my ( $self, $publications ) = @_;
+  if ( defined $publications ) {
+    $self->{publications} = $publications;
+  }
+  $self->_load_child( 'publications', '_fetch_publications' );
+  return $self->{publications};
 }
 
 =head2 is_reference
@@ -226,9 +226,9 @@ sub publications {
 =cut
 
 sub is_reference {
-	my ( $self, $is_reference ) = @_;
-	$self->{is_reference} = $is_reference if ( defined $is_reference );
-	return $self->{is_reference};
+  my ( $self, $is_reference ) = @_;
+  $self->{is_reference} = $is_reference if ( defined $is_reference );
+  return $self->{is_reference};
 }
 
 =head1 UTILITY METHODS
@@ -239,10 +239,10 @@ sub is_reference {
   Caller     : general
   Status     : Stable
 =cut
+
 sub to_string {
-	my ($self) = @_;
-	return
-			$self->name();
+  my ($self) = @_;
+  return $self->name();
 }
 
 1;
