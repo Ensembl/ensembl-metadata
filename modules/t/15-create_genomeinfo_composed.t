@@ -87,7 +87,4 @@ ok( $genome->serotype() eq $org_args{-SEROTYPE}, "serotype correct" );
 ok( $genome->is_reference() eq $org_args{-IS_REFERENCE},
     "is_reference correct" );
 
-my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-my $gdba  = $multi->get_DBAdaptor('empty_metadata');
-
 done_testing;

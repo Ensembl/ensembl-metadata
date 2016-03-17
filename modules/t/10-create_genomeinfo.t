@@ -71,6 +71,10 @@ ok( $genome->strain()   eq $oargs{-STRAIN},   "strain correct" );
 ok( $genome->serotype() eq $oargs{-SEROTYPE}, "serotype correct" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+eval {
+     $multi->load_database('empty_metadata');
+};
+
 my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
 $gdba->data_release($release);
 my $odba =
@@ -110,6 +114,7 @@ ok( $genome2->serotype() eq $oargs{-SEROTYPE}, "serotype correct" );
 
 $gdba->_clear_cache();
 my $genome3 = $gdba->fetch_by_dbID( $genome->dbID() );
+print Dumper($genome3);
 ok( defined $genome3, "Genome object exists" );
 ok( $genome->dbID()          eq $genome3->dbID(),     "DBID" );
 ok( $genome3->dbname()       eq $args{-DBNAME},       "dbname correct" );
@@ -188,3 +193,5 @@ diag "Testing assembly related retrieval";
 }
 
 done_testing;
+
+$multi->cleanup();

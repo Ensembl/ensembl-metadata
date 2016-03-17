@@ -48,6 +48,9 @@ my $release4 =
                                                 -RELEASE_DATE => '2014-09-29' );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+eval {
+     $multi->load_database('empty_metadata');
+};
 my $gdba =
   $multi->get_DBAdaptor('empty_metadata')->get_DataReleaseInfoAdaptor();
 $gdba->store($release);
@@ -93,3 +96,4 @@ is( $c_eg->ensembl_genomes_version(),
     $release->ensembl_genomes_version(),
     "EG version" );
 done_testing;
+$multi->cleanup();

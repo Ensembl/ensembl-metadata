@@ -33,6 +33,9 @@ ok( $compara->set_name()               eq $args{-SET_NAME}, "set_name exists" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
 my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeComparaInfoAdaptor();
+eval {
+     $multi->load_database('empty_metadata');
+};
 
 ok(!defined $compara->dbID(),"No DBID");
 $gdba->store($compara);

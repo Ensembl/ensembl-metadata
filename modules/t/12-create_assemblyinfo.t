@@ -51,6 +51,10 @@ ok( scalar( @{ $assembly->sequences() } ) eq 2 );
 
 diag "Testing storage";
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+eval {
+     $multi->load_database('empty_metadata');
+};
+
 my $gdba  = $multi->get_DBAdaptor('empty_metadata');
 my $aa    = $gdba->get_GenomeAssemblyInfoAdaptor();
 ok( defined $aa &&
@@ -138,3 +142,4 @@ diag "Testing fetch methods";
 }
 
 done_testing;
+$multi->cleanup();

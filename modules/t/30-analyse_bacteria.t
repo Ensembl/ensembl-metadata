@@ -26,7 +26,12 @@ Log::Log4perl->easy_init($INFO);
 my $test = Bio::EnsEMBL::Test::MultiTestDB->new('campylobacter_jejuni');
 my $core = $test->get_DBAdaptor('core');
 
-my $gdba = Bio::EnsEMBL::Test::MultiTestDB->new('multi')->get_DBAdaptor('empty_metadata');
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+eval {
+     $multi->load_database('empty_metadata');
+};
+my $gdba = $multi->get_DBAdaptor('empty_metadata');
+
 my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(
    -ANNOTATION_ANALYZER => Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
    -INFO_ADAPTOR => $gdba
@@ -36,4 +41,4 @@ my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(
 my $details = $processor->process_metadata([$core]);
 ok( defined $details, "Metadata exists" );
 done_testing;
-
+$multi->cleanup();
