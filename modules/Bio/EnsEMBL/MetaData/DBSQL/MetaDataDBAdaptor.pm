@@ -29,11 +29,11 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::DBSQL::TaxonomyDBAdaptor
+Bio::EnsEMBL::DBSQL::MetaDataDBAdaptor
 
 =head1 DESCRIPTION
 
-Specialised DBAdaptor for connecting to the ncbi_taxonomy MySQL database
+Specialised DBAdaptor for connecting to the ensembl_metadata MySQL database
 
 =head1 SYNOPSIS
 
