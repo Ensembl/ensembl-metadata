@@ -33,9 +33,8 @@ Bio::EnsEMBL::LookUp
 
 =head1 SYNOPSIS
 
-# creation of default implementation
-
-my $lookup = Bio::EnsEMBL::RemoteLookUp->new();
+my $adaptor = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
+my $lookup = Bio::EnsEMBL::RemoteLookUp->new(-ADAPTOR=>$adaptor);
 my $dbas = $lookup->registry()->get_all();
 $dbas = $lookup->get_all_by_taxon_id(388919);
 $dbas = $lookup->get_by_name_pattern("Escherichia.*");
@@ -43,13 +42,13 @@ $dbas = $lookup->get_by_name_pattern("Escherichia.*");
 =head1 DESCRIPTION
 
 This module is an implementation of Bio::EnsEMBL::LookUp that uses Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor to
-access a MySQL database containing information about Ensembl Genomes contents.
+access a MySQL database containing information about Ensembl and Ensembl Genomes contents and then instantiate DBAdaptors.
 
-The default constructor uses the public MySQL server and creates an info adaptor using the latest Ensembl Genomes release
+To instantiate using the public Ensembl/EG servers for creating DBAdaptors:
 
-	my $lookup = Bio::EnsEMBL::LookUp::RemoteLookUp->new();
-	
-Alternatively, a different server and adaptor can be specified:
+	my $lookup = Bio::EnsEMBL::LookUp::RemoteLookUp->new(-ADAPTOR=>$adaptor);
+
+To instantiate to use a specific server on which core databases are located:
 
 	my $lookup = Bio::EnsEMBL::LookUp::RemoteLookUp->new(-USER=>$user, -HOST=>$host, -PORT=>$port, -ADAPTOR=>$adaptor);
 
@@ -78,9 +77,8 @@ use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Bio::EnsEMBL::Utils::Exception qw(throw warning);
 use Bio::EnsEMBL::Utils::Scalar qw(assert_ref check_ref);
-use Bio::EnsEMBL::Utils::PublicMySQLServer
-  qw/eg_user eg_host eg_pass eg_port/;
 use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
+use Bio::EnsEMBL::Utils::PublicMySQLServer qw/e_args eg_args/;
 use Carp;
 use List::MoreUtils qw(uniq);
 
@@ -97,24 +95,14 @@ use List::MoreUtils qw(uniq);
 =cut
 
 sub new {
-  my ($class, @args) = @_;
-  my $self = bless({}, ref($class) || $class);
-  ($self->{_adaptor}, $self->{registry}, $self->{user},
-   $self->{pass},     $self->{host},     $self->{port})
-	= rearrange(['ADAPTOR', 'REGISTRY', 'USER', 'PASS', 'HOST', 'PORT'],
-				@args);
+  my ( $class, @args ) = @_;
+  my $self = bless( {}, ref($class) || $class );
+  ( $self->{_adaptor}, $self->{registry}, $self->{user},
+    $self->{pass},     $self->{host},     $self->{port} )
+    = rearrange( [ 'ADAPTOR', 'REGISTRY', 'USER', 'PASS', 'HOST', 'PORT' ],
+                 @args );
   $self->{dba_cache} = {};
-  $self->{user}     ||= eg_user();
-  $self->{pass}     ||= eg_pass();
-  $self->{host}     ||= eg_host();
-  $self->{port}     ||= eg_port();
   $self->{registry} ||= q/Bio::EnsEMBL::Registry/;
-
-  if (!defined $self->{_adaptor}) {
-	$self->{_adaptor} =
-	  Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
-	  ->build_eg_adaptor();
-  }
   return $self;
 }
 
@@ -128,6 +116,31 @@ sub _adaptor {
   return $self->{_adaptor};
 }
 
+sub _get_args {
+  my ( $self, $genome_info ) = @_;
+  # find arguments applicable to this particular info object
+  my $args = {};
+  if ( !defined $self->{host} ) {
+    # no host specified, so try and use public servers
+    if ( defined $genome_info->data_release->ensembl_genomes_release() ) {
+      # use EG
+      $args = eg_args();
+    }
+    else {
+      # use Ensembl
+      $args = e_args();
+    }
+  }
+  else {
+    # use host specified
+    $args = { -USER => $self->{user},
+              -PORT => $self->{port},
+              -PASS => $self->{pass},
+              -HOST => $self->{host} };
+  }
+  return $args;
+}
+
 =head2 genome_to_dba
 	Description : Build a Bio::EnsEMBL::DBSQL::DBAdaptor instance with the supplied info object
 	Argument    : Bio::EnsEMBL::MetaData::GenomeInfo
@@ -136,27 +149,27 @@ sub _adaptor {
 =cut
 
 sub genome_to_dba {
-  my ($self, $genome_info) = @_;
+  my ( $self, $genome_info ) = @_;
   my $dba;
-  if (defined $genome_info) {
-	assert_ref($genome_info,
-			   'Bio::EnsEMBL::MetaData::GenomeInfo');
-	$dba = $self->_cache()->{$genome_info->species()};
-	if (!defined $dba) {
-	  $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
-		-USER       => $self->{user},
-		-PASS       => $self->{pass},
-		-HOST       => $self->{host},
-		-PORT       => $self->{port},
-		-DBNAME     => $genome_info->dbname(),
-		-SPECIES    => $genome_info->species(),
-		-SPECIES_ID => $genome_info->species_id(),
-		-MULTISPECIES_DB => $genome_info->dbname() =~ m/_collection_/ ?
-		  1 :
-		  0,
-		-GROUP => 'core');
-	  $self->_cache()->{$genome_info->species()} = $dba;
-	}
+  if ( defined $genome_info ) {
+    assert_ref( $genome_info, 'Bio::EnsEMBL::MetaData::GenomeInfo' );
+    $dba = $self->_cache()->{ $genome_info->dbID() };
+    if ( !defined $dba ) {
+
+      my $args = $self->_get_args($genome_info);
+
+      $args->{-DBNAME}     = $genome_info->dbname();
+      $args->{-SPECIES}    = $genome_info->name();
+      $args->{-SPECIES_ID} = $genome_info->species_id();
+      $args->{-MULTISPECIES_DB} =
+        $genome_info->dbname() =~ m/_collection_/ ? 1 : 0;
+      $args->{-GROUP} = 'core';
+
+      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%$args);
+
+      $self->_cache()->{ $genome_info->dbID() } = $dba;
+
+    }
   }
   return $dba;
 } ## end sub genome_to_dba
@@ -169,12 +182,12 @@ sub genome_to_dba {
 =cut
 
 sub genomes_to_dbas {
-  my ($self, $genomes) = @_;
+  my ( $self, $genomes ) = @_;
   my $dbas = [];
-  if (defined $genomes) {
-	for my $genome (@{$genomes}) {
-	  push @$dbas, $self->genome_to_dba($genome);
-	}
+  if ( defined $genomes ) {
+    for my $genome ( @{$genomes} ) {
+      push @$dbas, $self->genome_to_dba($genome);
+    }
   }
   return $dbas;
 }
@@ -187,20 +200,23 @@ sub genomes_to_dbas {
 =cut
 
 sub compara_to_dba {
-  my ($self, $genome_info) = @_;
-  assert_ref($genome_info,
-			 'Bio::EnsEMBL::MetaData::GenomeComparaInfo');
-  my $dba = $self->_cache()->{$genome_info};
-  if (!defined $dba) {
-	$dba =
-	  Bio::EnsEMBL::Compara::DBSQL::DBAdaptor->new(
-								   -USER    => $self->{user},
-								   -PASS    => $self->{pass},
-								   -HOST    => $self->{host},
-								   -PORT    => $self->{port},
-								   -DBNAME  => $genome_info->dbname(),
-								   -SPECIES => $genome_info->division(),
-								   -GROUP   => 'compara');
+  my ( $self, $genome_info ) = @_;
+  assert_ref( $genome_info, 'Bio::EnsEMBL::MetaData::GenomeComparaInfo' );
+  my $dba = $self->_cache()->{compara}->{ $genome_info->dbID() };
+  if ( !defined $dba ) {
+    my $div = $genome_info->division();
+    if ( !$div eq 'Ensembl' ) {
+      $div = 'multi';
+    }
+
+    my $args = $self->_get_args($genome_info);
+    $args->{-DBNAME}  = $genome_info->dbname();
+    $args->{-SPECIES} = $div;
+    $args->{-GROUP}   = 'compara';
+    $dba              = Bio::EnsEMBL::Compara::DBSQL::DBAdaptor->new(%$args);
+
+    $self->_cache()->{compara}->{ $genome_info->dbID() } = $dba;
+
   }
   return $dba;
 }
@@ -214,7 +230,7 @@ sub compara_to_dba {
 
 sub get_all_dbnames {
   my ($self) = @_;
-  return [uniq(map { $_->dbname() } @{$self->{_adaptor}})];
+  return [ uniq( map { $_->dbname() } @{ $self->{_adaptor} } ) ];
 }
 
 =head2 get_all
@@ -226,13 +242,13 @@ sub get_all_dbnames {
 
 sub get_all {
   my ($self) = @_;
-  return $self->genomes_to_dbas($self->{_adaptor}->fetch_all());
+  return $self->genomes_to_dbas( $self->{_adaptor}->fetch_all() );
 }
 
 sub get_all_by_taxon_branch {
-  my ($self, $taxid) = @_;
+  my ( $self, $taxid ) = @_;
   return $self->genomes_to_dbas(
-			   $self->{_adaptor}->fetch_all_by_taxonomy_branch($taxid));
+                      $self->{_adaptor}->fetch_all_by_taxonomy_branch($taxid) );
 }
 
 =head2 get_all_by_taxon_id
@@ -243,9 +259,9 @@ sub get_all_by_taxon_branch {
 =cut
 
 sub get_all_by_taxon_id {
-  my ($self, $taxid) = @_;
+  my ( $self, $taxid ) = @_;
   return $self->genomes_to_dbas(
-				   $self->{_adaptor}->fetch_all_by_taxonomy_id($taxid));
+                          $self->{_adaptor}->fetch_all_by_taxonomy_id($taxid) );
 }
 
 =head2 get_by_name_exact
@@ -256,9 +272,8 @@ sub get_all_by_taxon_id {
 =cut
 
 sub get_by_name_exact {
-  my ($self, $name) = @_;
-  return $self->genome_to_dba(
-						   $self->{_adaptor}->fetch_by_any_name($name));
+  my ( $self, $name ) = @_;
+  return $self->genome_to_dba( $self->{_adaptor}->fetch_by_any_name($name) );
 }
 
 =head2 get_all_by_accession
@@ -269,12 +284,11 @@ sub get_by_name_exact {
 =cut	
 
 sub get_all_by_accession {
-  my ($self, $acc) = @_;
-  my $genomes =
-	$self->{_adaptor}->fetch_all_by_sequence_accession($acc);
-  if (!defined $genomes || scalar(@$genomes) == 0) {
-	$genomes = $self->{_adaptor}
-	  ->fetch_all_by_sequence_accession_unversioned($acc);
+  my ( $self, $acc ) = @_;
+  my $genomes = $self->{_adaptor}->fetch_all_by_sequence_accession($acc);
+  if ( !defined $genomes || scalar(@$genomes) == 0 ) {
+    $genomes =
+      $self->{_adaptor}->fetch_all_by_sequence_accession_unversioned($acc);
   }
   return $self->genomes_to_dbas($genomes);
 }
@@ -287,10 +301,10 @@ sub get_all_by_accession {
 =cut
 
 sub get_by_assembly_accession {
-  my ($self, $acc) = @_;
+  my ( $self, $acc ) = @_;
   my $genome = $self->{_adaptor}->fetch_by_assembly_id($acc);
-  if (!defined $genome) {
-	$genome = $self->{_adaptor}->fetch_by_assembly_id_unversioned($acc);
+  if ( !defined $genome ) {
+    $genome = $self->{_adaptor}->fetch_by_assembly_id_unversioned($acc);
   }
   return $self->genome_to_dba($genome);
 }
@@ -303,9 +317,9 @@ sub get_by_assembly_accession {
 =cut	
 
 sub get_all_by_name_pattern {
-  my ($self, $name) = @_;
+  my ( $self, $name ) = @_;
   return $self->genomes_to_dbas(
-				   $self->{_adaptor}->fetch_all_by_name_pattern($name));
+                          $self->{_adaptor}->fetch_all_by_name_pattern($name) );
 }
 
 =head2 get_all_by_dbname
@@ -316,9 +330,8 @@ sub get_all_by_name_pattern {
 =cut
 
 sub get_all_by_dbname {
-  my ($self, $name) = @_;
-  return $self->genomes_to_dbas(
-						 $self->{_adaptor}->fetch_all_by_dbname($name));
+  my ( $self, $name ) = @_;
+  return $self->genomes_to_dbas($self->{_adaptor}->fetch_all_by_dbname($name) );
 }
 
 =head2 get_all_taxon_ids
@@ -330,8 +343,7 @@ sub get_all_by_dbname {
 sub get_all_taxon_ids {
   my ($self) = @_;
   return [
-	   uniq(map { $_->taxonomy_id() } @{$self->{_adaptor}->fetch_all()})
-  ];
+        uniq( map { $_->taxonomy_id() } @{ $self->{_adaptor}->fetch_all() } ) ];
 }
 
 =head2 get_all_names
@@ -342,7 +354,7 @@ sub get_all_taxon_ids {
 
 sub get_all_names {
   my ($self) = @_;
-  return [map { $_->name() } @{$self->{_adaptor}->fetch_all()}];
+  return [ map { $_->name() } @{ $self->{_adaptor}->fetch_all() } ];
 }
 
 =head2 get_all_accessions
@@ -373,8 +385,7 @@ sub get_all_versioned_accessions {
 
 sub get_all_assemblies {
   my ($self) = @_;
-  return [map { s/\.[0-9]+$// }
-		  @{$self->get_all_versioned_assemblies()}];
+  return [ map { s/\.[0-9]+$// } @{ $self->get_all_versioned_assemblies() } ];
 }
 
 =head2 get_all_versioned_assemblies
@@ -386,9 +397,8 @@ sub get_all_assemblies {
 sub get_all_versioned_assemblies {
   my ($self) = @_;
   return [
-	 uniq(
-	   map { $_->assembly_id() || '' } @{$self->{_adaptor}->fetch_all()}
-	 )];
+     uniq( map { $_->assembly_id() || '' } @{ $self->{_adaptor}->fetch_all() } )
+  ];
 }
 
 1;

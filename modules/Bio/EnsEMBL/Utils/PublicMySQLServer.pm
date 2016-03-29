@@ -81,7 +81,6 @@ sub eg_pass {
 
 sub eg_args {
   return {-USER => PUBLIC_EG_USER,
-		  -PASS => PUBLIC_EG_PASS,
 		  -HOST => PUBLIC_EG_HOST,
 		  -PORT => PUBLIC_EG_PORT};
 }
@@ -104,7 +103,6 @@ sub e_pass {
 
 sub e_args {
   return {-USER => PUBLIC_E_USER,
-		  -PASS => PUBLIC_E_PASS,
 		  -HOST => PUBLIC_E_HOST,
 		  -PORT => PUBLIC_E_PORT};
 }
