@@ -26,7 +26,7 @@
 =head1 DESCRIPTION
 
 This script is an example of how to use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
-to find and print information about all genomes in the latest release of Ensembl
+to find and print information about all genomes in the latest release of Ensembl Genomes
 
 =head1 AUTHOR
 
@@ -47,7 +47,7 @@ use warnings;
 use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
