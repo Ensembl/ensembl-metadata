@@ -25,27 +25,29 @@ Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 
 =head1 SYNOPSIS
 
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
-my $md = $gdba->fetch_by_name("arabidopsis_thaliana");
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_adaptor();
+my $md = $gdba->fetch_by_name("homo_sapiens");
 
 =head1 DESCRIPTION
 
-Adaptor for storing and retrieving GenomeInfo objects from MySQL genome_info database
+Adaptor for storing and retrieving GenomeInfo objects from MySQL ensembl_metadata database
 
 To start working with an adaptor:
 
 # getting an adaptor
+## adaptor for latest public Ensembl release
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_adaptor();
+## adaptor for specified public Ensembl release
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_adaptor(83);
 ## adaptor for latest public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 ## adaptor for specified public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor(21);
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genome_adaptor(30);
 ## manually specify a given database
-my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
--USER=>'anonymous',
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-USER=>'anonymous',
 -PORT=>4157,
 -HOST=>'mysql-eg-publicsql.ebi.ac.uk',
--DBNAME=>'genome_info_21');
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
+-DBNAME=>'ensembl_metadata');
 
 To find genomes, use the fetch methods e.g.
 
@@ -79,6 +81,10 @@ for my $genome (@{$compara->genomes()}) {
 	print $genome->name()."\n";
 }
 
+# to change the release
+$gdba->set_ensembl_release(82);
+$gdba->set_ensembl_genomes_release(82);
+
 =head1 Author
 
 Dan Staines
@@ -99,10 +105,109 @@ use Scalar::Util qw(looks_like_number);
 use Data::Dumper;
 use List::MoreUtils qw/natatime/;
 use Scalar::Util qw(looks_like_number);
+use Bio::EnsEMBL::Utils::PublicMySQLServer qw/e_args eg_args/;
+use Bio::EnsEMBL::Utils::Exception qw/throw/;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 =head1 METHODS
 
-=head2 release
+=head2 build_ensembl_adaptor
+  Arg	     : (optional) Ensembl release number - default is latest
+  Description: Build an adaptor for the public Ensembl metadata database
+  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub build_ensembl_adaptor {
+  my ($release) = @_;
+  my $args = e_args();
+  $args->{-DBNAME} = 'ensembl_metadata';
+  my $adaptor =
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
+                                  Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
+  if ( defined $release ) {
+    $adaptor->set_ensembl_release($release);
+  }
+  return $adaptor;
+}
+
+=head2 build_ensembl_genomes_adaptor
+  Arg	     : (optional) EG release number  - default is latest
+  Description: Build an adaptor for the public Ensembl Genomes metadata database
+  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub build_ensembl_genomes_adaptor {
+  my ($release) = @_;
+  my $args = eg_args();
+  $args->{-DBNAME} = 'ensembl_metadata';
+  my $adaptor =
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
+                        Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
+  $adaptor->set_ensembl_genomes_release($release);
+  return $adaptor;
+}
+
+=head2 set_release
+  Arg	     : Ensembl release number
+  Description: Set release to use when querying 
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub set_ensembl_release {
+  my ( $self, $release ) = @_;
+  my $release_info =
+    $self->db()->get_DataReleaseInfoAdaptor()
+    ->fetch_by_ensembl_release($release);
+  if ( !defined $release_info ) {
+    throw "Could not find Ensembl release $release";
+  }
+  else {
+    $self->data_release($release_info);
+  }
+  return;
+}
+
+=head2 set_ensembl_genomes_release
+  Arg	     : Ensembl Genomes release number
+  Description: Set release to use when querying 
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub set_ensembl_genomes_release {
+  my ( $self, $release ) = @_;
+  my $release_info;
+  if ( !defined $release ) {
+    $release_info =
+      $self->db()->get_DataReleaseInfoAdaptor()
+      ->fetch_current_ensembl_genomes_release($release);
+  }
+  else {
+    $release_info =
+      $self->db()->get_DataReleaseInfoAdaptor()
+      ->fetch_by_ensembl_genomes_release($release);
+  }
+  if ( !defined $release_info ) {
+    throw "Could not find Ensembl Genomes release $release";
+  }
+  else {
+    $self->data_release($release_info);
+  }
+  return;
+}
+
+=head2 data_release
   Arg	     : Bio::EnsEMBL::MetaData::DataReleaseInfo
   Description: Default release to use when querying 
   Returntype : None
@@ -825,6 +930,7 @@ sub fetch_all_with_other_alignments {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_assembly {
   my ( $self, $genome ) = @_;
   if ( defined $genome->{assembly_id} ) {
@@ -842,6 +948,7 @@ sub _fetch_assembly {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_data_release {
   my ( $self, $genome ) = @_;
   if ( defined $genome->{data_release_id} ) {
