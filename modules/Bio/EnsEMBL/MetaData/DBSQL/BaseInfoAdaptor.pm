@@ -40,8 +40,6 @@ use warnings;
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
-use Bio::EnsEMBL::DBSQL::DBConnection;
-use Data::Dumper;
 use List::MoreUtils qw/natatime/;
 
 use base qw/Bio::EnsEMBL::DBSQL::BaseAdaptor/;
