@@ -113,6 +113,10 @@ sub _cache {
 
 sub _adaptor {
   my ($self) = @_;
+  if(!defined $self->{_adaptor}) {
+    # default to previous behaviour
+    $self->{_adaptor} = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
+  }
   return $self->{_adaptor};
 }
 
@@ -122,7 +126,7 @@ sub _get_args {
   my $args = {};
   if ( !defined $self->{host} ) {
     # no host specified, so try and use public servers
-    if ( defined $genome_info->data_release->ensembl_genomes_release() ) {
+    if ( defined $genome_info->data_release()->ensembl_genomes_release() ) {
       # use EG
       $args = eg_args();
     }
