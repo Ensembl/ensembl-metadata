@@ -94,7 +94,141 @@ use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+use Bio::EnsEMBL::Utils::Exception qw( throw );
 use List::MoreUtils qw(natatime);
+use Scalar::Util 'refaddr';
+
+=head2 set_release
+  Arg	     : Ensembl release number
+  Description: Set release to use when querying 
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub set_ensembl_release {
+  my ( $self, $release ) = @_;
+  my $release_info =
+    $self->db()->get_DataReleaseInfoAdaptor()
+    ->fetch_by_ensembl_release($release);
+  if ( !defined $release_info ) {
+    throw "Could not find Ensembl release $release";
+  }
+  else {
+    $self->data_release($release_info);
+  }
+  return;
+}
+
+=head2 set_ensembl_genomes_release
+  Arg	     : Ensembl Genomes release number
+  Description: Set release to use when querying 
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub set_ensembl_genomes_release {
+  my ( $self, $release ) = @_;
+  my $release_info;
+  if ( !defined $release ) {
+    $release_info =
+      $self->db()->get_DataReleaseInfoAdaptor()
+      ->fetch_current_ensembl_genomes_release($release);
+  }
+  else {
+    $release_info =
+      $self->db()->get_DataReleaseInfoAdaptor()
+      ->fetch_by_ensembl_genomes_release($release);
+  }
+  if ( !defined $release_info ) {
+    throw "Could not find Ensembl Genomes release $release";
+  }
+  else {
+    $self->data_release($release_info);
+  }
+  return;
+}
+
+=head2 data_release
+  Arg	     : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Description: Default release to use when querying 
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub data_release {
+  my ( $self, $release ) = @_;
+  if ( defined $release ) {
+    if ( !defined $self->{data_release} ||
+         refaddr($release) != refaddr( $self->{data_release} ) )
+    {
+      $self->{data_release} = $release;
+      $self->db()->get_GenomeInfoAdaptor()->data_release($release);
+    }
+  }
+  if ( !defined $self->{data_release} ) {
+    # default to current Ensembl release
+    $self->{data_release} =
+      $self->db()->get_DataReleaseInfoAdaptor()
+      ->fetch_current_ensembl_release();
+    if ( defined $self->{data_release} ) {
+      $self->db()->get_GenomeInfoAdaptor()
+        ->data_release( $self->{data_release} );
+    }
+  }
+  if ( defined $self->{data_release} && !defined $self->{data_release}->dbID() )
+  {
+    $self->db()->get_DataReleaseInfoAdaptor()->store( $self->{data_release} );
+  }
+  return $self->{data_release};
+} ## end sub data_release
+
+=head2 fetch_databases 
+  Arg        : (optional) release
+  Description: Fetch all compara-associated databases for the specified release
+  Returntype : Arrayref of strings
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_databases {
+  my ( $self, $release ) = @_;
+  if ( !defined $release ) {
+    $release = $self->data_release();
+  }
+  return $self->dbc()->sql_helper()->execute_simple(
+    -SQL => q/select distinct c.dbname from compara_analysis c
+      where data_release_id=?/,
+    -PARAMS => [ $self->data_release()->dbID() ] );
+}
+
+=head2 fetch_databases 
+  Arg        : division
+  Arg        : (optional) release
+  Description: Fetch all compara-associated databases for the specified release
+  Returntype : Arrayref of strings
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_division_databases {
+  my ( $self, $division, $release ) = @_;
+  if ( !defined $release ) {
+    $release = $self->data_release();
+  }
+  return $self->dbc()->sql_helper()->execute_simple(
+    -SQL => qw/select distinct c.dbname from compara_analysis c
+      join division d using (division_id)
+      where data_release_id=? and (d.name=? OR d.short_name=?)/,
+    -PARAMS => [ $self->data_release()->dbID(), $division, $division ] );
+}
 
 sub fetch_all_by_division {
   my ( $self, $division ) = @_;
@@ -154,12 +288,13 @@ sub update {
   }
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/update compara_analysis 
-	  set method=?,division_id=?,set_name=?,dbname=? 
+	  set method=?,division_id=?,set_name=?,dbname=?, data_release_id=?
 	  where compara_analysis_id=?/,
     -PARAMS => [ $compara->method(),
                  $self->_get_division_id( $compara->division() ),
                  $compara->set_name(),
                  $compara->dbname(),
+                 $self->data_release()->dbID(),
                  $compara->dbID() ] );
   $self->_store_compara_genomes($compara);
   $self->_store_cached_obj($compara);
@@ -197,11 +332,14 @@ q/select compara_analysis_id from compara_analysis where division_id=? and metho
     return $self->update($compara);
   }
   $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/insert into compara_analysis(method,division_id,set_name,dbname)
-		values(?,?,?,?)/,
+    -SQL =>
+q/insert into compara_analysis(method,division_id,set_name,dbname,data_release_id)
+		values(?,?,?,?,?)/,
     -PARAMS => [ $compara->method(),
                  $self->_get_division_id( $compara->division() ),
-                 $compara->set_name(), $compara->dbname() ],
+                 $compara->set_name(),
+                 $compara->dbname(),
+                 $self->data_release()->dbID() ],
     -CALLBACK => sub {
       my ( $sth, $dbh, $rv ) = @_;
       $compara->dbID( $dbh->{mysql_insertid} );
@@ -266,8 +404,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
 }
 
 my $base_compara_fetch_sql =
-q/select compara_analysis_id as dbID, method,division.name as division,set_name,dbname from compara_analysis join division using (division_id)/
-  ;
+q/select compara_analysis_id as dbID, method,division.name as division,set_name,dbname,data_release_id from compara_analysis join division using (division_id)/;
 
 sub _get_base_sql {
   return $base_compara_fetch_sql;
@@ -279,6 +416,18 @@ sub _get_id_field {
 
 sub _get_obj_class {
   return 'Bio::EnsEMBL::MetaData::GenomeComparaInfo';
+}
+
+# override to add release clause
+sub _args_to_sql {
+  my ( $self, $sql_in, $args ) = @_;
+  if ( !defined $args->{ _get_id_field() } ) {
+    # if we're not searching by dbID, add release as a clause
+    if ( defined $self->data_release()->dbID() ) {
+      $args->{data_release_id} = $self->data_release()->dbID();
+    }
+  }
+  return $self->SUPER::_args_to_sql( $sql_in, $args );
 }
 
 1;

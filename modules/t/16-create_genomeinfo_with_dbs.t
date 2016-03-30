@@ -108,6 +108,11 @@ is ($genome3->databases()->{otherfeatures}->{species_id}, 1, "Has otherfeatures 
 is ($genome3->databases()->{funcgen}->{dbname}, 'test_species_funcgen_27_80_1', "Has funcgen");
 is ($genome3->databases()->{funcgen}->{species_id}, 1, "Has funcgen species_id");
 
+{
+  my $dbs = $gdba->fetch_databases();
+  is(scalar @$dbs, 4, "4 dbs found");
+}
+
 done_testing;
 
 $multi->cleanup();

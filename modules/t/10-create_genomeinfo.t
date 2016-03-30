@@ -192,6 +192,12 @@ diag "Testing assembly related retrieval";
   ok( defined $infos && $infos->[0]->name() eq 'test' );
 }
 
+{
+  my $dbs = $gdba->fetch_databases();
+  is(scalar @$dbs, 1, "1 db found");
+}
+
+
 done_testing;
 
 $multi->cleanup();

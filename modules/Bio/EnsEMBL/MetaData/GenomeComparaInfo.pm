@@ -31,7 +31,8 @@ Bio::EnsEMBL::MetaData::GenomeComparaInfo
 								   -DIVISION => $division,
 								   -METHOD   => $method,
 								   -SET_NAME => $set_name,
-								   -GENOMES  => [$genome1, $genome2]);
+								   -GENOMES  => [$genome1, $genome2],
+								   -RELEASE  => $release);
 
 =head1 DESCRIPTION
 
@@ -75,9 +76,9 @@ sub new {
 	my ( $class, @args ) = @_;
 	my $self = $class->SUPER::new(@args);
   ( $self->{division}, $self->{method}, $self->{dbname},
-	$self->{set_name}, $self->{genomes} )
+	$self->{set_name}, $self->{genomes}, $self->{release} )
 	= rearrange(
-				 [ 'DIVISION', 'METHOD', 'DBNAME', 'SET_NAME', 'GENOMES'
+				 [ 'DIVISION', 'METHOD', 'DBNAME', 'SET_NAME', 'GENOMES', 'DATA_RELEASE'
 				 ],
 				 @args );
   return $self;

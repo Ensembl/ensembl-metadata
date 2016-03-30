@@ -101,10 +101,8 @@ use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::MetaData::GenomeInfo;
-use Scalar::Util qw(looks_like_number);
 use Data::Dumper;
-use List::MoreUtils qw/natatime/;
-use Scalar::Util qw(looks_like_number);
+use Scalar::Util qw(looks_like_number refaddr);
 use Bio::EnsEMBL::Utils::PublicMySQLServer qw/e_args eg_args/;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
@@ -219,19 +217,29 @@ sub set_ensembl_genomes_release {
 sub data_release {
   my ( $self, $release ) = @_;
   if ( defined $release ) {
-    $self->{data_release} = $release;
+    # replace release if we've been given something different
+    if ( !defined $self->{data_release} ||
+         refaddr($release) != refaddr( $self->{data_release} ) )
+    {
+      $self->{data_release} = $release;
+      $self->db()->get_GenomeComparaInfoAdaptor()->data_release($release);
+    }
   }
   if ( !defined $self->{data_release} ) {
     # default to current Ensembl release
     $self->{data_release} =
       $self->db()->get_DataReleaseInfoAdaptor()
       ->fetch_current_ensembl_release();
+    if ( defined $self->{data_release} ) {
+      $self->db()->get_GenomeComparaInfoAdaptor()
+        ->data_release( $self->{data_release} );
+    }
   }
   if ( !defined $self->{data_release}->dbID() ) {
     $self->db()->get_DataReleaseInfoAdaptor()->store( $self->{data_release} );
   }
   return $self->{data_release};
-}
+} ## end sub data_release
 
 =head2 store
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
@@ -281,7 +289,7 @@ sub store {
 genebuild,has_pan_compara,has_variations,has_peptide_compara,
 has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
 		values(?,?,?,?,?,?,?,?,?,?,?)/,
-    -PARAMS => [ $self->_get_division_id($genome->division()),
+    -PARAMS => [ $self->_get_division_id( $genome->division() ),
                  $genome->genebuild(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
@@ -327,7 +335,7 @@ sub update {
 genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
 has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
     ,
-    -PARAMS => [ $self->_get_division_id($genome->division()),
+    -PARAMS => [ $self->_get_division_id( $genome->division() ),
                  $genome->genebuild(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
@@ -446,13 +454,15 @@ sub _store_databases {
   my ( $self, $genome ) = @_;
 
   $self->dbc()->sql_helper()->execute_update(
-                     -SQL => q/delete from genome_database where genome_id=?/,
-                     -PARAMS => [ $genome->dbID() ] );
+                       -SQL => q/delete from genome_database where genome_id=?/,
+                       -PARAMS => [ $genome->dbID() ] );
   while ( my ( $type, $details ) = each %{ $genome->databases() } ) {
     $self->dbc()->sql_helper()->execute_update(
       -SQL => q/insert into genome_database(genome_id,type,dbname,species_id)
 		values(?,?,?,?)/,
-      -PARAMS => [ $genome->dbID(), $type, $details->{dbname}, $details->{species_id} ] );
+      -PARAMS =>
+        [ $genome->dbID(), $type, $details->{dbname}, $details->{species_id} ]
+    );
   }
   return;
 }
@@ -557,19 +567,47 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
 
 }
 
-=head2 list_divisions
-  Description: Get list of all Ensembl Genomes divisions for which information is available
+=head2 fetch_databases 
+  Arg        : release (optional)
+  Description: Fetch all genome-associated databases for the specified release
   Returntype : Arrayref of strings
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub list_divisions {
-  my ($self) = @_;
-  return $self->dbc()->sql_helper()
-    ->execute_simple(
-    -SQL => q/select distinct name from genome join division using (division_id) where name<>'Ensembl'/ );
+sub fetch_databases {
+  my ( $self, $release ) = @_;
+  if ( !defined $release ) {
+    $release = $self->data_release();
+  }
+  return $self->dbc()->sql_helper()->execute_simple(
+    -SQL => q/select distinct dbname from genome_database
+      join genome using (genome_id) where data_release_id=?/,
+    -PARAMS => [ $release->dbID() ] );
+}
+
+=head2 fetch_division_databases 
+  Arg        : division
+  Arg        : release (optional)
+  Description: Fetch all genome-associated databases for the specified release
+  Returntype : Arrayref of strings
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_division_databases {
+  my ( $self, $division, $release ) = @_;
+  if ( !defined $release ) {
+    $release = $self->data_release();
+  }
+  return $self->dbc()->sql_helper()->execute_simple(
+    -SQL => q/select distinct gd.dbname from genome_database gd
+      join genome g using (genome_id)
+      join division d using (division_id)
+      where data_release_id=? and (d.name=? OR d.short_name=?)/,
+    -PARAMS => [ $release->dbID(), $division, $division ] );
 }
 
 =head2 fetch_by_organism 
@@ -1016,6 +1054,7 @@ sub _fetch_variations {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _fetch_databases {
   my ( $self, $genome ) = @_;
   croak

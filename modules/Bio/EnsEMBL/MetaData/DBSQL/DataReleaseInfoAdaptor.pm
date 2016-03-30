@@ -205,6 +205,33 @@ sub fetch_current_ensembl_genomes_release {
     ) );
 }
 
+sub fetch_databases {
+  my ( $self, $release, $division ) = @_;
+  my $databases = [];
+  for my $db_div ( keys %{ $release->databases() } ) {
+    if ( !defined $division || $db_div eq $division ) {
+      for my $dbs ( values %{ $release->databases()->{$db_div} } ) {
+        $databases = [ @$databases, @{$dbs} ];
+      }
+    }
+  }
+  if ( defined $division ) {
+    $databases = [ @$databases,
+                   @{$self->db()->get_GenomeInfoAdaptor()
+                       ->fetch_division_databases( $division, $release ) },
+                   @{$self->db()->get_GenomeInfoAdaptor()
+                       ->fetch_division_databases( $division, $release ) } ];
+  }
+  else {
+    $databases = [ @$databases,
+                   @{$self->db()->get_GenomeInfoAdaptor()
+                       ->fetch_databases($release) },
+                   @{$self->db()->get_GenomeInfoAdaptor()
+                       ->fetch_databases($release) } ];
+  }
+  return $databases;
+} ## end sub fetch_databases
+
 =head2 _fetch_children
   Arg	     : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Fetch all children of specified genome info object

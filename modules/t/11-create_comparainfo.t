@@ -18,11 +18,20 @@ use warnings;
 use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
+use Bio::EnsEMBL::MetaData::DataReleaseInfo;
+
+my %rargs = ( -ENSEMBL_VERSION         => 99,
+              -ENSEMBL_GENOMES_VERSION => 66,
+              -RELEASE_DATE            => '2015-09-29' );
+              
+my $release = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(%rargs);
 
 my %args = ( -DBNAME   => "my_little_compara",
 			 -DIVISION => "EnsemblVeggies",
 			 -METHOD   => "myway",
-			 -SET_NAME => "cassette" );
+			 -SET_NAME => "cassette",
+			 -DATA_RELEASE => $release );
+						 
 my $compara = Bio::EnsEMBL::MetaData::GenomeComparaInfo->new(%args);
 
 ok( defined $compara, "Compara object exists" );
@@ -33,6 +42,7 @@ ok( $compara->set_name()               eq $args{-SET_NAME}, "set_name exists" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
 my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeComparaInfoAdaptor();
+$gdba->data_release($release);
 eval {
      $multi->load_database('empty_metadata');
 };
@@ -82,5 +92,9 @@ ok( $compara3->division()               eq $args{-DIVISION}, "division exists" )
 ok( $compara3->method()                 eq $args{-METHOD},   "method exists" );
 ok( $compara3->set_name()               eq $args{-SET_NAME}, "set_name exists" );
 
+{
+  my $dbs = $gdba->fetch_databases();
+  is(scalar @$dbs, 1, "1 db found");
+}
 
 done_testing;
