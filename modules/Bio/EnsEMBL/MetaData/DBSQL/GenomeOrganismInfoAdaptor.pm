@@ -100,6 +100,35 @@ use List::MoreUtils qw(natatime);
 =head1 METHODS
 =cut
 
+sub taxonomy_adaptor {
+  my ( $self, $adaptor ) = @_;
+  if ( defined $adaptor ) {
+    $self->{taxonomy_adaptor} = $adaptor;
+  }
+  else {
+    if ( !defined $self->{taxonomy_adaptor} ) {
+      # try and get from the registry
+      my $tax_dba =
+        Bio::EnsEMBL::Registry->get_DBAdaptor( "multi", "taxonomy" );
+      if ( !defined $tax_dba ) {
+        # can't find, so try and create alongside metadata
+        my $args = { -USER   => $self->db()->dbc()->user(),
+                     -PORT   => $self->db()->dbc()->port(),
+                     -PASS   => $self->db()->dbc()->pass(),
+                     -HOST   => $self->db()->dbc()->host(),
+                     -DBNAME => 'ncbi_taxonomy' };
+        $tax_dba =
+          Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor->new(%$args)
+          ->(%$args);
+      }
+      if(defined $tax_dba) {
+        $self->{taxonomy_adaptor} = $tax_dba->get_TaxonomyNodeAdaptor();
+      }
+    }
+  }
+  return $self->{taxonomy_adaptor};
+} ## end sub taxonomy_adaptor
+
 sub store {
   my ( $self, $organism ) = @_;
   if ( !defined $organism->dbID() ) {
@@ -107,8 +136,8 @@ sub store {
     my ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
-                -SQL => "select organism_id from organism where name=?",
-                -PARAMS => [ $organism->name() ] ) };
+                        -SQL => "select organism_id from organism where name=?",
+                        -PARAMS => [ $organism->name() ] ) };
 
     if ( defined $dbID ) {
       $organism->dbID($dbID);
@@ -121,14 +150,13 @@ sub store {
   else {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
-q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
+        q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
 species_taxonomy_id,is_reference)
 		values(?,?,?,?,?,?,?)/,
-      -PARAMS => [
-             $organism->name(),        $organism->display_name(),
-             $organism->strain(),      $organism->serotype(),
-             $organism->taxonomy_id(), $organism->species_taxonomy_id(),
-             $organism->is_reference() ],
+      -PARAMS => [ $organism->name(),        $organism->display_name(),
+                   $organism->strain(),      $organism->serotype(),
+                   $organism->taxonomy_id(), $organism->species_taxonomy_id(),
+                   $organism->is_reference() ],
       -CALLBACK => sub {
         my ( $sth, $dbh, $rv ) = @_;
         $organism->dbID( $dbh->{mysql_insertid} );
@@ -151,14 +179,10 @@ sub update {
     -SQL =>
 q/update organism set name=?,display_name=?,strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
 is_reference=? where organism_id=?/,
-    -PARAMS => [ $organism->name(),
-                 $organism->display_name(),
-                 $organism->strain(),
-                 $organism->serotype(),
-                 $organism->taxonomy_id(),
-                 $organism->species_taxonomy_id(),
-                 $organism->is_reference(),
-                 $organism->dbID() ] );
+    -PARAMS => [ $organism->name(),         $organism->display_name(),
+                 $organism->strain(),       $organism->serotype(),
+                 $organism->taxonomy_id(),  $organism->species_taxonomy_id(),
+                 $organism->is_reference(), $organism->dbID() ] );
 
   $self->_store_aliases($organism);
   $self->_store_publications($organism);
@@ -178,8 +202,8 @@ sub _store_aliases {
   my ( $self, $organism ) = @_;
 
   $self->dbc()->sql_helper()->execute_update(
-              -SQL => q/delete from organism_alias where organism_id=?/,
-              -PARAMS => [ $organism->dbID() ] );
+                      -SQL => q/delete from organism_alias where organism_id=?/,
+                      -PARAMS => [ $organism->dbID() ] );
   if ( defined $organism->aliases() ) {
     for my $alias ( @{ $organism->aliases() } ) {
 
@@ -205,14 +229,13 @@ sub _store_publications {
   my ( $self, $organism ) = @_;
 
   $self->dbc()->sql_helper()->execute_update(
-        -SQL => q/delete from organism_publication where organism_id=?/,
-        -PARAMS => [ $organism->dbID() ] );
+                -SQL => q/delete from organism_publication where organism_id=?/,
+                -PARAMS => [ $organism->dbID() ] );
 
   if ( defined $organism->publications() ) {
     for my $pub ( @{ $organism->publications() } ) {
       $self->dbc()->sql_helper()->execute_update(
-        -SQL =>
-          q/insert into organism_publication(organism_id,publication)
+        -SQL => q/insert into organism_publication(organism_id,publication)
 		values(?,?)/,
         -PARAMS => [ $organism->dbID(), $pub ] );
     }
@@ -232,8 +255,7 @@ sub _store_publications {
 
 sub fetch_all_by_taxonomy_id {
   my ( $self, $id, $keen ) = @_;
-  return $self->_fetch_generic_with_args( { 'taxonomy_id', $id },
-                                          $keen );
+  return $self->_fetch_generic_with_args( { 'taxonomy_id', $id }, $keen );
 }
 
 =head2 fetch_by_taxonomy_ids
@@ -251,17 +273,16 @@ sub fetch_all_by_taxonomy_ids {
 
   # filter list down
   my %ids = map { $_ => 1 } @$ids;
-  my @tids = grep { defined $ids{$_} }
-    @{
-    $self->dbc()->sql_helper()->execute_simple(
-                    -SQL => q/select distinct taxonomy_id from organism/
-    ) };
+  my @tids =
+    grep { defined $ids{$_} }
+    @{ $self->dbc()->sql_helper()
+      ->execute_simple( -SQL => q/select distinct taxonomy_id from organism/ )
+    };
   my @genomes = ();
   my $it = natatime 1000, @tids;
   while ( my @vals = $it->() ) {
     my $sql =
-      _get_base_sql() . ' where taxonomy_id in (' .
-      join( ',', @vals ) . ')';
+      _get_base_sql() . ' where taxonomy_id in (' . join( ',', @vals ) . ')';
     @genomes = ( @genomes, @{ $self->_fetch_generic( $sql, [] ) } );
   }
   return \@genomes;
@@ -284,12 +305,11 @@ sub fetch_all_by_taxonomy_branch {
       $root = $self->taxonomy_adaptor()->fetch_by_taxon_id($root);
     }
     else {
-      ($root) =
-        @{ $self->taxonomy_adaptor()->fetch_all_by_name($root) };
+      ($root) = @{ $self->taxonomy_adaptor()->fetch_all_by_name($root) };
     }
   }
-  my @taxids = ( $root->taxon_id(),
-                 @{ $root->adaptor()->fetch_descendant_ids($root) } );
+  my @taxids =
+    ( $root->taxon_id(), @{ $root->adaptor()->fetch_descendant_ids($root) } );
   return $self->fetch_all_by_taxonomy_ids( \@taxids );
 }
 
@@ -305,10 +325,9 @@ sub fetch_all_by_taxonomy_branch {
 
 sub fetch_by_display_name {
   my ( $self, $display_name, $keen ) = @_;
-  return
-    $self->_first_element( $self->_fetch_generic_with_args(
-                                { 'display_name', $display_name }, $keen
-                           ) );
+  return $self->_first_element(
+     $self->_fetch_generic_with_args( { 'display_name', $display_name }, $keen )
+  );
 }
 
 =head2 fetch_by_name
@@ -324,7 +343,7 @@ sub fetch_by_display_name {
 sub fetch_by_name {
   my ( $self, $name, $keen ) = @_;
   return $self->_first_element(
-          $self->_fetch_generic_with_args( { 'name', $name }, $keen ) );
+                  $self->_fetch_generic_with_args( { 'name', $name }, $keen ) );
 }
 
 =head2 fetch_any_by_name
@@ -363,10 +382,8 @@ sub fetch_all_by_name_pattern {
   my ( $self, $name, $keen ) = @_;
   return
     $self->_fetch_generic(
-                    _get_base_sql() .
-                      q/ where display_name REGEXP ? or name REGEXP ? /,
-                    [ $name, $name ],
-                    $keen );
+            _get_base_sql() . q/ where display_name REGEXP ? or name REGEXP ? /,
+            [ $name, $name ], $keen );
 }
 
 =head2 fetch_by_alias
@@ -383,11 +400,11 @@ sub fetch_by_alias {
   my ( $self, $name, $keen ) = @_;
   return
     $self->_first_element(
-          $self->_fetch_generic(
-            _get_base_sql() .
-              q/ join organism_alias using (organism_id) where alias=?/,
-            [$name],
-            $keen ) );
+                  $self->_fetch_generic(
+                    _get_base_sql() .
+                      q/ join organism_alias using (organism_id) where alias=?/,
+                    [$name],
+                    $keen ) );
 }
 
 =head2 _fetch_publications
@@ -401,14 +418,12 @@ sub fetch_by_alias {
 
 sub _fetch_publications {
   my ( $self, $org ) = @_;
-  croak
-    "Cannot fetch publications for an object that has not been stored"
+  croak "Cannot fetch publications for an object that has not been stored"
     if !defined $org->dbID();
   my $pubs =
     $self->dbc()->sql_helper()->execute_simple(
-    -SQL =>
-'select publication from organism_publication where organism_id=?',
-    -PARAMS => [ $org->dbID() ] );
+     -SQL => 'select publication from organism_publication where organism_id=?',
+     -PARAMS => [ $org->dbID() ] );
   $org->publications($pubs);
   return;
 }
@@ -424,13 +439,12 @@ sub _fetch_publications {
 
 sub _fetch_aliases {
   my ( $self, $org ) = @_;
-  croak
-"Cannot fetch aliases for a GenomeInfo object that has not been stored"
+  croak "Cannot fetch aliases for a GenomeInfo object that has not been stored"
     if !defined $org->dbID();
   my $aliases =
     $self->dbc()->sql_helper()->execute_simple(
-         -SQL => 'select alias from organism_alias where organism_id=?',
-         -PARAMS => [ $org->dbID() ] );
+                 -SQL => 'select alias from organism_alias where organism_id=?',
+                 -PARAMS => [ $org->dbID() ] );
   $org->aliases($aliases);
   return;
 }

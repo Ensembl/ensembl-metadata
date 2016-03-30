@@ -62,6 +62,7 @@ use warnings;
 package Bio::EnsEMBL::MetaData::GenomeInfo;
 use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
@@ -109,19 +110,17 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  my ( $name,                $display_name,  $taxonomy_id,
-       $species_taxonomy_id, $assembly_name, $assembly_id,
-       $assembly_level,      $strain,        $serotype,
-       $is_reference,        $organism );
-  ( $name,             $display_name,
-    $self->{dbname},   $self->{species_id},
-    $taxonomy_id,      $species_taxonomy_id,
-    $assembly_name,    $assembly_id,
-    $assembly_level,   $self->{genebuild},
-    $self->{division}, $strain,
-    $serotype,         $is_reference,
-    $self->{assembly}, $organism,
-    $self->{data_release} )
+  my ( $name,          $display_name, $dbname,
+       $species_id,    $taxonomy_id,  $species_taxonomy_id,
+       $assembly_name, $assembly_id,  $assembly_level,
+       $strain,        $serotype,     $is_reference,
+       $organism );
+  ( $name,              $display_name,     $dbname,
+    $species_id,        $taxonomy_id,      $species_taxonomy_id,
+    $assembly_name,     $assembly_id,      $assembly_level,
+    $self->{genebuild}, $self->{division}, $strain,
+    $serotype,          $is_reference,     $self->{assembly},
+    $organism,          $self->{data_release} )
     = rearrange( [ 'NAME',           'DISPLAY_NAME',
                    'DBNAME',         'SPECIES_ID',
                    'TAXONOMY_ID',    'SPECIES_TAXONOMY_ID',
@@ -133,20 +132,24 @@ sub new {
                    'DATA_RELEASE' ],
                  @args );
 
+  if ( defined $dbname ) {
+    $self->add_database( $dbname, $species_id );
+  }
+
   if ( !defined $self->assembly() ) {
     my $ass =
       Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
-                           -ASSEMBLY_NAME       => $assembly_name,
-                           -ASSEMBLY_ID         => $assembly_id,
-                           -ASSEMBLY_LEVEL      => $assembly_level,
-                           -DISPLAY_NAME        => $display_name,
-                           -NAME                => $name,
-                           -STRAIN              => $strain,
-                           -SEROTYPE            => $serotype,
-                           -TAXONOMY_ID         => $taxonomy_id,
-                           -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-                           -IS_REFERENCE        => $is_reference,
-                           -ORGANISM            => $organism );
+                                   -ASSEMBLY_NAME       => $assembly_name,
+                                   -ASSEMBLY_ID         => $assembly_id,
+                                   -ASSEMBLY_LEVEL      => $assembly_level,
+                                   -DISPLAY_NAME        => $display_name,
+                                   -NAME                => $name,
+                                   -STRAIN              => $strain,
+                                   -SEROTYPE            => $serotype,
+                                   -TAXONOMY_ID         => $taxonomy_id,
+                                   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+                                   -IS_REFERENCE        => $is_reference,
+                                   -ORGANISM            => $organism );
     $ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->assembly($ass);
   }
@@ -166,8 +169,10 @@ sub new {
 
 sub dbname {
   my ( $self, $dbname ) = @_;
-  $self->{dbname} = $dbname if ( defined $dbname );
-  return $self->{dbname};
+  if ( defined $dbname ) {
+    $self->{databases}{core}{dbname} = $dbname;
+  }
+  return $self->databases()->{core}{dbname};
 }
 
 =head2 species_id
@@ -181,8 +186,39 @@ sub dbname {
 
 sub species_id {
   my ( $self, $species_id ) = @_;
-  $self->{species_id} = $species_id if ( defined $species_id );
-  return $self->{species_id};
+  if ( defined $species_id ) {
+    $self->{databases}{core}{species_id} = $species_id;
+  }
+  return $self->databases()->{core}{species_id};
+}
+
+sub add_database {
+  my ( $self, $dbname, $species_id ) = @_;
+  # default to 1
+  $species_id ||= 1;
+  my $type = _parse_type($dbname);
+  $self->{databases}->{$type} = { dbname => $dbname, species_id => $species_id };
+  return;
+}
+
+sub _parse_type {
+  my ( $dbname ) = @_;
+  $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
+  if ( defined $1 ) {
+    return $1;
+  }
+  else {
+    throw "Could not parse database name $dbname";
+  }
+}
+
+sub databases {
+  my ($self, $databases) = @_;
+  if(defined $databases) {
+    $self->{databases} = $databases;
+  }
+  $self->_load_child( 'databases', '_fetch_databases' );
+  return $self->{databases};
 }
 
 =head2 data_release
@@ -197,7 +233,7 @@ sub species_id {
 sub data_release {
   my ( $self, $data_release ) = @_;
   $self->{data_release} = $data_release if ( defined $data_release );
-  $self->_load_child('data_release','_fetch_data_release');
+  $self->_load_child( 'data_release', '_fetch_data_release' );
   return $self->{data_release};
 }
 
@@ -311,7 +347,7 @@ sub species_taxonomy_id {
 sub assembly {
   my ( $self, $assembly ) = @_;
   $self->{assembly} = $assembly if ( defined $assembly );
-  $self->_load_child('assembly','_fetch_assembly');
+  $self->_load_child( 'assembly', '_fetch_assembly' );
   return $self->{assembly};
 }
 
@@ -462,7 +498,7 @@ sub compara {
     $self->{has_genome_alignments} = undef;
     $self->{has_pan_compara}       = undef;
   }
-    $self->_load_child('compara','_fetch_comparas');
+  $self->_load_child( 'compara', '_fetch_comparas' );
   return $self->{compara};
 }
 
@@ -511,7 +547,7 @@ sub variations {
     $self->{variations}     = $variations;
     $self->{has_variations} = undef;
   }
-  $self->_load_child('variations','_fetch_variations');
+  $self->_load_child( 'variations', '_fetch_variations' );
   return $self->{variations};
 }
 
@@ -531,7 +567,7 @@ sub features {
   if ( defined $features ) {
     $self->{features} = $features;
   }
-  $self->_load_child('features','_fetch_features');
+  $self->_load_child( 'features', '_fetch_features' );
   return $self->{features};
 }
 
@@ -550,7 +586,7 @@ sub annotations {
   if ( defined $annotation ) {
     $self->{annotations} = $annotation;
   }
-  $self->_load_child('annotations','_fetch_annotations');
+  $self->_load_child( 'annotations', '_fetch_annotations' );
   return $self->{annotations};
 }
 
@@ -570,7 +606,7 @@ sub other_alignments {
     $self->{other_alignments}     = $other_alignments;
     $self->{has_other_alignments} = undef;
   }
-  $self->_load_child('other_alignments','_fetch_other_alignments');
+  $self->_load_child( 'other_alignments', '_fetch_other_alignments' );
   return $self->{other_alignments} || 0;
 }
 
@@ -637,8 +673,7 @@ sub has_synteny {
   if ( defined $arg ) {
     $self->{has_synteny} = $arg;
   }
-  elsif ( !defined( $self->{has_synteny} ) && defined $self->compara() )
-  {
+  elsif ( !defined( $self->{has_synteny} ) && defined $self->compara() ) {
     $self->{has_synteny} = 0;
     for my $compara ( @{ $self->compara() } ) {
       if ( $compara->is_synteny() ) {
@@ -664,14 +699,11 @@ sub has_peptide_compara {
   if ( defined $arg ) {
     $self->{has_peptide_compara} = $arg;
   }
-  elsif ( !defined( $self->{has_peptide_compara} ) &&
-          defined $self->compara() )
+  elsif ( !defined( $self->{has_peptide_compara} ) && defined $self->compara() )
   {
     $self->{has_peptide_compara} = 0;
     for my $compara ( @{ $self->compara() } ) {
-      if ( $compara->is_peptide_compara() &&
-           !$compara->is_pan_compara() )
-      {
+      if ( $compara->is_peptide_compara() && !$compara->is_pan_compara() ) {
         $self->{has_peptide_compara} = 1;
         last;
       }
@@ -694,9 +726,7 @@ sub has_pan_compara {
   if ( defined $arg ) {
     $self->{has_pan_compara} = $arg;
   }
-  elsif ( !defined( $self->{has_pan_compara} ) &&
-          defined $self->compara() )
-  {
+  elsif ( !defined( $self->{has_pan_compara} ) && defined $self->compara() ) {
     $self->{has_pan_compara} = 0;
     for my $compara ( @{ $self->compara() } ) {
       if ( $compara->is_pan_compara() ) {
@@ -723,8 +753,7 @@ sub has_other_alignments {
     $self->{has_other_alignments} = $arg;
   }
   elsif ( !defined( $self->{has_other_alignments} ) ) {
-    $self->{has_other_alignments} =
-      $self->count_alignments() > 0 ? 1 : 0;
+    $self->{has_other_alignments} = $self->count_alignments() > 0 ? 1 : 0;
   }
   return $self->{has_other_alignments} || 0;
 }
@@ -740,8 +769,7 @@ sub has_other_alignments {
 sub count_variation {
   my ($self) = @_;
   return $self->count_hash_values( $self->{variations}{variations} ) +
-    $self->count_hash_values(
-                           $self->{variations}{structural_variations} );
+    $self->count_hash_values( $self->{variations}{structural_variations} );
 }
 
 =head2 count_alignments
@@ -755,10 +783,8 @@ sub count_variation {
 sub count_alignments {
   my ($self) = @_;
   return $self->count_hash_values( $self->{other_alignments}{bam} ) +
-    $self->count_hash_values(
-                     $self->{other_alignments}{proteinAlignFeatures} ) +
-    $self->count_hash_values(
-                          $self->{other_alignments}{dnaAlignFeatures} );
+    $self->count_hash_values( $self->{other_alignments}{proteinAlignFeatures} )
+    + $self->count_hash_values( $self->{other_alignments}{dnaAlignFeatures} );
 }
 
 =head2 get_uniprot_coverage
@@ -801,9 +827,7 @@ sub to_hash {
       push @{$out}, to_hash( $item, $keen );
     }
   }
-  elsif ( $type eq 'HASH' ||
-          $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' )
-  {
+  elsif ( $type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' ) {
     $out = {};
     while ( my ( $key, $val ) = each %$in ) {
       if ( $key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger' ) {

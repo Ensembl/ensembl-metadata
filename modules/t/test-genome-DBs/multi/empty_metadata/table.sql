@@ -1,8 +1,8 @@
--- MySQL dump 10.14  Distrib 5.5.44-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.14  Distrib 5.5.47-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: genome_metadata
+-- Host: localhost    Database: ensembl_metadata
 -- ------------------------------------------------------
--- Server version	5.5.44-MariaDB-1ubuntu0.14.04.1
+-- Server version	5.5.47-MariaDB-1ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -75,6 +75,24 @@ CREATE TABLE `compara_analysis` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `data_release`
+--
+
+DROP TABLE IF EXISTS `data_release`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `data_release` (
+  `data_release_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ensembl_version` int(10) unsigned NOT NULL,
+  `ensembl_genomes_version` int(10) unsigned DEFAULT NULL,
+  `release_date` date NOT NULL,
+  `is_current` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`data_release_id`),
+  UNIQUE KEY `ensembl_version` (`ensembl_version`,`ensembl_genomes_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `genome`
 --
 
@@ -88,8 +106,6 @@ CREATE TABLE `genome` (
   `organism_id` int(10) unsigned NOT NULL,
   `genebuild` varchar(64) NOT NULL,
   `division` varchar(32) NOT NULL,
-  `dbname` varchar(64) NOT NULL,
-  `species_id` int(10) unsigned NOT NULL,
   `has_pan_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_variations` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_peptide_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -98,8 +114,8 @@ CREATE TABLE `genome` (
   `has_other_alignments` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`genome_id`),
   UNIQUE KEY `release_genome` (`data_release_id`,`genome_id`),
-  UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
   KEY `genome_ibfk_1` (`assembly_id`),
+  KEY `genome_ibfk_3` (`organism_id`),
   CONSTRAINT `genome_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`),
   CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
   CONSTRAINT `genome_ibfk_3` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
@@ -159,6 +175,26 @@ CREATE TABLE `genome_compara_analysis` (
   KEY `compara_analysis_idx` (`compara_analysis_id`),
   CONSTRAINT `genome_compara_analysis_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`),
   CONSTRAINT `genome_compara_analysis_ibfk_2` FOREIGN KEY (`compara_analysis_id`) REFERENCES `compara_analysis` (`compara_analysis_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `genome_database`
+--
+
+DROP TABLE IF EXISTS `genome_database`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genome_database` (
+  `genome_database_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `genome_id` int(10) unsigned NOT NULL,
+  `dbname` varchar(64) NOT NULL,
+  `species_id` int(10) unsigned NOT NULL,
+  `type` enum('core','funcgen','variation','otherfeatures') DEFAULT NULL,
+  PRIMARY KEY (`genome_database_id`),
+  UNIQUE KEY `id_dbname` (`genome_id`,`dbname`),
+  UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
+  CONSTRAINT `genome_database_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -256,24 +292,6 @@ CREATE TABLE `organism_publication` (
   CONSTRAINT `organism_publication_ibfk_1` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `release`
---
-
-DROP TABLE IF EXISTS `data_release`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `data_release` (
-  `data_release_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ensembl_version` int(10) unsigned NOT NULL,
-  `ensembl_genomes_version` int(10) unsigned DEFAULT NULL,
-  `release_date` date NOT NULL,
-  `is_current` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`data_release_id`),
-  UNIQUE KEY `ensembl_version` (`ensembl_version`,`ensembl_genomes_version`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -284,4 +302,4 @@ CREATE TABLE `data_release` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-13  9:47:02
+-- Dump completed on 2016-03-30 11:18:32

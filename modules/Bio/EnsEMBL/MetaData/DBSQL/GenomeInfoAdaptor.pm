@@ -126,7 +126,7 @@ sub build_ensembl_adaptor {
   $args->{-DBNAME} = 'ensembl_metadata';
   my $adaptor =
     Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-                                  Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
+                Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
   if ( defined $release ) {
     $adaptor->set_ensembl_release($release);
   }
@@ -148,7 +148,7 @@ sub build_ensembl_genomes_adaptor {
   $args->{-DBNAME} = 'ensembl_metadata';
   my $adaptor =
     Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-                        Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
+                Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
   $adaptor->set_ensembl_genomes_release($release);
   return $adaptor;
 }
@@ -278,13 +278,11 @@ sub store {
   $self->db()->get_GenomeAssemblyInfoAdaptor()->store( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/insert into genome(division,
-genebuild,dbname,species_id,has_pan_compara,has_variations,has_peptide_compara,
+genebuild,has_pan_compara,has_variations,has_peptide_compara,
 has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
-		values(?,?,?,?,?,?,?,?,?,?,?,?,?)/,
+		values(?,?,?,?,?,?,?,?,?,?,?)/,
     -PARAMS => [ $genome->division(),
                  $genome->genebuild(),
-                 $genome->dbname(),
-                 $genome->species_id(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
                  $genome->has_peptide_compara(),
@@ -299,6 +297,7 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
       $genome->dbID( $dbh->{mysql_insertid} );
     } );
   $genome->adaptor($self);
+  $self->_store_databases($genome);
   $self->_store_annotations($genome);
   $self->_store_features($genome);
   $self->_store_variations($genome);
@@ -325,13 +324,11 @@ sub update {
   $self->db()->get_GenomeAssemblyInfoAdaptor()->update( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/update genome set division=?,
-genebuild=?,dbname=?,species_id=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
+genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
 has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
     ,
     -PARAMS => [ $genome->division(),
                  $genome->genebuild(),
-                 $genome->dbname(),
-                 $genome->species_id(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
                  $genome->has_peptide_compara(),
@@ -343,6 +340,7 @@ has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organ
                  $genome->data_release()->dbID(),
                  $genome->dbID() ] );
   $genome->adaptor($self);
+  $self->_store_databases($genome);
   $self->_store_annotations($genome);
   $self->_store_features($genome);
   $self->_store_variations($genome);
@@ -431,6 +429,30 @@ sub _store_features {
 		values(?,?,?,?)/,
         -PARAMS => [ $genome->dbID(), $type, $analysis, $count ] );
     }
+  }
+  return;
+}
+
+=head2 _store_databases
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the databases for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_databases {
+  my ( $self, $genome ) = @_;
+
+  $self->dbc()->sql_helper()->execute_update(
+                     -SQL => q/delete from genome_database where genome_id=?/,
+                     -PARAMS => [ $genome->dbID() ] );
+  while ( my ( $type, $details ) = each %{ $genome->databases() } ) {
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL => q/insert into genome_database(genome_id,type,dbname,species_id)
+		values(?,?,?,?)/,
+      -PARAMS => [ $genome->dbID(), $type, $details->{dbname}, $details->{species_id} ] );
   }
   return;
 }
@@ -986,6 +1008,34 @@ sub _fetch_variations {
   return;
 }
 
+=head2 _fetch_databases
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
+  Description: Add databases to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _fetch_databases {
+  my ( $self, $genome ) = @_;
+  croak
+    "Cannot fetch databases for a GenomeInfo object that has not been stored"
+    if !defined $genome->dbID();
+
+  my $databases = {};
+  $self->dbc()->sql_helper()->execute_no_return(
+    -SQL =>
+      'select dbname,species_id,type from genome_database where genome_id=?',
+    -CALLBACK => sub {
+      my @row = @{ shift @_ };
+      $databases->{ $row[2] } = { dbname => $row[0], species_id => $row[1] };
+      return;
+    },
+    -PARAMS => [ $genome->dbID() ] );
+  $genome->databases($databases);
+  return;
+}
+
 =head2 _fetch_other_alignments
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add other_alignments to supplied object
@@ -1108,6 +1158,7 @@ sub _fetch_comparas {
 
 sub _fetch_children {
   my ( $self, $genome ) = @_;
+  $self->_fetch_databases($genome);
   $self->_fetch_assembly($genome);
   $self->_fetch_data_release($genome);
   $self->_fetch_variations($genome);
@@ -1118,7 +1169,7 @@ sub _fetch_children {
 }
 
 my $base_genome_fetch_sql =
-  q/select genome_id as dbID, division, genebuild, dbname,species_id,
+  q/select genome_id as dbID, division, genebuild, 
 has_pan_compara, has_variations, has_peptide_compara, 
 has_genome_alignments, has_synteny, has_other_alignments, 
 assembly_id, data_release_id
