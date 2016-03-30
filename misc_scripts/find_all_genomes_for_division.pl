@@ -49,7 +49,7 @@ use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {

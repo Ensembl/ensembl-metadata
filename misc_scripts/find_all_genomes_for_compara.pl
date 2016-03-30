@@ -48,7 +48,7 @@ use warnings;
 use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 
 # create an adaptor to work with genomes
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
+my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 
 # find all comparas for the division of interest
 my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');
