@@ -114,6 +114,30 @@ sub is_current {
 	return $self->{is_current};
 }
 
+sub add_database {
+  my ( $self, $dbname, $division ) = @_;
+  my $type = _parse_type($dbname);
+  push @{$self->{databases}{$division}{$type}}, $dbname;
+  return;
+}
+
+sub _parse_type {
+  my ( $dbname ) = @_;
+  if($dbname =~ m/mart/) {
+    return 'mart';
+  } else {
+    return 'other';
+  }
+}
+
+sub databases {
+  my ($self, $databases) = @_;
+  if(defined $databases) {
+    $self->{databases} = $databases;
+  }
+  $self->_load_child( 'databases', '_fetch_databases' );
+  return $self->{databases};
+}
 
 =head2 release_date
   Arg        : (optional) version to set

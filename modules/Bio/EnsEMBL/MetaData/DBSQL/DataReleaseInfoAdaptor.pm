@@ -143,6 +143,7 @@ q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,
         $data_release->dbID( $dbh->{mysql_insertid} );
       } );
     $data_release->adaptor($self);
+    $self->_store_databases($data_release);
     $self->_store_cached_obj($data_release);
   }
   return;
@@ -161,6 +162,8 @@ q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_
                  $data_release->ensembl_genomes_version(),
                  $data_release->release_date(),
                  $data_release->dbID() ] );
+
+  $self->_store_databases($data_release);
   return;
 }
 
@@ -168,19 +171,19 @@ sub fetch_by_ensembl_release {
   my ( $self, $release ) = @_;
   return
     $self->_first_element(
-     $self->_fetch_generic(
-       _get_base_sql() .
-         ' where ensembl_version=? and ensembl_genomes_version is null',
-       [$release] ) );
+             $self->_fetch_generic(
+               _get_base_sql() .
+                 ' where ensembl_version=? and ensembl_genomes_version is null',
+               [$release] ) );
 }
 
 sub fetch_by_ensembl_genomes_release {
   my ( $self, $release ) = @_;
   return
     $self->_first_element(
-                 $self->_fetch_generic(
-                   _get_base_sql() . ' where ensembl_genomes_version=?',
-                   [$release] ) );
+                         $self->_fetch_generic(
+                           _get_base_sql() . ' where ensembl_genomes_version=?',
+                           [$release] ) );
 }
 
 sub fetch_current_ensembl_release {
@@ -189,8 +192,7 @@ sub fetch_current_ensembl_release {
     $self->_first_element(
     $self->_fetch_generic(
       _get_base_sql() .
-' where ensembl_genomes_version is null order by release_date desc limit 1'
-    ) );
+' where ensembl_genomes_version is null order by release_date desc limit 1' ) );
 }
 
 sub fetch_current_ensembl_genomes_release {
@@ -214,7 +216,62 @@ sub fetch_current_ensembl_genomes_release {
 
 sub _fetch_children {
   my ( $self, $md ) = @_;
+  $self->_fetch_databases($md);
   return;
+}
+
+=head2 _fetch_databases
+  Arg	     : Bio::EnsEMBL::MetaData::DataReleaseInfo 
+  Description: Add databases to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _fetch_databases {
+  my ( $self, $release ) = @_;
+  croak
+"Cannot fetch databases for a DataReleaseInfo object that has not been stored"
+    if !defined $release->dbID();
+
+  my $databases = {};
+  $self->dbc()->sql_helper()->execute_no_return(
+    -SQL =>
+'select dbname,type,division from data_release_database where data_release_id=?',
+    -CALLBACK => sub {
+      my @row = @{ shift @_ };
+      push @{ $databases->{ $row[2] }{ $row[1] } }, $row[0];
+      return;
+    },
+    -PARAMS => [ $release->dbID() ] );
+  $release->databases($databases);
+  return;
+}
+
+=head2 _store_databases
+  Arg	     : Bio::EnsEMBL::MetaData::DataReleaseInfo 
+  Description: Store databases from supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_databases {
+  my ( $self, $release ) = @_;
+  $self->dbc()->sql_helper()->execute_update(
+           -SQL => q/delete from data_release_database where data_release_id=?/,
+           -PARAMS => [ $release->dbID() ] );
+  while ( my ( $division, $div_details ) = each %{ $release->databases() } ) {
+    while ( my ( $type, $details ) = each %{$div_details} ) {
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL =>
+q/insert into data_release_database(data_release_id,type,dbname,division)
+		values(?,?,?,?)/,
+        -PARAMS => [ $release->dbID(), $type, $release->{dbname}, $division ] );
+    }
+  }
 }
 
 my $base_data_release_fetch_sql =
