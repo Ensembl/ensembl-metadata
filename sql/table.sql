@@ -65,12 +65,13 @@ DROP TABLE IF EXISTS `compara_analysis`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `compara_analysis` (
   `compara_analysis_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `division` varchar(64) NOT NULL,
+  `division_id` int(10) unsigned NOT NULL,
   `method` varchar(50) NOT NULL,
   `set_name` varchar(128) DEFAULT NULL,
   `dbname` varchar(64) NOT NULL,
   PRIMARY KEY (`compara_analysis_id`),
-  UNIQUE KEY `division_method_set_name_dbname` (`division`,`method`,`set_name`,`dbname`)
+  UNIQUE KEY `division_method_set_name_dbname` (`division_id`,`method`,`set_name`,`dbname`),
+  CONSTRAINT `compara_analysis_ibfk_1` FOREIGN KEY (`division_id`) REFERENCES `division` (`division_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -103,10 +104,30 @@ CREATE TABLE `data_release_database` (
   `data_release_database_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `data_release_id` int(10) unsigned NOT NULL,
   `dbname` varchar(64) NOT NULL,
-  `type` enum('mart','other') DEFAULT NULL,
+  `type` enum('mart','other') DEFAULT 'other',
+  `division_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`data_release_database_id`),
   UNIQUE KEY `id_dbname` (`data_release_id`,`dbname`),
-  CONSTRAINT `data_release_database_ibfk_1` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`)
+  KEY `data_release_database_ibfk_2` (`division_id`),
+  CONSTRAINT `data_release_database_ibfk_1` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
+  CONSTRAINT `data_release_database_ibfk_2` FOREIGN KEY (`division_id`) REFERENCES `division` (`division_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `division`
+--
+
+DROP TABLE IF EXISTS `division`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `division` (
+  `division_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  `short_name` varchar(8) NOT NULL,
+  PRIMARY KEY (`division_id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `short_name` (`short_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -123,7 +144,7 @@ CREATE TABLE `genome` (
   `assembly_id` int(10) unsigned NOT NULL,
   `organism_id` int(10) unsigned NOT NULL,
   `genebuild` varchar(64) NOT NULL,
-  `division` varchar(32) NOT NULL,
+  `division_id` int(10) unsigned NOT NULL,
   `has_pan_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_variations` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_peptide_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -134,9 +155,11 @@ CREATE TABLE `genome` (
   UNIQUE KEY `release_genome` (`data_release_id`,`genome_id`),
   KEY `genome_ibfk_1` (`assembly_id`),
   KEY `genome_ibfk_3` (`organism_id`),
+  KEY `genome_ibfk_4` (`division_id`),
   CONSTRAINT `genome_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`),
   CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
-  CONSTRAINT `genome_ibfk_3` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
+  CONSTRAINT `genome_ibfk_3` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`),
+  CONSTRAINT `genome_ibfk_4` FOREIGN KEY (`division_id`) REFERENCES `division` (`division_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -320,4 +343,4 @@ CREATE TABLE `organism_publication` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-03-30 12:04:42
+-- Dump completed on 2016-03-30 13:20:35

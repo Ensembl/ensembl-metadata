@@ -238,7 +238,7 @@ sub _fetch_databases {
   my $databases = {};
   $self->dbc()->sql_helper()->execute_no_return(
     -SQL =>
-'select dbname,type,division from data_release_database where data_release_id=?',
+'select dbname,type,division.name from data_release_database join division using (division_id) where data_release_id=?',
     -CALLBACK => sub {
       my @row = @{ shift @_ };
       push @{ $databases->{ $row[2] }{ $row[1] } }, $row[0];
@@ -264,12 +264,15 @@ sub _store_databases {
            -SQL => q/delete from data_release_database where data_release_id=?/,
            -PARAMS => [ $release->dbID() ] );
   while ( my ( $division, $div_details ) = each %{ $release->databases() } ) {
-    while ( my ( $type, $details ) = each %{$div_details} ) {
-      $self->dbc()->sql_helper()->execute_update(
-        -SQL =>
-q/insert into data_release_database(data_release_id,type,dbname,division)
+    while ( my ( $type, $dbnames ) = each %{$div_details} ) {
+      for my $dbname ( @{$dbnames} ) {
+        $self->dbc()->sql_helper()->execute_update(
+          -SQL =>
+q/insert into data_release_database(data_release_id,type,dbname,division_id)
 		values(?,?,?,?)/,
-        -PARAMS => [ $release->dbID(), $type, $release->{dbname}, $division ] );
+          -PARAMS => [ $release->dbID(), $type,
+                       $dbname,          $self->_get_division_id($division) ] );
+      }
     }
   }
 }

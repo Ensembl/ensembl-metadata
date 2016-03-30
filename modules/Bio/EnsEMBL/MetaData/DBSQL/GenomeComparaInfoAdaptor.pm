@@ -130,9 +130,9 @@ sub fetch_by_dbname_method_set {
   my ( $self, $dbname, $method, $set_name ) = @_;
   return
     _first_element(
-       $self->_fetch_generic_with_args(
-         { dbname => $dbname, method => $method, set_name => $set_name }
-       ) );
+               $self->_fetch_generic_with_args(
+                 { dbname => $dbname, method => $method, set_name => $set_name }
+               ) );
 }
 
 =head1 METHODS
@@ -154,10 +154,12 @@ sub update {
   }
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/update compara_analysis 
-	  set method=?,division=?,set_name=?,dbname=? 
+	  set method=?,division_id=?,set_name=?,dbname=? 
 	  where compara_analysis_id=?/,
-    -PARAMS => [ $compara->method(),   $compara->division(),
-                 $compara->set_name(), $compara->dbname(),
+    -PARAMS => [ $compara->method(),
+                 $self->_get_division_id( $compara->division() ),
+                 $compara->set_name(),
+                 $compara->dbname(),
                  $compara->dbID() ] );
   $self->_store_compara_genomes($compara);
   $self->_store_cached_obj($compara);
@@ -182,9 +184,10 @@ sub store {
       @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
-q/select compara_analysis_id from compara_analysis where division=? and method=? and set_name=? and dbname=?/,
-        -PARAMS => [ $compara->division(), $compara->method(),
-                     $compara->set_name(), $compara->dbname() ] ) };
+q/select compara_analysis_id from compara_analysis where division_id=? and method=? and set_name=? and dbname=?/,
+        -PARAMS => [ $self->_get_division_id( $compara->division() ),
+                     $compara->method(), $compara->set_name(),
+                     $compara->dbname() ] ) };
     if ( defined $dbID ) {
       $compara->dbID($dbID);
       $compara->adaptor($self);
@@ -194,10 +197,10 @@ q/select compara_analysis_id from compara_analysis where division=? and method=?
     return $self->update($compara);
   }
   $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-      q/insert into compara_analysis(method,division,set_name,dbname)
+    -SQL => q/insert into compara_analysis(method,division_id,set_name,dbname)
 		values(?,?,?,?)/,
-    -PARAMS => [ $compara->method(),   $compara->division(),
+    -PARAMS => [ $compara->method(),
+                 $self->_get_division_id( $compara->division() ),
                  $compara->set_name(), $compara->dbname() ],
     -CALLBACK => sub {
       my ( $sth, $dbh, $rv ) = @_;
@@ -211,9 +214,8 @@ q/select compara_analysis_id from compara_analysis where division=? and method=?
 sub _store_compara_genomes {
   my ( $self, $compara ) = @_;
   $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/delete from genome_compara_analysis where compara_analysis_id=?/,
-    -PARAMS => [ $compara->dbID() ] );
+     -SQL => q/delete from genome_compara_analysis where compara_analysis_id=?/,
+     -PARAMS => [ $compara->dbID() ] );
   if ( defined $compara->genomes() ) {
     for my $genome ( @{ $compara->genomes() } ) {
       if ( !defined $genome->dbID() ) {
@@ -221,7 +223,7 @@ q/delete from genome_compara_analysis where compara_analysis_id=?/,
       }
       $self->dbc()->sql_helper()->execute_update(
         -SQL =>
-q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
+          q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
 		values(?,?)/,
         -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
     }
@@ -256,8 +258,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
           -PARAMS => [ $compara->dbID() ] );
       } )
     {
-      push @$genomes,
-        $self->get_GenomeInfoAdaptor()->fetch_by_dbID($genome_id);
+      push @$genomes, $self->get_GenomeInfoAdaptor()->fetch_by_dbID($genome_id);
     }
     $compara->genomes($genomes);
   }
@@ -265,7 +266,8 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
 }
 
 my $base_compara_fetch_sql =
-q/select compara_analysis_id as dbID, method,division,set_name,dbname from compara_analysis/;
+q/select compara_analysis_id as dbID, method,division.name as division,set_name,dbname from compara_analysis join division using (division_id)/
+  ;
 
 sub _get_base_sql {
   return $base_compara_fetch_sql;

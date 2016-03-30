@@ -200,6 +200,66 @@ sub _fetch_generic {
   return $mds;
 } ## end sub _fetch_generic
 
+=head2 _get_division_id
+  Arg	     : division name
+  Description: Return ID for division, storing if required
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+my $division_names = { 'Ensembl'         => 'E',
+                       'EnsemblGenomes'  => 'EG',
+                       'EnsemblBacteria' => 'EB',
+                       'EnsemblMetazoa'  => 'EM',
+                       'EnsemblPlants'   => 'EPl',
+                       'EnsemblProtists' => 'EPr',
+                       'EnsemblFungi'    => 'EF' };
+
+sub _get_division_id {
+  my ( $self, $division, $short_name ) = @_;
+
+  my $div_id = $self->_cache('division')->{$division};
+
+  if ( !defined $div_id ) {
+
+    $div_id = $self->{dbc}->sql_helper()->transaction(
+      -CALLBACK => sub {
+        my ($dbc) = @_;
+        my $id;
+        my $ids =
+          $dbc->sql_helper()->execute_simple(
+                        -SQL => 'select division_id from division where name=?',
+                        -PARAMS => [$division] );
+        if ( scalar(@$ids) == 0 ) {
+          # not found so create
+          if ( !defined $short_name ) {
+            $short_name = $division_names->{$division};
+            if ( !defined $short_name ) {
+              $short_name = $division;
+              $short_name =~ s/[a-z]+//g;
+            }
+          }
+          $dbc->sql_helper->execute_update(
+            -SQL      => 'insert into division (name,short_name) values(?,?)',
+            -CALLBACK => sub {
+              my ( $sth, $dbh, $rv ) = @_;
+              $id = $dbh->{mysql_insertid};
+            },
+            -PARAMS => [ $division, $short_name ] );
+        }
+        else {
+          $id = $ids->[0];
+        }
+        return $id;
+      } );
+    $self->_cache('division')->{$division} = $div_id;
+  } ## end if ( !defined $div_id )
+  
+  return $div_id;
+} ## end sub _get_division_id
+
 =head2 _cache
   Arg	     : type of object for cache
   Description: Return internal cache for given type

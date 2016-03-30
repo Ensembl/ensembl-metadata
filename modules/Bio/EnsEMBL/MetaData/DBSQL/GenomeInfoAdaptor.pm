@@ -277,11 +277,11 @@ sub store {
   }
   $self->db()->get_GenomeAssemblyInfoAdaptor()->store( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/insert into genome(division,
+    -SQL => q/insert into genome(division_id,
 genebuild,has_pan_compara,has_variations,has_peptide_compara,
 has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
 		values(?,?,?,?,?,?,?,?,?,?,?)/,
-    -PARAMS => [ $genome->division(),
+    -PARAMS => [ $self->_get_division_id($genome->division()),
                  $genome->genebuild(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
@@ -323,11 +323,11 @@ sub update {
   }
   $self->db()->get_GenomeAssemblyInfoAdaptor()->update( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/update genome set division=?,
+    -SQL => q/update genome set division_id=?,
 genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
 has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
     ,
-    -PARAMS => [ $genome->division(),
+    -PARAMS => [ $self->_get_division_id($genome->division()),
                  $genome->genebuild(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
@@ -569,7 +569,7 @@ sub list_divisions {
   my ($self) = @_;
   return $self->dbc()->sql_helper()
     ->execute_simple(
-    -SQL => q/select distinct division from genome where division<>'Ensembl'/ );
+    -SQL => q/select distinct name from genome join division using (division_id) where name<>'Ensembl'/ );
 }
 
 =head2 fetch_by_organism 
@@ -1169,11 +1169,11 @@ sub _fetch_children {
 }
 
 my $base_genome_fetch_sql =
-  q/select genome_id as dbID, division, genebuild, 
+  q/select genome_id as dbID, division.name as division, genebuild, 
 has_pan_compara, has_variations, has_peptide_compara, 
 has_genome_alignments, has_synteny, has_other_alignments, 
 assembly_id, data_release_id
-from genome/;
+from genome join division using (division_id)/;
 
 sub _get_base_sql {
   return $base_genome_fetch_sql;
