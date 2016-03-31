@@ -95,7 +95,6 @@ use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::MetaData::DataReleaseInfo;
-use List::MoreUtils qw(natatime);
 
 =head1 METHODS
 =cut
@@ -258,7 +257,7 @@ sub _fetch_databases {
 "Cannot fetch databases for a DataReleaseInfo object that has not been stored"
     if !defined $release->dbID();
   my $databases =
-    $self->db()->get_DataReleaseDatabaseInfoAdaptor()
+    $self->db()->get_DatabaseInfoAdaptor()
     ->fetch_databases($release);
   $release->databases($databases);
   return;
@@ -280,7 +279,7 @@ sub _store_databases {
            -PARAMS => [ $release->dbID() ] );
 
   for my $database ( @{ $release->databases() } ) {
-    $self->db()->get_DataReleaseDatabaseInfoAdaptor()->store($database);
+    $self->db()->get_DatabaseInfoAdaptor()->store($database);
   }
   return;
 }

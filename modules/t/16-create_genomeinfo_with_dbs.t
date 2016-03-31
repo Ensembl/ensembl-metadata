@@ -43,6 +43,13 @@ my %rargs = ( -ENSEMBL_VERSION         => 99,
               -RELEASE_DATE            => '2015-09-29' );
 my $release = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(%rargs);
 
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+eval {
+     $multi->load_database('empty_metadata');
+};
+my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
+$gdba->data_release($release);
+
 my %args = ( '-DBNAME'       => "test_species_core_27_80_1",
              '-SPECIES_ID'   => 1,
              '-GENEBUILD'    => 'awesomeBuild1',
@@ -50,6 +57,7 @@ my %args = ( '-DBNAME'       => "test_species_core_27_80_1",
              '-IS_REFERENCE' => 1,
              '-ASSEMBLY'     => $assembly,
              '-DATA_RELEASE' => $release );
+             
 my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 ok( defined $genome, "Genome object exists" );
 
@@ -57,22 +65,14 @@ $genome->add_database("test_species_variation_27_80_1");
 $genome->add_database("test_species_otherfeatures_27_80_1");
 $genome->add_database("test_species_funcgen_27_80_1");
 
-is ($genome->databases()->{core}->{dbname}, 'test_species_core_27_80_1', "Has core");
-is ($genome->databases()->{core}->{species_id}, 1, "Has core species_id");
-is ($genome->databases()->{variation}->{dbname}, 'test_species_variation_27_80_1', "Has variation");
-is ($genome->databases()->{variation}->{species_id}, 1, "Has variation species_id");
-is ($genome->databases()->{otherfeatures}->{dbname}, 'test_species_otherfeatures_27_80_1', "Has otherfeatures");
-is ($genome->databases()->{otherfeatures}->{species_id}, 1, "Has otherfeatures species_id");
-is ($genome->databases()->{funcgen}->{dbname}, 'test_species_funcgen_27_80_1', "Has funcgen");
-is ($genome->databases()->{funcgen}->{species_id}, 1, "Has funcgen species_id");
-
-my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval {
-     $multi->load_database('empty_metadata');
-};
-
-my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
-$gdba->data_release($release);
+is (scalar(grep {$_->dbname() eq 'test_species_core_27_80_1'} grep {$_->type() eq 'core'} @{$genome->databases()}), 1, "Has core");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'core'} @{$genome->databases()}), 1, "Has core species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_variation_27_80_1'} grep {$_->type() eq 'variation'} @{$genome->databases()}), 1, "Has variation");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'variation'} @{$genome->databases()}), 1, "Has variation species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_otherfeatures_27_80_1'} grep {$_->type() eq 'otherfeatures'} @{$genome->databases()}), 1, "Has otherfeatures");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'otherfeatures'} @{$genome->databases()}), 1, "Has otherfeatures species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_funcgen_27_80_1'} grep {$_->type() eq 'funcgen'} @{$genome->databases()}), 1, "Has funcgen");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'funcgen'} @{$genome->databases()}), 1, "Has funcgen species_id");
 
 $gdba->store($genome);
 ok( defined $genome->dbID(), "DBID" );
@@ -86,27 +86,29 @@ ok( $gdba->db()->dbc()->sql_helper()
 my $genome2 = $gdba->fetch_by_dbID( $genome->dbID() );
 ok( defined $genome2, "Genome object exists" );
 
-is ($genome2->databases()->{core}->{dbname}, 'test_species_core_27_80_1', "Has core");
-is ($genome2->databases()->{core}->{species_id}, 1, "Has core species_id");
-is ($genome2->databases()->{variation}->{dbname}, 'test_species_variation_27_80_1', "Has variation");
-is ($genome2->databases()->{variation}->{species_id}, 1, "Has variation species_id");
-is ($genome2->databases()->{otherfeatures}->{dbname}, 'test_species_otherfeatures_27_80_1', "Has otherfeatures");
-is ($genome2->databases()->{otherfeatures}->{species_id}, 1, "Has otherfeatures species_id");
-is ($genome2->databases()->{funcgen}->{dbname}, 'test_species_funcgen_27_80_1', "Has funcgen");
-is ($genome2->databases()->{funcgen}->{species_id}, 1, "Has funcgen species_id");
+my $genome2_dbs = $genome2->databases();
+is (scalar(grep {$_->dbname() eq 'test_species_core_27_80_1'} grep {$_->type() eq 'core'} @{$genome2_dbs}), 1, "Has core");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'core'} @{$genome2_dbs}), 1, "Has core species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_variation_27_80_1'} grep {$_->type() eq 'variation'} @{$genome2_dbs}), 1, "Has variation");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'variation'} @{$genome2_dbs}), 1, "Has variation species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_otherfeatures_27_80_1'} grep {$_->type() eq 'otherfeatures'} @{$genome2_dbs}), 1, "Has otherfeatures");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'otherfeatures'} @{$genome2_dbs}), 1, "Has otherfeatures species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_funcgen_27_80_1'} grep {$_->type() eq 'funcgen'} @{$genome2_dbs}), 1, "Has funcgen");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'funcgen'} @{$genome2_dbs}), 1, "Has funcgen species_id");
 
 $gdba->_clear_cache();
 my $genome3 = $gdba->fetch_by_dbID( $genome->dbID() );
+my $genome3_dbs = $genome3->databases();
 ok( defined $genome3, "Genome object exists" );
 
-is ($genome3->databases()->{core}->{dbname}, 'test_species_core_27_80_1', "Has core");
-is ($genome3->databases()->{core}->{species_id}, 1, "Has core species_id");
-is ($genome3->databases()->{variation}->{dbname}, 'test_species_variation_27_80_1', "Has variation");
-is ($genome3->databases()->{variation}->{species_id}, 1, "Has variation species_id");
-is ($genome3->databases()->{otherfeatures}->{dbname}, 'test_species_otherfeatures_27_80_1', "Has otherfeatures");
-is ($genome3->databases()->{otherfeatures}->{species_id}, 1, "Has otherfeatures species_id");
-is ($genome3->databases()->{funcgen}->{dbname}, 'test_species_funcgen_27_80_1', "Has funcgen");
-is ($genome3->databases()->{funcgen}->{species_id}, 1, "Has funcgen species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_core_27_80_1'} grep {$_->type() eq 'core'} @{$genome3_dbs}), 1, "Has core");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'core'} @{$genome3_dbs}), 1, "Has core species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_variation_27_80_1'} grep {$_->type() eq 'variation'} @{$genome3_dbs}), 1, "Has variation");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'variation'} @{$genome3_dbs}), 1, "Has variation species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_otherfeatures_27_80_1'} grep {$_->type() eq 'otherfeatures'} @{$genome3_dbs}), 1, "Has otherfeatures");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'otherfeatures'} @{$genome3_dbs}), 1, "Has otherfeatures species_id");
+is (scalar(grep {$_->dbname() eq 'test_species_funcgen_27_80_1'} grep {$_->type() eq 'funcgen'} @{$genome3_dbs}), 1, "Has funcgen");
+is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'funcgen'} @{$genome3_dbs}), 1, "Has funcgen species_id");
 
 {
   my $dbs = $gdba->fetch_databases();

@@ -14,56 +14,76 @@
 # limitations under the License.
 
 use Test::More;
-use Bio::EnsEMBL::MetaData::GenomeInfo;
+use Bio::EnsEMBL::MetaData::DatabaseInfo;
 {
   my $type =
-    Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type("homo_sapiens_core_84_38");
+    Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type("homo_sapiens_core_84_38");
   is( 'core', $type, "Parsing current core" );
 }
 {
   my $type =
-    Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type("homo_sapiens_core_84_38a");
+    Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type("homo_sapiens_core_84_38a");
   is( 'core', $type, "Parsing old core" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                              "anopheles_gambiae_core_31_84_10");
   is( 'core', $type, "Parsing EG core" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                           "bacteria_1_collection_core_31_84_1");
   is( 'core', $type, "Parsing EG collection" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                        "fungi_mouldy1_collection_core_31_84_1");
   is( 'core', $type, "Parsing EG collection 2" );
 }
 {
-   my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+   my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                        "gorilla_gorilla_gorilla_core_84_1");
   is( 'core', $type, "Parsing trinomial" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                                 "homo_sapiens_variation_84_38");
   is( 'variation', $type, "Parsing variation" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                         "anopheles_gambiae_variation_31_84_10");
   is( 'variation', $type, "Parsing EG variation" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                         "homo_sapiens_funcgen_84_38");
   is( 'funcgen', $type, "Parsing funcgen" );
 }
 {
-  my $type = Bio::EnsEMBL::MetaData::GenomeInfo::_parse_type(
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                         "homo_sapiens_otherfeatures_84_38");
   is( 'otherfeatures', $type, "Parsing otherfeatures" );
+}
+{
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
+                                        "fungi_mart_27");
+  is( 'mart', $type, "Parsing mart" );
+}
+{
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
+                                        "fungi_snp_mart_27");
+  is( 'mart', $type, "Parsing mart" );
+}
+{
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
+                                        "ncbi_taxonomy");
+  is( 'other', $type, "Parsing ncbi_taxonomy" );
+}
+{
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
+                                        "ensembl_website_84");
+  is( 'other', $type, "Parsing ensembl_website_84" );
 }
 
 done_testing;

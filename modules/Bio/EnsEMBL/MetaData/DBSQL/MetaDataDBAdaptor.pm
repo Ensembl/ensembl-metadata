@@ -84,8 +84,8 @@ sub get_available_adaptors {
       'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor',
     GenomeAssemblyInfo =>
       'Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor',
-    DataReleaseDatabaseInfo =>
-      'Bio::EnsEMBL::MetaData::DBSQL::DataReleaseDatabaseInfoAdaptor',
+    DatabaseInfo =>
+      'Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor',
     EventInfo => 'Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor' };
 }
 

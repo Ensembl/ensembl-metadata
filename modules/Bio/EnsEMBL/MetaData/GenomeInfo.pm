@@ -194,22 +194,8 @@ sub species_id {
 
 sub add_database {
   my ( $self, $dbname, $species_id ) = @_;
-  # default to 1
-  $species_id ||= 1;
-  my $type = _parse_type($dbname);
-  $self->{databases}->{$type} = { dbname => $dbname, species_id => $species_id };
+  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DatabaseInfo->new(-SUBJECT=>$self, -DBNAME=>$dbname, -SPECIES_ID=>$species_id);
   return;
-}
-
-sub _parse_type {
-  my ( $dbname ) = @_;
-  $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
-  if ( defined $1 ) {
-    return $1;
-  }
-  else {
-    throw "Could not parse database name $dbname";
-  }
 }
 
 sub databases {

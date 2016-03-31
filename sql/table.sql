@@ -133,6 +133,7 @@ CREATE TABLE `data_release_database` (
   CONSTRAINT `data_release_database_ibfk_1` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
   CONSTRAINT `data_release_database_ibfk_2` FOREIGN KEY (`division_id`) REFERENCES `division` (`division_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

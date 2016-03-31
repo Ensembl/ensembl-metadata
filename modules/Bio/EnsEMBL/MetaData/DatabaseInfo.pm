@@ -21,13 +21,13 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::MetaData::DataReleaseDatabaseInfo
+Bio::EnsEMBL::MetaData::DatabaseInfo
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-Object encapsulating information about a non-genome specific database in a release
+Object encapsulating information about a database
 
 =head1 Author
 
@@ -35,7 +35,7 @@ Dan Staines
 
 =cut
 
-package Bio::EnsEMBL::MetaData::DataReleaseDatabaseInfo;
+package Bio::EnsEMBL::MetaData::DatabaseInfo;
 use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
 use strict;
 use warnings;
@@ -51,7 +51,7 @@ use Bio::EnsEMBL::Utils::Argument qw(rearrange);
   Arg [-DBNAME] : 
        string - database name
 
-  Example    : $info = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(...);
+  Example    : $info = Bio::EnsEMBL::MetaData::DatabaseInfo->new(...);
   Description: Creates a new release info object
   Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
   Exceptions : none
@@ -59,26 +59,35 @@ use Bio::EnsEMBL::Utils::Argument qw(rearrange);
   Status     : Stable
 
 =cut
+
 sub new {
-	my ( $class, @args ) = @_;
-	my $self = $class->SUPER::new(@args);
-	( $self->{type}, $self->{division}, $self->{dbname}, $self->{release}) =
-	  rearrange( [ 'TYPE', 'DIVISION', 'DBNAME', 'RELEASE' ], @args );
-	 if(!defined $self->{type}) {	   
-    $self->{type} = _parse_type($self->dbname());
-	 } 
-	return $self;
+  my ( $class, @args ) = @_;
+  my $self = $class->SUPER::new(@args);
+  ( $self->{type}, $self->{division}, $self->{dbname}, $self->{subject}, $self->{species_id} ) =
+    rearrange( [ 'TYPE', 'DIVISION', 'DBNAME', 'SUBJECT', 'SPECIES_ID' ], @args );
+  if ( !defined $self->{type} ) {
+    $self->{type} = _parse_type( $self->dbname() );
+  }
+  $self->{species_id} ||= 1;
+  return $self;
 }
 
 sub _parse_type {
-  my ( $dbname ) = @_;
-  if($dbname =~ m/mart/) {
+  my ($dbname) = @_;
+  if ( $dbname =~ m/mart/ ) {
     return 'mart';
-  } else {
-    return 'other';
+  }
+  else {
+    $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
+
+    if ( defined $1 ) {
+      return $1;
+    }
+    else {
+      return 'other';
+    }
   }
 }
-	 
 
 =head1 ATTRIBUTE METHODS
 =head2 division
@@ -96,6 +105,21 @@ sub division {
   return $self->{division};
 }
 
+=head2 species_id
+  Arg        : (optional) species_id to set
+  Description: Gets/sets species_id
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub species_id {
+  my ( $self, $species_id ) = @_;
+  $self->{species_id} = $species_id if ( defined $species_id );
+  return $self->{species_id};
+}
+
 =head2 dbname
   Arg        : (optional) dbname to set
   Description: Gets/sets dbname
@@ -104,6 +128,7 @@ sub division {
   Caller     : general
   Status     : Stable
 =cut
+
 sub dbname {
   my ( $self, $dbname ) = @_;
   $self->{dbname} = $dbname if ( defined $dbname );
@@ -118,17 +143,18 @@ sub dbname {
   Caller     : general
   Status     : Stable
 =cut
+
 sub type {
   my ( $self, $type ) = @_;
   $self->{type} = $type if ( defined $type );
   return $self->{type};
 }
-sub release {
-  my ( $self, $release ) = @_;
-  $self->{release} = $release if ( defined $release );
-  return $self->{release};
-}
 
+sub subject {
+  my ( $self, $subject ) = @_;
+  $self->{subject} = $subject if ( defined $subject );
+  return $self->{subject};
+}
 
 =head2 to_hash
   Description: Render as plain hash suitable for export as JSON/XML
@@ -139,17 +165,15 @@ sub release {
 =cut
 
 sub to_hash {
-	my ($in) = @_;
-	return { division => $in->division(),
-			 type      => $in->type(),
-			 dbname            => $in->dbname(), };
+  my ($in) = @_;
+  return { division => $in->division(),
+           type     => $in->type(),
+           dbname   => $in->dbname(), };
 }
 
 sub to_string {
-	my ($self) = @_;
-	return
-	  join( '/',
-			$self->division(), $self->type(), $self->dbname());
+  my ($self) = @_;
+  return join( '/', $self->division(), $self->type(), $self->dbname() );
 }
 
 1;

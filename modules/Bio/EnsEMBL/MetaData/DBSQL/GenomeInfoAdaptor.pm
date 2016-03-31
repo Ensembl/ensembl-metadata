@@ -452,17 +452,8 @@ sub _store_features {
 
 sub _store_databases {
   my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-                       -SQL => q/delete from genome_database where genome_id=?/,
-                       -PARAMS => [ $genome->dbID() ] );
-  while ( my ( $type, $details ) = each %{ $genome->databases() } ) {
-    $self->dbc()->sql_helper()->execute_update(
-      -SQL => q/insert into genome_database(genome_id,type,dbname,species_id)
-		values(?,?,?,?)/,
-      -PARAMS =>
-        [ $genome->dbID(), $type, $details->{dbname}, $details->{species_id} ]
-    );
+  for my $database ( @{ $genome->databases() } ) {
+    $self->db()->get_DatabaseInfoAdaptor()->store($database);
   }
   return;
 }
@@ -1060,18 +1051,7 @@ sub _fetch_databases {
   croak
     "Cannot fetch databases for a GenomeInfo object that has not been stored"
     if !defined $genome->dbID();
-
-  my $databases = {};
-  $self->dbc()->sql_helper()->execute_no_return(
-    -SQL =>
-      'select dbname,species_id,type from genome_database where genome_id=?',
-    -CALLBACK => sub {
-      my @row = @{ shift @_ };
-      $databases->{ $row[2] } = { dbname => $row[0], species_id => $row[1] };
-      return;
-    },
-    -PARAMS => [ $genome->dbID() ] );
-  $genome->databases($databases);
+  $genome->{databases} = $self->db()->get_DatabaseInfoAdaptor()->fetch_databases($genome);
   return;
 }
 
