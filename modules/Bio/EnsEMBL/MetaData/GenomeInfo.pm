@@ -780,6 +780,19 @@ sub get_uniprot_coverage {
     $self->annotations()->{nProteinCoding};
 }
 
+=head2 to_string
+  Description: Render genome as string for display
+  Returntype : String
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub to_string {
+   my ($self) = @_;
+   return join(':',($self->dbID()||'-'),$self->name(),$self->dbname(),$self->species_id());
+}
+
 =head2 to_hash
   Description: Render genome as plain hash suitable for export as JSON/XML
   Argument   : (optional) if set to 1, force expansion of children
