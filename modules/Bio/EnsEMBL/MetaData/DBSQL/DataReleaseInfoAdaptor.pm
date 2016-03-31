@@ -279,7 +279,8 @@ sub _store_databases {
            -PARAMS => [ $release->dbID() ] );
 
   for my $database ( @{ $release->databases() } ) {
-    $self->db()->get_DatabaseInfoAdaptor()->store($database);
+    print "Storing database ".$database->dbname()."\n";
+        $self->db()->get_DatabaseInfoAdaptor()->store($database);
   }
   return;
 }

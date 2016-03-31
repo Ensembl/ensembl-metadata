@@ -159,8 +159,7 @@ sub new {
 =head1 ATTRIBUTE METHODS
 
 =head2 dbname
-  Arg        : (optional) dbname to set
-  Description: Gets/sets name of core database from which genome comes
+  Description: Gets name of core database from which genome comes
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -168,16 +167,12 @@ sub new {
 =cut
 
 sub dbname {
-  my ( $self, $dbname ) = @_;
-  if ( defined $dbname ) {
-    $self->{databases}{core}{dbname} = $dbname;
-  }
-  return $self->databases()->{core}{dbname};
+  my ( $self ) = @_;
+  return $self->_get_core()->dbname();
 }
 
 =head2 species_id
-  Arg        : (optional) species_id to set
-  Description: Gets/sets species_id of genome within core database
+  Description: Gets species_id of genome within core database
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -185,11 +180,8 @@ sub dbname {
 =cut
 
 sub species_id {
-  my ( $self, $species_id ) = @_;
-  if ( defined $species_id ) {
-    $self->{databases}{core}{species_id} = $species_id;
-  }
-  return $self->databases()->{core}{species_id};
+  my ( $self ) = @_;
+  return $self->_get_core()->species_id();
 }
 
 sub add_database {
@@ -843,6 +835,22 @@ sub to_hash {
 } ## end sub to_hash
 
 =head1 INTERNAL METHODS
+=head2 _get_core
+  Description: Convenience method to find core database
+  Returntype : DatabaseInfo
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _get_core {
+  my ($self) = @_;
+  if(!defined $self->{core}) {
+    ($self->{core}) = grep {$_->type() eq 'core'}  @{$self->databases()}; 
+  }
+  return $self->{core};
+}
+
+
 =head2 count_hash_values
   Description: Sums values found in hash
   Arg		 : hashref
@@ -851,7 +859,6 @@ sub to_hash {
   Caller     : internal
   Status     : Stable
 =cut
-
 sub count_hash_values {
   my ( $self, $hash ) = @_;
   my $tot = 0;

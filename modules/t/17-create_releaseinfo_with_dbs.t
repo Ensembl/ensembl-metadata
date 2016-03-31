@@ -19,6 +19,8 @@ use Test::More;
 use Bio::EnsEMBL::Test::MultiTestDB;
 use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 use Data::Dumper;
+my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
+eval { $multi->load_database('empty_metadata'); };
 
 my $release =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION         => 99,
@@ -27,8 +29,7 @@ my $release =
 
 ok( defined $release, "Release object exists" );
 
-my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval { $multi->load_database('empty_metadata'); };
+
 my $gdba =
   $multi->get_DBAdaptor('empty_metadata')->get_DataReleaseInfoAdaptor();
 $release->add_database( "smelly_mart_27",     "EnsemblNanas" );
@@ -63,9 +64,10 @@ is( $eg->ensembl_genomes_version(),
     "EG version" );
 
 {
-  my @marts = grep {$_->type() eq 'mart'} @{$eg->databases()};
+  my $eg_databases = $eg->databases();
+  my @marts = grep {$_->type() eq 'mart'} @{$eg_databases};
   is( scalar @marts, 2, "2 marts" );
-  my @others = grep {$_->type() eq 'other'} @{$eg->databases()};
+  my @others = grep {$_->type() eq 'other'} @{$eg_databases};
   is( scalar @others, 1, "1 other" );
 }
 

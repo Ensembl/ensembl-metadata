@@ -67,19 +67,19 @@ sub update {
 sub store_DataReleaseInfo {
   my ( $self, $data_release_database ) = @_;
   if ( !defined $data_release_database->dbID() ) {
-    my $dbID = @{
+    my ($dbID) = @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL => q/select data_release_database_id from data_release_database 
 where dbname=? and data_release_id=?/,
         -PARAMS =>
-          [ $data_release_database->dbname(), $data_release_database->dbID() ] )
+          [ $data_release_database->dbname(), $data_release_database->subject()->dbID() ] )
     };
 
     if ( defined $dbID ) {
       $data_release_database->dbID($dbID);
       $data_release_database->adaptor($self);
     }
-    if ( !defined $data_release_database->dbID() ) {
+    if ( defined $data_release_database->dbID() ) {
       $self->update($data_release_database);
     }
     else {
@@ -111,7 +111,7 @@ sub update_DataReleaseInfo {
 
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update data_release_database set data_release_id=?, type=?, division=?, dbname=? 
+q/update data_release_database set data_release_id=?, type=?, division_id=?, dbname=? 
 where data_release_database_id=?/,
     -PARAMS => [ $database->subject()->dbID(),
                  $database->type(),
@@ -123,17 +123,17 @@ where data_release_database_id=?/,
 sub store_GenomeInfo {
   my ( $self, $genome_database ) = @_;
   if ( !defined $genome_database->dbID() ) {
-    my $dbID = @{
+    my ($dbID) = @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL => q/select genome_database_id from genome_database 
 where dbname=? and genome_id=?/,
-        -PARAMS => [ $genome_database->dbname(), $genome_database->dbID() ] ) };
+        -PARAMS => [ $genome_database->dbname(), $genome_database->subject()->dbID() ] ) };
 
     if ( defined $dbID ) {
       $genome_database->dbID($dbID);
       $genome_database->adaptor($self);
     }
-    if ( !defined $genome_database->dbID() ) {
+    if ( defined $genome_database->dbID() ) {
       $self->update($genome_database);
     }
     else {
