@@ -43,6 +43,7 @@ Dan Staines
 
 package Bio::EnsEMBL::MetaData::DataReleaseInfo;
 use base qw/Bio::EnsEMBL::MetaData::BaseInfo/;
+use Bio::EnsEMBL::MetaData::DataReleaseDatabaseInfo;
 use strict;
 use warnings;
 
@@ -116,18 +117,8 @@ sub is_current {
 
 sub add_database {
   my ( $self, $dbname, $division ) = @_;
-  my $type = _parse_type($dbname);
-  push @{$self->{databases}{$division}{$type}}, $dbname;
+  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DataReleaseDatabaseInfo->new(-DBNAME=>$dbname, -DIVISION=>$division, -RELEASE => $self);
   return;
-}
-
-sub _parse_type {
-  my ( $dbname ) = @_;
-  if($dbname =~ m/mart/) {
-    return 'mart';
-  } else {
-    return 'other';
-  }
 }
 
 sub databases {

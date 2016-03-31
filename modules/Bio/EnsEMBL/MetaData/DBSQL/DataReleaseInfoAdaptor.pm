@@ -207,13 +207,9 @@ sub fetch_current_ensembl_genomes_release {
 
 sub fetch_databases {
   my ( $self, $release, $division ) = @_;
-  my $databases = [];
-  for my $db_div ( keys %{ $release->databases() } ) {
-    if ( !defined $division || $db_div eq $division ) {
-      for my $dbs ( values %{ $release->databases()->{$db_div} } ) {
-        $databases = [ @$databases, @{$dbs} ];
-      }
-    }
+  my $databases = $release->databases();
+  if(defined $division) {
+    $databases = [grep {$division eq $_->division()} @{$release->databases()}];
   }
   if ( defined $division ) {
     $databases = [ @$databases,
@@ -261,17 +257,9 @@ sub _fetch_databases {
   croak
 "Cannot fetch databases for a DataReleaseInfo object that has not been stored"
     if !defined $release->dbID();
-
-  my $databases = {};
-  $self->dbc()->sql_helper()->execute_no_return(
-    -SQL =>
-'select dbname,type,division.name from data_release_database join division using (division_id) where data_release_id=?',
-    -CALLBACK => sub {
-      my @row = @{ shift @_ };
-      push @{ $databases->{ $row[2] }{ $row[1] } }, $row[0];
-      return;
-    },
-    -PARAMS => [ $release->dbID() ] );
+  my $databases =
+    $self->db()->get_DataReleaseDatabaseInfoAdaptor()
+    ->fetch_databases($release);
   $release->databases($databases);
   return;
 }
@@ -290,18 +278,11 @@ sub _store_databases {
   $self->dbc()->sql_helper()->execute_update(
            -SQL => q/delete from data_release_database where data_release_id=?/,
            -PARAMS => [ $release->dbID() ] );
-  while ( my ( $division, $div_details ) = each %{ $release->databases() } ) {
-    while ( my ( $type, $dbnames ) = each %{$div_details} ) {
-      for my $dbname ( @{$dbnames} ) {
-        $self->dbc()->sql_helper()->execute_update(
-          -SQL =>
-q/insert into data_release_database(data_release_id,type,dbname,division_id)
-		values(?,?,?,?)/,
-          -PARAMS => [ $release->dbID(), $type,
-                       $dbname,          $self->_get_division_id($division) ] );
-      }
-    }
+
+  for my $database ( @{ $release->databases() } ) {
+    $self->db()->get_DataReleaseDatabaseInfoAdaptor()->store($database);
   }
+  return;
 }
 
 my $base_data_release_fetch_sql =

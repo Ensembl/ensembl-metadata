@@ -35,11 +35,17 @@ $release->add_database( "smelly_mart_27",     "EnsemblNanas" );
 $release->add_database( "smelly_snp_mart_27", "EnsemblNanas" );
 $release->add_database( "weird_db_27",        "EnsemblNanas" );
 
-my $marts = $release->databases()->{EnsemblNanas}{mart};
-is( scalar @$marts, 2, "2 marts" );
-my $others = $release->databases()->{EnsemblNanas}{other};
-print Dumper( $release->databases() );
-is( scalar @$others, 1, "1 other" );
+{
+  my @marts = grep {$_->type() eq 'mart'} @{$release->databases()};
+  is( scalar @marts, 2, "2 marts" );
+  my @others = grep {$_->type() eq 'other'} @{$release->databases()};
+  is( scalar @others, 1, "1 other" );
+}
+
+{
+  my $dbs = $gdba->fetch_databases($release);
+  is( scalar @$dbs, 3, "3 dbs found" );
+}
 
 $gdba->store($release);
 ok( defined( $release->dbID() ),    "dbID" );
@@ -57,10 +63,10 @@ is( $eg->ensembl_genomes_version(),
     "EG version" );
 
 {
-  my $marts = $eg->databases()->{EnsemblNanas}{mart};
-  is( scalar @$marts, 2, "2 marts" );
-  my $others = $eg->databases()->{EnsemblNanas}{other};
-  is( scalar @$others, 1, "1 other" );
+  my @marts = grep {$_->type() eq 'mart'} @{$eg->databases()};
+  is( scalar @marts, 2, "2 marts" );
+  my @others = grep {$_->type() eq 'other'} @{$eg->databases()};
+  is( scalar @others, 1, "1 other" );
 }
 
 {

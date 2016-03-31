@@ -75,15 +75,18 @@ use Bio::EnsEMBL::Utils::Exception qw(throw);
 =cut
 
 sub get_available_adaptors {
-	return {
-		GenomeInfo => 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor',
-		DataReleaseInfo => 'Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor',
-		GenomeComparaInfo =>
-		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor',
-		GenomeOrganismInfo =>
-		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor',
-		GenomeAssemblyInfo =>
-		  'Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor' };
+  return {
+    GenomeInfo      => 'Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor',
+    DataReleaseInfo => 'Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor',
+    GenomeComparaInfo =>
+      'Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor',
+    GenomeOrganismInfo =>
+      'Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor',
+    GenomeAssemblyInfo =>
+      'Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor',
+    DataReleaseDatabaseInfo =>
+      'Bio::EnsEMBL::MetaData::DBSQL::DataReleaseDatabaseInfoAdaptor',
+    EventInfo => 'Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor' };
 }
 
 1;

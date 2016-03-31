@@ -77,6 +77,26 @@ CREATE TABLE `compara_analysis` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `compara_analysis_event`
+--
+
+DROP TABLE IF EXISTS `compara_analysis_event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `compara_analysis_event` (
+  `compara_analysis_event_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `compara_analysis_id` int(10) unsigned NOT NULL,
+  `type` varchar(32) NOT NULL,
+  `source` varchar(128) DEFAULT NULL,
+  `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `details` text,
+  PRIMARY KEY (`compara_analysis_event_id`),
+  KEY `compara_analysis_event_ibfk_1` (`compara_analysis_id`),
+  CONSTRAINT `compara_analysis_event_ibfk_1` FOREIGN KEY (`compara_analysis_id`) REFERENCES `compara_analysis` (`compara_analysis_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `data_release`
 --
 
@@ -112,6 +132,26 @@ CREATE TABLE `data_release_database` (
   KEY `data_release_database_ibfk_2` (`division_id`),
   CONSTRAINT `data_release_database_ibfk_1` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
   CONSTRAINT `data_release_database_ibfk_2` FOREIGN KEY (`division_id`) REFERENCES `division` (`division_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `data_release_database_event`
+--
+
+DROP TABLE IF EXISTS `data_release_database_event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `data_release_database_event` (
+  `data_release_database_event_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `data_release_database_id` int(10) unsigned NOT NULL,
+  `type` varchar(32) NOT NULL,
+  `source` varchar(128) DEFAULT NULL,
+  `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `details` text,
+  PRIMARY KEY (`data_release_database_event_id`),
+  KEY `data_release_database_event_ibfk_1` (`data_release_database_id`),
+  CONSTRAINT `data_release_database_event_ibfk_1` FOREIGN KEY (`data_release_database_id`) REFERENCES `data_release_database` (`data_release_database_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -241,6 +281,26 @@ CREATE TABLE `genome_database` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `genome_event`
+--
+
+DROP TABLE IF EXISTS `genome_event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genome_event` (
+  `genome_event_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `genome_id` int(10) unsigned NOT NULL,
+  `type` varchar(32) NOT NULL,
+  `source` varchar(128) DEFAULT NULL,
+  `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `details` text,
+  PRIMARY KEY (`genome_event_id`),
+  KEY `genome_event_ibfk_1` (`genome_id`),
+  CONSTRAINT `genome_event_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `genome_feature`
 --
 
@@ -344,4 +404,4 @@ CREATE TABLE `organism_publication` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-03-30 15:38:19
+-- Dump completed on 2016-03-31  9:34:52
