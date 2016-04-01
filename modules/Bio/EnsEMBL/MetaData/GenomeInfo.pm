@@ -184,11 +184,14 @@ sub species_id {
   return $self->_get_core()->species_id();
 }
 
-sub add_database {
-  my ( $self, $dbname, $species_id ) = @_;
-  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DatabaseInfo->new(-SUBJECT=>$self, -DBNAME=>$dbname, -SPECIES_ID=>$species_id);
-  return;
-}
+=head2 data_release
+  Arg        : (optional) Arrayref of DatabaseInfo objects to set
+  Description: Gets/sets databases associated with the genome
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::DatabaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub databases {
   my ($self, $databases) = @_;
@@ -202,7 +205,7 @@ sub databases {
 =head2 data_release
   Arg        : (optional) data_release object to set
   Description: Gets/sets data_release to which genome belongs
-  Returntype : Bio::EnsEMBL::MetaData::Data_ReleaseInfo
+  Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -226,12 +229,11 @@ sub data_release {
 
 sub organism {
   my ( $self, $organism ) = @_;
-  return $self->assembly()->organism();
+  return $self->assembly()->organism($organism);
 }
 
-=head2 species
-  Arg        : (optional) species to set
-  Description: Gets/sets readable name
+=head2 display_name
+  Description: Gets readable name
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -244,7 +246,6 @@ sub display_name {
 }
 
 =head2 strain
-  Arg        : (optional) strain to set
   Description: Gets/sets strain of genome
   Returntype : string
   Exceptions : none
@@ -253,13 +254,12 @@ sub display_name {
 =cut
 
 sub strain {
-  my ( $self, $arg ) = @_;
-  return $self->organism()->strain($arg);
+  my ( $self ) = @_;
+  return $self->organism()->strain();
 }
 
 =head2 serotype
-  Arg        : (optional) serotype to set
-  Description: Gets/sets serotype
+  Description: Gets serotype
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -267,13 +267,12 @@ sub strain {
 =cut
 
 sub serotype {
-  my ( $self, $arg ) = @_;
-  return $self->organism()->serotype($arg);
+  my ( $self ) = @_;
+  return $self->organism()->serotype();
 }
 
 =head2 name
-  Arg        : (optional) name to set
-  Description: Gets/sets name for genome
+  Description: Gets unique, compute-safe name for genome
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -281,13 +280,12 @@ sub serotype {
 =cut
 
 sub name {
-  my ( $self, $arg ) = @_;
-  return $self->organism()->name($arg);
+  my ( $self ) = @_;
+  return $self->organism()->name();
 }
 
 =head2 taxonomy_id
-  Arg        : (optional) taxonomy_id to set
-  Description: Gets/sets NCBI taxonomy ID
+  Description: Gets NCBI taxonomy ID
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -295,13 +293,12 @@ sub name {
 =cut
 
 sub taxonomy_id {
-  my ( $self, $taxonomy_id ) = @_;
-  return $self->organism()->taxonomy_id($taxonomy_id);
+  my ( $self ) = @_;
+  return $self->organism()->taxonomy_id();
 }
 
 =head2 species_taxonomy_id
-  Arg        : (optional) taxonomy_id to set
-  Description: Gets/sets NCBI taxonomy ID of species to which this belongs
+  Description: Gets NCBI taxonomy ID of species to which this belongs
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -309,8 +306,8 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-  my ( $self, $taxonomy_id ) = @_;
-  return $self->organism()->species_taxonomy_id($taxonomy_id);
+  my ( $self ) = @_;
+  return $self->organism()->species_taxonomy_id();
 }
 
 =head2 assembly
@@ -330,8 +327,7 @@ sub assembly {
 }
 
 =head2 assembly_name
-  Arg        : (optional) assembly_name to set
-  Description: Gets/sets name of assembly
+  Description: Gets name of assembly
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -339,13 +335,12 @@ sub assembly {
 =cut
 
 sub assembly_name {
-  my ( $self, $assembly_name ) = @_;
-  return $self->assembly()->assembly_name($assembly_name);
+  my ( $self ) = @_;
+  return $self->assembly()->assembly_name();
 }
 
 =head2 assembly_accession
-  Arg        : (optional) assembly_id to set
-  Description: Gets/sets INSDC accession for assembly
+  Description: Gets INSDC accession for assembly
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -353,13 +348,12 @@ sub assembly_name {
 =cut
 
 sub assembly_accession {
-  my ( $self, $assembly_id ) = @_;
-  return $self->assembly()->assembly_accession($assembly_id);
+  my ( $self ) = @_;
+  return $self->assembly()->assembly_accession();
 }
 
 =head2 assembly_level
-  Arg        : (optional) assembly_level to set
-  Description: Gets/sets highest level of assembly (chromosome, supercontig etc.)
+  Description: Gets highest level of assembly (chromosome, supercontig etc.)
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -367,8 +361,8 @@ sub assembly_accession {
 =cut
 
 sub assembly_level {
-  my ( $self, $assembly_level ) = @_;
-  return $self->assembly()->assembly_level($assembly_level);
+  my ( $self ) = @_;
+  return $self->assembly()->assembly_level();
 }
 
 =head2 genebuild
@@ -445,7 +439,6 @@ sub base_count {
 }
 
 =head2 aliases
-  Arg        : (optional) arrayref of aliases to set
   Description: Gets/sets aliases by which the genome is also known 
   Returntype : Arrayref of aliases
   Exceptions : none
@@ -454,8 +447,8 @@ sub base_count {
 =cut
 
 sub aliases {
-  my ( $self, $aliases ) = @_;
-  return $self->organism()->aliases($aliases);
+  my ( $self ) = @_;
+  return $self->organism()->aliases();
 }
 
 =head2 compara
@@ -481,8 +474,7 @@ sub compara {
 }
 
 =head2 sequences
-  Arg        : (optional) arrayref of sequences to set
-  Description: Gets/sets array of hashrefs describing sequences from the assembly. Elements are hashrefs with name and acc as keys
+  Description: Gets array of hashrefs describing sequences from the assembly. Elements are hashrefs with name and acc as keys
   Returntype : Arrayref
   Exceptions : none
   Caller     : general
@@ -490,13 +482,12 @@ sub compara {
 =cut
 
 sub sequences {
-  my ( $self, $sequences ) = @_;
-  return $self->assembly()->sequences($sequences);
+  my ( $self ) = @_;
+  return $self->assembly()->sequences();
 }
 
 =head2 publications
-  Arg        : (optional) arrayref of pubmed IDs to set
-  Description: Gets/sets PubMed IDs for publications associated with the genome
+  Description: Gets PubMed IDs for publications associated with the genome
   Returntype : Arrayref of PubMed IDs
   Exceptions : none
   Caller     : general
@@ -504,8 +495,8 @@ sub sequences {
 =cut
 
 sub publications {
-  my ( $self, $publications ) = @_;
-  return $self->organism()->publications($publications);
+  my ( $self ) = @_;
+  return $self->organism()->publications();
 }
 
 =head2 variations
@@ -779,6 +770,24 @@ sub get_uniprot_coverage {
     ( $self->annotations()->{nProteinCodingUniProtKB} )/
     $self->annotations()->{nProteinCoding};
 }
+
+=head2 add_database
+  Arg        : Name of database
+  Arg        : (Optional) species_id (defaults to 1)
+  Description: Add a database associated with this genome
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub add_database {
+  my ( $self, $dbname, $species_id ) = @_;
+  $self->{species_id}||=1;
+  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DatabaseInfo->new(-SUBJECT=>$self, -DBNAME=>$dbname, -SPECIES_ID=>$species_id);
+  return;
+}
+
 
 =head2 to_string
   Description: Render genome as string for display
