@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,59 +25,16 @@ Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 
 =head1 SYNOPSIS
 
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
-my $md = $gdba->fetch_by_name("arabidopsis_thaliana");
+# metadata_db is an instance of MetaDataDBAdaptor
+my $adaptor = $metadata_db->get_DataReleaseInfoAdaptor();
+# find the latest e! release
+my $release = $adaptor->fetch_current_ensembl_release();
+# find associated databases
+$adaptor->fetch_databases($release);
 
 =head1 DESCRIPTION
 
-Adaptor for storing and retrieving GenomeInfo objects from MySQL genome_info database
-
-To start working with an adaptor:
-
-# getting an adaptor
-## adaptor for latest public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor();
-## adaptor for specified public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor(21);
-## manually specify a given database
-my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
--USER=>'anonymous',
--PORT=>4157,
--HOST=>'mysql-eg-publicsql.ebi.ac.uk',
--DBNAME=>'genome_info_21');
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
-
-To find genomes, use the fetch methods e.g.
-
-# find a genome by name
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
-
-# find and iterate over all genomes
-for my $genome (@{$gdba->fetch_all()}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes from plants
-for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes with variation
-for my $genome (@{$gdba->fetch_all_with_variation()}) {
-	print $genome->name()."\n";
-}
-
-# find all comparas for the division of interest
-my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');
-
-# find the peptide compara
-my ($compara) = grep {$_->is_peptide_compara()} @$comparas;
-print $compara->division()." ".$compara->method()."(".$compara->dbname().")\n";
-
-# print out all the genomes in this compara
-for my $genome (@{$compara->genomes()}) {
-	print $genome->name()."\n";
-}
+Adaptor for storing and retrieving DataRelease objects from MySQL genome_info database
 
 =head1 Author
 
@@ -97,6 +54,13 @@ use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 
 =head1 METHODS
+=head2 store
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Store the supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
 =cut
 
 sub store {
@@ -147,7 +111,14 @@ q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,
   }
   return;
 } ## end sub store
-
+=head2 update
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Update the supplied object (must be previously stored)
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub update {
   my ( $self, $data_release ) = @_;
   if ( !defined $data_release->dbID() ) {
@@ -166,6 +137,14 @@ q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_
   return;
 }
 
+=head2 fetch_by_ensembl_release
+  Arg        : String - Ensembl Release
+  Description: Retrieve details for the specified Ensembl release
+  Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub fetch_by_ensembl_release {
   my ( $self, $release ) = @_;
   return
@@ -175,7 +154,14 @@ sub fetch_by_ensembl_release {
                  ' where ensembl_version=? and ensembl_genomes_version is null',
                [$release] ) );
 }
-
+=head2 fetch_by_ensembl_genomes_release
+  Arg        : String - Ensembl Genomes Release
+  Description: Retrieve details for the specified Ensembl Genomes release
+  Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub fetch_by_ensembl_genomes_release {
   my ( $self, $release ) = @_;
   return
@@ -184,7 +170,13 @@ sub fetch_by_ensembl_genomes_release {
                            _get_base_sql() . ' where ensembl_genomes_version=?',
                            [$release] ) );
 }
-
+=head2 fetch_current_ensembl_release
+  Description: Retrieve details for the current Ensembl release
+  Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub fetch_current_ensembl_release {
   my ($self) = @_;
   return
@@ -193,7 +185,13 @@ sub fetch_current_ensembl_release {
       _get_base_sql() .
 ' where ensembl_genomes_version is null order by release_date desc limit 1' ) );
 }
-
+=head2 fetch_current_ensembl_genomes_release
+  Description: Retrieve details for the current Ensembl Genomes release
+  Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub fetch_current_ensembl_genomes_release {
   my ($self) = @_;
   return
@@ -203,7 +201,15 @@ sub fetch_current_ensembl_genomes_release {
 ' where ensembl_genomes_version is not null order by release_date desc limit 1'
     ) );
 }
-
+=head2 
+  Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Arg        : String - (optional) division
+  Description: Retrieve databases associated with the specified release
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::DatabaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub fetch_databases {
   my ( $self, $release, $division ) = @_;
   my $databases = $release->databases();
@@ -227,6 +233,7 @@ sub fetch_databases {
   return $databases;
 } ## end sub fetch_databases
 
+=head1 INTERNAL METHODS
 =head2 _fetch_children
   Arg	     : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Fetch all children of specified genome info object
@@ -284,7 +291,7 @@ sub _store_databases {
   }
   return;
 }
-
+# internal implementation
 my $base_data_release_fetch_sql =
 q/select data_release_id as dbID, ensembl_version, ensembl_genomes_version, release_date from data_release/;
 

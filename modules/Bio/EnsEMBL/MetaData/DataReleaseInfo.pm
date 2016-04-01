@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
+=head1 CONTACT
 
-=pod
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
+
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
 
 =head1 NAME
 
@@ -108,19 +112,28 @@ sub ensembl_genomes_version {
 	$self->{ensembl_genomes_version} = $arg if ( defined $arg );
 	return $self->{ensembl_genomes_version};
 }
-
+=head2 is_current
+  Arg        : (optional) Integer to set if current
+  Description: Gets/sets if release is current
+  Returntype : Integer (1 if current)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub is_current {
 	my ( $self, $arg ) = @_;
 	$self->{is_current} = $arg if ( defined $arg );
 	return $self->{is_current};
 }
 
-sub add_database {
-  my ( $self, $dbname, $division ) = @_;
-  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DatabaseInfo->new(-DBNAME=>$dbname, -DIVISION=>$division, -SUBJECT => $self);
-  return;
-}
-
+=head2 databases
+  Arg        : (optional) Arrayref of DatabaseInfo objects
+  Description: Databases associated with this release
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub databases {
   my ($self, $databases) = @_;
   if(defined $databases) {
@@ -145,6 +158,23 @@ sub release_date {
 	return $self->{release_date};
 }
 
+=head1 UTILITY METHODS
+=head2 add_database
+  Arg        : String - Name of database
+  Arg        : String - Name of Ensembl division
+  Description: Associate a database with this release
+  Returntype : None
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub add_database {
+  my ( $self, $dbname, $division ) = @_;
+  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DatabaseInfo->new(-DBNAME=>$dbname, -DIVISION=>$division, -SUBJECT => $self);
+  return;
+}
+
 =head2 to_hash
   Description: Render as plain hash suitable for export as JSON/XML
   Returntype : Hashref
@@ -160,46 +190,19 @@ sub to_hash {
 			 release_date            => $in->release_date(), };
 }
 
+=head2 to_hash
+  Description: Render as string for display
+  Returntype : String
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub to_string {
 	my ($self) = @_;
 	return
 	  join( '/',
 			$self->ensembl_version(), ($self->ensembl_genomes_version()||'-'), ( $self->release_date() ) );
-}
-
-=head1 INTERNAL METHODS
-=head2 dbID
-  Arg        : (optional) dbID to set set
-  Description: Gets/sets internal data_release_id used as database primary key
-  Returntype : dbID string
-  Exceptions : none
-  Caller     : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
-  Status     : Stable
-=cut
-
-sub dbID {
-	my ( $self, $arg ) = @_;
-	if ( defined $arg ) {
-		$self->{dbID} = $arg;
-	}
-	return $self->{dbID};
-}
-
-=head2 adaptor
-  Arg        : (optional) adaptor to set set
-  Description: Gets/sets GenomeInfoAdaptor
-  Returntype : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
-  Exceptions : none
-  Caller     : Internal
-  Status     : Stable
-=cut
-
-sub adaptor {
-	my ( $self, $arg ) = @_;
-	if ( defined $arg ) {
-		$self->{adaptor} = $arg;
-	}
-	return $self->{adaptor};
 }
 
 1;

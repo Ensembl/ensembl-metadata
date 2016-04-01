@@ -15,10 +15,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
+=head1 CONTACT
 
-=pod
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
 
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
+  
 =head1 NAME
 
 Bio::EnsEMBL::MetaData::GenomeOrganismInfo
@@ -49,19 +53,19 @@ use warnings;
 =head1 CONSTRUCTOR
 =head2 new
   Arg [-NAME]  : 
-       string - human readable version of the name of the genome
+       string - human readable version of the name of the organism
   Arg [-SPECIES]    : 
-       string - computable version of the name of the genome (lower case, no spaces)
+       string - computable version of the name of the organism (lower case, no spaces)
    Arg [-TAXONOMY_ID] :
         string - NCBI taxonomy identifier
   Arg [-SPECIES_TAXONOMY_ID] :
-        string - NCBI taxonomy identifier of species to which this genome belongs
+        string - NCBI taxonomy identifier of species to which this organism belongs
   Arg [-STRAIN]:
-        string - name of strain to which genome belongs
+        string - name of strain to which organism belongs
   Arg [-SEROTYPE]:
-        string - name of serotype to which genome belongs
+        string - name of serotype to which organism belongs
   Arg [-IS_REFERENCE]:
-        bool - 1 if this genome is the reference for its species
+        bool - 1 if this organism is the reference for its species
 
   Example    : $info = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(...);
   Description: Creates a new info object

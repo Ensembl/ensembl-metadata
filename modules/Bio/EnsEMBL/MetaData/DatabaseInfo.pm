@@ -15,9 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
+=head1 CONTACT
 
-=pod
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
+
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
 
 =head1 NAME
 
@@ -25,9 +29,12 @@ Bio::EnsEMBL::MetaData::DatabaseInfo
 
 =head1 SYNOPSIS
 
+my $info = Bio::EnsEMBL::MetaData::DatabaseInfo->new(-DBNAME=>"homo_sapiens_core_84_38", -SUBJECT=>$human_genome);
+print $info->dbname();
+
 =head1 DESCRIPTION
 
-Object encapsulating information about a database
+Object encapsulating information about a database that can be associated with genomes or releases.
 
 =head1 Author
 
@@ -41,19 +48,22 @@ use strict;
 use warnings;
 
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Bio::EnsEMBL::Utils::Exception qw(throw);
 
 =head1 CONSTRUCTOR
 =head2 new
+  Arg [-SUBJECT] : Bio::EnsEMBL::MetaData::GenomeInfo or Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Arg [-DBNAME] : string - database name
   Arg [-TYPE]  : 
-       string - database type
+       string - database type (optional - if absent derived from dbname)
   Arg [-DIVISION]    : 
-       string : Ensembl division
-  Arg [-DBNAME] : 
-       string - database name
+       string : optional Ensembl division (for use when subject is DataRelease)
+  Arg [-SPECIES_ID] : 
+       Integer - optional species_id (for use when subject is GenomeInfo)
 
   Example    : $info = Bio::EnsEMBL::MetaData::DatabaseInfo->new(...);
-  Description: Creates a new release info object
-  Returntype : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Description: Creates a new database info object
+  Returntype : Bio::EnsEMBL::MetaData::DatabaseInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
@@ -63,30 +73,17 @@ use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  ( $self->{type}, $self->{division}, $self->{dbname}, $self->{subject}, $self->{species_id} ) =
-    rearrange( [ 'TYPE', 'DIVISION', 'DBNAME', 'SUBJECT', 'SPECIES_ID' ], @args );
+  my $subject;
+  ( $self->{type}, $self->{division}, $self->{dbname}, $subject,
+    $self->{species_id} )
+    = rearrange( [ 'TYPE', 'DIVISION', 'DBNAME', 'SUBJECT', 'SPECIES_ID' ],
+                 @args );
   if ( !defined $self->{type} ) {
     $self->{type} = _parse_type( $self->dbname() );
   }
   $self->{species_id} ||= 1;
+  $self->{subject} = $subject;
   return $self;
-}
-
-sub _parse_type {
-  my ($dbname) = @_;
-  if ( $dbname =~ m/mart/ ) {
-    return 'mart';
-  }
-  else {
-    $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
-
-    if ( defined $1 ) {
-      return $1;
-    }
-    else {
-      return 'other';
-    }
-  }
 }
 
 =head1 ATTRIBUTE METHODS
@@ -131,7 +128,12 @@ sub species_id {
 
 sub dbname {
   my ( $self, $dbname ) = @_;
-  $self->{dbname} = $dbname if ( defined $dbname );
+  if ( defined $dbname ) {
+    $self->{dbname} = $dbname;
+    if ( !defined $self->{type} ) {
+      $self->{type} = _parse_type( $self->dbname() );
+    }
+  }
   return $self->{dbname};
 }
 
@@ -150,9 +152,26 @@ sub type {
   return $self->{type};
 }
 
+=head2 subject
+  Arg        : (optional) subject
+  Description: Gets/sets subject that database is associated with
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo or Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub subject {
   my ( $self, $subject ) = @_;
-  $self->{subject} = $subject if ( defined $subject );
+  if ( defined $subject ) {
+    if ( !$subject->isa("Bio::EnsEMBL::MetaData::GenomeInfo") &&
+         !$subject->isa("Bio::EnsEMBL::MetaData::DataReleaseInfo") )
+    {
+      throw
+"The subject of a DatabaseInfo object must be GenomeInfo or DataReleaseInfo";
+    }
+    $self->{subject} = $subject;
+  }
   return $self->{subject};
 }
 
@@ -171,9 +190,42 @@ sub to_hash {
            dbname   => $in->dbname(), };
 }
 
+=head2 to_hash
+  Description: Render as string for display
+  Returntype : String
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub to_string {
   my ($self) = @_;
   return join( '/', $self->division(), $self->type(), $self->dbname() );
+}
+
+=head2 _parse_type
+  Description: Derive type from database name
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _parse_type {
+  my ($dbname) = @_;
+  if ( $dbname =~ m/mart/ ) {
+    return 'mart';
+  }
+  else {
+    $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
+
+    if ( defined $1 ) {
+      return $1;
+    }
+    else {
+      return 'other';
+    }
+  }
 }
 
 1;

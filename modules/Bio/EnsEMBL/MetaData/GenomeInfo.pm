@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
+=head1 CONTACT
 
-=pod
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
+
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
 
 =head1 NAME
 
@@ -425,8 +429,7 @@ sub db_size {
 }
 
 =head2 base_count
-  Arg        : (optional) base_count to set
-  Description: Gets/sets total number of bases in assembled genome
+  Description: Gets total number of bases in assembled genome
   Returntype : integer
   Exceptions : none
   Caller     : general
@@ -434,12 +437,12 @@ sub db_size {
 =cut
 
 sub base_count {
-  my ( $self, $base_count ) = @_;
-  return $self->assembly()->base_count($base_count);
+  my ( $self ) = @_;
+  return $self->assembly()->base_count();
 }
 
 =head2 aliases
-  Description: Gets/sets aliases by which the genome is also known 
+  Description: Gets aliases by which the genome is also known 
   Returntype : Arrayref of aliases
   Exceptions : none
   Caller     : general

@@ -1,6 +1,6 @@
 =head1 LICENSE
 
-Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
-
-=pod
-
 =head1 CONTACT
 
   Please email comments or questions to the public Ensembl
@@ -25,33 +21,7 @@ limitations under the License.
 
   Questions may also be sent to the Ensembl help desk at
   <helpdesk@ensembl.org>.
- 
-=cut
-
-package Bio::EnsEMBL::MetaData::DBAFinder;
-use Bio::EnsEMBL::Utils::Exception qw/throw/;
-use strict;
-use warnings;
-
-sub new {
-  my $caller = shift;
-  my $class  = ref($caller) || $caller;
-  my $self   = bless({}, $class);
-  return $self;
-}
-
-sub get_dbas {
-  my ($self) = @_;
-  throw "Unimplemented subroutine get_dbas() in " .
-	ref($self) . ". Please implement";
-}
-
-1;
-
-__END__
-
-=pod
-
+  
 =head1 NAME
 
 Bio::EnsEMBL::MetaData::DBAFinder
@@ -62,23 +32,42 @@ Bio::EnsEMBL::MetaData::DBAFinder
 
 Base class for retrieving lists of DBAs to retrieve metadata from
 
-=head1 SUBROUTINES/METHODS
-
-=head2 new
-
-=head2 get_dbas
-Description : Return list of DBAs to work on
-
 =head1 AUTHOR
 
-dstaines
-
-=head1 MAINTAINER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
+Dan Staines
 
 =cut
+
+
+package Bio::EnsEMBL::MetaData::DBAFinder;
+use Bio::EnsEMBL::Utils::Exception qw/throw/;
+use strict;
+use warnings;
+
+=head1 SUBROUTINES/METHODS
+=head2 new
+Description : Create a new object
+Returntype  : Bio::EnsEMBL::MetaData::DBAFinder
+=cut
+
+sub new {
+  my $caller = shift;
+  my $class  = ref($caller) || $caller;
+  my $self   = bless({}, $class);
+  return $self;
+}
+
+=head2 get_dbas
+  Description: Find DBAs to work on (stub method)
+  Returntype : Arrayref of Bio::EnsEMBL::DBSQL::DBAdaptor
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub get_dbas {
+  my ($self) = @_;
+  throw "Unimplemented subroutine get_dbas() in " .
+	ref($self) . ". Please implement";
+}
+
+1;

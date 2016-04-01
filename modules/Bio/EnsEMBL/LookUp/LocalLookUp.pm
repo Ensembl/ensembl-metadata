@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-=cut
-
-=pod
 
 =head1 CONTACT
 
@@ -61,7 +57,7 @@ Finally, a Registry already loaded with core databases can be supplied:
 
 	my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new(-REGISTRY=>'Bio::EnsEMBL::Registry');
 
-If the standard Registry is used, the argument can be omitted completely:
+If the standard Registry is used, the Arg can be omitted completely:
 
 	my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new();
 
@@ -208,7 +204,7 @@ sub cache_file {
 
 =head2  update_from_registry
 	Description : Update internal hashes of database adaptors by name/taxids from the registry. Invoke when registry has been updated independently.
-	Argument 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing LookUp instance)
+	Arg 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing LookUp instance)
 	Exceptions  : None
 =cut
 
@@ -224,6 +220,13 @@ sub update_from_registry {
   return;
 }
 
+=head2 taxonomy_adaptor
+	Description	: Get/set the taxonomy adaptor
+	Arg	: (optional) Bio::EnsEMBL::Taxonomy::DBSQL::DBAdaptor
+	Caller    : Internal
+	Status    : Stable
+	Return		: Bio::EnsEMBL::Taxonomy::DBSQL::DBAdaptor
+=cut
 sub taxonomy_adaptor {
   my ( $self, $adaptor ) = @_;
   if ( defined $adaptor ) {
@@ -238,7 +241,7 @@ sub taxonomy_adaptor {
 
 =head2 _register_dba
 	Description	: Add a single DBAdaptor to the registry and the internal hashes of details
-	Argument	: Bio::EnsEMBL::DBAdaptor
+	Arg	: Bio::EnsEMBL::DBSQL::DBAdaptor
 	Return		: None
 =cut
 
@@ -314,8 +317,8 @@ q/select species_id,meta_value from meta where meta_key='species.taxonomy_id'/,
 
 =head2 _hash_dba
 	Description : Add details from a DBAdaptor to the internal hashes of details
-	Argument	: Bio::EnsEMBL::DBAdaptor
-	Argument 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing LookUp instance)
+	Arg	: Bio::EnsEMBL::DBAdaptor
+	Arg 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing LookUp instance)
 =cut
 
 sub _hash_dba {
@@ -335,10 +338,10 @@ sub _hash_dba {
 
 =head2 _hash_dba_from_values
 	Description : Add supplied details to the internal hashes of details
-	Argument	: Bio::EnsEMBL::DBAdaptor to hash
-	Argument	: Arrayref of taxonomy IDs to use as keys
-	Argument	: Arrayref of aliases to use as keys
-	Argument	: Arrayref of ENA accessions to use as keys
+	Arg	: Bio::EnsEMBL::DBAdaptor to hash
+	Arg	: Arrayref of taxonomy IDs to use as keys
+	Arg	: Arrayref of aliases to use as keys
+	Arg	: Arrayref of ENA accessions to use as keys
 =cut
 
 sub _hash_dba_from_values {
@@ -451,7 +454,7 @@ sub _registry_to_json {
 
 =head2 write_registry_to_file
 	Description	: Write the contents of the registry and species lists to a JSON file
-	Argument	: File name
+	Arg	: File name
 	Return		: None
 =cut
 
@@ -477,7 +480,7 @@ sub clear_cache {
 
 =head2 _load_registry_from_json
 	Description	: load the registry from the supplied JSON string
-	Argument	: JSON string
+	Arg	: JSON string
 =cut
 
 sub _load_registry_from_json {
@@ -535,8 +538,8 @@ sub load_registry_from_url {
 }
 
 =head2 dba_to_args
-	Description	: Dump the arguments needed for contructing a DBA
-	Argument	: Bio::EnsEMBL::DBAdaptor
+	Description	: Dump the Args needed for contructing a DBA
+	Arg	: Bio::EnsEMBL::DBAdaptor
 	Return		: Arrayref of args
 =cut
 
@@ -558,13 +561,13 @@ sub dba_to_args {
 
 =head2 _dba_to_locator
 	Description : return a hash key for a DBAdaptor
-	Argument	: Bio::EnsEMBL::DBAdaptor
+	Arg	: Bio::EnsEMBL::DBAdaptor
 =cut
 
 sub _dba_to_locator {
   my ($dba) = @_;
   confess(
-	"Argument must be Bio::EnsEMBL::DBSQL::DBAdaptor not " . ref($dba) )
+	"Arg must be Bio::EnsEMBL::DBSQL::DBAdaptor not " . ref($dba) )
 	unless ref($dba) eq "Bio::EnsEMBL::DBSQL::DBAdaptor";
   my $locator =
 	join( q{!-!}, $dba->species_id(), _dbc_to_locator( $dba->dbc() ) );
@@ -573,7 +576,7 @@ sub _dba_to_locator {
 
 =head2 _dbc_to_locator
 	Description : return a hash key for a DBConnection
-	Argument	: Bio::EnsEMBL::DBConnection
+	Arg	: Bio::EnsEMBL::DBConnection
 =cut
 
 sub _dbc_to_locator {
@@ -611,7 +614,7 @@ sub _intern_db_connections {
 
 =head2 get_all_DBConnections
 	Description : Return all database connections used by the DBAs retrieved from the registry
-	Argument    : None
+	Arg    : None
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DBConnection
 =cut
@@ -629,7 +632,7 @@ sub get_all_DBConnections {
 
 =head2 get_all_dbnames
 	Description : Return all database names used by the DBAs retrieved from the registry
-	Argument    : None
+	Arg    : None
 	Exceptions  : None
 	Return type : Arrayref of strings
 =cut
@@ -646,7 +649,7 @@ sub get_all_dbnames {
 
 =head2 get_all
 	Description : Return all database adaptors that have been retrieved from registry
-	Argument    : None
+	Arg    : None
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut
@@ -680,7 +683,7 @@ sub get_all_by_taxon_branch {
 
 =head2 get_all_by_taxon_id
 	Description : Returns all database adaptors that have the supplied taxonomy ID
-	Argument    : Int
+	Arg    : Int
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut
@@ -692,7 +695,7 @@ sub get_all_by_taxon_id {
 
 =head2 get_by_name_exact
 	Description : Return all database adaptors that have the supplied string as an alias/name
-	Argument    : String
+	Arg    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut
@@ -704,7 +707,7 @@ sub get_by_name_exact {
 
 =head2 get_all_by_accession
 	Description : Returns the database adaptor(s) that contains a seq_region with the supplied INSDC accession (or other seq_region name)
-	Argument    : Int
+	Arg    : Int
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut	
@@ -721,7 +724,7 @@ sub get_all_by_accession {
 
 =head2 get_by_assembly_accession
 	Description : Returns the database adaptor that contains the assembly with the supplied INSDC assembly accession
-	Argument    : Int
+	Arg    : Int
 	Exceptions  : None
 	Return type : Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut
@@ -738,7 +741,7 @@ sub get_by_assembly_accession {
 
 =head2 get_all_by_name_pattern
 	Description : Return all database adaptors that have an alias/name that match the supplied regexp
-	Argument    : String
+	Arg    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut	
@@ -759,7 +762,7 @@ sub get_all_by_name_pattern {
 
 =head2 get_all_by_dbname
 	Description : Returns all database adaptors that have the supplied dbname
-	Argument    : String
+	Arg    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut
@@ -847,11 +850,11 @@ sub get_all_versioned_assemblies {
 
 =head2 register_all_dbs
 	Description : Helper method to load the registry with all multispecies core databases on the supplied server
-	Argument    : Host
-	Argument    : Port
-	Argument    : User
-	Argument    : Password
-	Argument    : (optional) String with database regexp (default is _collection_core_[0-9]_eVersion_[0-9]+)
+	Arg    : Host
+	Arg    : Port
+	Arg    : User
+	Arg    : Password
+	Arg    : (optional) String with database regexp (default is _collection_core_[0-9]_eVersion_[0-9]+)
 	Exceptions  : None
 	Return type : None
 =cut
@@ -993,8 +996,8 @@ sub _query_multispecies_db {
 
 =head2 _add_aliases
 	Description : Registry all aliases
-	Argument	: Species name
-	Argument	: Arrayref of alias strings
+	Arg	: Species name
+	Arg	: Arrayref of alias strings
 =cut
 
 sub _add_aliases {
@@ -1015,7 +1018,7 @@ sub _add_aliases {
 
 =head2 _runtime_include
 	Description : Load the specified module (usually a DatabaseAdaptor)
-	Argument 	: Module name
+	Arg 	: Module name
 =cut
 
 sub _runtime_include {
@@ -1030,7 +1033,7 @@ sub _runtime_include {
 
 =head2 _check_name
 	Description : Check that the name is not longer than 64 characters
-	Argument	: Name to check
+	Arg	: Name to check
 =cut
 
 sub _check_name {
@@ -1044,11 +1047,11 @@ sub _check_name {
 }
 
 =head2 _login_hash
-	Description : Generate dbadaptor login hash from supplied arguments
-	Argument	: Host
-	Argument	: Port
-	Argument	: User
-	Argument	: Password
+	Description : Generate dbadaptor login hash from supplied Args
+	Arg	: Host
+	Arg	: Port
+	Arg	: User
+	Arg	: Password
 =cut
 
 sub _login_hash {

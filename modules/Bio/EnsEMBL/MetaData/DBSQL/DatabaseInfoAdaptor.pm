@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,11 +21,19 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::MetaData::DBSQL::DataReleaseDatabaseInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor
 
 =head1 SYNOPSIS
 
+# metadata_db is an instance of MetaDataDBAdaptor
+my $adaptor = $metadata_db->get_DatabaseInfoAdaptor();
+$adaptor->fetch_databases($info);
+
 =head1 DESCRIPTION
+
+Adaptor to handle DatabaseInfo objects associated with GenomeInfo or DataReleaseInfo objects.
+
+Uses delegate pattern to handle objects differently according to their subject objects.
 
 =head1 Author
 
@@ -46,23 +54,69 @@ use Bio::EnsEMBL::MetaData::DatabaseInfo;
 use List::MoreUtils qw(natatime);
 
 =head1 METHODS
+=head2 store
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Store the supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
 =cut
 
 sub store {
   my ( $self, $database ) = @_;
+  # delegate to appropriate method for the subject
   my $ref = ref( $database->subject() );
   $ref =~ s/.*:([^:]+)$/store_$1/;
   $self->$ref($database);
   return;
 }
 
+=head2 update
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Update the supplied object (must be previously stored)
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub update {
   my ( $self, $database ) = @_;
+  # delegate to appropriate method for the subject
   my $ref = ref( $database->subject() );
   $ref =~ s/.*:([^:]+)$/update_$1/;
   $self->$ref($database);
   return;
 }
+
+=head2 fetch_databases
+  Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo 
+               or Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg        : String - Optional division
+  Description: Find the databases associated with the supplied object
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::DatabaseInfo 
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+sub fetch_databases {
+  my ( $self, $subject, $division ) = @_;
+  # delegate to appropriate method for the subject
+  my $ref = ref($subject);
+  $ref =~ s/.*:([^:]+)$/fetch_databases_$1/;
+  return $self->$ref($subject);
+}
+
+=head1 INTERNAL METHODS
+=head2 store_DataReleaseInfo
+  Description: Implementation of store for Bio::EnsEMBL::MetaData::DataReleaseInfo 
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub store_DataReleaseInfo {
   my ( $self, $data_release_database ) = @_;
@@ -71,9 +125,8 @@ sub store_DataReleaseInfo {
       $self->dbc()->sql_helper()->execute_simple(
         -SQL => q/select data_release_database_id from data_release_database 
 where dbname=? and data_release_id=?/,
-        -PARAMS =>
-          [ $data_release_database->dbname(), $data_release_database->subject()->dbID() ] )
-    };
+        -PARAMS => [ $data_release_database->dbname(),
+                     $data_release_database->subject()->dbID() ] ) };
 
     if ( defined $dbID ) {
       $data_release_database->dbID($dbID);
@@ -103,6 +156,15 @@ values (?,?,?,?)/,
   return;
 } ## end sub store_DataReleaseInfo
 
+=head2 update_DataReleaseInfo
+  Description: Implementation of update for Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stabl
+=cut
+
 sub update_DataReleaseInfo {
   my ( $self, $database ) = @_;
   if ( !defined $database->dbID() ) {
@@ -120,6 +182,15 @@ where data_release_database_id=?/,
   return;
 }
 
+=head2 store_GenomeInfo
+  Description: Implementation of store for Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub store_GenomeInfo {
   my ( $self, $genome_database ) = @_;
   if ( !defined $genome_database->dbID() ) {
@@ -127,7 +198,9 @@ sub store_GenomeInfo {
       $self->dbc()->sql_helper()->execute_simple(
         -SQL => q/select genome_database_id from genome_database 
 where dbname=? and genome_id=?/,
-        -PARAMS => [ $genome_database->dbname(), $genome_database->subject()->dbID() ] ) };
+        -PARAMS =>
+          [ $genome_database->dbname(), $genome_database->subject()->dbID() ] )
+    };
 
     if ( defined $dbID ) {
       $genome_database->dbID($dbID);
@@ -142,7 +215,7 @@ where dbname=? and genome_id=?/,
 values (?,?,?,?)/,
         -PARAMS => [ $genome_database->subject()->dbID(),
                      $genome_database->type(),
-                     ($genome_database->species_id()||1),
+                     ( $genome_database->species_id() || 1 ),
                      $genome_database->dbname() ],
         -CALLBACK => sub {
           my ( $sth, $dbh, $rv ) = @_;
@@ -155,6 +228,15 @@ values (?,?,?,?)/,
   return;
 } ## end sub store_GenomeInfo
 
+=head2 update_GenomeInfo
+  Description: Implementation of update for Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stabl
+=cut
+
 sub update_GenomeInfo {
   my ( $self, $database ) = @_;
   if ( !defined $database->dbID() ) {
@@ -166,16 +248,19 @@ sub update_GenomeInfo {
       q/update genome_database set genome_id=?, type=?, species_id=?, dbname=? 
 where genome_database_id=?/,
     -PARAMS => [ $database->subject()->dbID(), $database->type(),
-                 ($database->species_id()||1),      $database->dbname() ] );
+                 ( $database->species_id() || 1 ), $database->dbname() ] );
   return;
 }
 
-sub fetch_databases {
-  my ( $self, $subject, $division ) = @_;
-  my $ref = ref($subject);
-  $ref =~ s/.*:([^:]+)$/fetch_databases_$1/;
-  return $self->$ref($subject);
-}
+=head2 fetch_databases_DataReleaseInfo
+  Description: Implementation of fetch_databases for Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo 
+  Description: Find the databases associated with the supplied object
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::DatabaseInfo 
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub fetch_databases_DataReleaseInfo {
   my ( $self, $release, $division ) = @_;
@@ -205,10 +290,21 @@ join division d using (division_id) where data_release_id=?/;
   return $databases;
 } ## end sub fetch_databases_DataReleaseInfo
 
+=head2 fetch_databases_GenomeInfo
+  Description: Implementation of fetch_databases for Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg        : String - Optional division
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::DatabaseInfo 
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub fetch_databases_GenomeInfo {
 
   my ( $self, $genome ) = @_;
-  my $sql = q/select genome_database_id, dbname, type, species_id from genome_database 
+  my $sql =
+    q/select genome_database_id, dbname, type, species_id from genome_database 
 where genome_id=?/;
   my $params    = [ $genome->dbID() ];
   my $databases = [];
@@ -219,15 +315,15 @@ where genome_id=?/;
       my @row = @{ shift @_ };
       push @{$databases},
         Bio::EnsEMBL::MetaData::DatabaseInfo->new( -SUBJECT    => $genome,
-                                                   -DBID     => $row[0],
-                                                   -DBNAME       => $row[1],
-                                                   -TYPE => $row[2],
+                                                   -DBID       => $row[0],
+                                                   -DBNAME     => $row[1],
+                                                   -TYPE       => $row[2],
                                                    -SPECIES_ID => $row[3] );
       return;
     },
     -PARAMS => $params );
 
   return $databases;
-}
+} ## end sub fetch_databases_GenomeInfo
 
 1;

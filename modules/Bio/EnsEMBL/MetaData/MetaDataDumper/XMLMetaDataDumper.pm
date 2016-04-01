@@ -1,7 +1,6 @@
-=pod
 =head1 LICENSE
 
-Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,10 +14,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
-
-=pod
-
 =head1 CONTACT
 
   Please email comments or questions to the public Ensembl
@@ -26,7 +21,22 @@ limitations under the License.
 
   Questions may also be sent to the Ensembl help desk at
   <helpdesk@ensembl.org>.
- 
+
+=head1 NAME
+
+Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+Implementation to dump metadata details to an XML file.
+See Bio::EnsEMBL::MetaData::MetaDataDumper for method details.
+
+=head1 AUTHOR
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper;
@@ -84,39 +94,3 @@ sub end {
 }
 
 1;
-
-__END__
-
-=pod
-
-=head1 NAME
-
-Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-implementation to dump metadata details to an XML file
-
-=head1 SUBROUTINES/METHODS
-
-=head2 new
-
-=head2 dump_metadata
-Description : Dump metadata to the file supplied by the constructor 
-Argument : Hash of details
-
-=head1 AUTHOR
-
-dstaines
-
-=head1 MAINTAINER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
-
-=cut

@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,13 +15,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
+=head1 CONTACT
 
-=pod
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
+
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
 
 =head1 NAME
 
 Bio::EnsEMBL::MetaData::BaseInfo
+
+=head DESCRIPTION
+
+Base class for other data objects in Bio::EnsEMBL::MetaData API.
 
 =head1 AUTHOR
 
@@ -36,16 +44,14 @@ package Bio::EnsEMBL::MetaData::BaseInfo;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 
 =head1 CONSTRUCTOR
-=head2 new
-  
-
-  Example    : $info = Bio::EnsEMBL::MetaData::GenomeInfo->new(...);
+=head2 new 
+  Arg        : -DBID - ID for Storable object
+  Arg:       : -ADAPTOR - corresponding DBAdaptor
   Description: Creates a new info object
   Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : internal
   Status     : Stable
-
 =cut
 
 sub new {
@@ -210,6 +216,15 @@ sub _unload {
   return;
 }
 
+=head2 _load_child
+  Description: Lazy load method for loading children from database if not initialised
+  Arg        : Key to find child data in object hash
+  Arg        : Method for loading child data from adaptor()
+  Returntype : none
+  Exceptions : none
+  Caller     : Internal
+  Status     : Stable
+=cut
 sub _load_child {
   my ( $self, $key, $method ) = @_;
   if ( !defined $self->{$key} &&

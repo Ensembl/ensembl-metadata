@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2014] EMBL-European Bioinformatics Institute
+Copyright [1999-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor
 =head1 DESCRIPTION
 
 Base adaptor for storing and retrieving objects from MySQL genome_metadata database
+
+Provides basic methods for store/fetch
 
 =head1 Author
 
@@ -101,14 +103,36 @@ sub fetch_by_dbIDs {
   return \@genomes;
 }
 
+=head1 INTERNAL METHODS
+=head2 _get_base_sql
+  Description: Base SQL for fetching object - must be implemented 
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _get_base_sql {
   throw("Method not implemented in base class");
 }
 
+=head2 _get_id_field
+  Description: Database column containing dbID - must be implemented 
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _get_id_field {
   throw("Method not implemented in base class");
 }
 
+=head2 _get_obj_class
+  Description: Class of object retrieved - must be implemented 
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _get_obj_class {
   throw("Method not implemented in base class");
 }
@@ -132,12 +156,29 @@ sub _fetch_generic_with_args {
   return $info;
 }
 
+=head2 _get_obj_class
+  Description: Load children of object - no-op implementation, can be overridden
+  Arg        : Object to retrieve children for
+  Returntype : non
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _fetch_children {
   my ( $self, $i ) = @_;
   # do nothing
   return;
 }
 
+=head2 _args_to_sql
+  Description: Add where clauses to SQL given arguments
+  Arg        : String - Base SQL
+  Arg        : Hashref - arguments
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 sub _args_to_sql {
   my ( $self, $sql_in, $args ) = @_;
   my $sql    = $sql_in;

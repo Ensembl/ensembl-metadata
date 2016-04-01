@@ -21,63 +21,17 @@ limitations under the License.
 
 =head1 NAME
 
-Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor
 
 =head1 SYNOPSIS
 
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_adaptor();
-my $md = $gdba->fetch_by_name("arabidopsis_thaliana");
+# metadata_db is an instance of MetaDataDBAdaptor
+my $adaptor = $metadata_db->get_EventInfoAdaptor();
+my $events = $adaptor->fetch_events($info);
 
 =head1 DESCRIPTION
 
-Adaptor for storing and retrieving GenomeInfo objects from MySQL genome_info database
-
-To start working with an adaptor:
-
-# getting an adaptor
-## adaptor for latest public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor();
-## adaptor for specified public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor(21);
-## manually specify a given database
-my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
--USER=>'anonymous',
--PORT=>4157,
--HOST=>'mysql-eg-publicsql.ebi.ac.uk',
--DBNAME=>'genome_info_21');
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
-
-To find genomes, use the fetch methods e.g.
-
-# find a genome by name
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
-
-# find and iterate over all genomes
-for my $genome (@{$gdba->fetch_all()}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes from plants
-for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes with variation
-for my $genome (@{$gdba->fetch_all_with_variation()}) {
-	print $genome->name()."\n";
-}
-
-# find all comparas for the division of interest
-my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');
-
-# find the peptide compara
-my ($compara) = grep {$_->is_peptide_compara()} @$comparas;
-print $compara->division()." ".$compara->method()."(".$compara->dbname().")\n";
-
-# print out all the genomes in this compara
-for my $genome (@{$compara->genomes()}) {
-	print $genome->name()."\n";
-}
+Adaptor for storing and retrieving EventInfo objects from MySQL ensembl_metadata database
 
 =head1 Author
 
@@ -105,6 +59,14 @@ my $tables = {"Bio::EnsEMBL::MetaData::GenomeInfo"        => "genome",
               "Bio::EnsEMBL::MetaData::GenomeComparaInfo" => "compara_analysis",
               "Bio::EnsEMBL::MetaData::DatabaseInfo" => "data_release_database"
 };
+=head2 store
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Store the supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub store {
   my ( $self, $event ) = @_;
@@ -132,12 +94,28 @@ values (?,?,?,?)/,
   }
   return;
 }
-
+=head2 update
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Update the supplied object (must be previously stored)
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub update {
   my ( $self, $event ) = @_;
   throw "Cannot update an event";
 }
-
+=head2 fetch_events
+  Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+              or Bio::EnsEMBL::MetaData::GenomeComparaInfo
+              or Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Retrieve events associated with the supplied object
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::EventInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub fetch_events {
   my ( $self, $subject ) = @_;
   my $table          = $tables->{ ref($subject) };

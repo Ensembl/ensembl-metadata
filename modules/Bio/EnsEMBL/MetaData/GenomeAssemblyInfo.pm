@@ -15,10 +15,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-=cut
+=head1 CONTACT
 
-=pod
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
 
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
+  
 =head1 NAME
 
 Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
@@ -29,12 +33,13 @@ Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
 		Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
 											  -ASSEMBLY_NAME      => $assembly_name,
 											  -ASSEMBLY_ACCESSION => $assembly_accession,
-											  -ASSEMBLY_LEVEL     => $assembly_level
+											  -ASSEMBLY_LEVEL     => $assembly_level,
+											  -ORGANISM           => $organism
 		);
 
 =head1 DESCRIPTION
 
-Object encapsulating information about a particular assembly
+Object encapsulating information about a particular assembly. Release-independent.
 
 =head1 Author
 
@@ -57,8 +62,25 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
         string - INSDC assembly accession
   Arg [-ASSEMBLY_LEVEL] :
         string - highest assembly level (chromosome, supercontig etc.)
-|
-  Example    : $info = Bio::EnsEMBL::MetaData::GenomeAssemnblyInfo->new(...);
+  Arg [-BASE_COUNT] :
+        long - total number of bases in toplevel
+  Arg [-ORGANISM] :
+        Bio::EnsEMBL::MetaData::GenomeOrganismInfo - organism to which this assembly belongs
+  Arg [-NAME]  : 
+       string - human readable version of the name of the organism
+  Arg [-SPECIES]    : 
+       string - computable version of the name of the organism (lower case, no spaces)
+   Arg [-TAXONOMY_ID] :
+        string - NCBI taxonomy identifier
+  Arg [-SPECIES_TAXONOMY_ID] :
+        string - NCBI taxonomy identifier of species to which this organism belongs
+  Arg [-STRAIN]:
+        string - name of strain to which organism belongs
+  Arg [-SEROTYPE]:
+        string - name of serotype to which organism belongs
+  Arg [-IS_REFERENCE]:
+        bool - 1 if this organism is the reference for its species
+  Example    : $info = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(...);
   Description: Creates a new info object
   Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
   Exceptions : none
@@ -206,8 +228,7 @@ sub organism {
 }
 
 =head2 display_name
-  Arg        : (optional) display_name to set
-  Description: Gets/sets display_name
+  Description: Gets display_name
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -215,13 +236,12 @@ sub organism {
 =cut
 
 sub display_name {
-  my ( $self, $display_name ) = @_;
-  return $self->organism()->display_name($display_name);
+  my ( $self) = @_;
+  return $self->organism()->display_name();
 }
 
 =head2 strain
-  Arg        : (optional) strain to set
-  Description: Gets/sets strain of genome
+  Description: Gets strain of genome
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -229,13 +249,12 @@ sub display_name {
 =cut
 
 sub strain {
-  my ( $self, $arg ) = @_;
-  return $self->organism()->strain($arg);
+  my ( $self ) = @_;
+  return $self->organism()->strain();
 }
 
 =head2 serotype
-  Arg        : (optional) serotype to set
-  Description: Gets/sets serotype
+  Description: Gets serotype
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -243,13 +262,12 @@ sub strain {
 =cut
 
 sub serotype {
-  my ( $self, $arg ) = @_;
-  return $self->organism()->serotype($arg);
+  my ( $self ) = @_;
+  return $self->organism()->serotype();
 }
 
 =head2 name
-  Arg        : (optional) name (computationally safe) for species to set
-  Description: Gets/sets name for genome
+  Description: Gets name for genome
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -257,13 +275,12 @@ sub serotype {
 =cut
 
 sub name {
-  my ( $self, $arg ) = @_;
-  return $self->organism()->name($arg);
+  my ( $self ) = @_;
+  return $self->organism()->name();
 }
 
 =head2 taxonomy_id
-  Arg        : (optional) taxonomy_id to set
-  Description: Gets/sets NCBI taxonomy ID
+  Description: Gets NCBI taxonomy ID
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -271,13 +288,12 @@ sub name {
 =cut
 
 sub taxonomy_id {
-  my ( $self, $taxonomy_id ) = @_;
-  return $self->organism()->taxonomy_id($taxonomy_id);
+  my ( $self ) = @_;
+  return $self->organism()->taxonomy_id();
 }
 
 =head2 species_taxonomy_id
-  Arg        : (optional) taxonomy_id to set
-  Description: Gets/sets NCBI taxonomy ID for species to which this organism belongs
+  Description: Gets NCBI taxonomy ID for species to which this organism belongs
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -285,13 +301,12 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-  my ( $self, $taxonomy_id ) = @_;
-  return $self->organism()->species_taxonomy_id($taxonomy_id);
+  my ( $self ) = @_;
+  return $self->organism()->species_taxonomy_id();
 }
 
 =head2 is_reference
-  Arg        : (optional) value of is_reference
-  Description: Gets/sets whether this is a reference for the species
+  Description: Gets whether this is a reference for the species
   Returntype : bool
   Exceptions : none
   Caller     : general
@@ -299,8 +314,8 @@ sub species_taxonomy_id {
 =cut
 
 sub is_reference {
-  my ( $self, $is_ref ) = @_;
-  return $self->organism()->is_reference($is_ref);
+  my ( $self ) = @_;
+  return $self->organism()->is_reference();
 }
 
 =head1 UTILITY METHODS

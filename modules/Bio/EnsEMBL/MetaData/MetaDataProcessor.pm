@@ -185,7 +185,7 @@ sub process_genome {
     }
   } ## end if ( defined $self->{contigs...})
 
-  $md->sequences($seqs_arr);
+  $md->assembly()->sequences($seqs_arr);
 
   # get toplevel base count
   my $base_counts =
@@ -204,10 +204,10 @@ where a.code='toplevel' and species_id=?/,
       -PARAMS => [ $dba->species_id() ] );
   }
 
-  $md->base_count( $base_counts->[0] );
+  $md->assembly()->base_count( $base_counts->[0] );
 
   # get associated PMIDs
-  $md->publications(
+  $md->organism()->publications(
     $dba->dbc()->sql_helper()->execute_simple(
       -SQL => q/select distinct dbprimary_acc from 
 	  xref
@@ -220,7 +220,7 @@ where a.code='toplevel' and species_id=?/,
       -PARAMS => [ $dba->species_id() ] ) );
 
   # add aliases
-  $md->aliases(
+  $md->organism()->aliases(
     $dba->dbc()->sql_helper()->execute_simple(
       -SQL => q/select distinct meta_value from meta
 	  where species_id=? and meta_key='species.alias'/,

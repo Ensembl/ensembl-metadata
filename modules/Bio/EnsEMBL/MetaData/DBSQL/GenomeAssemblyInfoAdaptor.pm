@@ -25,7 +25,9 @@ Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor
 
 =head1 SYNOPSIS
 
-TODO
+# metadata_db is an instance of MetaDataDBAdaptor
+my $adaptor = $metadata_db->get_GenomeAssemblyInfoAdaptor();
+my $assembly = $adaptor->fetch_by_assembly_accession('GCA_000001405.15');
 
 =head1 DESCRIPTION
 
@@ -54,6 +56,15 @@ use List::MoreUtils qw(natatime);
 =head1 METHODS
 =cut
 
+=head2 store
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Store the supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub store {
   my ( $self, $assembly ) = @_;
   if ( !defined $assembly->organism() ) {
@@ -70,8 +81,7 @@ sub store {
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
 "select assembly_id from assembly where organism_id=? and assembly_name=?",
-        -PARAMS =>
-          [ $assembly->organism()->dbID(), $assembly->assembly_name() ]
+        -PARAMS => [ $assembly->organism()->dbID(), $assembly->assembly_name() ]
       ) };
     if ( defined $dbID ) {
       $assembly->dbID($dbID);
@@ -102,6 +112,15 @@ q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_coun
   return;
 } ## end sub store
 
+=head2 update
+  Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
+  Description: Update the supplied object (must be previously stored)
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub update {
   my ( $self, $assembly ) = @_;
   if ( !defined $assembly->dbID() ) {
@@ -111,44 +130,10 @@ sub update {
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
 q/update assembly set assembly_accession=?,assembly_name=?,assembly_level=?,base_count=?,organism_id=? where assembly_id=?/,
-    -PARAMS => [
-            $assembly->assembly_accession(), $assembly->assembly_name(),
-            $assembly->assembly_level(),     $assembly->base_count(),
-            $assembly->organism()->dbID(),   $assembly->dbID() ] );
+    -PARAMS => [ $assembly->assembly_accession(), $assembly->assembly_name(),
+                 $assembly->assembly_level(),     $assembly->base_count(),
+                 $assembly->organism()->dbID(),   $assembly->dbID() ] );
 
-  return;
-}
-
-=head2 _store_sequences
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
-  Description: Stores the sequences for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_sequences {
-  my ( $self, $assembly ) = @_;
-
-  $self->{dbc}->sql_helper()->execute_update(
-           -SQL => q/delete from assembly_sequence where assembly_id=?/,
-           -PARAMS => [ $assembly->dbID() ] );
-
-  return if !defined $assembly->sequences();
-
-  my $it = natatime 1000, @{ $assembly->sequences() };
-  while ( my @vals = $it->() ) {
-    my $sql =
-'insert ignore into assembly_sequence(assembly_id,name,acc) values '
-      . join(
-      ',',
-      map {
-        '(' . $assembly->dbID() . ',"' . $_->{name} . '",' .
-          ( $_->{acc} ? ( '"' . $_->{acc} . '"' ) : ('NULL') ) . ')'
-        } @vals );
-    $self->dbc()->sql_helper()->execute_update( -SQL => $sql );
-  }
   return;
 }
 
@@ -165,12 +150,10 @@ sub _store_sequences {
 sub fetch_all_by_sequence_accession {
   my ( $self, $id, $keen ) = @_;
   if ( $id =~ m/\.[0-9]+$/ ) {
-    return $self->fetch_all_by_sequence_accession_versioned( $id,
-                                                             $keen );
+    return $self->fetch_all_by_sequence_accession_versioned( $id, $keen );
   }
   else {
-    return $self->fetch_all_by_sequence_accession_unversioned( $id,
-                                                               $keen );
+    return $self->fetch_all_by_sequence_accession_unversioned( $id, $keen );
   }
 }
 
@@ -228,9 +211,9 @@ sub fetch_by_assembly_accession {
   my ( $self, $id, $keen ) = @_;
   return
     $self->_first_element(
-          $self->_fetch_generic(
-            $self->_get_base_sql . ' where assembly_accession=?', [$id],
-            $keen ) );
+                         $self->_fetch_generic(
+                           $self->_get_base_sql . ' where assembly_accession=?',
+                           [$id], $keen ) );
 
 }
 
@@ -248,8 +231,8 @@ sub fetch_all_by_assembly_set_chain {
   my ( $self, $id, $keen ) = @_;
   return
     $self->_fetch_generic(
-              $self->_get_base_sql . ' where assembly_accession like ?',
-              [ $id . '.%' ], $keen );
+                      $self->_get_base_sql . ' where assembly_accession like ?',
+                      [ $id . '.%' ], $keen );
 }
 
 =head2 fetch_all_by_organism
@@ -264,15 +247,46 @@ sub fetch_all_by_assembly_set_chain {
 
 sub fetch_all_by_organism {
   my ( $self, $organism_id, $keen ) = @_;
-  if (
-     ref($organism_id) eq 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' )
-  {
+  if ( ref($organism_id) eq 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' ) {
     $organism_id = $organism_id->dbID();
   }
   return
-    $self->_fetch_generic(
-                      $self->_get_base_sql() . ' where organism_id = ?',
-                      [$organism_id], $keen );
+    $self->_fetch_generic( $self->_get_base_sql() . ' where organism_id = ?',
+                           [$organism_id], $keen );
+}
+
+=head1 INTERNAL METHODS
+=head2 _store_sequences
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+  Description: Stores the sequences for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_sequences {
+  my ( $self, $assembly ) = @_;
+
+  $self->{dbc}->sql_helper()->execute_update(
+                   -SQL => q/delete from assembly_sequence where assembly_id=?/,
+                   -PARAMS => [ $assembly->dbID() ] );
+
+  return if !defined $assembly->sequences();
+
+  my $it = natatime 1000, @{ $assembly->sequences() };
+  while ( my @vals = $it->() ) {
+    my $sql =
+      'insert ignore into assembly_sequence(assembly_id,name,acc) values ' .
+      join(
+      ',',
+      map {
+        '(' . $assembly->dbID() . ',"' . $_->{name} . '",' .
+          ( $_->{acc} ? ( '"' . $_->{acc} . '"' ) : ('NULL') ) . ')'
+      } @vals );
+    $self->dbc()->sql_helper()->execute_update( -SQL => $sql );
+  }
+  return;
 }
 
 =head2 _fetch_sequences
@@ -291,10 +305,9 @@ sub _fetch_sequences {
     if !defined $genome->dbID();
   my $sequences =
     $self->dbc()->sql_helper()->execute(
-         -USE_HASHREFS => 1,
-         -SQL =>
-           'select name,acc from assembly_sequence where assembly_id=?',
-         -PARAMS => [ $genome->dbID() ] );
+           -USE_HASHREFS => 1,
+           -SQL => 'select name,acc from assembly_sequence where assembly_id=?',
+           -PARAMS => [ $genome->dbID() ] );
   $genome->sequences($sequences);
   return;
 }

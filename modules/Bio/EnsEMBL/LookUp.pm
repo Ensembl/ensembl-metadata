@@ -38,7 +38,7 @@ my $lookup = Bio::EnsEMBL::LookUp->new();
 
 =head1 DESCRIPTION
 
-This module is a helper that provides additional methods to aid navigating a registry of >6000 species across >25 databases. 
+This module is a helper that provides additional methods to aid navigating a registry of >30000 species across >200 databases. 
 It does not replace the Registry but provides some additional methods for finding species e.g. by searching for species that 
 have an alias that match a regular expression, or species which are derived from a specific ENA/INSDC accession, or species
 that belong to a particular part of the taxonomy. 

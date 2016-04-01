@@ -25,7 +25,8 @@ Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
 
 =head1 SYNOPSIS
 
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_adaptor();
+# metadata_db is an instance of MetaDataDBAdaptor
+my $adaptor = $metadata_db->get_GenomeInfoAdaptor();
 my $md = $gdba->fetch_by_name("homo_sapiens");
 
 =head1 DESCRIPTION
@@ -49,23 +50,30 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-USER=>'anonymo
 -HOST=>'mysql-eg-publicsql.ebi.ac.uk',
 -DBNAME=>'ensembl_metadata');
 
-To find genomes, use the fetch methods e.g.
+To find genomes, use the fetch methods. These will work with the release set on the adaptor
+which is the latest Ensembl release by default.
 
 # find a genome by name
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
+my $genome = $gdba->fetch_by_name('homo_sapiens');
 
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
 	print $genome->name()."\n";
 }
 
-# find and iterate over all genomes from plants
-for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
+# find and iterate over all genomes with variation
+for my $genome (@{$gdba->fetch_all_with_variation()}) {
 	print $genome->name()."\n";
 }
 
-# find and iterate over all genomes with variation
-for my $genome (@{$gdba->fetch_all_with_variation()}) {
+# to change the release
+$gdba->set_ensembl_release(82);
+$gdba->set_ensembl_genomes_release(82);
+
+my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
+
+# find and iterate over all genomes from plants
+for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
 	print $genome->name()."\n";
 }
 
@@ -80,10 +88,6 @@ print $compara->division()." ".$compara->method()."(".$compara->dbname().")\n";
 for my $genome (@{$compara->genomes()}) {
 	print $genome->name()."\n";
 }
-
-# to change the release
-$gdba->set_ensembl_release(82);
-$gdba->set_ensembl_genomes_release(82);
 
 =head1 Author
 
@@ -413,150 +417,6 @@ sub update_booleans {
 
   return;
 } ## end sub update_booleans
-
-=head2 _store_features
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
-  Description: Stores the features for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_features {
-  my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-                        -SQL => q/delete from genome_feature where genome_id=?/,
-                        -PARAMS => [ $genome->dbID() ] );
-
-  while ( my ( $type, $f ) = each %{ $genome->features() } ) {
-    while ( my ( $analysis, $count ) = each %$f ) {
-      $self->dbc()->sql_helper()->execute_update(
-        -SQL => q/insert into genome_feature(genome_id,type,analysis,count)
-		values(?,?,?,?)/,
-        -PARAMS => [ $genome->dbID(), $type, $analysis, $count ] );
-    }
-  }
-  return;
-}
-
-=head2 _store_databases
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
-  Description: Stores the databases for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_databases {
-  my ( $self, $genome ) = @_;
-  for my $database ( @{ $genome->databases() } ) {
-    $self->db()->get_DatabaseInfoAdaptor()->store($database);
-  }
-  return;
-}
-
-=head2 _store_annotations
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
-  Description: Stores the annotations for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_annotations {
-  my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-                     -SQL => q/delete from genome_annotation where genome_id=?/,
-                     -PARAMS => [ $genome->dbID() ] );
-
-  while ( my ( $type, $count ) = each %{ $genome->annotations() } ) {
-    $self->dbc()->sql_helper()->execute_update(
-      -SQL => q/insert into genome_annotation(genome_id,type,count)
-		values(?,?,?)/,
-      -PARAMS => [ $genome->dbID(), $type, $count ] );
-  }
-  return;
-}
-
-=head2 _store_variations
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
-  Description: Stores the variations for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_variations {
-  my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-                      -SQL => q/delete from genome_variation where genome_id=?/,
-                      -PARAMS => [ $genome->dbID() ] );
-
-  while ( my ( $type, $f ) = each %{ $genome->variations() } ) {
-    while ( my ( $key, $count ) = each %$f ) {
-      $self->dbc()->sql_helper()->execute_update(
-        -SQL => q/insert into genome_variation(genome_id,type,name,count)
-		values(?,?,?,?)/,
-        -PARAMS => [ $genome->dbID(), $type, $key, $count ] );
-    }
-  }
-  return;
-}
-
-=head2 _store_alignments
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
-  Description: Stores the alignments for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub _store_alignments {
-  my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-                      -SQL => q/delete from genome_alignment where genome_id=?/,
-                      -PARAMS => [ $genome->dbID() ] );
-
-  while ( my ( $type, $f ) = each %{ $genome->other_alignments() } ) {
-    while ( my ( $key, $count ) = each %$f ) {
-      $self->dbc()->sql_helper()->execute_update(
-        -SQL => q/insert into genome_alignment(genome_id,type,name,count)
-		values(?,?,?,?)/,
-        -PARAMS => [ $genome->dbID(), $type, $key, $count ] );
-    }
-  }
-  return;
-}
-
-sub _store_compara {
-  my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-               -SQL => q/delete from genome_compara_analysis where genome_id=?/,
-               -PARAMS => [ $genome->dbID() ] );
-  if ( defined $genome->compara() ) {
-    for my $compara ( @{ $genome->compara() } ) {
-      if ( !defined $compara->dbID() ) {
-        $self->db()->get_GenomeComparaInfoAdaptor()->store($compara);
-      }
-      $self->dbc()->sql_helper()->execute_update(
-        -SQL =>
-q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)/,
-        -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
-    }
-  }
-  return;
-
-}
 
 =head2 fetch_databases 
   Arg        : release (optional)
@@ -973,6 +833,7 @@ sub fetch_all_with_other_alignments {
                                           $keen );
 }
 
+=head1 INTERNAL METHODS
 =head2 _fetch_assembly
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add assembly to supplied object
@@ -1186,6 +1047,159 @@ sub _fetch_children {
   $self->_fetch_comparas($genome);
   return;
 }
+
+
+=head2 _store_features
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the features for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_features {
+  my ( $self, $genome ) = @_;
+
+  $self->dbc()->sql_helper()->execute_update(
+                        -SQL => q/delete from genome_feature where genome_id=?/,
+                        -PARAMS => [ $genome->dbID() ] );
+
+  while ( my ( $type, $f ) = each %{ $genome->features() } ) {
+    while ( my ( $analysis, $count ) = each %$f ) {
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL => q/insert into genome_feature(genome_id,type,analysis,count)
+		values(?,?,?,?)/,
+        -PARAMS => [ $genome->dbID(), $type, $analysis, $count ] );
+    }
+  }
+  return;
+}
+
+=head2 _store_databases
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the databases for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_databases {
+  my ( $self, $genome ) = @_;
+  for my $database ( @{ $genome->databases() } ) {
+    $self->db()->get_DatabaseInfoAdaptor()->store($database);
+  }
+  return;
+}
+
+=head2 _store_annotations
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the annotations for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_annotations {
+  my ( $self, $genome ) = @_;
+
+  $self->dbc()->sql_helper()->execute_update(
+                     -SQL => q/delete from genome_annotation where genome_id=?/,
+                     -PARAMS => [ $genome->dbID() ] );
+
+  while ( my ( $type, $count ) = each %{ $genome->annotations() } ) {
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL => q/insert into genome_annotation(genome_id,type,count)
+		values(?,?,?)/,
+      -PARAMS => [ $genome->dbID(), $type, $count ] );
+  }
+  return;
+}
+
+=head2 _store_variations
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the variations for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_variations {
+  my ( $self, $genome ) = @_;
+
+  $self->dbc()->sql_helper()->execute_update(
+                      -SQL => q/delete from genome_variation where genome_id=?/,
+                      -PARAMS => [ $genome->dbID() ] );
+
+  while ( my ( $type, $f ) = each %{ $genome->variations() } ) {
+    while ( my ( $key, $count ) = each %$f ) {
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL => q/insert into genome_variation(genome_id,type,name,count)
+		values(?,?,?,?)/,
+        -PARAMS => [ $genome->dbID(), $type, $key, $count ] );
+    }
+  }
+  return;
+}
+
+=head2 _store_alignments
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the alignments for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _store_alignments {
+  my ( $self, $genome ) = @_;
+
+  $self->dbc()->sql_helper()->execute_update(
+                      -SQL => q/delete from genome_alignment where genome_id=?/,
+                      -PARAMS => [ $genome->dbID() ] );
+
+  while ( my ( $type, $f ) = each %{ $genome->other_alignments() } ) {
+    while ( my ( $key, $count ) = each %$f ) {
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL => q/insert into genome_alignment(genome_id,type,name,count)
+		values(?,?,?,?)/,
+        -PARAMS => [ $genome->dbID(), $type, $key, $count ] );
+    }
+  }
+  return;
+}
+=head2 _store_compara
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Stores the compara analyses for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+sub _store_compara {
+  my ( $self, $genome ) = @_;
+
+  $self->dbc()->sql_helper()->execute_update(
+               -SQL => q/delete from genome_compara_analysis where genome_id=?/,
+               -PARAMS => [ $genome->dbID() ] );
+  if ( defined $genome->compara() ) {
+    for my $compara ( @{ $genome->compara() } ) {
+      if ( !defined $compara->dbID() ) {
+        $self->db()->get_GenomeComparaInfoAdaptor()->store($compara);
+      }
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL =>
+q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)/,
+        -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
+    }
+  }
+  return;
+
+}
+
 
 my $base_genome_fetch_sql =
   q/select genome_id as dbID, division.name as division, genebuild, 

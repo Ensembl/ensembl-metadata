@@ -37,11 +37,26 @@ Specialised DBAdaptor for connecting to the ensembl_metadata MySQL database
 
 =head1 SYNOPSIS
 
+# instantiate directly
+my $dba = Bio::EnsEMBL::DBSQL::MetaDataDBAdaptor->new();
+
+# retrieve from Registry
+my $dba = Bio::EnsEMBL::Registry->get_DBAdaptor("multi", "metadata");
+
+# retrieve adaptors
+my $adaptor = $dba->get_GenomeInfoAdaptor();
 									  
 =head DESCRIPTION
 
 A specialised DBAdaptor allowing connection to a metadata database. 
-Can be used to retrieve an instance of Bio::EnsEMBL::DBSQL::GenomeInfoAdaptor.
+Can be used to retrieve instances of:
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+    Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor
+    Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor
+    Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor
+
 
 =head1 AUTHOR
 

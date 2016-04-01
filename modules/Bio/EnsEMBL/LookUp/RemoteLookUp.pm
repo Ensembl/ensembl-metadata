@@ -85,11 +85,15 @@ use List::MoreUtils qw(uniq);
 =head1 SUBROUTINES/METHODS
 
 =head2 new
-
+  Arg [-ADAPTOR]    : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+  Arg [-REGISTRY]   : Registry to obtain DBAdaptors from
+  Arg [-HOST]       : Host containing DBAdaptors
+  Arg [-PORT]       : Port  for DBAdaptors
+  Arg [-USER]       : User for DBAdaptors
+  Arg [-PASS]       : Password for DBAdaptors
   Description       : Creates a new instance of this object. 
   Returntype        : Instance of lookup
   Status            : Stable
-
   Example       	: 
   my $lookup = Bio::EnsEMBL::RemoteLookUp->new();
 =cut
@@ -104,45 +108,6 @@ sub new {
   $self->{dba_cache} = {};
   $self->{registry} ||= q/Bio::EnsEMBL::Registry/;
   return $self;
-}
-
-sub _cache {
-  my ($self) = @_;
-  return $self->{dba_cache};
-}
-
-sub _adaptor {
-  my ($self) = @_;
-  if(!defined $self->{_adaptor}) {
-    # default to previous behaviour
-    $self->{_adaptor} = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
-  }
-  return $self->{_adaptor};
-}
-
-sub _get_args {
-  my ( $self, $genome_info ) = @_;
-  # find arguments applicable to this particular info object
-  my $args = {};
-  if ( !defined $self->{host} ) {
-    # no host specified, so try and use public servers
-    if ( defined $genome_info->data_release()->ensembl_genomes_release() ) {
-      # use EG
-      $args = eg_args();
-    }
-    else {
-      # use Ensembl
-      $args = e_args();
-    }
-  }
-  else {
-    # use host specified
-    $args = { -USER => $self->{user},
-              -PORT => $self->{port},
-              -PASS => $self->{pass},
-              -HOST => $self->{host} };
-  }
-  return $args;
 }
 
 =head2 genome_to_dba
@@ -249,6 +214,12 @@ sub get_all {
   return $self->genomes_to_dbas( $self->{_adaptor}->fetch_all() );
 }
 
+=head2 get_all_by_taxon_branch
+	Description : Returns all database adaptors that lie beneath the specified taxon node
+	Argument    : String
+	Exceptions  : None
+	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+=cut
 sub get_all_by_taxon_branch {
   my ( $self, $taxid ) = @_;
   return $self->genomes_to_dbas(
@@ -257,7 +228,7 @@ sub get_all_by_taxon_branch {
 
 =head2 get_all_by_taxon_id
 	Description : Returns all database adaptors that have the supplied taxonomy ID
-	Argument    : Int
+	Argument    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
 =cut
@@ -403,6 +374,68 @@ sub get_all_versioned_assemblies {
   return [
      uniq( map { $_->assembly_id() || '' } @{ $self->{_adaptor}->fetch_all() } )
   ];
+}
+
+=head1 INTERNAL METHODS
+=head2 _cache
+	Description : Return hash of DBAs
+	Exceptions  : None
+	Return type : Hashref of Bio::EnsEMBL::DBSQL::DBAdaptor by name
+	Caller      : Internal
+	Status      : Stable
+=cut
+sub _cache {
+  my ($self) = @_;
+  return $self->{dba_cache};
+}
+
+=head2 _adaptor
+	Description : Return GenomeInfoAdaptor
+	Exceptions  : None
+	Return type : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+	Caller      : Internal
+	Status      : Stable
+=cut
+sub _adaptor {
+  my ($self) = @_;
+  if(!defined $self->{_adaptor}) {
+    # default to previous behaviour
+    $self->{_adaptor} = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
+  }
+  return $self->{_adaptor};
+}
+
+=head2 _get_args
+	Description : Generate arguments for constructing a DBAdaptor
+	Arg         : Bio::EnsEMBL::MetaData::GenomeInfo
+	Exceptions  : None
+	Return type : Hashref
+	Caller      : Internal
+	Status      : Stable
+=cut
+sub _get_args {
+  my ( $self, $genome_info ) = @_;
+  # find arguments applicable to this particular info object
+  my $args = {};
+  if ( !defined $self->{host} ) {
+    # no host specified, so try and use public servers
+    if ( defined $genome_info->data_release()->ensembl_genomes_release() ) {
+      # use EG
+      $args = eg_args();
+    }
+    else {
+      # use Ensembl
+      $args = e_args();
+    }
+  }
+  else {
+    # use host specified
+    $args = { -USER => $self->{user},
+              -PORT => $self->{port},
+              -PASS => $self->{pass},
+              -HOST => $self->{host} };
+  }
+  return $args;
 }
 
 1;

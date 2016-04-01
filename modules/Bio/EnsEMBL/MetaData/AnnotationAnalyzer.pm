@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +14,31 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+=head1 CONTACT
+
+  Please email comments or questions to the public Ensembl
+  developers list at <dev@ensembl.org>.
+
+  Questions may also be sent to the Ensembl help desk at
+  <helpdesk@ensembl.org>.
+
+=head1 NAME
+
+Bio::EnsEMBL::MetaData::AnnotationAnalyzer
+
+=head1 SYNOPSIS
+
+my $anal = Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new();
+my $details = $anal->analyze_annotation($dba);
+
+=head1 DESCRIPTION
+
+Utility class for counting xrefs, variations etc. associated with a genome
+
+=head1 AUTHOR
+
+Dan Staines
 
 =cut
 
@@ -32,6 +57,16 @@ my $ua = LWP::UserAgent->new();
 my $url_template =
 'https://raw.github.com/EnsemblGenomes/eg-web-DIVISION/master/conf/ini-files/SPECIES.ini';
 
+=head1 SUBROUTINES/METHODS
+
+=head2 new
+  Description: Return a new instance of AnnotationAnalyzer
+  Returntype : Bio::EnsEMBL::MetaData::AnnotationAnalyzer
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub new {
   my $caller = shift;
   my $class  = ref($caller) || $caller;
@@ -40,59 +75,101 @@ sub new {
   return $self;
 }
 
+=head2 analyze_annotation
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes annotation content of the supplied core DB
+  Returntype : 	Hash ref with the following keys:
+					nProteinCoding - number of protein coding genes
+					nProteinCodingUniProtKBSwissProt - number of protein coding genes with at least one SwissPROT entry
+					nProteinCodingUniProtKBTrEMBL - number of protein coding genes with at least one TrEMBL entry
+					nProteinCodingGO - number of protein coding genes with at least one GO term
+					nProteinCodingInterPro - number of protein coding genes with at least one InterPro match
+					nUniProtKBSwissProt - number of distinct UniProtKB/TrEMBL entries matching at least one translation
+					nUniProtKBTrEMBL - number of distinct UniProtKB/TrEMBL entries matching at least one translation
+					nGO - number of distinct GO terms matching at least one translation
+					nInterPro - number of distinct InterPro entries matching at least one feature
+					nInterProDomains - number of distinct protein features matching an InterPro domains
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub analyze_annotation {
   my ( $self, $dba ) = @_;
-  $self->{logger}
-    ->debug( "Analysing annotation for " . $dba->species() );
+  $self->{logger}->debug( "Analysing annotation for " . $dba->species() );
   return {
-    nProteinCoding => $self->count_by_biotype( $dba, 'protein_coding' ),
-    nProteinCodingGO =>
-      $self->count_by_xref( $dba, 'GO', 'protein_coding' ),
-    nProteinCodingUniProtKB =>
-      $self->count_by_xref( $dba,
-                            [ 'Uniprot/SWISSPROT', 'Uniprot/SPTREMBL' ],
-                            'protein_coding' ),
-    nProteinCodingUniProtKBSwissProt =>
-      $self->count_by_xref( $dba, 'Uniprot/SWISSPROT',
-                            'protein_coding' ),
-    nProteinCodingUniProtKBTrEMBL =>
-      $self->count_by_xref( $dba, 'Uniprot/SPTREMBL', 'protein_coding'
-      ),
-    nProteinCodingInterPro => $self->count_by_interpro($dba),
-    nGO => $self->count_by_xref( $dba, 'GO', 'protein_coding' ),
-    nUniProtKBSwissProt =>
-      $self->count_xrefs( $dba, 'Uniprot/SWISSPROT' ),
-    nUniProtKBTrEMBL => $self->count_xrefs( $dba, 'Uniprot/SPTREMBL' ),
-    nInterPro        => $self->count_interpro($dba),
-    nInterProDomains => $self->count_interpro_domains($dba) };
-} ## end sub analyze_annotation
+      nProteinCoding => $self->count_by_biotype( $dba, 'protein_coding' ),
+      nProteinCodingGO => $self->count_by_xref( $dba, 'GO', 'protein_coding' ),
+      nProteinCodingUniProtKB =>
+        $self->count_by_xref( $dba, [ 'Uniprot/SWISSPROT', 'Uniprot/SPTREMBL' ],
+                              'protein_coding' ),
+      nProteinCodingUniProtKBSwissProt =>
+        $self->count_by_xref( $dba, 'Uniprot/SWISSPROT', 'protein_coding' ),
+      nProteinCodingUniProtKBTrEMBL =>
+        $self->count_by_xref( $dba, 'Uniprot/SPTREMBL', 'protein_coding' ),
+      nProteinCodingInterPro => $self->count_by_interpro($dba),
+      nGO => $self->count_by_xref( $dba, 'GO', 'protein_coding' ),
+      nUniProtKBSwissProt => $self->count_xrefs( $dba, 'Uniprot/SWISSPROT' ),
+      nUniProtKBTrEMBL    => $self->count_xrefs( $dba, 'Uniprot/SPTREMBL' ),
+      nInterPro           => $self->count_interpro($dba),
+      nInterProDomains => $self->count_interpro_domains($dba) };
+}
+
+=head2 analyze_features
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes features found in the supplied core/otherfeatures database (simple_feature,repeat_feature,protein_align_feature,dna_align_features)
+  Returntype : 	Hash ref (keys are feature tables, values are hashrefs of count by analysis name)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub analyze_features {
   my ( $self, $dba ) = @_;
-  return {
-      simpleFeatures => $self->count_features( $dba, 'simple_feature' ),
-      repeatFeatures => $self->count_features( $dba, 'repeat_feature' )
-  };
+  return { simpleFeatures => $self->count_features( $dba, 'simple_feature' ),
+           repeatFeatures => $self->count_features( $dba, 'repeat_feature' ) };
 }
+
+=head2 analyze_variation
+  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Analyzes variation found in the supplied variation database
+  Returntype : 	Hash ref with the following keys
+					variations - count of variations per source
+					structuralVariations - count of structural variations per source
+					genotypes - count of genotypes per sample
+					phenotypes - count of variation annotations per phenotype
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub analyze_variation {
   my ( $self, $dba ) = @_;
-  return {
-       variations           => $self->count_variations($dba),
-       structuralVariations => $self->count_structural_variations($dba),
-       genotypes            => $self->count_genotypes($dba),
-       phenotypes           => $self->count_phenotypes($dba) };
+  return { variations           => $self->count_variations($dba),
+           structuralVariations => $self->count_structural_variations($dba),
+           genotypes            => $self->count_genotypes($dba),
+           phenotypes           => $self->count_phenotypes($dba) };
 }
+
+=head2 analyze_compara
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : Bio::EnsEMBL::Compara::DBSQL::DBAdaptor
+  Description: Analyzes compara methods found in the supplied compara database involving the supplied core species
+  Returntype : 	Hash ref (keys are method names, values are arrays of partner species)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 
 sub analyze_compara {
   my ( $self, $dba, $core ) = @_;
   my $compara = {};
   eval {
     my $gdb =
-      $dba->get_GenomeDBAdaptor()
-      ->fetch_by_registry_name( $core->species() );
-    for my $mlss ( @{$dba->get_MethodLinkSpeciesSetAdaptor()
-                       ->fetch_all_by_GenomeDB($gdb) } )
+      $dba->get_GenomeDBAdaptor()->fetch_by_registry_name( $core->species() );
+    for my $mlss (
+       @{ $dba->get_MethodLinkSpeciesSetAdaptor()->fetch_all_by_GenomeDB($gdb) }
+      )
     {
       my $t = $mlss->method()->type();
       next
@@ -112,6 +189,15 @@ sub analyze_compara {
   return $compara;
 } ## end sub analyze_compara
 
+=head2 analyze_alignments
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes alignments for sequences to the assembly 
+  Returntype : Hash ref - keys are source_type (e.g. RNA seq), values are arrayrefs of hashrefs containing track details (source_name,description,source_url)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
 sub analyze_alignments {
   my ( $self, $dba ) = @_;
   my $ali = {};
@@ -125,6 +211,15 @@ sub analyze_alignments {
   }
   return $ali;
 }
+
+=head2 analyze_tracks
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes tracks attached to the supplied core database
+  Returntype : Hash ref - keys are source_type (e.g. RNA seq), values are arrayrefs of hashrefs containing track details (source_name,description,source_url)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable	
+=cut
 
 sub analyze_tracks {
   my ( $self, $species, $division ) = @_;
@@ -174,10 +269,31 @@ sub analyze_tracks {
   return $bams;
 } ## end sub analyze_tracks
 
+=head2 count_by_biotype
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : String (biotype)
+  Description: Returns count of genes with specified biotype
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 sub count_by_biotype {
   my ( $self, $dba, $biotype ) = @_;
   return $dba->get_GeneAdaptor()->count_all_by_biotype($biotype);
 }
+
+=head2 count_by_xref
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : Arrayref of dbnames 
+  Arg        : (optional) String (biotype)
+  Description: Returns count of genes with specified cross-reference
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $xref_gene_sql = q/select count(distinct(gene_id)) 
 from gene g
@@ -195,7 +311,7 @@ my $biotype_clause = q/ and g.biotype=?/;
 sub count_by_xref {
   my ( $self, $dba, $db_names, $biotype ) = @_;
   $self->{logger}->debug( "Counting genes by " .
-              join( ",", $db_names ) . " xref for " . $dba->species() );
+                      join( ",", $db_names ) . " xref for " . $dba->species() );
   $db_names = [$db_names] if ( ref($db_names) ne 'ARRAY' );
   my $sql = $xref_gene_sql;
   my $db_name = join ',', map { "\"$_\"" } @$db_names;
@@ -210,6 +326,16 @@ sub count_by_xref {
   return $dba->dbc()->sql_helper()
     ->execute_single_result( -SQL => $sql, -PARAMS => $params );
 }
+
+=head2 count_xrefs
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : One or more dbnames
+  Description: Returns count of numbers of cross-references to supplied database(s)
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $gene_xref_count_sql = q/
 select count(distinct(dbprimary_acc)) 
@@ -249,22 +375,31 @@ sub count_xrefs {
   for my $db_name (@_) {
     $tot +=
       $dba->dbc()->sql_helper()->execute_single_result(
-                             -SQL    => $gene_xref_count_sql,
-                             -PARAMS => [ $dba->species_id(), $db_name ]
+                                     -SQL    => $gene_xref_count_sql,
+                                     -PARAMS => [ $dba->species_id(), $db_name ]
       );
     $tot +=
       $dba->dbc()->sql_helper()->execute_single_result(
-                             -SQL    => $transcript_xref_count_sql,
-                             -PARAMS => [ $dba->species_id(), $db_name ]
+                                     -SQL    => $transcript_xref_count_sql,
+                                     -PARAMS => [ $dba->species_id(), $db_name ]
       );
     $tot +=
       $dba->dbc()->sql_helper()->execute_single_result(
-                             -SQL    => $translation_xref_count_sql,
-                             -PARAMS => [ $dba->species_id(), $db_name ]
+                                     -SQL    => $translation_xref_count_sql,
+                                     -PARAMS => [ $dba->species_id(), $db_name ]
       );
   }
   return $tot;
 }
+
+=head2 count_by_interpro
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of genes with InterPro domains
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $count_by_interpro_base = q/ from interpro
 join protein_feature on (id=hit_name)
@@ -282,10 +417,19 @@ sub count_by_interpro {
   my ( $self, $dba ) = @_;
   return
     $dba->dbc()->sql_helper()->execute_single_result(
-                                       -SQL    => $count_by_interpro,
-                                       -PARAMS => [ $dba->species_id() ]
+                                               -SQL    => $count_by_interpro,
+                                               -PARAMS => [ $dba->species_id() ]
     );
 }
+
+=head2 count_interpro
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of InterPro cross-references
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $count_interpro =
   q/select count(distinct(translation_id)) / . $count_by_interpro_base;
@@ -294,23 +438,40 @@ sub count_interpro {
   my ( $self, $dba ) = @_;
   return
     $dba->dbc()->sql_helper()->execute_single_result(
-                                       -SQL    => $count_interpro,
-                                       -PARAMS => [ $dba->species_id() ]
+                                               -SQL    => $count_interpro,
+                                               -PARAMS => [ $dba->species_id() ]
     );
 }
 
+=head2 count_interpro_domains
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of InterPro domains
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 my $count_interpro_domains =
-  q/select count(distinct(protein_feature_id)) / .
-  $count_by_interpro_base;
+  q/select count(distinct(protein_feature_id)) / . $count_by_interpro_base;
 
 sub count_interpro_domains {
   my ( $self, $dba ) = @_;
   return
     $dba->dbc()->sql_helper()->execute_single_result(
-                                       -SQL => $count_interpro_domains,
-                                       -PARAMS => [ $dba->species_id() ]
+                                               -SQL => $count_interpro_domains,
+                                               -PARAMS => [ $dba->species_id() ]
     );
 }
+
+=head2 count_toplevel
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of top-level regions
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $count_toplevel = q/select count(*) from seq_region 
 join seq_region_attrib using (seq_region_id) 
@@ -322,10 +483,20 @@ sub count_toplevel {
   my ( $self, $dba ) = @_;
   return
     $dba->dbc()->sql_helper()->execute_single_result(
-                                       -SQL    => $count_toplevel,
-                                       -PARAMS => [ $dba->species_id() ]
+                                               -SQL    => $count_toplevel,
+                                               -PARAMS => [ $dba->species_id() ]
     );
 }
+
+=head2 count_features
+  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : String - feature type (e.g. RepeatFeature)
+  Description: Returns count of specified feature by analysis
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $count_features = q/select logic_name,count(*) 
 from TABLE join analysis using (analysis_id) 
@@ -337,12 +508,18 @@ sub count_features {
   my ( $self, $dba, $table ) = @_;
   my $sql = $count_features;
   $sql =~ s/TABLE/$table/;
-  return
-    $dba->dbc()->sql_helper()->execute_into_hash(
-                                       -SQL    => $sql,
-                                       -PARAMS => [ $dba->species_id() ]
-    );
+  return $dba->dbc()->sql_helper()
+    ->execute_into_hash( -SQL => $sql, -PARAMS => [ $dba->species_id() ] );
 }
+
+=head2 count_variations
+  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of variations by source
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $count_variation = q/select ifnull(s.name,"unknown"),count(*) 
 from variation v 
@@ -355,19 +532,34 @@ sub count_variations {
     ->execute_into_hash( -SQL => $count_variation, -PARAMS => [] );
 }
 
-my $count_structural_variation =
-  q/select ifnull(s.name,"unknown"),count(*) 
+=head2 count_structural_variations
+  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of structural variations by source
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+my $count_structural_variation = q/select ifnull(s.name,"unknown"),count(*) 
 from structural_variation v 
 join source s using (source_id) 
 group by s.name/;
 
 sub count_structural_variations {
   my ( $self, $dba ) = @_;
-  return
-    $dba->dbc()->sql_helper()->execute_into_hash(
-                                    -SQL => $count_structural_variation,
-                                    -PARAMS => [] );
+  return $dba->dbc()->sql_helper()
+    ->execute_into_hash( -SQL => $count_structural_variation, -PARAMS => [] );
 }
+
+=head2 count_genotypes
+  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of genotypes by source
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
 
 my $count_genotypes = q/
 select ifnull(name,"unknown"),count(*) 
@@ -385,6 +577,15 @@ sub count_genotypes {
   return $cnt;
 }
 
+=head2 count_phenotypes
+  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of phenotypes by name
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
 my $count_phenotypes = q/
 select ifnull(p.name,"unknown"),count(*) 
 from phenotype p 
@@ -400,100 +601,3 @@ sub count_phenotypes {
 }
 
 1;
-
-__END__
-
-=pod
-=head1 NAME
-
-Bio::EnsEMBL::MetaData::AnnotationAnalyzer
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-Utility class for counting xrefs etc.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 new
-Description:	Return a new instance of AnnotationAnalyzer
-Return:			Bio::EnsEMBL::MetaData::AnnotationAnalyzer
-
-=head2 analyze_annotation
-Description:	Analyzes annotation content of the supplied core DBA
-Argument:		Core DBAdaptor
-Return:			Hash ref with the following keys:
-					nProteinCoding - number of protein coding genes
-					nProteinCodingUniProtKBSwissProt - number of protein coding genes with at least one SwissPROT entry
-					nProteinCodingUniProtKBTrEMBL - number of protein coding genes with at least one TrEMBL entry
-					nProteinCodingGO - number of protein coding genes with at least one GO term
-					nProteinCodingInterPro - number of protein coding genes with at least one InterPro match
-					nUniProtKBSwissProt - number of distinct UniProtKB/TrEMBL entries matching at least one translation
-					nUniProtKBTrEMBL - number of distinct UniProtKB/TrEMBL entries matching at least one translation
-					nGO - number of distinct GO terms matching at least one translation
-					nInterPro - number of distinct InterPro entries matching at least one feature
-					nInterProDomains - number of distinct protein features matching an InterPro domains
-
-=head2 analyze_features
-Description:	Analyzes features found in the supplied core/otherfeatures database (simple_feature,repeat_feature,protein_align_feature,dna_align_features)
-Argument:		DBAdaptor
-Return:			Hash ref (keys are feature tables, values are hashrefs of count by analysis name)
-
-=head2 analyze_tracks
-Description:	Analyzes tracks attached to the supplied core database 
-Argument:		DBAdaptor
-Return:			Hash ref - keys are source_type (e.g. RNA seq), values are arrayrefs of hashrefs containing track details (source_name,description,source_url)
-
-=head2 analyze_variation
-Description:	Analyzes variation found in the supplied variation database
-Argument:		Variation DBAdaptor
-Return:			Hash ref with the following keys
-					variations - count of variations per source
-					structuralVariations - count of structural variations per source
-					genotypes - count of genotypes per sample
-					phenotypes - count of variation annotations per phenotype
-		  
-=head2 analyze_compara
-Description:	Analyzes compara methods found in the supplied compara database involving the supplied core species
-Argument:		Compara DBAdaptor
-Argument:		Core DBAdaptor
-Return:			Hash ref (keys are method names, values are arrays of partner species)
-
-=head2 count_by_biotype
-
-=head2 count_by_interpro
-
-=head2 count_by_xref
-
-=head2 count_xrefs
-
-=head2 count_interpro
-
-=head2 count_interpro_domains
-
-=head2 count_features
-
-=head2 count_variations
-
-=head2 count_structural_variations
-
-=head2 count_genotypes
-
-=head2 count_phenotypes
-
-=head2 count_toplevel
-
-=head1 AUTHOR
-
-dstaines
-
-=head1 MAINTAINER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
-
-=cut
