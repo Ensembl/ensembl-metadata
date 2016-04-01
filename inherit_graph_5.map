@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html" title="Bio::EnsEMBL::MetaData::DBAFinder" alt="" coords="5,31,240,57"/>
+<area shape="rect" id="node2" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1EnaDBAFinder.html" title="Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder" alt="" coords="300,5,625,32"/>
+<area shape="rect" id="node3" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1RegistryDBAFinder.html" title="Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder" alt="" coords="288,56,637,83"/>
+</map>

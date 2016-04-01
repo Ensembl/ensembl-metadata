@@ -1,173 +1,241 @@
 var NAVTREE =
 [
-  [ "ensembl-metadata", "index.html", [
-    [ "Files", null, [
-      [ "File List", "files.html", "files" ]
+  [ "Ensembl Metadata", "index.html", [
+    [ "Full Class List", "annotated.html", [
+      [ "Bio::EnsEMBL::MetaData::AnnotationAnalyzer", "classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html", null ],
+      [ "Bio::EnsEMBL::MetaData::BaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DatabaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DataReleaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1DbHostDBAFinder.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1EnaDBAFinder.html", null ],
+      [ "Bio::EnsEMBL::MetaData::EventInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::GenomeAssemblyInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::GenomeComparaInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::GenomeFactory", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1GenomeFactory.html", null ],
+      [ "Bio::EnsEMBL::MetaData::GenomeInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::GenomeOrganismInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1JsonMetaDataDumper.html", null ],
+      [ "Bio::EnsEMBL::LookUp::LocalLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html", null ],
+      [ "Bio::EnsEMBL::LookUp", "classBio_1_1EnsEMBL_1_1LookUp.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataProcessor", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessCompara.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenome.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenomes__conf.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder::ProductionDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1ProductionDBAFinder.html", null ],
+      [ "Bio::EnsEMBL::Utils::PublicMySQLServer", "classBio_1_1EnsEMBL_1_1Utils_1_1PublicMySQLServer.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1RegistryDBAFinder.html", null ],
+      [ "Bio::EnsEMBL::LookUp::RemoteLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1RemoteLookUp.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TextMetaDataDumper.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TT2MetaDataDumper.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1UniProtReportDumper.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::UpdateBools", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1UpdateBools.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1XMLMetaDataDumper.html", null ]
+    ] ],
+    [ "Class Index", "classes.html", null ],
+    [ "Class Hierarchy", "hierarchy.html", [
+      [ "Bio::EnsEMBL::MetaData::AnnotationAnalyzer", "classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html", null ],
+      [ "Bio::EnsEMBL::MetaData::BaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html", [
+        [ "Bio::EnsEMBL::MetaData::DatabaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DataReleaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html", null ],
+        [ "Bio::EnsEMBL::MetaData::EventInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html", null ],
+        [ "Bio::EnsEMBL::MetaData::GenomeAssemblyInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html", null ],
+        [ "Bio::EnsEMBL::MetaData::GenomeComparaInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html", null ],
+        [ "Bio::EnsEMBL::MetaData::GenomeInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html", null ],
+        [ "Bio::EnsEMBL::MetaData::GenomeOrganismInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html", null ]
+      ] ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html", [
+        [ "Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html", null ]
+      ] ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html", [
+        [ "Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1EnaDBAFinder.html", null ],
+        [ "Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1RegistryDBAFinder.html", null ]
+      ] ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1DbHostDBAFinder.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::GenomeFactory", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1GenomeFactory.html", null ],
+      [ "Bio::EnsEMBL::LookUp::LocalLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html", null ],
+      [ "Bio::EnsEMBL::LookUp", "classBio_1_1EnsEMBL_1_1LookUp.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html", [
+        [ "Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1JsonMetaDataDumper.html", null ],
+        [ "Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TextMetaDataDumper.html", null ],
+        [ "Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TT2MetaDataDumper.html", null ],
+        [ "Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1UniProtReportDumper.html", null ],
+        [ "Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1XMLMetaDataDumper.html", null ]
+      ] ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataProcessor", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessCompara.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenome.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenomes__conf.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder::ProductionDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1ProductionDBAFinder.html", null ],
+      [ "Bio::EnsEMBL::Utils::PublicMySQLServer", "classBio_1_1EnsEMBL_1_1Utils_1_1PublicMySQLServer.html", null ],
+      [ "Bio::EnsEMBL::LookUp::RemoteLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1RemoteLookUp.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline::UpdateBools", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1UpdateBools.html", null ]
+    ] ],
+    [ "Methods from all packages", "functions.html", null ],
+    [ "Namespace List", "namespaces.html", [
+      [ "Bio", "namespaceBio.html", null ],
+      [ "Bio::EnsEMBL", "namespaceBio_1_1EnsEMBL.html", null ],
+      [ "Bio::EnsEMBL::LookUp", "namespaceBio_1_1EnsEMBL_1_1LookUp.html", null ],
+      [ "Bio::EnsEMBL::MetaData", "namespaceBio_1_1EnsEMBL_1_1MetaData.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBAFinder", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL.html", null ],
+      [ "Bio::EnsEMBL::MetaData::MetaDataDumper", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html", null ],
+      [ "Bio::EnsEMBL::MetaData::Pipeline", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline.html", null ],
+      [ "Bio::EnsEMBL::Utils", "namespaceBio_1_1EnsEMBL_1_1Utils.html", null ]
+    ] ],
+    [ "File List", "files.html", [
+      [ "Bio/EnsEMBL/LookUp.pm", "LookUp_8pm.html", null ],
+      [ "Bio/EnsEMBL/LookUp/LocalLookUp.pm", "LocalLookUp_8pm.html", null ],
+      [ "Bio/EnsEMBL/LookUp/RemoteLookUp.pm", "RemoteLookUp_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/AnnotationAnalyzer.pm", "AnnotationAnalyzer_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/BaseInfo.pm", "BaseInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DatabaseInfo.pm", "DatabaseInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DataReleaseInfo.pm", "DataReleaseInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBAFinder.pm", "DBAFinder_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/EventInfo.pm", "EventInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/GenomeAssemblyInfo.pm", "GenomeAssemblyInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/GenomeComparaInfo.pm", "GenomeComparaInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/GenomeInfo.pm", "GenomeInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/GenomeOrganismInfo.pm", "GenomeOrganismInfo_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataDumper.pm", "MetaDataDumper_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataProcessor.pm", "MetaDataProcessor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBAFinder/DbHostDBAFinder.pm", "DbHostDBAFinder_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBAFinder/LookUpDBAFinder.pm", "LookUpDBAFinder_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBAFinder/ProductionDBAFinder.pm", "ProductionDBAFinder_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBAFinder/RegistryDBAFinder.pm", "RegistryDBAFinder_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/BaseInfoAdaptor.pm", "BaseInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/DatabaseInfoAdaptor.pm", "DatabaseInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/DataReleaseInfoAdaptor.pm", "DataReleaseInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/EventInfoAdaptor.pm", "EventInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/GenomeAssemblyInfoAdaptor.pm", "GenomeAssemblyInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/GenomeComparaInfoAdaptor.pm", "GenomeComparaInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/GenomeInfoAdaptor.pm", "GenomeInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/GenomeOrganismInfoAdaptor.pm", "GenomeOrganismInfoAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/MetaDataDBAdaptor.pm", "MetaDataDBAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataDumper/JsonMetaDataDumper.pm", "JsonMetaDataDumper_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataDumper/TextMetaDataDumper.pm", "TextMetaDataDumper_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataDumper/TT2MetaDataDumper.pm", "TT2MetaDataDumper_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataDumper/UniProtReportDumper.pm", "UniProtReportDumper_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/MetaDataDumper/XMLMetaDataDumper.pm", "XMLMetaDataDumper_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/Pipeline/GenomeFactory.pm", "GenomeFactory_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/Pipeline/ProcessCompara.pm", "ProcessCompara_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/Pipeline/ProcessGenome.pm", "ProcessGenome_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/Pipeline/ProcessGenomes_conf.pm", "ProcessGenomes__conf_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/Pipeline/UpdateBools.pm", "UpdateBools_8pm.html", null ],
+      [ "Bio/EnsEMBL/Utils/PublicMySQLServer.pm", "PublicMySQLServer_8pm.html", null ]
+    ] ],
+    [ "Directory Browser", "dirs.html", [
+      [ "Bio", "dir_f291a5c6a5fef7055712b39e9f488b79.html", [
+        [ "EnsEMBL", "dir_0d06678ceff87819d908c2c84023dd52.html", [
+          [ "LookUp", "dir_1a8df8ec2c00fa74870afcc2ea8dff64.html", null ],
+          [ "MetaData", "dir_16e0533e3e198c6c6390584fc6444d5c.html", [
+            [ "DBAFinder", "dir_9a5829a916e0b5775eef346cb970fb30.html", null ],
+            [ "DBSQL", "dir_ec59936737e8555a9e46976312dc2a80.html", null ],
+            [ "MetaDataDumper", "dir_3baf3f4783dbc7253a10ee46ba1d9deb.html", null ],
+            [ "Pipeline", "dir_ffc3417898722b993928c19c1f9d4c30.html", null ]
+          ] ],
+          [ "Utils", "dir_16386ecb77d43a32d0c205470b5d4f43.html", null ]
+        ] ]
+      ] ]
     ] ]
   ] ]
 ];
 
-var NAVTREEINDEX =
-[
-"AnnotationAnalyzer_8pm.html"
-];
-
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
-var navTreeSubIndices = new Array();
-
-function getData(varName)
-{
-  var i = varName.lastIndexOf('/');
-  var n = i>=0 ? varName.substring(i+1) : varName;
-  return eval(n.replace(/\-/g,'_'));
-}
-
-function stripPath(uri)
-{
-  return uri.substring(uri.lastIndexOf('/')+1);
-}
-
-function stripPath2(uri)
-{
-  var i = uri.lastIndexOf('/');
-  var s = uri.substring(i+1);
-  var m = uri.substring(0,i+1).match(/\/d\w\/d\w\w\/$/);
-  return m ? uri.substring(i-6) : s;
-}
-
-function hashValue()
-{
-  return $(location).attr('hash').substring(1).replace(/[^\w\-]/g,'');
-}
-
-function hashUrl()
-{
-  return '#'+hashValue();
-}
-
-function pathName()
-{
-  return $(location).attr('pathname').replace(/[^-A-Za-z0-9+&@#/%?=~_|!:,.;\(\)]/g, '');
-}
-
-function localStorageSupported()
-{
-  try {
-    return 'localStorage' in window && window['localStorage'] !== null && window.localStorage.getItem;
-  }
-  catch(e) {
-    return false;
-  }
-}
-
-
-function storeLink(link)
-{
-  if (!$("#nav-sync").hasClass('sync') && localStorageSupported()) {
-      window.localStorage.setItem('navpath',link);
-  }
-}
-
-function deleteLink()
-{
-  if (localStorageSupported()) {
-    window.localStorage.setItem('navpath','');
-  }
-}
-
-function cachedLink()
-{
-  if (localStorageSupported()) {
-    return window.localStorage.getItem('navpath');
-  } else {
-    return '';
-  }
-}
-
-function getScript(scriptName,func,show)
-{
-  var head = document.getElementsByTagName("head")[0]; 
-  var script = document.createElement('script');
-  script.id = scriptName;
-  script.type = 'text/javascript';
-  script.onload = func; 
-  script.src = scriptName+'.js'; 
-  if ($.browser.msie && $.browser.version<=8) { 
-    // script.onload does not work with older versions of IE
-    script.onreadystatechange = function() {
-      if (script.readyState=='complete' || script.readyState=='loaded') { 
-        func(); if (show) showRoot(); 
-      }
-    }
-  }
-  head.appendChild(script); 
-}
-
 function createIndent(o,domNode,node,level)
 {
-  var level=-1;
-  var n = node;
-  while (n.parentNode) { level++; n=n.parentNode; }
-  if (node.childrenData) {
-    var imgNode = document.createElement("img");
-    imgNode.style.paddingLeft=(16*level).toString()+'px';
-    imgNode.width  = 16;
-    imgNode.height = 22;
-    imgNode.border = 0;
+  if (node.parentNode && node.parentNode.parentNode)
+  {
+    createIndent(o,domNode,node.parentNode,level+1);
+  }
+  var imgNode = document.createElement("img");
+  if (level==0 && node.childrenData)
+  {
     node.plus_img = imgNode;
     node.expandToggle = document.createElement("a");
     node.expandToggle.href = "javascript:void(0)";
-    node.expandToggle.onclick = function() {
-      if (node.expanded) {
+    node.expandToggle.onclick = function() 
+    {
+      if (node.expanded) 
+      {
         $(node.getChildrenUL()).slideUp("fast");
-        node.plus_img.src = node.relpath+"ftv2pnode.png";
+        if (node.isLast)
+        {
+          node.plus_img.src = node.relpath+"ftv2plastnode.png";
+        }
+        else
+        {
+          node.plus_img.src = node.relpath+"ftv2pnode.png";
+        }
         node.expanded = false;
-      } else {
-        expandNode(o, node, false, false);
+      } 
+      else 
+      {
+        expandNode(o, node, false);
       }
     }
     node.expandToggle.appendChild(imgNode);
     domNode.appendChild(node.expandToggle);
-    imgNode.src = node.relpath+"ftv2pnode.png";
-  } else {
-    var span = document.createElement("span");
-    span.style.display = 'inline-block';
-    span.style.width   = 16*(level+1)+'px';
-    span.style.height  = '22px';
-    span.innerHTML = '&#160;';
-    domNode.appendChild(span);
-  } 
-}
-
-var animationInProgress = false;
-
-function gotoAnchor(anchor,aname,updateLocation)
-{
-  var pos, docContent = $('#doc-content');
-  var ancParent = $(anchor.parent());
-  if (ancParent.hasClass('memItemLeft') ||
-      ancParent.hasClass('fieldname') ||
-      ancParent.hasClass('fieldtype') ||
-      ancParent.is(':header'))
+  }
+  else
   {
-    pos = ancParent.position().top;
-  } else if (anchor.position()) {
-    pos = anchor.position().top;
+    domNode.appendChild(imgNode);
   }
-  if (pos) {
-    var dist = Math.abs(Math.min(
-               pos-docContent.offset().top,
-               docContent[0].scrollHeight-
-               docContent.height()-docContent.scrollTop()));
-    animationInProgress=true;
-    docContent.animate({
-      scrollTop: pos + docContent.scrollTop() - docContent.offset().top
-    },Math.max(50,Math.min(500,dist)),function(){
-      if (updateLocation) window.location.href=aname;
-      animationInProgress=false;
-    });
+  if (level==0)
+  {
+    if (node.isLast)
+    {
+      if (node.childrenData)
+      {
+        imgNode.src = node.relpath+"ftv2plastnode.png";
+      }
+      else
+      {
+        imgNode.src = node.relpath+"ftv2lastnode.png";
+        domNode.appendChild(imgNode);
+      }
+    }
+    else
+    {
+      if (node.childrenData)
+      {
+        imgNode.src = node.relpath+"ftv2pnode.png";
+      }
+      else
+      {
+        imgNode.src = node.relpath+"ftv2node.png";
+        domNode.appendChild(imgNode);
+      }
+    }
   }
+  else
+  {
+    if (node.isLast)
+    {
+      imgNode.src = node.relpath+"ftv2blank.png";
+    }
+    else
+    {
+      imgNode.src = node.relpath+"ftv2vertline.png";
+    }
+  }
+  imgNode.border = "0";
 }
 
 function newNode(o, po, text, link, childrenData, lastNode)
@@ -196,50 +264,27 @@ function newNode(o, po, text, link, childrenData, lastNode)
   var a = document.createElement("a");
   node.labelSpan.appendChild(a);
   node.label = document.createTextNode(text);
-  node.expanded = false;
   a.appendChild(node.label);
-  if (link) {
-    var url;
-    if (link.substring(0,1)=='^') {
-      url = link.substring(1);
-      link = url;
-    } else {
-      url = node.relpath+link;
-    }
-    a.className = stripPath(link.replace('#',':'));
-    if (link.indexOf('#')!=-1) {
-      var aname = '#'+link.split('#')[1];
-      var srcPage = stripPath(pathName());
-      var targetPage = stripPath(link.split('#')[0]);
-      a.href = srcPage!=targetPage ? url : "javascript:void(0)"; 
-      a.onclick = function(){
-        storeLink(link);
-        if (!$(a).parent().parent().hasClass('selected'))
-        {
-          $('.item').removeClass('selected');
-          $('.item').removeAttr('id');
-          $(a).parent().parent().addClass('selected');
-          $(a).parent().parent().attr('id','selected');
-        }
-        var anchor = $(aname);
-        gotoAnchor(anchor,aname,true);
-      };
-    } else {
-      a.href = url;
-      a.onclick = function() { storeLink(link); }
-    }
-  } else {
+  if (link) 
+  {
+    a.href = node.relpath+link;
+  } 
+  else 
+  {
     if (childrenData != null) 
     {
       a.className = "nolink";
       a.href = "javascript:void(0)";
       a.onclick = node.expandToggle.onclick;
+      node.expanded = false;
     }
   }
 
   node.childrenUL = null;
-  node.getChildrenUL = function() {
-    if (!node.childrenUL) {
+  node.getChildrenUL = function() 
+  {
+    if (!node.childrenUL) 
+    {
       node.childrenUL = document.createElement("ul");
       node.childrenUL.className = "children_ul";
       node.childrenUL.style.display = "none";
@@ -256,231 +301,70 @@ function showRoot()
   var headerHeight = $("#top").height();
   var footerHeight = $("#nav-path").height();
   var windowHeight = $(window).height() - headerHeight - footerHeight;
-  (function (){ // retry until we can scroll to the selected item
-    try {
-      var navtree=$('#nav-tree');
-      navtree.scrollTo('#selected',0,{offset:-windowHeight/2});
-    } catch (err) {
-      setTimeout(arguments.callee, 0);
+  navtree.scrollTo('#selected',0,{offset:-windowHeight/2});
+}
+
+function expandNode(o, node, imm)
+{
+  if (node.childrenData && !node.expanded) 
+  {
+    if (!node.childrenVisited) 
+    {
+      getNode(o, node);
     }
-  })();
-}
-
-function expandNode(o, node, imm, showRoot)
-{
-  if (node.childrenData && !node.expanded) {
-    if (typeof(node.childrenData)==='string') {
-      var varName    = node.childrenData;
-      getScript(node.relpath+varName,function(){
-        node.childrenData = getData(varName);
-        expandNode(o, node, imm, showRoot);
-      }, showRoot);
-    } else {
-      if (!node.childrenVisited) {
-        getNode(o, node);
-      } if (imm || ($.browser.msie && $.browser.version>8)) { 
-        // somehow slideDown jumps to the start of tree for IE9 :-(
-        $(node.getChildrenUL()).show();
-      } else {
-        $(node.getChildrenUL()).slideDown("fast");
-      }
-      if (node.isLast) {
-        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
-      } else {
-        node.plus_img.src = node.relpath+"ftv2mnode.png";
-      }
-      node.expanded = true;
+    if (imm)
+    {
+      $(node.getChildrenUL()).show();
+    } 
+    else 
+    {
+      $(node.getChildrenUL()).slideDown("fast",showRoot);
     }
-  }
-}
-
-function glowEffect(n,duration)
-{
-  n.addClass('glow').delay(duration).queue(function(next){
-    $(this).removeClass('glow');next();
-  });
-}
-
-function highlightAnchor()
-{
-  var aname = hashUrl();
-  var anchor = $(aname);
-  if (anchor.parent().attr('class')=='memItemLeft'){
-    var rows = $('.memberdecls tr[class$="'+hashValue()+'"]');
-    glowEffect(rows.children(),300); // member without details
-  } else if (anchor.parent().attr('class')=='fieldname'){
-    glowEffect(anchor.parent().parent(),1000); // enum value
-  } else if (anchor.parent().attr('class')=='fieldtype'){
-    glowEffect(anchor.parent().parent(),1000); // struct field
-  } else if (anchor.parent().is(":header")) {
-    glowEffect(anchor.parent(),1000); // section header
-  } else {
-    glowEffect(anchor.next(),1000); // normal member
-  }
-  gotoAnchor(anchor,aname,false);
-}
-
-function selectAndHighlight(hash,n)
-{
-  var a;
-  if (hash) {
-    var link=stripPath(pathName())+':'+hash.substring(1);
-    a=$('.item a[class$="'+link+'"]');
-  }
-  if (a && a.length) {
-    a.parent().parent().addClass('selected');
-    a.parent().parent().attr('id','selected');
-    highlightAnchor();
-  } else if (n) {
-    $(n.itemDiv).addClass('selected');
-    $(n.itemDiv).attr('id','selected');
-  }
-  if ($('#nav-tree-contents .item:first').hasClass('selected')) {
-    $('#nav-sync').css('top','30px');
-  } else {
-    $('#nav-sync').css('top','5px');
-  }
-  showRoot();
-}
-
-function showNode(o, node, index, hash)
-{
-  if (node && node.childrenData) {
-    if (typeof(node.childrenData)==='string') {
-      var varName    = node.childrenData;
-      getScript(node.relpath+varName,function(){
-        node.childrenData = getData(varName);
-        showNode(o,node,index,hash);
-      },true);
-    } else {
-      if (!node.childrenVisited) {
-        getNode(o, node);
-      }
-      $(node.getChildrenUL()).css({'display':'block'});
-      if (node.isLast) {
-        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
-      } else {
-        node.plus_img.src = node.relpath+"ftv2mnode.png";
-      }
-      node.expanded = true;
-      var n = node.children[o.breadcrumbs[index]];
-      if (index+1<o.breadcrumbs.length) {
-        showNode(o,n,index+1,hash);
-      } else {
-        if (typeof(n.childrenData)==='string') {
-          var varName = n.childrenData;
-          getScript(n.relpath+varName,function(){
-            n.childrenData = getData(varName);
-            node.expanded=false;
-            showNode(o,node,index,hash); // retry with child node expanded
-          },true);
-        } else {
-          var rootBase = stripPath(o.toroot.replace(/\..+$/, ''));
-          if (rootBase=="index" || rootBase=="pages" || rootBase=="search") {
-            expandNode(o, n, true, true);
-          }
-          selectAndHighlight(hash,n);
-        }
-      }
+    if (node.isLast)
+    {
+      node.plus_img.src = node.relpath+"ftv2mlastnode.png";
     }
-  } else {
-    selectAndHighlight(hash);
-  }
-}
-
-function removeToInsertLater(element) {
-  var parentNode = element.parentNode;
-  var nextSibling = element.nextSibling;
-  parentNode.removeChild(element);
-  return function() {
-    if (nextSibling) {
-      parentNode.insertBefore(element, nextSibling);
-    } else {
-      parentNode.appendChild(element);
+    else
+    {
+      node.plus_img.src = node.relpath+"ftv2mnode.png";
     }
-  };
+    node.expanded = true;
+  }
 }
 
 function getNode(o, po)
 {
-  var insertFunction = removeToInsertLater(po.li);
   po.childrenVisited = true;
   var l = po.childrenData.length-1;
-  for (var i in po.childrenData) {
+  for (var i in po.childrenData) 
+  {
     var nodeData = po.childrenData[i];
     po.children[i] = newNode(o, po, nodeData[0], nodeData[1], nodeData[2],
-      i==l);
-  }
-  insertFunction();
-}
-
-function gotoNode(o,subIndex,root,hash,relpath)
-{
-  var nti = navTreeSubIndices[subIndex][root+hash];
-  o.breadcrumbs = $.extend(true, [], nti ? nti : navTreeSubIndices[subIndex][root]);
-  if (!o.breadcrumbs && root!=NAVTREE[0][1]) { // fallback: show index
-    navTo(o,NAVTREE[0][1],"",relpath);
-    $('.item').removeClass('selected');
-    $('.item').removeAttr('id');
-  }
-  if (o.breadcrumbs) {
-    o.breadcrumbs.unshift(0); // add 0 for root node
-    showNode(o, o.node, 0, hash);
+        i==l);
   }
 }
 
-function navTo(o,root,hash,relpath)
+function findNavTreePage(url, data)
 {
-  var link = cachedLink();
-  if (link) {
-    var parts = link.split('#');
-    root = parts[0];
-    if (parts.length>1) hash = '#'+parts[1].replace(/[^\w\-]/g,'');
-    else hash='';
-  }
-  if (hash.match(/^#l\d+$/)) {
-    var anchor=$('a[name='+hash.substring(1)+']');
-    glowEffect(anchor.parent(),1000); // line number
-    hash=''; // strip line number anchors
-  }
-  var url=root+hash;
-  var i=-1;
-  while (NAVTREEINDEX[i+1]<=url) i++;
-  if (i==-1) { i=0; root=NAVTREE[0][1]; } // fallback: show index
-  if (navTreeSubIndices[i]) {
-    gotoNode(o,i,root,hash,relpath)
-  } else {
-    getScript(relpath+'navtreeindex'+i,function(){
-      navTreeSubIndices[i] = eval('NAVTREEINDEX'+i);
-      if (navTreeSubIndices[i]) {
-        gotoNode(o,i,root,hash,relpath);
+  var nodes = data;
+  var result = null;
+  for (var i in nodes) 
+  {
+    var d = nodes[i];
+    if (d[1] == url) 
+    {
+      return new Array(i);
+    }
+    else if (d[2] != null) // array of children
+    {
+      result = findNavTreePage(url, d[2]);
+      if (result != null) 
+      {
+        return (new Array(i).concat(result));
       }
-    },true);
+    }
   }
-}
-
-function showSyncOff(n,relpath)
-{
-    n.html('<img src="'+relpath+'sync_off.png" title="'+SYNCOFFMSG+'"/>');
-}
-
-function showSyncOn(n,relpath)
-{
-    n.html('<img src="'+relpath+'sync_on.png" title="'+SYNCONMSG+'"/>');
-}
-
-function toggleSyncButton(relpath)
-{
-  var navSync = $('#nav-sync');
-  if (navSync.hasClass('sync')) {
-    navSync.removeClass('sync');
-    showSyncOff(navSync,relpath);
-    storeLink(stripPath2(pathName())+hashUrl());
-  } else {
-    navSync.addClass('sync');
-    showSyncOn(navSync,relpath);
-    deleteLink();
-  }
+  return null;
 }
 
 function initNavTree(toroot,relpath)
@@ -496,48 +380,26 @@ function initNavTree(toroot,relpath)
   o.node.li.appendChild(o.node.childrenUL);
   o.node.depth = 0;
   o.node.relpath = relpath;
-  o.node.expanded = false;
-  o.node.isLast = true;
-  o.node.plus_img = document.createElement("img");
-  o.node.plus_img.src = relpath+"ftv2pnode.png";
-  o.node.plus_img.width = 16;
-  o.node.plus_img.height = 22;
 
-  if (localStorageSupported()) {
-    var navSync = $('#nav-sync');
-    if (cachedLink()) {
-      showSyncOff(navSync,relpath);
-      navSync.removeClass('sync');
-    } else {
-      showSyncOn(navSync,relpath);
-    }
-    navSync.click(function(){ toggleSyncButton(relpath); });
+  getNode(o, o.node);
+
+  o.breadcrumbs = findNavTreePage(toroot, NAVTREE);
+  if (o.breadcrumbs == null)
+  {
+    o.breadcrumbs = findNavTreePage("index.html",NAVTREE);
   }
-
-  $(window).load(function(){
-    navTo(o,toroot,hashUrl(),relpath);
-    showRoot();
-  });
-
-  $(window).bind('hashchange', function(){
-     if (window.location.hash && window.location.hash.length>1){
-       var a;
-       if ($(location).attr('hash')){
-         var clslink=stripPath(pathName())+':'+hashValue();
-         a=$('.item a[class$="'+clslink.replace(/</g,'\\3c ')+'"]');
-       }
-       if (a==null || !$(a).parent().parent().hasClass('selected')){
-         $('.item').removeClass('selected');
-         $('.item').removeAttr('id');
-       }
-       var link=stripPath2(pathName());
-       navTo(o,link,hashUrl(),relpath);
-     } else if (!animationInProgress) {
-       $('#doc-content').scrollTop(0);
-       $('.item').removeClass('selected');
-       $('.item').removeAttr('id');
-       navTo(o,toroot,hashUrl(),relpath);
-     }
-  })
+  if (o.breadcrumbs != null && o.breadcrumbs.length>0)
+  {
+    var p = o.node;
+    for (var i in o.breadcrumbs) 
+    {
+      var j = o.breadcrumbs[i];
+      p = p.children[j];
+      expandNode(o,p,true);
+    }
+    p.itemDiv.className = p.itemDiv.className + " selected";
+    p.itemDiv.id = "selected";
+    $(window).load(showRoot);
+  }
 }
 

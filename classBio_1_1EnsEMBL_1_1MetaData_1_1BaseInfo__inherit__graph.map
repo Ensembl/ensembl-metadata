@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html" title="Bio::EnsEMBL::MetaData::DatabaseInfo" alt="" coords="303,5,550,32"/>
+<area shape="rect" id="node3" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html" title="Bio::EnsEMBL::MetaData::DataReleaseInfo" alt="" coords="293,56,560,83"/>
+<area shape="rect" id="node4" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html" title="Bio::EnsEMBL::MetaData::EventInfo" alt="" coords="314,107,539,133"/>
+<area shape="rect" id="node5" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html" title="Bio::EnsEMBL::MetaData::GenomeAssemblyInfo" alt="" coords="278,157,575,184"/>
+<area shape="rect" id="node6" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html" title="Bio::EnsEMBL::MetaData::GenomeComparaInfo" alt="" coords="279,208,574,235"/>
+<area shape="rect" id="node7" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html" title="Bio::EnsEMBL::MetaData::GenomeInfo" alt="" coords="305,259,548,285"/>
+<area shape="rect" id="node8" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html" title="Bio::EnsEMBL::MetaData::GenomeOrganismInfo" alt="" coords="278,309,575,336"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$GenomeFactory_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/GenomeFactory.pm" alt="" coords="5,80,333,107"/>
+<area shape="rect" id="node3" href="$ProcessCompara_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/ProcessCompara.pm" alt="" coords="358,80,692,107"/>
+<area shape="rect" id="node4" href="$ProcessGenome_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/ProcessGenome.pm" alt="" coords="717,80,1047,107"/>
+</map>
