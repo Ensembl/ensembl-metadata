@@ -5,6 +5,7 @@ An API for storing and querying metadata about Ensembl and Ensembl Genomes relea
 This API requires the following Ensembl APIs (including their Perl dependencies):
 - [ensembl](https://github.com/Ensembl/ensembl)
 - [ensembl-taxonomy](https://github.com/Ensembl/ensembl-taxonomy)
+- [ensembl-hive](https://github.com/Ensembl/ensembl-hive) (only if load pipelines are used)
 
 In addition, additional Perl modules are required, listed in [the cpan dependency file](cpanfile).
 
