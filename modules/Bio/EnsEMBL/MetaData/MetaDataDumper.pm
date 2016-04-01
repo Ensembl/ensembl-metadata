@@ -56,6 +56,14 @@ Base class for rendering details from an instance of Bio::EnsEMBL::MetaData::Gen
 Designed for dumping to multiple per-division files in parallel including a common "all" 
 file, (using start, write_metadata and end) or for one-off use (using dump_metadata).
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
+Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper
+
 =head1 AUTHOR
 
 Dan Staines

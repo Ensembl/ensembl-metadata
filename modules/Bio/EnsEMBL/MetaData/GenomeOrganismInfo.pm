@@ -38,7 +38,12 @@ Bio::EnsEMBL::MetaData::GenomeOrganismInfo
 
 Object encapsulating information about the organism to which a particular genome belongs
 
-=head1 Author
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor
+
+=head1 AUTHOR
 
 Dan Staines
 

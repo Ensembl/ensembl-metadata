@@ -29,9 +29,13 @@ Base adaptor for storing and retrieving objects from MySQL genome_metadata datab
 
 Provides basic methods for store/fetch
 
-=head1 Author
+=head1 AUTHOR
 
 Dan Staines
+
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
 
 =cut
 

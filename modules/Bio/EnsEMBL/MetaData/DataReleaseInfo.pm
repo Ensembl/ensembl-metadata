@@ -39,7 +39,12 @@ Bio::EnsEMBL::MetaData::DataReleaseInfo
 
 Object encapsulating information about a particular release of Ensembl or Ensembl Genomes
 
-=head1 Author
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::DBSQLDataReleaseInfoAdaptor
+
+=head1 AUTHOR
 
 Dan Staines
 

@@ -69,17 +69,13 @@ release on a specified server, the following method can be used:
 
 Once a lookup has been created, it can be used as specified in Bio::EnsEMBL::LookUp
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::LookUp
+
 =head1 AUTHOR
 
-dstaines
-
-=head1 MAINTANER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
+Dan Staines
 
 =cut
 

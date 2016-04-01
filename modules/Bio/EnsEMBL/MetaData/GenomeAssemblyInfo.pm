@@ -41,6 +41,12 @@ Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
 
 Object encapsulating information about a particular assembly. Release-independent.
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor
+
 =head1 Author
 
 Dan Staines

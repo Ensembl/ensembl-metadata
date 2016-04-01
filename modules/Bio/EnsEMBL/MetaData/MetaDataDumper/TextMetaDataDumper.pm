@@ -33,6 +33,9 @@ Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper
 Implementation to dump metadata details to a TSV file.
 See Bio::EnsEMBL::MetaData::MetaDataDumper for method details.
 
+=head1 SEE ALSO
+Bio::EnsEMBL::MetaData::MetaDataDumper
+
 =head1 AUTHOR
 
 Dan Staines

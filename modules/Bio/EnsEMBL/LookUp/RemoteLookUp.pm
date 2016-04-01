@@ -53,18 +53,14 @@ To instantiate to use a specific server on which core databases are located:
 	my $lookup = Bio::EnsEMBL::LookUp::RemoteLookUp->new(-USER=>$user, -HOST=>$host, -PORT=>$port, -ADAPTOR=>$adaptor);
 
 Once constructed, the LookUp instance can be used as documented in Bio::EnsEMBL::LookUp.
-  
+
+=head1 SEE ALSO
+
+Bio::EnsEMBL::LookUp
+
 =head1 AUTHOR
 
-dstaines
-
-=head1 MAINTANER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
+Dan Staines
 
 =cut
 

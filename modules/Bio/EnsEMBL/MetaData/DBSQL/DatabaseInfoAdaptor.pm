@@ -35,9 +35,15 @@ Adaptor to handle DatabaseInfo objects associated with GenomeInfo or DataRelease
 
 Uses delegate pattern to handle objects differently according to their subject objects.
 
-=head1 Author
+=head1 AUTHOR
 
 Dan Staines
+
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::DatabaseInfo
+Bio::EnsEMBL::MetaData::DataReleaseInfo
+Bio::EnsEMBL::MetaData::GenomeInfo
 
 =cut
 

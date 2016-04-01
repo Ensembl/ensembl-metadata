@@ -36,6 +36,11 @@ for my $genome (@{@comparas[0]->genomes()}) {
 
 Adaptor for storing and retrieving GenomeComparaInfo objects from MySQL genome_info database
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::GenomeComparaInfo
+Bio::EnsEMBL::MetaData::GenomeInfo
+
 =head1 Author
 
 Dan Staines

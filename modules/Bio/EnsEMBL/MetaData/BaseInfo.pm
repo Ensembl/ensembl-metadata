@@ -35,6 +35,17 @@ Base class for other data objects in Bio::EnsEMBL::MetaData API.
 
 Dan Staines
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::GenomeInfo
+Bio::EnsEMBL::MetaData::GenomeComparaInfo
+Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+Bio::EnsEMBL::MetaData::DataReleaseInfo
+Bio::EnsEMBL::MetaData::DatabaseInfo
+Bio::EnsEMBL::MetaData::EventInfo
+Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor
+
 =cut
 
 use strict;

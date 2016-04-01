@@ -36,9 +36,14 @@ print $info->dbname();
 
 Object encapsulating information about a database that can be associated with genomes or releases.
 
-=head1 Author
+=head1 AUTHOR
 
 Dan Staines
+
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::DBSQLDatabaseInfoAdaptor
 
 =cut
 

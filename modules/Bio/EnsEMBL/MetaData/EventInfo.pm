@@ -38,6 +38,11 @@ Bio::EnsEMBL::MetaData::EventInfo
 
 Object encapsulating information about an event that concerns a metadata object
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor
+
 =head1 Author
 
 Dan Staines

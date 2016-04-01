@@ -58,17 +58,19 @@ Can be used to retrieve instances of:
     Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor
 
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor
+Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor
+    
 =head1 AUTHOR
 
-dstaines
+Dan Staines
 
-=head1 MAINTANER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
 =cut		
 
 package Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;

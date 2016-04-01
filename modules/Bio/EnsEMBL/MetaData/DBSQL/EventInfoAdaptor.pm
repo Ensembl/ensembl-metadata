@@ -33,7 +33,14 @@ my $events = $adaptor->fetch_events($info);
 
 Adaptor for storing and retrieving EventInfo objects from MySQL ensembl_metadata database
 
-=head1 Author
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::EventInfo
+Bio::EnsEMBL::MetaData::DatabaseInfo
+Bio::EnsEMBL::MetaData::GenomeComparaInfo
+Bio::EnsEMBL::MetaData::GenomeInfo
+
+=head1 AUTHOR
 
 Dan Staines
 

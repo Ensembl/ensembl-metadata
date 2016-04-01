@@ -36,9 +36,15 @@ $adaptor->fetch_databases($release);
 
 Adaptor for storing and retrieving DataRelease objects from MySQL genome_info database
 
-=head1 Author
+=head1 AUTHOR
 
 Dan Staines
+
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::DataReleaseInfo
+Bio::EnsEMBL::MetaData::DatabaseInfo
+Bio::EnsEMBL::MetaData::GenomeInfo
 
 =cut
 

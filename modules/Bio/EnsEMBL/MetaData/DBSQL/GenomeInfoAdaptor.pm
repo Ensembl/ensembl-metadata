@@ -89,6 +89,13 @@ for my $genome (@{$compara->genomes()}) {
 	print $genome->name()."\n";
 }
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::GenomeInfo
+Bio::EnsEMBL::MetaData::GenomeComparaInfo
+Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+
 =head1 Author
 
 Dan Staines

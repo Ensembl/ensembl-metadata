@@ -33,6 +33,10 @@ my $assembly = $adaptor->fetch_by_name('homo_sapiens');
 
 Adaptor for storing and retrieving GenomeOrganismInfo objects from MySQL ensembl_metadata database
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+
 =head1 Author
 
 Dan Staines

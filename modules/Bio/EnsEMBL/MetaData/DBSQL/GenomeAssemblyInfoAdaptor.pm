@@ -33,6 +33,11 @@ my $assembly = $adaptor->fetch_by_assembly_accession('GCA_000001405.15');
 
 Adaptor for storing and retrieving GenomeAssemblyInfo objects from MySQL ensembl_metadata database
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+
 =head1 Author
 
 Dan Staines

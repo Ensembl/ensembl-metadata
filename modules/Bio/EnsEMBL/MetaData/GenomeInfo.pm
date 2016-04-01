@@ -54,6 +54,17 @@ if($genome->has_variations()) {
 }
 print "Compara analyses: ".scalar(@{$genome->compara()})."\n";
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
+Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+Bio::EnsEMBL::MetaData::GenomeComparaInfo
+Bio::EnsEMBL::MetaData::DataReleaseInfo
+Bio::EnsEMBL::MetaData::DatabaseInfo
+Bio::EnsEMBL::MetaData::EventInfo
+Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+
 =head1 AUTHOR
 
 Dan Staines

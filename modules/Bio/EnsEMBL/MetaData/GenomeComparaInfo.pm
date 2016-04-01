@@ -42,6 +42,12 @@ Bio::EnsEMBL::MetaData::GenomeComparaInfo
 
 Object encapsulating information about a particular compara analysis and the genomes it involves
 
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::GenomeInfo
+Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor
+
 =head1 Author
 
 Dan Staines
