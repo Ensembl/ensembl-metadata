@@ -15,6 +15,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+=head1 NAME
+
+Bio::EnsEMBL::MetaData::MetaDataProcessor
+
+=head1 SYNOPSIS
+
+my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new();
+my $info = $processor->process_genome($dba);
+
+=head1 DESCRIPTION
+
+Object for generating GenomeInfo objects from DBAdaptor objects.
+
+=head1 SEE ALSO
+
+Bio::EnsEMBL::MetaData::BaseInfo
+Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor
+
+=head1 AUTHOR
+
+Dan Staines
+
 =cut
 
 package Bio::EnsEMBL::MetaData::MetaDataProcessor;
@@ -29,6 +51,25 @@ use Carp qw/confess croak/;
 use strict;
 use warnings;
 
+=head1 SUBROUTINES/METHODS
+
+=head2 new
+  Arg [-CONTIGS] : Integer
+    Set to retrieve a list of sequences
+  Arg [-ANNOTATION_ANALYZER] : Bio::EnsEMBL::MetaData::AnnotationAnalyzer
+  Arg [-VARIATION] : Integer
+    Set to process variation
+  Arg [-COMPARA] : Integer
+    Set to process compara
+  Arg [-INFO_ADAPTOR] : Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor
+  Arg [-FORCE_UPDATE] : Integer
+    Set to force update of existing metadata
+  Description: Return a new instance of MetaDataProcessor
+  Returntype : Bio::EnsEMBL::MetaData::MetaDataProcessor
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub new {
   my ( $caller, @args ) = @_;
   my $class = ref($caller) || $caller;
@@ -45,6 +86,14 @@ sub new {
   return $self;
 }
 
+=head2 process_metadata
+  Arg        : Arrayref of DBAdaptors
+  Description: Process supplied DBAdaptors
+  Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub process_metadata {
   my ( $self, $dbas ) = @_;
 
@@ -85,6 +134,14 @@ sub process_metadata {
   return [ values(%$genome_infos) ];
 } ## end sub process_metadata
 
+=head2 process_genome
+  Arg        : Hashref of DBAdaptors
+  Description: Process supplied genome
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub process_genome {
   my ( $self, $dbas ) = @_;
   my $dba = $dbas->{core};
@@ -296,12 +353,15 @@ my $DIVISION_NAMES = { 'bacteria'     => 'EnsemblBacteria',
                        'metazoa'      => 'EnsemblMetazoa',
                        'pan_homology' => 'EnsemblPan' };
 
-sub compara_to_info {
-  my ( $self, $compara, $genomes ) = @_;
-  my $compara_info;
-  return $compara_info;
-}
-
+=head2 process_compara
+  Arg        : Bio::EnsEMBL::Compara::DBSQL::DBAdaptor
+  Arg        : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Process supplied compara
+  Returntype : Bio::EnsEMBL::MetaData::GenomeComparaInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub process_compara {
   my ( $self, $compara, $genomes ) = @_;
   if ( !defined $genomes ) {
@@ -448,6 +508,14 @@ sub process_compara {
   return $comparas;
 } ## end sub process_compara
 
+=head2 get_dbsize
+  Arg        : DBAdaptor
+  Description: Calculate size of supplied database
+  Returntype : Long
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
 sub get_dbsize {
   my ($dba) = @_;
   return
@@ -458,37 +526,3 @@ sub get_dbsize {
 }
 
 1;
-
-__END__
-
-=pod
-
-=head1 NAME
-
-Bio::EnsEMBL::MetaData::MetaDataProcessor
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-=head1 SUBROUTINES/METHODS
-
-=head2 new
-
-=head2 process_metadata
-Description : Return hashed metadata for the supplied databases
-Argument: Arrayref of DBAdaptor objects
-
-=head1 AUTHOR
-
-dstaines
-
-=head1 MAINTAINER
-
-$Author$
-
-=head1 VERSION
-
-$Revision$
-
-=cut
