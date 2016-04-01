@@ -2,13 +2,12 @@
 <area shape="rect" id="node2" href="$DataReleaseInfoAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/DataReleaseInfoAdaptor.pm" alt="" coords="265,80,639,107"/>
 <area shape="rect" id="node3" href="$EventInfoAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/EventInfoAdaptor.pm" alt="" coords="664,80,996,107"/>
 <area shape="rect" id="node4" href="$GenomeInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeInfo.pm" alt="" coords="1022,80,1279,107"/>
-<area shape="rect" id="node11" href="$GenomeFactory_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/GenomeFactory.pm" alt="" coords="1340,229,1668,256"/>
+<area shape="rect" id="node10" href="$GenomeFactory_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/GenomeFactory.pm" alt="" coords="1340,229,1668,256"/>
 <area shape="rect" id="node5" href="$GenomeInfoAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/GenomeInfoAdaptor.pm" alt="" coords="295,155,645,181"/>
-<area shape="rect" id="node10" href="$MetaDataProcessor_8pm.html" title="Bio/EnsEMBL/MetaData/MetaDataProcessor.pm" alt="" coords="1001,155,1299,181"/>
+<area shape="rect" id="node9" href="$MetaDataProcessor_8pm.html" title="Bio/EnsEMBL/MetaData/MetaDataProcessor.pm" alt="" coords="1001,155,1299,181"/>
 <area shape="rect" id="node6" href="$RemoteLookUp_8pm.html" title="Bio/EnsEMBL/LookUp/RemoteLookUp.pm" alt="" coords="339,229,601,256"/>
-<area shape="rect" id="node9" href="$UpdateBools_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/UpdateBools.pm" alt="" coords="5,229,313,256"/>
+<area shape="rect" id="node8" href="$UpdateBools_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/UpdateBools.pm" alt="" coords="5,229,313,256"/>
 <area shape="rect" id="node7" href="$LookUp_8pm.html" title="Bio/EnsEMBL/LookUp.pm" alt="" coords="385,304,556,331"/>
-<area shape="rect" id="node8" href="$LookUpDBAFinder_8pm.html" title="Bio/EnsEMBL/MetaData/DBAFinder/LookUpDBAFinder.pm" alt="" coords="291,379,651,405"/>
-<area shape="rect" id="node12" href="$ProcessCompara_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/ProcessCompara.pm" alt="" coords="626,229,960,256"/>
-<area shape="rect" id="node13" href="$ProcessGenome_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/ProcessGenome.pm" alt="" coords="985,229,1315,256"/>
+<area shape="rect" id="node11" href="$ProcessCompara_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/ProcessCompara.pm" alt="" coords="626,229,960,256"/>
+<area shape="rect" id="node12" href="$ProcessGenome_8pm.html" title="Bio/EnsEMBL/MetaData/Pipeline/ProcessGenome.pm" alt="" coords="985,229,1315,256"/>
 </map>

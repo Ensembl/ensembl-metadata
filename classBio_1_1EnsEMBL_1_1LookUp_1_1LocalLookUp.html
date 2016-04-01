@@ -162,7 +162,7 @@ Finally, a Registry already loaded with core databases can be supplied:
 
 	my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new(-REGISTRY=>'Bio::EnsEMBL::Registry');
 
-If the standard Registry is used, the argument can be omitted completely:
+If the standard Registry is used, the Arg can be omitted completely:
 
 	my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new();
 
@@ -224,7 +224,8 @@ Bio::EnsEMBL::DBSQL::DatabaseAdaptor&#160;</td><td class="memItemRight" valign="
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#ab78380bb6a3ec6c927925f07b4079964">new</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#ae9a05fa751b5559b883a114392f31ad9">register_all_dbs</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public Registry&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a6e44afef58e07ac928c5ee914a06978b">registry</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a747cc736051212b616e1df95eb36ba70">taxonomy_adaptor</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+Bio::EnsEMBL::Taxonomy::DBSQL::DBAdaptor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a41a04d896570e072c58955bc7849a0f5">taxonomy_adaptor</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a6e048fa6ac0febfc23051767c9beea83">update_from_registry</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#aa4c72f3de0b7bef96ba8f8d8cf862f44">write_registry_to_file</a> ()</td></tr>
 </table>
@@ -243,8 +244,8 @@ Bio::EnsEMBL::DBSQL::DatabaseAdaptor&#160;</td><td class="memItemRight" valign="
 </div>
 <div class="memdoc">
 <pre>	Description : Registry all aliases
-	Argument	: Species name
-	Argument	: Arrayref of alias strings
+	Arg	: Species name
+	Arg	: Arrayref of alias strings
  </pre><div id="codesection-_add_aliases" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_add_aliases-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -282,7 +283,7 @@ Bio::EnsEMBL::DBSQL::DatabaseAdaptor&#160;</td><td class="memItemRight" valign="
 </div>
 <div class="memdoc">
 <pre>	Description : Check that the name is not longer than 64 characters
-	Argument	: Name to check
+	Arg	: Name to check
  </pre><div id="codesection-_check_name" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_check_name-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -340,7 +341,7 @@ Bio::EnsEMBL::DBSQL::DatabaseAdaptor&#160;</td><td class="memItemRight" valign="
 </div>
 <div class="memdoc">
 <pre>	Description : return a hash key for a DBAdaptor
-	Argument	: Bio::EnsEMBL::DBAdaptor
+	Arg	: Bio::EnsEMBL::DBAdaptor
  </pre><div id="codesection-_dba_to_locator" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_dba_to_locator-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -349,7 +350,7 @@ Bio::EnsEMBL::DBSQL::DatabaseAdaptor&#160;</td><td class="memItemRight" valign="
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a33750117ab1c474dd86ac60ffd7a0746">_dba_to_locator</a> {
   my ($dba) = @_;
   confess(
-    <span class="stringliteral">&quot;Argument must be Bio::EnsEMBL::DBSQL::DBAdaptor not &quot;</span> . ref($dba) )
+    <span class="stringliteral">&quot;Arg must be Bio::EnsEMBL::DBSQL::DBAdaptor not &quot;</span> . ref($dba) )
     unless ref($dba) eq &quot;Bio::EnsEMBL::DBSQL::DBAdaptor&quot;;
   my $locator =
     join( q{!-!}, $dba-&gt;species_id(), <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a2e5521e5f6f171fe369f8834e37dba80">_dbc_to_locator</a>( $dba-&gt;dbc() ) );
@@ -372,7 +373,7 @@ Bio::EnsEMBL::DBSQL::DatabaseAdaptor&#160;</td><td class="memItemRight" valign="
 </div>
 <div class="memdoc">
 <pre>	Description : return a hash key for a DBConnection
-	Argument	: Bio::EnsEMBL::DBConnection
+	Arg	: Bio::EnsEMBL::DBConnection
  </pre><div id="codesection-_dbc_to_locator" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_dbc_to_locator-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -482,8 +483,8 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Add details from a DBAdaptor to the internal hashes of details
-	Argument	: Bio::EnsEMBL::DBAdaptor
-	Argument 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing <a class="el" href="classBio_1_1EnsEMBL_1_1LookUp.html">LookUp</a> instance)
+	Arg	: Bio::EnsEMBL::DBAdaptor
+	Arg 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing <a class="el" href="classBio_1_1EnsEMBL_1_1LookUp.html">LookUp</a> instance)
  </pre><div id="codesection-_hash_dba" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_hash_dba-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -520,10 +521,10 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Add supplied details to the internal hashes of details
-	Argument	: Bio::EnsEMBL::DBAdaptor to hash
-	Argument	: Arrayref of taxonomy IDs to use as keys
-	Argument	: Arrayref of aliases to use as keys
-	Argument	: Arrayref of ENA accessions to use as keys
+	Arg	: Bio::EnsEMBL::DBAdaptor to hash
+	Arg	: Arrayref of taxonomy IDs to use as keys
+	Arg	: Arrayref of aliases to use as keys
+	Arg	: Arrayref of ENA accessions to use as keys
  </pre><div id="codesection-_hash_dba_from_values" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_hash_dba_from_values-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -653,7 +654,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description	: load the registry from the supplied JSON string
-	Argument	: JSON string
+	Arg	: JSON string
  </pre><div id="codesection-_load_registry_from_json" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_load_registry_from_json-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -709,11 +710,11 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
       </table>
 </div>
 <div class="memdoc">
-<pre>	Description : Generate dbadaptor login hash from supplied arguments
-	Argument	: Host
-	Argument	: Port
-	Argument	: User
-	Argument	: Password
+<pre>	Description : Generate dbadaptor login hash from supplied Args
+	Arg	: Host
+	Arg	: Port
+	Arg	: User
+	Arg	: Password
  </pre><div id="codesection-_login_hash" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_login_hash-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -794,7 +795,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description	: Add a single DBAdaptor to the registry and the internal hashes of details
-	Argument	: Bio::EnsEMBL::DBAdaptor
+	Arg	: Bio::EnsEMBL::DBSQL::DBAdaptor
 	Return		: None
  </pre><div id="codesection-_register_dba" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_register_dba-trigger' src='closed.png' style='display:inline'><b>Code:</b>
@@ -1035,7 +1036,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Load the specified module (usually a DatabaseAdaptor)
-	Argument 	: Module name
+	Arg 	: Module name
  </pre><div id="codesection-_runtime_include" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_runtime_include-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
@@ -1127,8 +1128,8 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
       </table>
 </div>
 <div class="memdoc">
-<pre>	Description	: Dump the arguments needed for contructing a DBA
-	Argument	: Bio::EnsEMBL::DBAdaptor
+<pre>	Description	: Dump the Args needed for contructing a DBA
+	Arg	: Bio::EnsEMBL::DBAdaptor
 	Return		: Arrayref of args
  </pre><div id="codesection-dba_to_args" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-dba_to_args-trigger' src='closed.png' style='display:inline'><b>Code:</b>
@@ -1167,7 +1168,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Return all database adaptors that have been retrieved from registry
-	Argument    : None
+	Arg    : None
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_all" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1252,7 +1253,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Returns the database adaptor(s) that contains a seq_region with the supplied INSDC accession (or other seq_region name)
-	Argument    : Int
+	Arg    : Int
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_all_by_accession" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1286,7 +1287,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Returns all database adaptors that have the supplied dbname
-	Argument    : String
+	Arg    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_all_by_dbname" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1325,7 +1326,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Return all database adaptors that have an alias/name that match the supplied regexp
-	Argument    : String
+	Arg    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_all_by_name_pattern" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1406,7 +1407,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Returns all database adaptors that have the supplied taxonomy ID
-	Argument    : Int
+	Arg    : Int
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_all_by_taxon_id" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1435,7 +1436,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Return all database connections used by the DBAs retrieved from the registry
-	Argument    : None
+	Arg    : None
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DBConnection
  </pre><div id="codesection-get_all_DBConnections" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1470,7 +1471,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Return all database names used by the DBAs retrieved from the registry
-	Argument    : None
+	Arg    : None
 	Exceptions  : None
 	Return type : Arrayref of strings
  </pre><div id="codesection-get_all_dbnames" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1616,7 +1617,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Returns the database adaptor that contains the assembly with the supplied INSDC assembly accession
-	Argument    : Int
+	Arg    : Int
 	Exceptions  : None
 	Return type : Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_by_assembly_accession" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1650,7 +1651,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Return all database adaptors that have the supplied string as an alias/name
-	Argument    : String
+	Arg    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
  </pre><div id="codesection-get_by_name_exact" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1802,11 +1803,11 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Helper method to load the registry with all multispecies core databases on the supplied server
-	Argument    : Host
-	Argument    : Port
-	Argument    : User
-	Argument    : Password
-	Argument    : (optional) String with database regexp (default is _collection_core_[0-9]_eVersion_[0-9]+)
+	Arg    : Host
+	Arg    : Port
+	Arg    : User
+	Arg    : Password
+	Arg    : (optional) String with database regexp (default is _collection_core_[0-9]_eVersion_[0-9]+)
 	Exceptions  : None
 	Return type : None
  </pre><div id="codesection-register_all_dbs" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
@@ -1889,12 +1890,12 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a747cc736051212b616e1df95eb36ba70"></a><!-- doxytag: member="Bio::EnsEMBL::LookUp::LocalLookUp::taxonomy_adaptor" ref="a747cc736051212b616e1df95eb36ba70" args="()" -->
+<a class="anchor" id="a41a04d896570e072c58955bc7849a0f5"></a><!-- doxytag: member="Bio::EnsEMBL::LookUp::LocalLookUp::taxonomy_adaptor" ref="a41a04d896570e072c58955bc7849a0f5" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::LookUp::LocalLookUp::taxonomy_adaptor </td>
+          <td class="memname">public Bio::EnsEMBL::Taxonomy::DBSQL::DBAdaptor Bio::EnsEMBL::LookUp::LocalLookUp::taxonomy_adaptor </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1902,22 +1903,26 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-taxonomy_adaptor" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>	Description	: Get/set the taxonomy adaptor
+	Arg	: (optional) Bio::EnsEMBL::Taxonomy::DBSQL::DBAdaptor
+	Caller    : Internal
+	Status    : Stable
+	Return		: Bio::EnsEMBL::Taxonomy::DBSQL::DBAdaptor
+ </pre><div id="codesection-taxonomy_adaptor" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-taxonomy_adaptor-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-taxonomy_adaptor-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-taxonomy_adaptor-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a747cc736051212b616e1df95eb36ba70">taxonomy_adaptor</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a41a04d896570e072c58955bc7849a0f5">taxonomy_adaptor</a> {
   my ( $self, $adaptor ) = @_;
   <span class="keywordflow">if</span> ( defined $adaptor ) {
-    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a747cc736051212b616e1df95eb36ba70">taxonomy_adaptor</a>} = $adaptor;
+    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a41a04d896570e072c58955bc7849a0f5">taxonomy_adaptor</a>} = $adaptor;
   }
   elsif ( !defined $self-&gt;{taxonomy_adaptor} ) {
-    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a747cc736051212b616e1df95eb36ba70">taxonomy_adaptor</a>} =
+    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a41a04d896570e072c58955bc7849a0f5">taxonomy_adaptor</a>} =
       Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor-&gt;new_public();
   }
-  <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a747cc736051212b616e1df95eb36ba70">taxonomy_adaptor</a>};
+  <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html#a41a04d896570e072c58955bc7849a0f5">taxonomy_adaptor</a>};
 }
 </pre></div> </div> 
 </div>
@@ -1936,7 +1941,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description : Update internal hashes of database adaptors by name/taxids from the registry. Invoke when registry has been updated independently.
-	Argument 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing <a class="el" href="classBio_1_1EnsEMBL_1_1LookUp.html">LookUp</a> instance)
+	Arg 	: (optional) If set to 1, do not update from a DBAdaptor if already processed (allows updates of an existing <a class="el" href="classBio_1_1EnsEMBL_1_1LookUp.html">LookUp</a> instance)
 	Exceptions  : None
  </pre><div id="codesection-update_from_registry" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-update_from_registry-trigger' src='closed.png' style='display:inline'><b>Code:</b>
@@ -1971,7 +1976,7 @@ q/select species_id,meta_value from meta where meta_key=<span class="stringliter
 </div>
 <div class="memdoc">
 <pre>	Description	: Write the contents of the registry and species lists to a JSON file
-	Argument	: File name
+	Arg	: File name
 	Return		: None
  </pre><div id="codesection-write_registry_to_file" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-write_registry_to_file-trigger' src='closed.png' style='display:inline'><b>Code:</b>

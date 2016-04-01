@@ -146,147 +146,125 @@ function toggleVisibility(linkObj) {
 <a name="l00020"></a>00020 =pod
 <a name="l00021"></a>00021 
 <a name="l00022"></a>00022 =head1 NAME
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00023"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html">00023</a> 
+<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor</a>
 <a name="l00025"></a>00025 
 <a name="l00026"></a>00026 =head1 SYNOPSIS
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028 my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_adaptor();
-<a name="l00029"></a>00029 my $md = $gdba-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a76c2418354c61a9d2fd07dd2c881df74">fetch_by_name</a>(<span class="stringliteral">&quot;arabidopsis_thaliana&quot;</span>);
-<a name="l00030"></a>00030 
-<a name="l00031"></a>00031 =head1 DESCRIPTION
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033 Adaptor <span class="keywordflow">for</span> storing and retrieving GenomeInfo objects from MySQL genome_info database
-<a name="l00034"></a>00034 
-<a name="l00035"></a>00035 To start working with an adaptor:
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 <span class="preprocessor"># getting an adaptor</span>
-<a name="l00038"></a>00038 <span class="preprocessor"></span><span class="preprocessor">## adaptor for latest public EG release</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span>my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_eg_adaptor();
-<a name="l00040"></a>00040 <span class="preprocessor">## adaptor for specified public EG release</span>
-<a name="l00041"></a>00041 <span class="preprocessor"></span>my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_eg_adaptor(21);
-<a name="l00042"></a>00042 <span class="preprocessor">## manually specify a given database</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span>my $dbc = Bio::EnsEMBL::DBSQL::DBConnection-&gt;new(
-<a name="l00044"></a>00044 -USER=&gt;<span class="stringliteral">&#39;anonymous&#39;</span>,
-<a name="l00045"></a>00045 -PORT=&gt;4157,
-<a name="l00046"></a>00046 -HOST=&gt;<span class="stringliteral">&#39;mysql-eg-publicsql.ebi.ac.uk&#39;</span>,
-<a name="l00047"></a>00047 -DBNAME=&gt;<span class="stringliteral">&#39;genome_info_21&#39;</span>);
-<a name="l00048"></a>00048 my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;new(-DBC=&gt;$dbc);
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 To find genomes, use the fetch methods e.g.
-<a name="l00051"></a>00051 
-<a name="l00052"></a>00052 # find a genome by name
-<a name="l00053"></a>00053 my $genome = $gdba-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a76c2418354c61a9d2fd07dd2c881df74">fetch_by_name</a>(<span class="stringliteral">&#39;arabidopsis_thaliana&#39;</span>);
+<a name="l00028"></a>00028 <span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_EventInfoAdaptor();
+<a name="l00030"></a>00030 my $events = $adaptor-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html#a7256fc9828c4710ca84a6e39911eae1a">fetch_events</a>($info);
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 =head1 DESCRIPTION
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 Adaptor <span class="keywordflow">for</span> storing and retrieving <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">EventInfo</a> objects from MySQL ensembl_metadata database
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 =head1 Author
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 Dan Staines
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 =cut
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor;
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 use strict;
+<a name="l00045"></a>00045 use warnings;
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
+<a name="l00048"></a>00048 
+<a name="l00049"></a>00049 use Carp qw(cluck croak);
+<a name="l00050"></a>00050 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+<a name="l00051"></a>00051 use Bio::EnsEMBL::Utils::Exception qw( <span class="keywordflow">throw</span> );
+<a name="l00052"></a>00052 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>;
+<a name="l00053"></a>00053 use List::MoreUtils qw(natatime);
 <a name="l00054"></a>00054 
-<a name="l00055"></a>00055 <span class="preprocessor"># find and iterate over all genomes</span>
-<a name="l00056"></a>00056 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$gdba-&gt;fetch_all()}) {
-<a name="l00057"></a>00057     print $genome-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a099657bcf23824f8c7342ea680b04a1e">name</a>().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00058"></a>00058 }
-<a name="l00059"></a>00059 
-<a name="l00060"></a>00060 <span class="preprocessor"># find and iterate over all genomes from plants</span>
-<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$gdba-&gt;fetch_all_by_division(<span class="stringliteral">&#39;EnsemblPlants&#39;</span>)}) {
-<a name="l00062"></a>00062     print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00063"></a>00063 }
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065 <span class="preprocessor"># find and iterate over all genomes with variation</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$gdba-&gt;fetch_all_with_variation()}) {
-<a name="l00067"></a>00067     print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00068"></a>00068 }
-<a name="l00069"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html">00069</a> 
-<a name="l00070"></a>00070 <span class="preprocessor"># find all comparas for the division of interest</span>
-<a name="l00071"></a>00071 <span class="preprocessor"></span>my $comparas = $gdba-&gt;fetch_all_compara_by_division(<span class="stringliteral">&#39;EnsemblPlants&#39;</span>);
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 <span class="preprocessor"># find the peptide compara</span>
-<a name="l00074"></a>00074 <span class="preprocessor"></span>my ($compara) = grep {$_-&gt;is_peptide_compara()} @$comparas;
-<a name="l00075"></a>00075 print $compara-&gt;division().<span class="stringliteral">&quot; &quot;</span>.$compara-&gt;method().<span class="stringliteral">&quot;(&quot;</span>.$compara-&gt;dbname().<span class="stringliteral">&quot;)\n&quot;</span>;
-<a name="l00076"></a>00076 
-<a name="l00077"></a>00077 <span class="preprocessor"># print out all the genomes in this compara</span>
-<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$compara-&gt;genomes()}) {
-<a name="l00079"></a>00079     print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00080"></a>00080 }
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082 =head1 Author
-<a name="l00083"></a>00083 
-<a name="l00084"></a>00084 Dan Staines
-<a name="l00085"></a>00085 
-<a name="l00086"></a>00086 =cut
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor;
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090 use strict;
-<a name="l00091"></a>00091 use warnings;
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
-<a name="l00094"></a>00094 
-<a name="l00095"></a>00095 use Carp qw(cluck croak);
-<a name="l00096"></a>00096 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-<a name="l00097"></a>00097 use Bio::EnsEMBL::Utils::Exception qw( <span class="keywordflow">throw</span> );
-<a name="l00098"></a>00098 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>;
-<a name="l00099"></a>00099 use List::MoreUtils qw(natatime);
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101 =head1 METHODS
-<a name="l00102"></a>00102 =cut
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104 my $tables = {<span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::GenomeInfo&quot;</span>        =&gt; <span class="stringliteral">&quot;genome&quot;</span>,
-<a name="l00105"></a>00105               <span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::GenomeComparaInfo&quot;</span> =&gt; <span class="stringliteral">&quot;compara_analysis&quot;</span>,
-<a name="l00106"></a>00106               <span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::DatabaseInfo&quot;</span> =&gt; <span class="stringliteral">&quot;data_release_database&quot;</span>
-<a name="l00107"></a>00107 };
-<a name="l00108"></a>00108 
-<a name="l00109"></a>00109 sub store {
-<a name="l00110"></a>00110   my ( $self, $event ) = @_;
-<a name="l00111"></a>00111   my $table       = $tables-&gt;{ ref( $event-&gt;subject() ) };
-<a name="l00112"></a>00112   my $id          = $table . <span class="stringliteral">&#39;_id&#39;</span>;
-<a name="l00113"></a>00113   my $event_table = $table . <span class="stringliteral">&#39;_event&#39;</span>;
-<a name="l00114"></a>00114   <span class="keywordflow">if</span>(!defined $event-&gt;subject()-&gt;dbID()) {
-<a name="l00115"></a>00115     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Cannot store an event on an object that has not been stored first&quot;</span>;
-<a name="l00116"></a>00116   }
-<a name="l00117"></a>00117   <span class="keywordflow">if</span> ( !defined $event-&gt;dbID() ) {
-<a name="l00118"></a>00118     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00119"></a>00119       -SQL =&gt; qq/insert into $event_table($id,type,source,details) 
-<a name="l00120"></a>00120 values (?,?,?,?)/,
-<a name="l00121"></a>00121       -PARAMS =&gt; [ $event-&gt;subject()-&gt;dbID(), $event-&gt;type(),
-<a name="l00122"></a>00122                    $event-&gt;source(),          $event-&gt;details() ],
-<a name="l00123"></a>00123       -CALLBACK =&gt; sub {
-<a name="l00124"></a>00124         my ( $sth, $dbh, $rv ) = @_;
-<a name="l00125"></a>00125         $event-&gt;dbID( $dbh-&gt;{mysql_insertid} );
-<a name="l00126"></a>00126       } );
-<a name="l00127"></a>00127     $event-&gt;adaptor($self);
-<a name="l00128"></a>00128     $self-&gt;_store_cached_obj($event);
-<a name="l00129"></a>00129   }
-<a name="l00130"></a>00130   <span class="keywordflow">else</span> {
-<a name="l00131"></a>00131     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Cannot store an event that has been stored already&quot;</span>;
-<a name="l00132"></a>00132   }
-<a name="l00133"></a>00133   <span class="keywordflow">return</span>;
-<a name="l00134"></a>00134 }
-<a name="l00135"></a>00135 
-<a name="l00136"></a>00136 sub update {
-<a name="l00137"></a>00137   my ( $self, $event ) = @_;
-<a name="l00138"></a>00138   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Cannot update an event&quot;</span>;
+<a name="l00055"></a>00055 =head1 METHODS
+<a name="l00056"></a>00056 =cut
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 my $tables = {<span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::GenomeInfo&quot;</span>        =&gt; <span class="stringliteral">&quot;genome&quot;</span>,
+<a name="l00059"></a>00059               <span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::GenomeComparaInfo&quot;</span> =&gt; <span class="stringliteral">&quot;compara_analysis&quot;</span>,
+<a name="l00060"></a>00060               <span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::DatabaseInfo&quot;</span> =&gt; <span class="stringliteral">&quot;data_release_database&quot;</span>
+<a name="l00061"></a>00061 };
+<a name="l00062"></a>00062 =head2 store
+<a name="l00063"></a>00063   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00064"></a>00064   Description: Store the supplied <span class="keywordtype">object</span>
+<a name="l00065"></a>00065   Returntype : none
+<a name="l00066"></a>00066   Exceptions : none
+<a name="l00067"></a>00067   Caller     : general
+<a name="l00068"></a>00068   Status     : Stable
+<a name="l00069"></a>00069 =cut
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 sub store {
+<a name="l00072"></a>00072   my ( $self, $event ) = @_;
+<a name="l00073"></a>00073   my $table       = $tables-&gt;{ ref( $event-&gt;subject() ) };
+<a name="l00074"></a>00074   my $id          = $table . <span class="stringliteral">&#39;_id&#39;</span>;
+<a name="l00075"></a>00075   my $event_table = $table . <span class="stringliteral">&#39;_event&#39;</span>;
+<a name="l00076"></a>00076   <span class="keywordflow">if</span>(!defined $event-&gt;subject()-&gt;dbID()) {
+<a name="l00077"></a>00077     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Cannot store an event on an object that has not been stored first&quot;</span>;
+<a name="l00078"></a>00078   }
+<a name="l00079"></a>00079   <span class="keywordflow">if</span> ( !defined $event-&gt;dbID() ) {
+<a name="l00080"></a>00080     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00081"></a>00081       -SQL =&gt; qq/insert into $event_table($id,type,source,details) 
+<a name="l00082"></a>00082 values (?,?,?,?)/,
+<a name="l00083"></a>00083       -PARAMS =&gt; [ $event-&gt;subject()-&gt;dbID(), $event-&gt;type(),
+<a name="l00084"></a>00084                    $event-&gt;source(),          $event-&gt;details() ],
+<a name="l00085"></a>00085       -CALLBACK =&gt; sub {
+<a name="l00086"></a>00086         my ( $sth, $dbh, $rv ) = @_;
+<a name="l00087"></a>00087         $event-&gt;dbID( $dbh-&gt;{mysql_insertid} );
+<a name="l00088"></a>00088       } );
+<a name="l00089"></a>00089     $event-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#acff50be91e583478e9ec05005c216887">adaptor</a>($self);
+<a name="l00090"></a>00090     $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a5e21e43816c978e152d9d94b7a011117">_store_cached_obj</a>($event);
+<a name="l00091"></a>00091   }
+<a name="l00092"></a>00092   <span class="keywordflow">else</span> {
+<a name="l00093"></a>00093     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Cannot store an event that has been stored already&quot;</span>;
+<a name="l00094"></a>00094   }
+<a name="l00095"></a>00095   <span class="keywordflow">return</span>;
+<a name="l00096"></a>00096 }
+<a name="l00097"></a>00097 =head2 update
+<a name="l00098"></a>00098   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00099"></a>00099   Description: Update the supplied object (must be previously stored)
+<a name="l00100"></a>00100   Returntype : none
+<a name="l00101"></a>00101   Exceptions : none
+<a name="l00102"></a>00102   Caller     : general
+<a name="l00103"></a>00103   Status     : Stable
+<a name="l00104"></a>00104 =cut
+<a name="l00105"></a>00105 sub update {
+<a name="l00106"></a>00106   my ( $self, $event ) = @_;
+<a name="l00107"></a>00107   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Cannot update an event&quot;</span>;
+<a name="l00108"></a>00108 }
+<a name="l00109"></a>00109 =head2 fetch_events
+<a name="l00110"></a>00110   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00111"></a>00111               or <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00112"></a>00112               or <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00113"></a>00113   Description: Retrieve events associated with the supplied <span class="keywordtype">object</span>
+<a name="l00114"></a>00114   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">Bio::EnsEMBL::MetaData::EventInfo</a>
+<a name="l00115"></a>00115   Exceptions : none
+<a name="l00116"></a>00116   Caller     : general
+<a name="l00117"></a>00117   Status     : Stable
+<a name="l00118"></a>00118 =cut
+<a name="l00119"></a>00119 sub fetch_events {
+<a name="l00120"></a>00120   my ( $self, $subject ) = @_;
+<a name="l00121"></a>00121   my $table          = $tables-&gt;{ ref($subject) };
+<a name="l00122"></a>00122   my $id             = $table . <span class="stringliteral">&#39;_id&#39;</span>;
+<a name="l00123"></a>00123   my $event_table    = $table . <span class="stringliteral">&#39;_event&#39;</span>;
+<a name="l00124"></a>00124   my $event_table_id = $event_table . <span class="stringliteral">&#39;_id&#39;</span>;
+<a name="l00125"></a>00125   <span class="keywordflow">return</span> $self-&gt;dbc()-&gt;sql_helper()-&gt;execute(
+<a name="l00126"></a>00126     -SQL =&gt; qq/select $event_table_id, type, source, details, creation_time 
+<a name="l00127"></a>00127 from $event_table where $id=? order by creation_time asc/,
+<a name="l00128"></a>00128     -CALLBACK =&gt; sub {
+<a name="l00129"></a>00129       my @row = @{ shift @_ };
+<a name="l00130"></a>00130       <span class="keywordflow">return</span>
+<a name="l00131"></a>00131         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">Bio::EnsEMBL::MetaData::EventInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html#af3090c59c94dc6a93b1eb281583e0fba">new</a>( -DBID      =&gt; $row[0],
+<a name="l00132"></a>00132                                                 -SUBJECT   =&gt; $subject,
+<a name="l00133"></a>00133                                                 -TYPE      =&gt; $row[1],
+<a name="l00134"></a>00134                                                 -SOURCE    =&gt; $row[2],
+<a name="l00135"></a>00135                                                 -DETAILS   =&gt; $row[3],
+<a name="l00136"></a>00136                                                 -TIMESTAMP =&gt; $row[4] );
+<a name="l00137"></a>00137     },
+<a name="l00138"></a>00138     -PARAMS =&gt; [ $subject-&gt;dbID() ] );
 <a name="l00139"></a>00139 }
 <a name="l00140"></a>00140 
-<a name="l00141"></a>00141 sub fetch_events {
-<a name="l00142"></a>00142   my ( $self, $subject ) = @_;
-<a name="l00143"></a>00143   my $table          = $tables-&gt;{ ref($subject) };
-<a name="l00144"></a>00144   my $id             = $table . <span class="stringliteral">&#39;_id&#39;</span>;
-<a name="l00145"></a>00145   my $event_table    = $table . <span class="stringliteral">&#39;_event&#39;</span>;
-<a name="l00146"></a>00146   my $event_table_id = $event_table . <span class="stringliteral">&#39;_id&#39;</span>;
-<a name="l00147"></a>00147   <span class="keywordflow">return</span> $self-&gt;dbc()-&gt;sql_helper()-&gt;execute(
-<a name="l00148"></a>00148     -SQL =&gt; qq/select $event_table_id, type, source, details, creation_time 
-<a name="l00149"></a>00149 from $event_table where $id=? order by creation_time asc/,
-<a name="l00150"></a>00150     -CALLBACK =&gt; sub {
-<a name="l00151"></a>00151       my @row = @{ shift @_ };
-<a name="l00152"></a>00152       <span class="keywordflow">return</span>
-<a name="l00153"></a>00153         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">Bio::EnsEMBL::MetaData::EventInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html#af3090c59c94dc6a93b1eb281583e0fba">new</a>( -DBID      =&gt; $row[0],
-<a name="l00154"></a>00154                                                 -SUBJECT   =&gt; $subject,
-<a name="l00155"></a>00155                                                 -TYPE      =&gt; $row[1],
-<a name="l00156"></a>00156                                                 -SOURCE    =&gt; $row[2],
-<a name="l00157"></a>00157                                                 -DETAILS   =&gt; $row[3],
-<a name="l00158"></a>00158                                                 -TIMESTAMP =&gt; $row[4] );
-<a name="l00159"></a>00159     },
-<a name="l00160"></a>00160     -PARAMS =&gt; [ $subject-&gt;dbID() ] );
-<a name="l00161"></a>00161 }
-<a name="l00162"></a>00162 
-<a name="l00163"></a>00163 1;
+<a name="l00141"></a>00141 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

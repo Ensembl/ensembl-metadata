@@ -311,7 +311,7 @@ function toggleVisibility(linkObj) {
 <a name="l00185"></a>00185     }
 <a name="l00186"></a>00186   } ## end <span class="keywordflow">if</span> ( defined $self-&gt;{contigs...})
 <a name="l00187"></a>00187 
-<a name="l00188"></a>00188   $md-&gt;sequences($seqs_arr);
+<a name="l00188"></a>00188   $md-&gt;assembly()-&gt;sequences($seqs_arr);
 <a name="l00189"></a>00189 
 <a name="l00190"></a>00190 <span class="preprocessor">  # get toplevel base count</span>
 <a name="l00191"></a>00191 <span class="preprocessor"></span>  my $base_counts =
@@ -330,10 +330,10 @@ function toggleVisibility(linkObj) {
 <a name="l00204"></a>00204       -PARAMS =&gt; [ $dba-&gt;species_id() ] );
 <a name="l00205"></a>00205   }
 <a name="l00206"></a>00206 
-<a name="l00207"></a>00207   $md-&gt;base_count( $base_counts-&gt;[0] );
+<a name="l00207"></a>00207   $md-&gt;assembly()-&gt;base_count( $base_counts-&gt;[0] );
 <a name="l00208"></a>00208 
 <a name="l00209"></a>00209 <span class="preprocessor">  # get associated PMIDs</span>
-<a name="l00210"></a>00210 <span class="preprocessor"></span>  $md-&gt;publications(
+<a name="l00210"></a>00210 <span class="preprocessor"></span>  $md-&gt;organism()-&gt;publications(
 <a name="l00211"></a>00211     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
 <a name="l00212"></a>00212       -SQL =&gt; q/select distinct dbprimary_acc from 
 <a name="l00213"></a>00213       xref
@@ -346,7 +346,7 @@ function toggleVisibility(linkObj) {
 <a name="l00220"></a>00220       -PARAMS =&gt; [ $dba-&gt;species_id() ] ) );
 <a name="l00221"></a>00221 
 <a name="l00222"></a>00222 <span class="preprocessor">  # add aliases</span>
-<a name="l00223"></a>00223 <span class="preprocessor"></span>  $md-&gt;aliases(
+<a name="l00223"></a>00223 <span class="preprocessor"></span>  $md-&gt;organism()-&gt;aliases(
 <a name="l00224"></a>00224     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
 <a name="l00225"></a>00225       -SQL =&gt; q/select distinct meta_value from meta
 <a name="l00226"></a>00226       where species_id=? and meta_key=<span class="stringliteral">&#39;species.alias&#39;</span>/,

@@ -143,18 +143,20 @@ function toggleVisibility(linkObj) {
 <hr/><a name="details" id="details"></a><h2>Class Summary</h2>
 <div class="textblock"><h2><a class="anchor" id="Synopsis"></a>
 Synopsis</h2>
-<div class="fragment"><pre class="fragment">TODO
+<div class="fragment"><pre class="fragment"><span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_GenomeAssemblyInfoAdaptor();
+my $assembly = $adaptor-&gt;fetch_by_assembly_accession(<span class="stringliteral">&#39;GCA_000001405.15&#39;</span>);
 </pre></div> <h2><a class="anchor" id="Description"></a>
 Description</h2>
  <pre>
 Adaptor for storing and retrieving GenomeAssemblyInfo objects from MySQL ensembl_metadata database
 
 </pre> 
-<p>Definition at line <a class="el" href="GenomeAssemblyInfoAdaptor_8pm_source.html#l00022">22</a> of file <a class="el" href="GenomeAssemblyInfoAdaptor_8pm_source.html">GenomeAssemblyInfoAdaptor.pm</a>.</p>
+<p>Definition at line <a class="el" href="GenomeAssemblyInfoAdaptor_8pm_source.html#l00024">24</a> of file <a class="el" href="GenomeAssemblyInfoAdaptor_8pm_source.html">GenomeAssemblyInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a88689efc81e1d0511baf03d370a66dcd">_args_to_sql</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af0f4ed5e5e2528be363302c280a6cb1a">_args_to_sql</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ab58303767b81425110b88adc9e2323d1">_cache</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ace600f4648ebeb1ac9e6cd67dd7cae97">_clear_cache</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a89e7245d0928c0e72f23242323e11b53">_fetch_children</a> ()</td></tr>
@@ -169,7 +171,7 @@ Available Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#aa7a532ce6ea6507786d2890fde4eece2">_get_id_field</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#ae685e79b480a517fb00c6d3052ebbeef">_get_obj_class</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a5e21e43816c978e152d9d94b7a011117">_store_cached_obj</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a4b2532946807a65c3a9aa0904982adc1">_store_sequences</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a008d86006fc69dbd30cf87a1a1e432d6">_store_sequences</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#acfa41c718138cc68d924d0fb5c550105">fetch_all</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html">Bio::EnsEMBL::MetaData::GenomeAssemblyInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a15b04523eb3f0cce3f6b89c4a62975a8">fetch_all_by_assembly_set_chain</a> ()</td></tr>
@@ -187,16 +189,16 @@ Available Methods</h2></td></tr>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a5e7ddcf6f5ed0516c6357a0eb112012b">fetch_by_dbID</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a62b6a7c963d480a08591ad20f5ab0454">fetch_by_dbIDs</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a10742fb726f2f378be8622df2ac02acd">store</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#ac906b45f1f52612dc7434ed2cc50f0ae">update</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a066d73a26bbc6fa70beb5efe650dba97">store</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#aa22160d2c13692376c52870d75fbcc03">update</a> ()</td></tr>
 </table>
 <hr/><h2>Method Documentation</h2>
-<a class="anchor" id="a88689efc81e1d0511baf03d370a66dcd"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::_args_to_sql" ref="a88689efc81e1d0511baf03d370a66dcd" args="()" -->
+<a class="anchor" id="af0f4ed5e5e2528be363302c280a6cb1a"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::_args_to_sql" ref="af0f4ed5e5e2528be363302c280a6cb1a" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor::_args_to_sql </td>
+          <td class="memname">protected String Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor::_args_to_sql </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td><code> [inherited]</code></td>
@@ -204,13 +206,19 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-_args_to_sql" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Add where clauses to SQL given arguments
+  Arg        : String - Base SQL
+  Arg        : Hashref - arguments
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-_args_to_sql" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_args_to_sql-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_args_to_sql-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_args_to_sql-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a88689efc81e1d0511baf03d370a66dcd">_args_to_sql</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af0f4ed5e5e2528be363302c280a6cb1a">_args_to_sql</a> {
   my ( $self, $sql_in, $args ) = @_;
   my $sql    = $sql_in;
   my $params = [];
@@ -496,10 +504,9 @@ Available Methods</h2></td></tr>
     <span class="keywordflow">if</span> !defined $genome-&gt;dbID();
   my $sequences =
     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute(
-         -USE_HASHREFS =&gt; 1,
-         -SQL =&gt;
-           <span class="stringliteral">&#39;select name,acc from assembly_sequence where assembly_id=?&#39;</span>,
-         -PARAMS =&gt; [ $genome-&gt;dbID() ] );
+           -USE_HASHREFS =&gt; 1,
+           -SQL =&gt; <span class="stringliteral">&#39;select name,acc from assembly_sequence where assembly_id=?&#39;</span>,
+           -PARAMS =&gt; [ $genome-&gt;dbID() ] );
   $genome-&gt;sequences($sequences);
   <span class="keywordflow">return</span>;
 }
@@ -693,7 +700,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;assembly_id&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#aed14d34e814f461ef8878b7995f85aba">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a23bbb63b4a6951c881f22f8f8327f9f2">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -720,7 +727,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeAssemblyInfo&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a77195d8968d32f514e812661fd398b01">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ad9daa29802aa14c337f7833b2872caaf">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -758,12 +765,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a4b2532946807a65c3a9aa0904982adc1"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::_store_sequences" ref="a4b2532946807a65c3a9aa0904982adc1" args="()" -->
+<a class="anchor" id="a008d86006fc69dbd30cf87a1a1e432d6"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::_store_sequences" ref="a008d86006fc69dbd30cf87a1a1e432d6" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected void Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::_store_sequences </td>
+          <td class="memname">protected Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::_store_sequences </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -771,36 +778,31 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg	     : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html">Bio::EnsEMBL::MetaData::GenomeAssemblyInfo</a>
-  Description: Stores the sequences for the supplied object
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
- </pre><div id="codesection-_store_sequences" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<p>Undocumented method</p>
+<div id="codesection-_store_sequences" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_store_sequences-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_store_sequences-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_store_sequences-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a4b2532946807a65c3a9aa0904982adc1">_store_sequences</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a008d86006fc69dbd30cf87a1a1e432d6">_store_sequences</a> {
   my ( $self, $assembly ) = @_;
 
   $self-&gt;{dbc}-&gt;sql_helper()-&gt;execute_update(
-           -SQL =&gt; q/<span class="keyword">delete</span> from assembly_sequence where assembly_id=?/,
-           -PARAMS =&gt; [ $assembly-&gt;dbID() ] );
+                   -SQL =&gt; q/<span class="keyword">delete</span> from assembly_sequence where assembly_id=?/,
+                   -PARAMS =&gt; [ $assembly-&gt;dbID() ] );
 
   <span class="keywordflow">return</span> <span class="keywordflow">if</span> !defined $assembly-&gt;sequences();
 
   my $it = natatime 1000, @{ $assembly-&gt;sequences() };
   <span class="keywordflow">while</span> ( my @vals = $it-&gt;() ) {
     my $sql =
-<span class="stringliteral">&#39;insert ignore into assembly_sequence(assembly_id,name,acc) values &#39;</span>
-      . join(
+      <span class="stringliteral">&#39;insert ignore into assembly_sequence(assembly_id,name,acc) values &#39;</span> .
+      join(
       <span class="charliteral">&#39;,&#39;</span>,
       map {
         <span class="charliteral">&#39;(&#39;</span> . $assembly-&gt;dbID() . <span class="stringliteral">&#39;,&quot;&#39;</span> . $_-&gt;{name} . <span class="stringliteral">&#39;&quot;,&#39;</span> .
           ( $_-&gt;{acc} ? ( <span class="charliteral">&#39;&quot;&#39;</span> . $_-&gt;{acc} . <span class="charliteral">&#39;&quot;&#39;</span> ) : (<span class="stringliteral">&#39;NULL&#39;</span>) ) . <span class="charliteral">&#39;)&#39;</span>
-        } @vals );
+      } @vals );
     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update( -SQL =&gt; $sql );
   }
   <span class="keywordflow">return</span>;
@@ -863,8 +865,8 @@ Available Methods</h2></td></tr>
   my ( $self, $id, $keen ) = @_;
   <span class="keywordflow">return</span>
     $self-&gt;_fetch_generic(
-              $self-&gt;_get_base_sql . <span class="stringliteral">&#39; where assembly_accession like ?&#39;</span>,
-              [ $id . <span class="stringliteral">&#39;.%&#39;</span> ], $keen );
+                      $self-&gt;_get_base_sql . <span class="stringliteral">&#39; where assembly_accession like ?&#39;</span>,
+                      [ $id . <span class="stringliteral">&#39;.%&#39;</span> ], $keen );
 }
 </pre></div> </div> 
 </div>
@@ -896,15 +898,12 @@ Available Methods</h2></td></tr>
 <div id='codesection-fetch_all_by_organism-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#aef28a91dc6980c267ae6f9e5edd8929f">fetch_all_by_organism</a> {
   my ( $self, $organism_id, $keen ) = @_;
-  <span class="keywordflow">if</span> (
-     ref($organism_id) eq <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeOrganismInfo&#39;</span> )
-  {
+  <span class="keywordflow">if</span> ( ref($organism_id) eq <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeOrganismInfo&#39;</span> ) {
     $organism_id = $organism_id-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>();
   }
   <span class="keywordflow">return</span>
-    $self-&gt;_fetch_generic(
-                      $self-&gt;_get_base_sql() . <span class="stringliteral">&#39; where organism_id = ?&#39;</span>,
-                      [$organism_id], $keen );
+    $self-&gt;_fetch_generic( $self-&gt;_get_base_sql() . <span class="stringliteral">&#39; where organism_id = ?&#39;</span>,
+                           [$organism_id], $keen );
 }
 </pre></div> </div> 
 </div>
@@ -937,12 +936,10 @@ Available Methods</h2></td></tr>
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a13fe63496a6a2caf4c003e141d95b453">fetch_all_by_sequence_accession</a> {
   my ( $self, $id, $keen ) = @_;
   <span class="keywordflow">if</span> ( $id =~ m/\.[0-9]+$/ ) {
-    <span class="keywordflow">return</span> $self-&gt;fetch_all_by_sequence_accession_versioned( $id,
-                                                             $keen );
+    <span class="keywordflow">return</span> $self-&gt;fetch_all_by_sequence_accession_versioned( $id, $keen );
   }
   <span class="keywordflow">else</span> {
-    <span class="keywordflow">return</span> $self-&gt;fetch_all_by_sequence_accession_unversioned( $id,
-                                                               $keen );
+    <span class="keywordflow">return</span> $self-&gt;fetch_all_by_sequence_accession_unversioned( $id, $keen );
   }
 }
 </pre></div> </div> 
@@ -1051,9 +1048,9 @@ Available Methods</h2></td></tr>
   my ( $self, $id, $keen ) = @_;
   <span class="keywordflow">return</span>
     $self-&gt;_first_element(
-          $self-&gt;_fetch_generic(
-            $self-&gt;_get_base_sql . <span class="stringliteral">&#39; where assembly_accession=?&#39;</span>, [$id],
-            $keen ) );
+                         $self-&gt;_fetch_generic(
+                           $self-&gt;_get_base_sql . <span class="stringliteral">&#39; where assembly_accession=?&#39;</span>,
+                           [$id], $keen ) );
 
 }
 </pre></div> </div> 
@@ -1135,12 +1132,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a10742fb726f2f378be8622df2ac02acd"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::store" ref="a10742fb726f2f378be8622df2ac02acd" args="()" -->
+<a class="anchor" id="a066d73a26bbc6fa70beb5efe650dba97"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::store" ref="a066d73a26bbc6fa70beb5efe650dba97" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::store </td>
+          <td class="memname">public void Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::store </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1148,13 +1145,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-store" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+  Description: Store the supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-store" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-store-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-store-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-store-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a10742fb726f2f378be8622df2ac02acd">store</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a066d73a26bbc6fa70beb5efe650dba97">store</a> {
   my ( $self, $assembly ) = @_;
   <span class="keywordflow">if</span> ( !defined $assembly-&gt;organism() ) {
     <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Assembly must be associated with an organism&quot;</span>);
@@ -1170,8 +1172,7 @@ Available Methods</h2></td></tr>
       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
         -SQL =&gt;
 <span class="stringliteral">&quot;select assembly_id from assembly where organism_id=? and assembly_name=?&quot;</span>,
-        -PARAMS =&gt;
-          [ $assembly-&gt;organism()-&gt;dbID(), $assembly-&gt;assembly_name() ]
+        -PARAMS =&gt; [ $assembly-&gt;organism()-&gt;dbID(), $assembly-&gt;assembly_name() ]
       ) };
     <span class="keywordflow">if</span> ( defined $dbID ) {
       $assembly-&gt;dbID($dbID);
@@ -1200,16 +1201,16 @@ q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_coun
     $self-&gt;_store_cached_obj($assembly);
   }
   <span class="keywordflow">return</span>;
-} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a10742fb726f2f378be8622df2ac02acd">store</a>
+} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#a066d73a26bbc6fa70beb5efe650dba97">store</a>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="ac906b45f1f52612dc7434ed2cc50f0ae"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::update" ref="ac906b45f1f52612dc7434ed2cc50f0ae" args="()" -->
+<a class="anchor" id="aa22160d2c13692376c52870d75fbcc03"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::update" ref="aa22160d2c13692376c52870d75fbcc03" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::update </td>
+          <td class="memname">public void Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor::update </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1217,13 +1218,18 @@ q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_coun
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-update" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+  Description: Update the supplied object (must be previously stored)
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-update" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-update-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-update-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-update-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#ac906b45f1f52612dc7434ed2cc50f0ae">update</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#aa22160d2c13692376c52870d75fbcc03">update</a> {
   my ( $self, $assembly ) = @_;
   <span class="keywordflow">if</span> ( !defined $assembly-&gt;dbID() ) {
     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
@@ -1231,11 +1237,10 @@ q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_coun
 
   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
     -SQL =&gt;
-q/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#ac906b45f1f52612dc7434ed2cc50f0ae">update</a> assembly <span class="keyword">set</span> assembly_accession=?,assembly_name=?,assembly_level=?,base_count=?,organism_id=? where assembly_id=?/,
-    -PARAMS =&gt; [
-            $assembly-&gt;assembly_accession(), $assembly-&gt;assembly_name(),
-            $assembly-&gt;assembly_level(),     $assembly-&gt;base_count(),
-            $assembly-&gt;organism()-&gt;dbID(),   $assembly-&gt;dbID() ] );
+q/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html#aa22160d2c13692376c52870d75fbcc03">update</a> assembly <span class="keyword">set</span> assembly_accession=?,assembly_name=?,assembly_level=?,base_count=?,organism_id=? where assembly_id=?/,
+    -PARAMS =&gt; [ $assembly-&gt;assembly_accession(), $assembly-&gt;assembly_name(),
+                 $assembly-&gt;assembly_level(),     $assembly-&gt;base_count(),
+                 $assembly-&gt;organism()-&gt;dbID(),   $assembly-&gt;dbID() ] );
 
   <span class="keywordflow">return</span>;
 }

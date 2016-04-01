@@ -139,13 +139,27 @@ Specialised DBAdaptor for connecting to the ensembl_metadata MySQL database
 
 </pre> <h2><a class="anchor" id="Synopsis"></a>
 Synopsis</h2>
-<div class="fragment"><pre class="fragment">                                      
+<div class="fragment"><pre class="fragment"><span class="preprocessor"># instantiate directly</span>
+<span class="preprocessor"></span>my $dba = Bio::EnsEMBL::DBSQL::MetaDataDBAdaptor-&gt;new();
+
+<span class="preprocessor"># retrieve from Registry</span>
+<span class="preprocessor"></span>my $dba = Bio::EnsEMBL::Registry-&gt;get_DBAdaptor(<span class="stringliteral">&quot;multi&quot;</span>, <span class="stringliteral">&quot;metadata&quot;</span>);
+
+<span class="preprocessor"># retrieve adaptors</span>
+<span class="preprocessor"></span>my $adaptor = $dba-&gt;get_GenomeInfoAdaptor();
+                                      
 =head DESCRIPTION
 
 A specialised DBAdaptor allowing connection to a metadata database. 
-Can be used to retrieve an instance of Bio::EnsEMBL::DBSQL::GenomeInfoAdaptor.
+Can be used to retrieve instances of:
+    <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+    <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor</a>
+    <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor</a>
+    <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor</a>
+    <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor</a>
+    <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor</a>
 </pre></div> 
-<p>Definition at line <a class="el" href="MetaDataDBAdaptor_8pm_source.html#l00022">22</a> of file <a class="el" href="MetaDataDBAdaptor_8pm_source.html">MetaDataDBAdaptor.pm</a>.</p>
+<p>Definition at line <a class="el" href="MetaDataDBAdaptor_8pm_source.html#l00037">37</a> of file <a class="el" href="MetaDataDBAdaptor_8pm_source.html">MetaDataDBAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>

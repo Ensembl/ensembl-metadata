@@ -147,19 +147,20 @@ Synopsis</h2>
         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html">Bio::EnsEMBL::MetaData::GenomeAssemblyInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a17fe417a1b13a698d46932828ab4aa15">new</a>(
                                               -ASSEMBLY_NAME      =&gt; $assembly_name,
                                               -ASSEMBLY_ACCESSION =&gt; $assembly_accession,
-                                              -ASSEMBLY_LEVEL     =&gt; $assembly_level
+                                              -ASSEMBLY_LEVEL     =&gt; $assembly_level,
+                                              -ORGANISM           =&gt; $organism
         );
 </pre></div> <h2><a class="anchor" id="Description"></a>
 Description</h2>
  <pre>
-Object encapsulating information about a particular assembly
+Object encapsulating information about a particular assembly. Release-independent.
 
 </pre> 
-<p>Definition at line <a class="el" href="GenomeAssemblyInfo_8pm_source.html#l00022">22</a> of file <a class="el" href="GenomeAssemblyInfo_8pm_source.html">GenomeAssemblyInfo.pm</a>.</p>
+<p>Definition at line <a class="el" href="GenomeAssemblyInfo_8pm_source.html#l00023">23</a> of file <a class="el" href="GenomeAssemblyInfo_8pm_source.html">GenomeAssemblyInfo.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1a34c3fa71d4be6076403fee9cbda557">_load_child</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#af4f9282e4cc933a50c3e33bd5cc1b232">_preload</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#aa6d67412b126b44790904b638f81fcbc">_unload</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
@@ -186,12 +187,12 @@ Available Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#ac2b60a218773b1d54779f2613deade39">to_string</a> ()</td></tr>
 </table>
 <hr/><h2>Method Documentation</h2>
-<a class="anchor" id="a1a34c3fa71d4be6076403fee9cbda557"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::GenomeAssemblyInfo::_load_child" ref="a1a34c3fa71d4be6076403fee9cbda557" args="()" -->
+<a class="anchor" id="a1b236763fc118984bee34ca2618e687f"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::GenomeAssemblyInfo::_load_child" ref="a1b236763fc118984bee34ca2618e687f" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected Bio::EnsEMBL::MetaData::BaseInfo::_load_child </td>
+          <td class="memname">protected void Bio::EnsEMBL::MetaData::BaseInfo::_load_child </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td><code> [inherited]</code></td>
@@ -199,13 +200,19 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-_load_child" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Lazy load method for loading children from database if not initialised
+  Arg        : Key to find child data in object hash
+  Arg        : Method for loading child data from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#acff50be91e583478e9ec05005c216887">adaptor()</a>
+  Returntype : none
+  Exceptions : none
+  Caller     : Internal
+  Status     : Stable
+ </pre><div id="codesection-_load_child" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_load_child-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_load_child-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_load_child-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1a34c3fa71d4be6076403fee9cbda557">_load_child</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a> {
   my ( $self, $key, $method ) = @_;
   <span class="keywordflow">if</span> ( !defined $self-&gt;{$key} &amp;&amp;
        defined $self-&gt;dbID() &amp;&amp;
@@ -316,7 +323,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#acff50be91e583478e9ec05005c216887">adaptor</a>};
 }
 </pre></div> </div> 
-<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a17dc05217c517ca2fe7ddc12213dea6b">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>, and <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a29d96e7a145a18364d0de3416d988f11">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
+<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a29d96e7a145a18364d0de3416d988f11">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
 
 </div>
 </div>
@@ -547,7 +554,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>};
 }
 </pre></div> </div> 
-<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a5559e8aacd49d61b3adc34ff33b31d04">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>, and <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#ae2ae7289199643ff4352d80941bdb6cd">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
+<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#ae2ae7289199643ff4352d80941bdb6cd">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
 
 </div>
 </div>
@@ -564,8 +571,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) display_name to set
-  Description: Gets/sets display_name
+<pre>  Description: Gets display_name
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -576,8 +582,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-display_name-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-display_name-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a35fbdad2cfc93ab031508232ad1a8b1c">display_name</a> {
-  my ( $self, $display_name ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;display_name($display_name);
+  my ( $self) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;display_name();
 }
 </pre></div> </div> 
 </div>
@@ -595,8 +601,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) value of is_reference
-  Description: Gets/sets whether this is a reference for the species
+<pre>  Description: Gets whether this is a reference for the species
   Returntype : bool
   Exceptions : none
   Caller     : general
@@ -607,8 +612,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-is_reference-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-is_reference-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#aa7e78b1a036ba69e427a2abf53b3e083">is_reference</a> {
-  my ( $self, $is_ref ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;is_reference($is_ref);
+  my ( $self ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;is_reference();
 }
 </pre></div> </div> 
 </div>
@@ -626,8 +631,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) name (computationally safe) for species to set
-  Description: Gets/sets name for genome
+<pre>  Description: Gets name for genome
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -638,8 +642,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-name-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-name-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a5b3f18d4634f79ce8236737a3545aa61">name</a> {
-  my ( $self, $arg ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;name($arg);
+  my ( $self ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;name();
 }
 </pre></div> </div> 
 </div>
@@ -736,7 +740,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">if</span> ( defined $organism ) {
     $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a441e87334af9d952307a3b07c122a6dd">organism</a>} = $organism;
   }
-  $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1a34c3fa71d4be6076403fee9cbda557">_load_child</a>( <span class="stringliteral">&#39;organism&#39;</span>, <span class="stringliteral">&#39;_fetch_organism&#39;</span> );
+  $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a>( <span class="stringliteral">&#39;organism&#39;</span>, <span class="stringliteral">&#39;_fetch_organism&#39;</span> );
   <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a441e87334af9d952307a3b07c122a6dd">organism</a>};
 }
 </pre></div> </div> 
@@ -790,8 +794,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) serotype to set
-  Description: Gets/sets serotype
+<pre>  Description: Gets serotype
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -802,8 +805,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-serotype-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-serotype-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a56d415e8ab17e86d348dc6a5da159e38">serotype</a> {
-  my ( $self, $arg ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;serotype($arg);
+  my ( $self ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;serotype();
 }
 </pre></div> </div> 
 </div>
@@ -821,8 +824,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) taxonomy_id to set
-  Description: Gets/sets NCBI taxonomy ID for species to which this organism belongs
+<pre>  Description: Gets NCBI taxonomy ID for species to which this organism belongs
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -833,8 +835,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-species_taxonomy_id-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-species_taxonomy_id-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a960101bada51d652227445e932189a10">species_taxonomy_id</a> {
-  my ( $self, $taxonomy_id ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;species_taxonomy_id($taxonomy_id);
+  my ( $self ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;species_taxonomy_id();
 }
 </pre></div> </div> 
 </div>
@@ -852,8 +854,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) strain to set
-  Description: Gets/sets strain of genome
+<pre>  Description: Gets strain of genome
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -864,8 +865,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-strain-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-strain-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#aedfb19c8bafa967e9f784b403c73ce74">strain</a> {
-  my ( $self, $arg ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;strain($arg);
+  my ( $self ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;strain();
 }
 </pre></div> </div> 
 </div>
@@ -883,8 +884,7 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg        : (optional) taxonomy_id to set
-  Description: Gets/sets NCBI taxonomy ID
+<pre>  Description: Gets NCBI taxonomy ID
   Returntype : string
   Exceptions : none
   Caller     : general
@@ -895,8 +895,8 @@ Available Methods</h2></td></tr>
 <div id='codesection-taxonomy_id-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-taxonomy_id-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html#a3163fefe5f186edbad7915e8358e2b36">taxonomy_id</a> {
-  my ( $self, $taxonomy_id ) = @_;
-  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;taxonomy_id($taxonomy_id);
+  my ( $self ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;organism()-&gt;taxonomy_id();
 }
 </pre></div> </div> 
 </div>
@@ -965,7 +965,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $out;
 } ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a6fbbd86e4e29265997aa9adeff7d3a33">to_hash</a>
 </pre></div> </div> 
-<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#af1b92812b54d3d13a84ac0cf1383f69b">Bio::EnsEMBL::MetaData::DatabaseInfo</a>, <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#ac0a094a56a7accc3ddf6f97d65eb1738">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>, <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html#afb28178d2a90fa037caeefb38452aa77">Bio::EnsEMBL::MetaData::EventInfo</a>, <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html#a932dc42d26d9918a5172395a692db7f8">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>, and <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a4d9ae95216e2871a828f771a4c0d2f3d">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
+<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a93df7e26dd8804a2d8acad128d7af1ae">Bio::EnsEMBL::MetaData::DatabaseInfo</a>, <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a3ab9fc6895c1088bcdfc9387d013192b">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>, <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html#aa187fcb32166ee20d72c81d2cbeec730">Bio::EnsEMBL::MetaData::EventInfo</a>, <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html#a932dc42d26d9918a5172395a692db7f8">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>, and <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a4d9ae95216e2871a828f771a4c0d2f3d">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
 
 </div>
 </div>

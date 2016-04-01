@@ -9,9 +9,6 @@ var NAVTREE =
       [ "Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html", null ],
       [ "Bio::EnsEMBL::MetaData::DataReleaseInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html", null ],
       [ "Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1DbHostDBAFinder.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1EnaDBAFinder.html", null ],
       [ "Bio::EnsEMBL::MetaData::EventInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html", null ],
       [ "Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1EventInfoAdaptor.html", null ],
       [ "Bio::EnsEMBL::MetaData::GenomeAssemblyInfo", "classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html", null ],
@@ -32,9 +29,7 @@ var NAVTREE =
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessCompara.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenome.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenomes__conf.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder::ProductionDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1ProductionDBAFinder.html", null ],
       [ "Bio::EnsEMBL::Utils::PublicMySQLServer", "classBio_1_1EnsEMBL_1_1Utils_1_1PublicMySQLServer.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1RegistryDBAFinder.html", null ],
       [ "Bio::EnsEMBL::LookUp::RemoteLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1RemoteLookUp.html", null ],
       [ "Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TextMetaDataDumper.html", null ],
       [ "Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TT2MetaDataDumper.html", null ],
@@ -63,11 +58,6 @@ var NAVTREE =
         [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html", null ],
         [ "Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html", null ]
       ] ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html", [
-        [ "Bio::EnsEMBL::MetaData::DBAFinder::EnaDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1EnaDBAFinder.html", null ],
-        [ "Bio::EnsEMBL::MetaData::DBAFinder::RegistryDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1RegistryDBAFinder.html", null ]
-      ] ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder::DbHostDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1DbHostDBAFinder.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::GenomeFactory", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1GenomeFactory.html", null ],
       [ "Bio::EnsEMBL::LookUp::LocalLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1LocalLookUp.html", null ],
       [ "Bio::EnsEMBL::LookUp", "classBio_1_1EnsEMBL_1_1LookUp.html", null ],
@@ -83,7 +73,6 @@ var NAVTREE =
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessCompara.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenome.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenomes__conf.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder::ProductionDBAFinder", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1ProductionDBAFinder.html", null ],
       [ "Bio::EnsEMBL::Utils::PublicMySQLServer", "classBio_1_1EnsEMBL_1_1Utils_1_1PublicMySQLServer.html", null ],
       [ "Bio::EnsEMBL::LookUp::RemoteLookUp", "classBio_1_1EnsEMBL_1_1LookUp_1_1RemoteLookUp.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::UpdateBools", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1UpdateBools.html", null ]
@@ -94,7 +83,6 @@ var NAVTREE =
       [ "Bio::EnsEMBL", "namespaceBio_1_1EnsEMBL.html", null ],
       [ "Bio::EnsEMBL::LookUp", "namespaceBio_1_1EnsEMBL_1_1LookUp.html", null ],
       [ "Bio::EnsEMBL::MetaData", "namespaceBio_1_1EnsEMBL_1_1MetaData.html", null ],
-      [ "Bio::EnsEMBL::MetaData::DBAFinder", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder.html", null ],
       [ "Bio::EnsEMBL::MetaData::DBSQL", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL.html", null ],
       [ "Bio::EnsEMBL::MetaData::MetaDataDumper", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline", "namespaceBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline.html", null ],
@@ -108,7 +96,6 @@ var NAVTREE =
       [ "Bio/EnsEMBL/MetaData/BaseInfo.pm", "BaseInfo_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DatabaseInfo.pm", "DatabaseInfo_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DataReleaseInfo.pm", "DataReleaseInfo_8pm.html", null ],
-      [ "Bio/EnsEMBL/MetaData/DBAFinder.pm", "DBAFinder_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/EventInfo.pm", "EventInfo_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/GenomeAssemblyInfo.pm", "GenomeAssemblyInfo_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/GenomeComparaInfo.pm", "GenomeComparaInfo_8pm.html", null ],
@@ -116,10 +103,6 @@ var NAVTREE =
       [ "Bio/EnsEMBL/MetaData/GenomeOrganismInfo.pm", "GenomeOrganismInfo_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/MetaDataDumper.pm", "MetaDataDumper_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/MetaDataProcessor.pm", "MetaDataProcessor_8pm.html", null ],
-      [ "Bio/EnsEMBL/MetaData/DBAFinder/DbHostDBAFinder.pm", "DbHostDBAFinder_8pm.html", null ],
-      [ "Bio/EnsEMBL/MetaData/DBAFinder/LookUpDBAFinder.pm", "LookUpDBAFinder_8pm.html", null ],
-      [ "Bio/EnsEMBL/MetaData/DBAFinder/ProductionDBAFinder.pm", "ProductionDBAFinder_8pm.html", null ],
-      [ "Bio/EnsEMBL/MetaData/DBAFinder/RegistryDBAFinder.pm", "RegistryDBAFinder_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DBSQL/BaseInfoAdaptor.pm", "BaseInfoAdaptor_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DBSQL/DatabaseInfoAdaptor.pm", "DatabaseInfoAdaptor_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DBSQL/DataReleaseInfoAdaptor.pm", "DataReleaseInfoAdaptor_8pm.html", null ],
@@ -146,7 +129,6 @@ var NAVTREE =
         [ "EnsEMBL", "dir_0d06678ceff87819d908c2c84023dd52.html", [
           [ "LookUp", "dir_1a8df8ec2c00fa74870afcc2ea8dff64.html", null ],
           [ "MetaData", "dir_16e0533e3e198c6c6390584fc6444d5c.html", [
-            [ "DBAFinder", "dir_9a5829a916e0b5775eef346cb970fb30.html", null ],
             [ "DBSQL", "dir_ec59936737e8555a9e46976312dc2a80.html", null ],
             [ "MetaDataDumper", "dir_3baf3f4783dbc7253a10ee46ba1d9deb.html", null ],
             [ "Pipeline", "dir_ffc3417898722b993928c19c1f9d4c30.html", null ]

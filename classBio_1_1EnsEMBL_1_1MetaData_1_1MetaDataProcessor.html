@@ -525,7 +525,7 @@ Available Methods</h2></td></tr>
     }
   } ## end <span class="keywordflow">if</span> ( defined $self-&gt;{contigs...})
 
-  $md-&gt;sequences($seqs_arr);
+  $md-&gt;assembly()-&gt;sequences($seqs_arr);
 
 <span class="preprocessor">  # get toplevel base count</span>
 <span class="preprocessor"></span>  my $base_counts =
@@ -544,10 +544,10 @@ where a.code=<span class="stringliteral">&#39;toplevel&#39;</span> and species_i
       -PARAMS =&gt; [ $dba-&gt;species_id() ] );
   }
 
-  $md-&gt;base_count( $base_counts-&gt;[0] );
+  $md-&gt;assembly()-&gt;base_count( $base_counts-&gt;[0] );
 
 <span class="preprocessor">  # get associated PMIDs</span>
-<span class="preprocessor"></span>  $md-&gt;publications(
+<span class="preprocessor"></span>  $md-&gt;organism()-&gt;publications(
     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
       -SQL =&gt; q/select distinct dbprimary_acc from 
       xref
@@ -560,7 +560,7 @@ where a.code=<span class="stringliteral">&#39;toplevel&#39;</span> and species_i
       -PARAMS =&gt; [ $dba-&gt;species_id() ] ) );
 
 <span class="preprocessor">  # add aliases</span>
-<span class="preprocessor"></span>  $md-&gt;aliases(
+<span class="preprocessor"></span>  $md-&gt;organism()-&gt;aliases(
     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
       -SQL =&gt; q/select distinct meta_value from meta
       where species_id=? and meta_key=<span class="stringliteral">&#39;species.alias&#39;</span>/,

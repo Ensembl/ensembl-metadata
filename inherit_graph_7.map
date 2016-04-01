@@ -1,3 +1,8 @@
 <map id="G" name="G">
-<area shape="rect" id="node1" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1DBAFinder_1_1ProductionDBAFinder.html" title="Bio::EnsEMBL::MetaData::DBAFinder::ProductionDBAFinder" alt="" coords="5,5,371,32"/>
+<area shape="rect" id="node1" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html" title="Bio::EnsEMBL::MetaData::MetaDataDumper" alt="" coords="5,107,277,133"/>
+<area shape="rect" id="node2" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1JsonMetaDataDumper.html" title="Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper" alt="" coords="326,5,733,32"/>
+<area shape="rect" id="node3" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TextMetaDataDumper.html" title="Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper" alt="" coords="327,56,731,83"/>
+<area shape="rect" id="node4" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TT2MetaDataDumper.html" title="Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper" alt="" coords="328,107,731,133"/>
+<area shape="rect" id="node5" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1UniProtReportDumper.html" title="Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper" alt="" coords="327,157,731,184"/>
+<area shape="rect" id="node6" href="$classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1XMLMetaDataDumper.html" title="Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper" alt="" coords="326,208,733,235"/>
 </map>

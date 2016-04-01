@@ -147,416 +147,373 @@ function toggleVisibility(linkObj) {
 <a name="l00021"></a>00021 
 <a name="l00022"></a>00022 =head1 NAME
 <a name="l00023"></a>00023 
-<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor</a>
 <a name="l00025"></a>00025 
-<a name="l00026"></a>00026 =head1 SYNOPSIS
+<a name="l00026"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html">00026</a> =head1 SYNOPSIS
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028 my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_adaptor();
-<a name="l00029"></a>00029 my $md = $gdba-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a76c2418354c61a9d2fd07dd2c881df74">fetch_by_name</a>(<span class="stringliteral">&quot;arabidopsis_thaliana&quot;</span>);
-<a name="l00030"></a>00030 
-<a name="l00031"></a>00031 =head1 DESCRIPTION
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033 Adaptor <span class="keywordflow">for</span> storing and retrieving GenomeInfo objects from MySQL genome_info database
+<a name="l00028"></a>00028 <span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_GenomeComparaInfoAdaptor();
+<a name="l00030"></a>00030 my @comparas = $adaptor-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a684c8efcaddc134791b04104db37390e">fetch_all_by_method</a>(<span class="stringliteral">&#39;PROTEIN_TREES&#39;</span>);
+<a name="l00031"></a>00031 <span class="keywordflow">for</span> my $genome (@{@comparas[0]-&gt;genomes()}) {
+<a name="l00032"></a>00032   print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
+<a name="l00033"></a>00033 }
 <a name="l00034"></a>00034 
-<a name="l00035"></a>00035 To start working with an adaptor:
+<a name="l00035"></a>00035 =head1 DESCRIPTION
 <a name="l00036"></a>00036 
-<a name="l00037"></a>00037 <span class="preprocessor"># getting an adaptor</span>
-<a name="l00038"></a>00038 <span class="preprocessor"></span><span class="preprocessor">## adaptor for latest public EG release</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span>my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_eg_adaptor();
-<a name="l00040"></a>00040 <span class="preprocessor">## adaptor for specified public EG release</span>
-<a name="l00041"></a>00041 <span class="preprocessor"></span>my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_eg_adaptor(21);
-<a name="l00042"></a>00042 <span class="preprocessor">## manually specify a given database</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span>my $dbc = Bio::EnsEMBL::DBSQL::DBConnection-&gt;new(
-<a name="l00044"></a>00044 -USER=&gt;<span class="stringliteral">&#39;anonymous&#39;</span>,
-<a name="l00045"></a>00045 -PORT=&gt;4157,
-<a name="l00046"></a>00046 -HOST=&gt;<span class="stringliteral">&#39;mysql-eg-publicsql.ebi.ac.uk&#39;</span>,
-<a name="l00047"></a>00047 -DBNAME=&gt;<span class="stringliteral">&#39;genome_info_21&#39;</span>);
-<a name="l00048"></a>00048 my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;new(-DBC=&gt;$dbc);
+<a name="l00037"></a>00037 Adaptor <span class="keywordflow">for</span> storing and retrieving <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">GenomeComparaInfo</a> objects from MySQL genome_info database
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 =head1 Author
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 Dan Staines
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 =cut
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor;
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 use strict;
+<a name="l00048"></a>00048 use warnings;
 <a name="l00049"></a>00049 
-<a name="l00050"></a>00050 To find genomes, use the fetch methods e.g.
+<a name="l00050"></a>00050 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
 <a name="l00051"></a>00051 
-<a name="l00052"></a>00052 # find a genome by name
-<a name="l00053"></a>00053 my $genome = $gdba-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a76c2418354c61a9d2fd07dd2c881df74">fetch_by_name</a>(<span class="stringliteral">&#39;arabidopsis_thaliana&#39;</span>);
-<a name="l00054"></a>00054 
-<a name="l00055"></a>00055 <span class="preprocessor"># find and iterate over all genomes</span>
-<a name="l00056"></a>00056 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$gdba-&gt;fetch_all()}) {
-<a name="l00057"></a>00057     print $genome-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a099657bcf23824f8c7342ea680b04a1e">name</a>().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00058"></a>00058 }
-<a name="l00059"></a>00059 
-<a name="l00060"></a>00060 <span class="preprocessor"># find and iterate over all genomes from plants</span>
-<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$gdba-&gt;fetch_all_by_division(<span class="stringliteral">&#39;EnsemblPlants&#39;</span>)}) {
-<a name="l00062"></a>00062     print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00063"></a>00063 }
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065 <span class="preprocessor"># find and iterate over all genomes with variation</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$gdba-&gt;fetch_all_with_variation()}) {
-<a name="l00067"></a>00067     print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00068"></a>00068 }
-<a name="l00069"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html">00069</a> 
-<a name="l00070"></a>00070 <span class="preprocessor"># find all comparas for the division of interest</span>
-<a name="l00071"></a>00071 <span class="preprocessor"></span>my $comparas = $gdba-&gt;fetch_all_compara_by_division(<span class="stringliteral">&#39;EnsemblPlants&#39;</span>);
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 <span class="preprocessor"># find the peptide compara</span>
-<a name="l00074"></a>00074 <span class="preprocessor"></span>my ($compara) = grep {$_-&gt;is_peptide_compara()} @$comparas;
-<a name="l00075"></a>00075 print $compara-&gt;division().<span class="stringliteral">&quot; &quot;</span>.$compara-&gt;method().<span class="stringliteral">&quot;(&quot;</span>.$compara-&gt;dbname().<span class="stringliteral">&quot;)\n&quot;</span>;
-<a name="l00076"></a>00076 
-<a name="l00077"></a>00077 <span class="preprocessor"># print out all the genomes in this compara</span>
-<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="keywordflow">for</span> my $genome (@{$compara-&gt;genomes()}) {
-<a name="l00079"></a>00079     print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
-<a name="l00080"></a>00080 }
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082 =head1 Author
-<a name="l00083"></a>00083 
-<a name="l00084"></a>00084 Dan Staines
-<a name="l00085"></a>00085 
-<a name="l00086"></a>00086 =cut
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor;
+<a name="l00052"></a>00052 use Carp qw(cluck croak);
+<a name="l00053"></a>00053 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+<a name="l00054"></a>00054 use Bio::EnsEMBL::Utils::Exception qw( <span class="keywordflow">throw</span> );
+<a name="l00055"></a>00055 use List::MoreUtils qw(natatime);
+<a name="l00056"></a>00056 use Scalar::Util <span class="stringliteral">&#39;refaddr&#39;</span>;
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 =head2 set_release
+<a name="l00059"></a>00059   Arg        : Ensembl release number
+<a name="l00060"></a>00060   Description: Set release to use when querying 
+<a name="l00061"></a>00061   Returntype : None
+<a name="l00062"></a>00062   Exceptions : none
+<a name="l00063"></a>00063   Caller     : general
+<a name="l00064"></a>00064   Status     : Stable
+<a name="l00065"></a>00065 =cut
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 sub set_ensembl_release {
+<a name="l00068"></a>00068   my ( $self, $release ) = @_;
+<a name="l00069"></a>00069   my $release_info =
+<a name="l00070"></a>00070     $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
+<a name="l00071"></a>00071     -&gt;fetch_by_ensembl_release($release);
+<a name="l00072"></a>00072   <span class="keywordflow">if</span> ( !defined $release_info ) {
+<a name="l00073"></a>00073     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Could not find Ensembl release $release&quot;</span>;
+<a name="l00074"></a>00074   }
+<a name="l00075"></a>00075   <span class="keywordflow">else</span> {
+<a name="l00076"></a>00076     $self-&gt;data_release($release_info);
+<a name="l00077"></a>00077   }
+<a name="l00078"></a>00078   <span class="keywordflow">return</span>;
+<a name="l00079"></a>00079 }
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081 =head2 set_ensembl_genomes_release
+<a name="l00082"></a>00082   Arg        : Ensembl Genomes release number
+<a name="l00083"></a>00083   Description: Set release to use when querying 
+<a name="l00084"></a>00084   Returntype : None
+<a name="l00085"></a>00085   Exceptions : none
+<a name="l00086"></a>00086   Caller     : general
+<a name="l00087"></a>00087   Status     : Stable
+<a name="l00088"></a>00088 =cut
 <a name="l00089"></a>00089 
-<a name="l00090"></a>00090 use strict;
-<a name="l00091"></a>00091 use warnings;
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
-<a name="l00094"></a>00094 
-<a name="l00095"></a>00095 use Carp qw(cluck croak);
-<a name="l00096"></a>00096 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-<a name="l00097"></a>00097 use Bio::EnsEMBL::Utils::Exception qw( <span class="keywordflow">throw</span> );
-<a name="l00098"></a>00098 use List::MoreUtils qw(natatime);
-<a name="l00099"></a>00099 use Scalar::Util <span class="stringliteral">&#39;refaddr&#39;</span>;
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101 =head2 set_release
-<a name="l00102"></a>00102   Arg        : Ensembl release number
-<a name="l00103"></a>00103   Description: Set release to use when querying 
-<a name="l00104"></a>00104   Returntype : None
-<a name="l00105"></a>00105   Exceptions : none
-<a name="l00106"></a>00106   Caller     : general
-<a name="l00107"></a>00107   Status     : Stable
-<a name="l00108"></a>00108 =cut
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110 sub set_ensembl_release {
-<a name="l00111"></a>00111   my ( $self, $release ) = @_;
-<a name="l00112"></a>00112   my $release_info =
-<a name="l00113"></a>00113     $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
-<a name="l00114"></a>00114     -&gt;fetch_by_ensembl_release($release);
-<a name="l00115"></a>00115   <span class="keywordflow">if</span> ( !defined $release_info ) {
-<a name="l00116"></a>00116     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Could not find Ensembl release $release&quot;</span>;
-<a name="l00117"></a>00117   }
-<a name="l00118"></a>00118   <span class="keywordflow">else</span> {
-<a name="l00119"></a>00119     $self-&gt;data_release($release_info);
-<a name="l00120"></a>00120   }
-<a name="l00121"></a>00121   <span class="keywordflow">return</span>;
-<a name="l00122"></a>00122 }
-<a name="l00123"></a>00123 
-<a name="l00124"></a>00124 =head2 set_ensembl_genomes_release
-<a name="l00125"></a>00125   Arg        : Ensembl Genomes release number
-<a name="l00126"></a>00126   Description: Set release to use when querying 
-<a name="l00127"></a>00127   Returntype : None
-<a name="l00128"></a>00128   Exceptions : none
-<a name="l00129"></a>00129   Caller     : general
-<a name="l00130"></a>00130   Status     : Stable
-<a name="l00131"></a>00131 =cut
-<a name="l00132"></a>00132 
-<a name="l00133"></a>00133 sub set_ensembl_genomes_release {
-<a name="l00134"></a>00134   my ( $self, $release ) = @_;
-<a name="l00135"></a>00135   my $release_info;
-<a name="l00136"></a>00136   <span class="keywordflow">if</span> ( !defined $release ) {
-<a name="l00137"></a>00137     $release_info =
-<a name="l00138"></a>00138       $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
-<a name="l00139"></a>00139       -&gt;fetch_current_ensembl_genomes_release($release);
+<a name="l00090"></a>00090 sub set_ensembl_genomes_release {
+<a name="l00091"></a>00091   my ( $self, $release ) = @_;
+<a name="l00092"></a>00092   my $release_info;
+<a name="l00093"></a>00093   <span class="keywordflow">if</span> ( !defined $release ) {
+<a name="l00094"></a>00094     $release_info =
+<a name="l00095"></a>00095       $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
+<a name="l00096"></a>00096       -&gt;fetch_current_ensembl_genomes_release($release);
+<a name="l00097"></a>00097   }
+<a name="l00098"></a>00098   <span class="keywordflow">else</span> {
+<a name="l00099"></a>00099     $release_info =
+<a name="l00100"></a>00100       $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
+<a name="l00101"></a>00101       -&gt;fetch_by_ensembl_genomes_release($release);
+<a name="l00102"></a>00102   }
+<a name="l00103"></a>00103   <span class="keywordflow">if</span> ( !defined $release_info ) {
+<a name="l00104"></a>00104     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Could not find Ensembl Genomes release $release&quot;</span>;
+<a name="l00105"></a>00105   }
+<a name="l00106"></a>00106   <span class="keywordflow">else</span> {
+<a name="l00107"></a>00107     $self-&gt;data_release($release_info);
+<a name="l00108"></a>00108   }
+<a name="l00109"></a>00109   <span class="keywordflow">return</span>;
+<a name="l00110"></a>00110 }
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112 =head2 data_release
+<a name="l00113"></a>00113   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00114"></a>00114   Description: Default release to use when querying 
+<a name="l00115"></a>00115   Returntype : None
+<a name="l00116"></a>00116   Exceptions : none
+<a name="l00117"></a>00117   Caller     : general
+<a name="l00118"></a>00118   Status     : Stable
+<a name="l00119"></a>00119 =cut
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121 sub data_release {
+<a name="l00122"></a>00122   my ( $self, $release ) = @_;
+<a name="l00123"></a>00123   <span class="keywordflow">if</span> ( defined $release ) {
+<a name="l00124"></a>00124     <span class="keywordflow">if</span> ( !defined $self-&gt;{data_release} ||
+<a name="l00125"></a>00125          refaddr($release) != refaddr( $self-&gt;{data_release} ) )
+<a name="l00126"></a>00126     {
+<a name="l00127"></a>00127       $self-&gt;{data_release} = $release;
+<a name="l00128"></a>00128       $self-&gt;db()-&gt;get_GenomeInfoAdaptor()-&gt;data_release($release);
+<a name="l00129"></a>00129     }
+<a name="l00130"></a>00130   }
+<a name="l00131"></a>00131   <span class="keywordflow">if</span> ( !defined $self-&gt;{data_release} ) {
+<a name="l00132"></a>00132 <span class="preprocessor">    # default to current Ensembl release</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>    $self-&gt;{data_release} =
+<a name="l00134"></a>00134       $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
+<a name="l00135"></a>00135       -&gt;fetch_current_ensembl_release();
+<a name="l00136"></a>00136     <span class="keywordflow">if</span> ( defined $self-&gt;{data_release} ) {
+<a name="l00137"></a>00137       $self-&gt;db()-&gt;get_GenomeInfoAdaptor()
+<a name="l00138"></a>00138         -&gt;data_release( $self-&gt;{data_release} );
+<a name="l00139"></a>00139     }
 <a name="l00140"></a>00140   }
-<a name="l00141"></a>00141   <span class="keywordflow">else</span> {
-<a name="l00142"></a>00142     $release_info =
-<a name="l00143"></a>00143       $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
-<a name="l00144"></a>00144       -&gt;fetch_by_ensembl_genomes_release($release);
-<a name="l00145"></a>00145   }
-<a name="l00146"></a>00146   <span class="keywordflow">if</span> ( !defined $release_info ) {
-<a name="l00147"></a>00147     <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Could not find Ensembl Genomes release $release&quot;</span>;
-<a name="l00148"></a>00148   }
-<a name="l00149"></a>00149   <span class="keywordflow">else</span> {
-<a name="l00150"></a>00150     $self-&gt;data_release($release_info);
-<a name="l00151"></a>00151   }
-<a name="l00152"></a>00152   <span class="keywordflow">return</span>;
-<a name="l00153"></a>00153 }
-<a name="l00154"></a>00154 
-<a name="l00155"></a>00155 =head2 data_release
-<a name="l00156"></a>00156   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
-<a name="l00157"></a>00157   Description: Default release to use when querying 
-<a name="l00158"></a>00158   Returntype : None
-<a name="l00159"></a>00159   Exceptions : none
-<a name="l00160"></a>00160   Caller     : general
-<a name="l00161"></a>00161   Status     : Stable
-<a name="l00162"></a>00162 =cut
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164 sub data_release {
-<a name="l00165"></a>00165   my ( $self, $release ) = @_;
-<a name="l00166"></a>00166   <span class="keywordflow">if</span> ( defined $release ) {
-<a name="l00167"></a>00167     <span class="keywordflow">if</span> ( !defined $self-&gt;{data_release} ||
-<a name="l00168"></a>00168          refaddr($release) != refaddr( $self-&gt;{data_release} ) )
-<a name="l00169"></a>00169     {
-<a name="l00170"></a>00170       $self-&gt;{data_release} = $release;
-<a name="l00171"></a>00171       $self-&gt;db()-&gt;get_GenomeInfoAdaptor()-&gt;data_release($release);
-<a name="l00172"></a>00172     }
-<a name="l00173"></a>00173   }
-<a name="l00174"></a>00174   <span class="keywordflow">if</span> ( !defined $self-&gt;{data_release} ) {
-<a name="l00175"></a>00175 <span class="preprocessor">    # default to current Ensembl release</span>
-<a name="l00176"></a>00176 <span class="preprocessor"></span>    $self-&gt;{data_release} =
-<a name="l00177"></a>00177       $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
-<a name="l00178"></a>00178       -&gt;fetch_current_ensembl_release();
-<a name="l00179"></a>00179     <span class="keywordflow">if</span> ( defined $self-&gt;{data_release} ) {
-<a name="l00180"></a>00180       $self-&gt;db()-&gt;get_GenomeInfoAdaptor()
-<a name="l00181"></a>00181         -&gt;data_release( $self-&gt;{data_release} );
-<a name="l00182"></a>00182     }
-<a name="l00183"></a>00183   }
-<a name="l00184"></a>00184   <span class="keywordflow">if</span> ( defined $self-&gt;{data_release} &amp;&amp; !defined $self-&gt;{data_release}-&gt;dbID() )
-<a name="l00185"></a>00185   {
-<a name="l00186"></a>00186     $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()-&gt;store( $self-&gt;{data_release} );
-<a name="l00187"></a>00187   }
-<a name="l00188"></a>00188   <span class="keywordflow">return</span> $self-&gt;{data_release};
-<a name="l00189"></a>00189 } ## end sub data_release
-<a name="l00190"></a>00190 
-<a name="l00191"></a>00191 =head2 fetch_databases 
-<a name="l00192"></a>00192   Arg        : (optional) release
-<a name="l00193"></a>00193   Description: Fetch all compara-associated databases <span class="keywordflow">for</span> the specified release
-<a name="l00194"></a>00194   Returntype : Arrayref of strings
-<a name="l00195"></a>00195   Exceptions : none
-<a name="l00196"></a>00196   Caller     : general
-<a name="l00197"></a>00197   Status     : Stable
-<a name="l00198"></a>00198 =cut
-<a name="l00199"></a>00199 
-<a name="l00200"></a>00200 sub fetch_databases {
-<a name="l00201"></a>00201   my ( $self, $release ) = @_;
-<a name="l00202"></a>00202   <span class="keywordflow">if</span> ( !defined $release ) {
-<a name="l00203"></a>00203     $release = $self-&gt;data_release();
-<a name="l00204"></a>00204   }
-<a name="l00205"></a>00205   <span class="keywordflow">return</span> $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00206"></a>00206     -SQL =&gt; q/select distinct c.dbname from compara_analysis c
-<a name="l00207"></a>00207       where data_release_id=?/,
-<a name="l00208"></a>00208     -PARAMS =&gt; [ $self-&gt;data_release()-&gt;dbID() ] );
-<a name="l00209"></a>00209 }
-<a name="l00210"></a>00210 
-<a name="l00211"></a>00211 =head2 fetch_databases 
-<a name="l00212"></a>00212   Arg        : division
-<a name="l00213"></a>00213   Arg        : (optional) release
-<a name="l00214"></a>00214   Description: Fetch all compara-associated databases <span class="keywordflow">for</span> the specified release
-<a name="l00215"></a>00215   Returntype : Arrayref of strings
-<a name="l00216"></a>00216   Exceptions : none
-<a name="l00217"></a>00217   Caller     : general
-<a name="l00218"></a>00218   Status     : Stable
-<a name="l00219"></a>00219 =cut
-<a name="l00220"></a>00220 
-<a name="l00221"></a>00221 sub fetch_division_databases {
-<a name="l00222"></a>00222   my ( $self, $division, $release ) = @_;
-<a name="l00223"></a>00223   <span class="keywordflow">if</span> ( !defined $release ) {
-<a name="l00224"></a>00224     $release = $self-&gt;data_release();
-<a name="l00225"></a>00225   }
-<a name="l00226"></a>00226   <span class="keywordflow">return</span> $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00227"></a>00227     -SQL =&gt; qw/select distinct c.dbname from compara_analysis c
-<a name="l00228"></a>00228       join division d using (division_id)
-<a name="l00229"></a>00229       where data_release_id=? and (d.name=? OR d.short_name=?)/,
-<a name="l00230"></a>00230     -PARAMS =&gt; [ $self-&gt;data_release()-&gt;dbID(), $division, $division ] );
-<a name="l00231"></a>00231 }
-<a name="l00232"></a>00232 
-<a name="l00233"></a>00233 sub fetch_all_by_division {
-<a name="l00234"></a>00234   my ( $self, $division ) = @_;
-<a name="l00235"></a>00235   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { division =&gt; $division } );
-<a name="l00236"></a>00236 }
-<a name="l00237"></a>00237 
-<a name="l00238"></a>00238 =head2 fetch_all_compara_by_method
-<a name="l00239"></a>00239   Arg        : Method of compara analyses to retrieve
-<a name="l00240"></a>00240   Description: Fetch compara specified compara analysis
-<a name="l00241"></a>00241   Returntype : array ref of  <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00242"></a>00242   Exceptions : none
-<a name="l00243"></a>00243   Caller     : general
-<a name="l00244"></a>00244   Status     : Stable
-<a name="l00245"></a>00245 =cut
-<a name="l00246"></a>00246 
-<a name="l00247"></a>00247 sub fetch_all_by_method {
-<a name="l00248"></a>00248   my ( $self, $method ) = @_;
-<a name="l00249"></a>00249   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { method =&gt; $method } );
-<a name="l00250"></a>00250 }
-<a name="l00251"></a>00251 
-<a name="l00252"></a>00252 =head2 fetch_compara_by_dbname_method_set
-<a name="l00253"></a>00253   Arg        : DBName of compara analyses to retrieve
-<a name="l00254"></a>00254   Arg        : Method of compara analyses to retrieve
-<a name="l00255"></a>00255   Arg        : Set of compara analyses to retrieve
-<a name="l00256"></a>00256   Description: Fetch specified compara analysis
-<a name="l00257"></a>00257   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00258"></a>00258   Exceptions : none
-<a name="l00259"></a>00259   Caller     : general
-<a name="l00260"></a>00260   Status     : Stable
-<a name="l00261"></a>00261 =cut
-<a name="l00262"></a>00262 
-<a name="l00263"></a>00263 sub fetch_by_dbname_method_set {
-<a name="l00264"></a>00264   my ( $self, $dbname, $method, $set_name ) = @_;
-<a name="l00265"></a>00265   <span class="keywordflow">return</span>
-<a name="l00266"></a>00266     _first_element(
-<a name="l00267"></a>00267                $self-&gt;_fetch_generic_with_args(
-<a name="l00268"></a>00268                  { dbname =&gt; $dbname, method =&gt; $method, set_name =&gt; $set_name }
-<a name="l00269"></a>00269                ) );
-<a name="l00270"></a>00270 }
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272 =head1 METHODS
-<a name="l00273"></a>00273 =cut
-<a name="l00274"></a>00274 
-<a name="l00275"></a>00275 =head2 update
-<a name="l00276"></a>00276   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00277"></a>00277   Description: Updates the supplied <span class="keywordtype">object</span> and all associated  genomes
-<a name="l00278"></a>00278   Returntype : None
-<a name="l00279"></a>00279   Exceptions : none
-<a name="l00280"></a>00280   Caller     : <span class="keyword">internal</span>
-<a name="l00281"></a>00281   Status     : Stable
-<a name="l00282"></a>00282 =cut
-<a name="l00283"></a>00283 
-<a name="l00284"></a>00284 sub update {
-<a name="l00285"></a>00285   my ( $self, $compara ) = @_;
-<a name="l00286"></a>00286   <span class="keywordflow">if</span> ( !defined $compara-&gt;dbID() ) {
-<a name="l00287"></a>00287     croak <span class="stringliteral">&quot;Cannot update compara object with no dbID&quot;</span>;
-<a name="l00288"></a>00288   }
-<a name="l00289"></a>00289   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00290"></a>00290     -SQL =&gt; q/update compara_analysis 
-<a name="l00291"></a>00291       <span class="keyword">set</span> method=?,division_id=?,set_name=?,dbname=?, data_release_id=?
-<a name="l00292"></a>00292       where compara_analysis_id=?/,
-<a name="l00293"></a>00293     -PARAMS =&gt; [ $compara-&gt;method(),
-<a name="l00294"></a>00294                  $self-&gt;_get_division_id( $compara-&gt;division() ),
-<a name="l00295"></a>00295                  $compara-&gt;set_name(),
-<a name="l00296"></a>00296                  $compara-&gt;dbname(),
-<a name="l00297"></a>00297                  $self-&gt;data_release()-&gt;dbID(),
-<a name="l00298"></a>00298                  $compara-&gt;dbID() ] );
-<a name="l00299"></a>00299   $self-&gt;_store_compara_genomes($compara);
-<a name="l00300"></a>00300   $self-&gt;_store_cached_obj($compara);
-<a name="l00301"></a>00301   <span class="keywordflow">return</span>;
-<a name="l00302"></a>00302 }
-<a name="l00303"></a>00303 
-<a name="l00304"></a>00304 =head2 store
-<a name="l00305"></a>00305   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00306"></a>00306   Description: Stores the supplied <span class="keywordtype">object</span> and all associated  genomes (<span class="keywordflow">if</span> not already stored)
-<a name="l00307"></a>00307   Returntype : None
-<a name="l00308"></a>00308   Exceptions : none
-<a name="l00309"></a>00309   Caller     : <span class="keyword">internal</span>
-<a name="l00310"></a>00310   Status     : Stable
-<a name="l00311"></a>00311 =cut
-<a name="l00312"></a>00312 
-<a name="l00313"></a>00313 sub store {
-<a name="l00314"></a>00314   my ( $self, $compara ) = @_;
-<a name="l00315"></a>00315 <span class="preprocessor">  # check if it already exists</span>
-<a name="l00316"></a>00316 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( !defined $compara-&gt;dbID() ) {
-<a name="l00317"></a>00317 <span class="preprocessor">    # find out if compara exists first</span>
-<a name="l00318"></a>00318 <span class="preprocessor"></span>    my ($dbID) =
-<a name="l00319"></a>00319       @{
-<a name="l00320"></a>00320       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00321"></a>00321         -SQL =&gt;
-<a name="l00322"></a>00322 q/select compara_analysis_id from compara_analysis where division_id=? and method=? and set_name=? and dbname=?/,
-<a name="l00323"></a>00323         -PARAMS =&gt; [ $self-&gt;_get_division_id( $compara-&gt;division() ),
-<a name="l00324"></a>00324                      $compara-&gt;method(), $compara-&gt;set_name(),
-<a name="l00325"></a>00325                      $compara-&gt;dbname() ] ) };
-<a name="l00326"></a>00326     <span class="keywordflow">if</span> ( defined $dbID ) {
-<a name="l00327"></a>00327       $compara-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
-<a name="l00328"></a>00328       $compara-&gt;adaptor($self);
-<a name="l00329"></a>00329     }
-<a name="l00330"></a>00330   }
-<a name="l00331"></a>00331   <span class="keywordflow">if</span> ( defined $compara-&gt;dbID() ) {
-<a name="l00332"></a>00332     <span class="keywordflow">return</span> $self-&gt;update($compara);
-<a name="l00333"></a>00333   }
-<a name="l00334"></a>00334   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00335"></a>00335     -SQL =&gt;
-<a name="l00336"></a>00336 q/insert into compara_analysis(method,division_id,set_name,dbname,data_release_id)
-<a name="l00337"></a>00337         values(?,?,?,?,?)/,
-<a name="l00338"></a>00338     -PARAMS =&gt; [ $compara-&gt;method(),
-<a name="l00339"></a>00339                  $self-&gt;_get_division_id( $compara-&gt;division() ),
-<a name="l00340"></a>00340                  $compara-&gt;set_name(),
-<a name="l00341"></a>00341                  $compara-&gt;dbname(),
-<a name="l00342"></a>00342                  $self-&gt;data_release()-&gt;dbID() ],
-<a name="l00343"></a>00343     -CALLBACK =&gt; sub {
-<a name="l00344"></a>00344       my ( $sth, $dbh, $rv ) = @_;
-<a name="l00345"></a>00345       $compara-&gt;dbID( $dbh-&gt;{mysql_insertid} );
-<a name="l00346"></a>00346     } );
-<a name="l00347"></a>00347   $self-&gt;_store_compara_genomes($compara);
-<a name="l00348"></a>00348   $self-&gt;_store_cached_obj($compara);
-<a name="l00349"></a>00349   <span class="keywordflow">return</span>;
-<a name="l00350"></a>00350 } ## end sub store
-<a name="l00351"></a>00351 
-<a name="l00352"></a>00352 sub _store_compara_genomes {
-<a name="l00353"></a>00353   my ( $self, $compara ) = @_;
-<a name="l00354"></a>00354   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00355"></a>00355      -SQL =&gt; q/<span class="keyword">delete</span> from genome_compara_analysis where compara_analysis_id=?/,
-<a name="l00356"></a>00356      -PARAMS =&gt; [ $compara-&gt;dbID() ] );
-<a name="l00357"></a>00357   <span class="keywordflow">if</span> ( defined $compara-&gt;genomes() ) {
-<a name="l00358"></a>00358     <span class="keywordflow">for</span> my $genome ( @{ $compara-&gt;genomes() } ) {
-<a name="l00359"></a>00359       <span class="keywordflow">if</span> ( !defined $genome-&gt;dbID() ) {
-<a name="l00360"></a>00360         $self-&gt;get_GenomeInfoAdaptor()-&gt;store($genome);
-<a name="l00361"></a>00361       }
-<a name="l00362"></a>00362       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00363"></a>00363         -SQL =&gt;
-<a name="l00364"></a>00364           q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
-<a name="l00365"></a>00365         values(?,?)/,
-<a name="l00366"></a>00366         -PARAMS =&gt; [ $genome-&gt;dbID(), $compara-&gt;dbID() ] );
-<a name="l00367"></a>00367     }
-<a name="l00368"></a>00368   }
-<a name="l00369"></a>00369   <span class="keywordflow">return</span>;
-<a name="l00370"></a>00370 }
-<a name="l00371"></a>00371 
-<a name="l00372"></a>00372 =head2 _fetch_children
-<a name="l00373"></a>00373     Arg      : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00374"></a>00374   Description: Fetch all children of specified genome info <span class="keywordtype">object</span>
-<a name="l00375"></a>00375   Returntype : none
-<a name="l00376"></a>00376   Exceptions : none
-<a name="l00377"></a>00377   Caller     : <span class="keyword">internal</span>
-<a name="l00378"></a>00378   Status     : Stable
-<a name="l00379"></a>00379 =cut
-<a name="l00380"></a>00380 
-<a name="l00381"></a>00381 sub _fetch_children {
-<a name="l00382"></a>00382   my ( $self, $compara ) = @_;
-<a name="l00383"></a>00383   $self-&gt;_fetch_compara_genomes($compara);
-<a name="l00384"></a>00384   <span class="keywordflow">return</span>;
-<a name="l00385"></a>00385 }
-<a name="l00386"></a>00386 
-<a name="l00387"></a>00387 sub _fetch_compara_genomes {
-<a name="l00388"></a>00388   my ( $self, $compara ) = @_;
-<a name="l00389"></a>00389 <span class="preprocessor"># add genomes on one by one (don&#39;t nest the fetch here as could run of connections)</span>
-<a name="l00390"></a>00390 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( !defined $compara-&gt;{genomes} ) {
-<a name="l00391"></a>00391     my $genomes = [];
-<a name="l00392"></a>00392     <span class="keywordflow">for</span> my $genome_id (
-<a name="l00393"></a>00393       @{$self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00394"></a>00394           -SQL =&gt;
-<a name="l00395"></a>00395 q/select distinct(genome_id) from genome_compara_analysis where compara_analysis_id=?/,
-<a name="l00396"></a>00396           -PARAMS =&gt; [ $compara-&gt;dbID() ] );
-<a name="l00397"></a>00397       } )
-<a name="l00398"></a>00398     {
-<a name="l00399"></a>00399       push @$genomes, $self-&gt;get_GenomeInfoAdaptor()-&gt;fetch_by_dbID($genome_id);
-<a name="l00400"></a>00400     }
-<a name="l00401"></a>00401     $compara-&gt;genomes($genomes);
-<a name="l00402"></a>00402   }
-<a name="l00403"></a>00403   <span class="keywordflow">return</span>;
-<a name="l00404"></a>00404 }
-<a name="l00405"></a>00405 
-<a name="l00406"></a>00406 my $base_compara_fetch_sql =
-<a name="l00407"></a>00407 q/select compara_analysis_id as dbID, method,division.<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a099657bcf23824f8c7342ea680b04a1e">name</a> as division,set_name,dbname,data_release_id from compara_analysis join division <span class="keyword">using</span> (division_id)/;
-<a name="l00408"></a>00408 
-<a name="l00409"></a>00409 sub _get_base_sql {
-<a name="l00410"></a>00410   <span class="keywordflow">return</span> $base_compara_fetch_sql;
-<a name="l00411"></a>00411 }
-<a name="l00412"></a>00412 
-<a name="l00413"></a>00413 sub _get_id_field {
-<a name="l00414"></a>00414   <span class="keywordflow">return</span> <span class="stringliteral">&#39;compara_analysis_id&#39;</span>;
-<a name="l00415"></a>00415 }
-<a name="l00416"></a>00416 
-<a name="l00417"></a>00417 sub _get_obj_class {
-<a name="l00418"></a>00418   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeComparaInfo&#39;</span>;
-<a name="l00419"></a>00419 }
-<a name="l00420"></a>00420 
-<a name="l00421"></a>00421 <span class="preprocessor"># override to add release clause</span>
-<a name="l00422"></a>00422 <span class="preprocessor"></span>sub _args_to_sql {
-<a name="l00423"></a>00423   my ( $self, $sql_in, $args ) = @_;
-<a name="l00424"></a>00424   <span class="keywordflow">if</span> ( !defined $args-&gt;{ _get_id_field() } ) {
-<a name="l00425"></a>00425 <span class="preprocessor">    # if we&#39;re not searching by dbID, add release as a clause</span>
-<a name="l00426"></a>00426 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ( defined $self-&gt;data_release()-&gt;dbID() ) {
-<a name="l00427"></a>00427       $args-&gt;{data_release_id} = $self-&gt;data_release()-&gt;dbID();
-<a name="l00428"></a>00428     }
-<a name="l00429"></a>00429   }
-<a name="l00430"></a>00430   <span class="keywordflow">return</span> $self-&gt;SUPER::_args_to_sql( $sql_in, $args );
-<a name="l00431"></a>00431 }
-<a name="l00432"></a>00432 
-<a name="l00433"></a>00433 1;
+<a name="l00141"></a>00141   <span class="keywordflow">if</span> ( defined $self-&gt;{data_release} &amp;&amp; !defined $self-&gt;{data_release}-&gt;dbID() )
+<a name="l00142"></a>00142   {
+<a name="l00143"></a>00143     $self-&gt;db()-&gt;get_DataReleaseInfoAdaptor()-&gt;store( $self-&gt;{data_release} );
+<a name="l00144"></a>00144   }
+<a name="l00145"></a>00145   <span class="keywordflow">return</span> $self-&gt;{data_release};
+<a name="l00146"></a>00146 } ## end sub data_release
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148 =head2 fetch_databases 
+<a name="l00149"></a>00149   Arg        : (optional) release
+<a name="l00150"></a>00150   Description: Fetch all compara-associated databases <span class="keywordflow">for</span> the specified release
+<a name="l00151"></a>00151   Returntype : Arrayref of strings
+<a name="l00152"></a>00152   Exceptions : none
+<a name="l00153"></a>00153   Caller     : general
+<a name="l00154"></a>00154   Status     : Stable
+<a name="l00155"></a>00155 =cut
+<a name="l00156"></a>00156 
+<a name="l00157"></a>00157 sub fetch_databases {
+<a name="l00158"></a>00158   my ( $self, $release ) = @_;
+<a name="l00159"></a>00159   <span class="keywordflow">if</span> ( !defined $release ) {
+<a name="l00160"></a>00160     $release = $self-&gt;data_release();
+<a name="l00161"></a>00161   }
+<a name="l00162"></a>00162   <span class="keywordflow">return</span> $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00163"></a>00163     -SQL =&gt; q/select distinct c.dbname from compara_analysis c
+<a name="l00164"></a>00164       where data_release_id=?/,
+<a name="l00165"></a>00165     -PARAMS =&gt; [ $self-&gt;data_release()-&gt;dbID() ] );
+<a name="l00166"></a>00166 }
+<a name="l00167"></a>00167 
+<a name="l00168"></a>00168 =head2 fetch_databases 
+<a name="l00169"></a>00169   Arg        : division
+<a name="l00170"></a>00170   Arg        : (optional) release
+<a name="l00171"></a>00171   Description: Fetch all compara-associated databases <span class="keywordflow">for</span> the specified release
+<a name="l00172"></a>00172   Returntype : Arrayref of strings
+<a name="l00173"></a>00173   Exceptions : none
+<a name="l00174"></a>00174   Caller     : general
+<a name="l00175"></a>00175   Status     : Stable
+<a name="l00176"></a>00176 =cut
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 sub fetch_division_databases {
+<a name="l00179"></a>00179   my ( $self, $division, $release ) = @_;
+<a name="l00180"></a>00180   <span class="keywordflow">if</span> ( !defined $release ) {
+<a name="l00181"></a>00181     $release = $self-&gt;data_release();
+<a name="l00182"></a>00182   }
+<a name="l00183"></a>00183   <span class="keywordflow">return</span> $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00184"></a>00184     -SQL =&gt; qw/select distinct c.dbname from compara_analysis c
+<a name="l00185"></a>00185       join division d using (division_id)
+<a name="l00186"></a>00186       where data_release_id=? and (d.name=? OR d.short_name=?)/,
+<a name="l00187"></a>00187     -PARAMS =&gt; [ $self-&gt;data_release()-&gt;dbID(), $division, $division ] );
+<a name="l00188"></a>00188 }
+<a name="l00189"></a>00189 
+<a name="l00190"></a>00190 sub fetch_all_by_division {
+<a name="l00191"></a>00191   my ( $self, $division ) = @_;
+<a name="l00192"></a>00192   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { division =&gt; $division } );
+<a name="l00193"></a>00193 }
+<a name="l00194"></a>00194 
+<a name="l00195"></a>00195 =head2 fetch_all_by_method
+<a name="l00196"></a>00196   Arg        : Method of compara analyses to retrieve
+<a name="l00197"></a>00197   Description: Fetch compara specified compara analysis
+<a name="l00198"></a>00198   Returntype : array ref of  <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00199"></a>00199   Exceptions : none
+<a name="l00200"></a>00200   Caller     : general
+<a name="l00201"></a>00201   Status     : Stable
+<a name="l00202"></a>00202 =cut
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204 sub fetch_all_by_method {
+<a name="l00205"></a>00205   my ( $self, $method ) = @_;
+<a name="l00206"></a>00206   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { method =&gt; $method } );
+<a name="l00207"></a>00207 }
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209 =head2 fetch_by_dbname_method_set
+<a name="l00210"></a>00210   Arg        : DBName of compara analyses to retrieve
+<a name="l00211"></a>00211   Arg        : Method of compara analyses to retrieve
+<a name="l00212"></a>00212   Arg        : Set of compara analyses to retrieve
+<a name="l00213"></a>00213   Description: Fetch specified compara analysis
+<a name="l00214"></a>00214   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00215"></a>00215   Exceptions : none
+<a name="l00216"></a>00216   Caller     : general
+<a name="l00217"></a>00217   Status     : Stable
+<a name="l00218"></a>00218 =cut
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220 sub fetch_by_dbname_method_set {
+<a name="l00221"></a>00221   my ( $self, $dbname, $method, $set_name ) = @_;
+<a name="l00222"></a>00222   <span class="keywordflow">return</span>
+<a name="l00223"></a>00223     _first_element(
+<a name="l00224"></a>00224                $self-&gt;_fetch_generic_with_args(
+<a name="l00225"></a>00225                  { dbname =&gt; $dbname, method =&gt; $method, set_name =&gt; $set_name }
+<a name="l00226"></a>00226                ) );
+<a name="l00227"></a>00227 }
+<a name="l00228"></a>00228 
+<a name="l00229"></a>00229 =head1 METHODS
+<a name="l00230"></a>00230 =cut
+<a name="l00231"></a>00231 
+<a name="l00232"></a>00232 =head2 update
+<a name="l00233"></a>00233   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00234"></a>00234   Description: Updates the supplied <span class="keywordtype">object</span> and all associated  genomes
+<a name="l00235"></a>00235   Returntype : None
+<a name="l00236"></a>00236   Exceptions : none
+<a name="l00237"></a>00237   Caller     : <span class="keyword">internal</span>
+<a name="l00238"></a>00238   Status     : Stable
+<a name="l00239"></a>00239 =cut
+<a name="l00240"></a>00240 
+<a name="l00241"></a>00241 sub update {
+<a name="l00242"></a>00242   my ( $self, $compara ) = @_;
+<a name="l00243"></a>00243   <span class="keywordflow">if</span> ( !defined $compara-&gt;dbID() ) {
+<a name="l00244"></a>00244     croak <span class="stringliteral">&quot;Cannot update compara object with no dbID&quot;</span>;
+<a name="l00245"></a>00245   }
+<a name="l00246"></a>00246   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00247"></a>00247     -SQL =&gt; q/update compara_analysis 
+<a name="l00248"></a>00248       <span class="keyword">set</span> method=?,division_id=?,set_name=?,dbname=?, data_release_id=?
+<a name="l00249"></a>00249       where compara_analysis_id=?/,
+<a name="l00250"></a>00250     -PARAMS =&gt; [ $compara-&gt;method(),
+<a name="l00251"></a>00251                  $self-&gt;_get_division_id( $compara-&gt;division() ),
+<a name="l00252"></a>00252                  $compara-&gt;set_name(),
+<a name="l00253"></a>00253                  $compara-&gt;dbname(),
+<a name="l00254"></a>00254                  $self-&gt;data_release()-&gt;dbID(),
+<a name="l00255"></a>00255                  $compara-&gt;dbID() ] );
+<a name="l00256"></a>00256   $self-&gt;_store_compara_genomes($compara);
+<a name="l00257"></a>00257   $self-&gt;_store_cached_obj($compara);
+<a name="l00258"></a>00258   <span class="keywordflow">return</span>;
+<a name="l00259"></a>00259 }
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261 =head2 store
+<a name="l00262"></a>00262   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00263"></a>00263   Description: Stores the supplied <span class="keywordtype">object</span> and all associated  genomes (<span class="keywordflow">if</span> not already stored)
+<a name="l00264"></a>00264   Returntype : None
+<a name="l00265"></a>00265   Exceptions : none
+<a name="l00266"></a>00266   Caller     : <span class="keyword">internal</span>
+<a name="l00267"></a>00267   Status     : Stable
+<a name="l00268"></a>00268 =cut
+<a name="l00269"></a>00269 
+<a name="l00270"></a>00270 sub store {
+<a name="l00271"></a>00271   my ( $self, $compara ) = @_;
+<a name="l00272"></a>00272 <span class="preprocessor">  # check if it already exists</span>
+<a name="l00273"></a>00273 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( !defined $compara-&gt;dbID() ) {
+<a name="l00274"></a>00274 <span class="preprocessor">    # find out if compara exists first</span>
+<a name="l00275"></a>00275 <span class="preprocessor"></span>    my ($dbID) =
+<a name="l00276"></a>00276       @{
+<a name="l00277"></a>00277       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00278"></a>00278         -SQL =&gt;
+<a name="l00279"></a>00279 q/select compara_analysis_id from compara_analysis where division_id=? and method=? and set_name=? and dbname=?/,
+<a name="l00280"></a>00280         -PARAMS =&gt; [ $self-&gt;_get_division_id( $compara-&gt;division() ),
+<a name="l00281"></a>00281                      $compara-&gt;method(), $compara-&gt;set_name(),
+<a name="l00282"></a>00282                      $compara-&gt;dbname() ] ) };
+<a name="l00283"></a>00283     <span class="keywordflow">if</span> ( defined $dbID ) {
+<a name="l00284"></a>00284       $compara-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
+<a name="l00285"></a>00285       $compara-&gt;adaptor($self);
+<a name="l00286"></a>00286     }
+<a name="l00287"></a>00287   }
+<a name="l00288"></a>00288   <span class="keywordflow">if</span> ( defined $compara-&gt;dbID() ) {
+<a name="l00289"></a>00289     <span class="keywordflow">return</span> $self-&gt;update($compara);
+<a name="l00290"></a>00290   }
+<a name="l00291"></a>00291   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00292"></a>00292     -SQL =&gt;
+<a name="l00293"></a>00293 q/insert into compara_analysis(method,division_id,set_name,dbname,data_release_id)
+<a name="l00294"></a>00294         values(?,?,?,?,?)/,
+<a name="l00295"></a>00295     -PARAMS =&gt; [ $compara-&gt;method(),
+<a name="l00296"></a>00296                  $self-&gt;_get_division_id( $compara-&gt;division() ),
+<a name="l00297"></a>00297                  $compara-&gt;set_name(),
+<a name="l00298"></a>00298                  $compara-&gt;dbname(),
+<a name="l00299"></a>00299                  $self-&gt;data_release()-&gt;dbID() ],
+<a name="l00300"></a>00300     -CALLBACK =&gt; sub {
+<a name="l00301"></a>00301       my ( $sth, $dbh, $rv ) = @_;
+<a name="l00302"></a>00302       $compara-&gt;dbID( $dbh-&gt;{mysql_insertid} );
+<a name="l00303"></a>00303     } );
+<a name="l00304"></a>00304   $self-&gt;_store_compara_genomes($compara);
+<a name="l00305"></a>00305   $self-&gt;_store_cached_obj($compara);
+<a name="l00306"></a>00306   <span class="keywordflow">return</span>;
+<a name="l00307"></a>00307 } ## end sub store
+<a name="l00308"></a>00308 
+<a name="l00309"></a>00309 sub _store_compara_genomes {
+<a name="l00310"></a>00310   my ( $self, $compara ) = @_;
+<a name="l00311"></a>00311   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00312"></a>00312      -SQL =&gt; q/<span class="keyword">delete</span> from genome_compara_analysis where compara_analysis_id=?/,
+<a name="l00313"></a>00313      -PARAMS =&gt; [ $compara-&gt;dbID() ] );
+<a name="l00314"></a>00314   <span class="keywordflow">if</span> ( defined $compara-&gt;genomes() ) {
+<a name="l00315"></a>00315     <span class="keywordflow">for</span> my $genome ( @{ $compara-&gt;genomes() } ) {
+<a name="l00316"></a>00316       <span class="keywordflow">if</span> ( !defined $genome-&gt;dbID() ) {
+<a name="l00317"></a>00317         $self-&gt;get_GenomeInfoAdaptor()-&gt;store($genome);
+<a name="l00318"></a>00318       }
+<a name="l00319"></a>00319       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00320"></a>00320         -SQL =&gt;
+<a name="l00321"></a>00321           q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
+<a name="l00322"></a>00322         values(?,?)/,
+<a name="l00323"></a>00323         -PARAMS =&gt; [ $genome-&gt;dbID(), $compara-&gt;dbID() ] );
+<a name="l00324"></a>00324     }
+<a name="l00325"></a>00325   }
+<a name="l00326"></a>00326   <span class="keywordflow">return</span>;
+<a name="l00327"></a>00327 }
+<a name="l00328"></a>00328 
+<a name="l00329"></a>00329 =head2 _fetch_children
+<a name="l00330"></a>00330     Arg      : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00331"></a>00331   Description: Fetch all children of specified genome info <span class="keywordtype">object</span>
+<a name="l00332"></a>00332   Returntype : none
+<a name="l00333"></a>00333   Exceptions : none
+<a name="l00334"></a>00334   Caller     : <span class="keyword">internal</span>
+<a name="l00335"></a>00335   Status     : Stable
+<a name="l00336"></a>00336 =cut
+<a name="l00337"></a>00337 
+<a name="l00338"></a>00338 sub _fetch_children {
+<a name="l00339"></a>00339   my ( $self, $compara ) = @_;
+<a name="l00340"></a>00340   $self-&gt;_fetch_compara_genomes($compara);
+<a name="l00341"></a>00341   <span class="keywordflow">return</span>;
+<a name="l00342"></a>00342 }
+<a name="l00343"></a>00343 
+<a name="l00344"></a>00344 sub _fetch_compara_genomes {
+<a name="l00345"></a>00345   my ( $self, $compara ) = @_;
+<a name="l00346"></a>00346 <span class="preprocessor"># add genomes on one by one (don&#39;t nest the fetch here as could run of connections)</span>
+<a name="l00347"></a>00347 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( !defined $compara-&gt;{genomes} ) {
+<a name="l00348"></a>00348     my $genomes = [];
+<a name="l00349"></a>00349     <span class="keywordflow">for</span> my $genome_id (
+<a name="l00350"></a>00350       @{$self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00351"></a>00351           -SQL =&gt;
+<a name="l00352"></a>00352 q/select distinct(genome_id) from genome_compara_analysis where compara_analysis_id=?/,
+<a name="l00353"></a>00353           -PARAMS =&gt; [ $compara-&gt;dbID() ] );
+<a name="l00354"></a>00354       } )
+<a name="l00355"></a>00355     {
+<a name="l00356"></a>00356       push @$genomes, $self-&gt;get_GenomeInfoAdaptor()-&gt;fetch_by_dbID($genome_id);
+<a name="l00357"></a>00357     }
+<a name="l00358"></a>00358     $compara-&gt;genomes($genomes);
+<a name="l00359"></a>00359   }
+<a name="l00360"></a>00360   <span class="keywordflow">return</span>;
+<a name="l00361"></a>00361 }
+<a name="l00362"></a>00362 
+<a name="l00363"></a>00363 my $base_compara_fetch_sql =
+<a name="l00364"></a>00364 q/select compara_analysis_id as dbID, method,division.<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a099657bcf23824f8c7342ea680b04a1e">name</a> as division,set_name,dbname,data_release_id from compara_analysis join division <span class="keyword">using</span> (division_id)/;
+<a name="l00365"></a>00365 
+<a name="l00366"></a>00366 sub _get_base_sql {
+<a name="l00367"></a>00367   <span class="keywordflow">return</span> $base_compara_fetch_sql;
+<a name="l00368"></a>00368 }
+<a name="l00369"></a>00369 
+<a name="l00370"></a>00370 sub _get_id_field {
+<a name="l00371"></a>00371   <span class="keywordflow">return</span> <span class="stringliteral">&#39;compara_analysis_id&#39;</span>;
+<a name="l00372"></a>00372 }
+<a name="l00373"></a>00373 
+<a name="l00374"></a>00374 sub _get_obj_class {
+<a name="l00375"></a>00375   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeComparaInfo&#39;</span>;
+<a name="l00376"></a>00376 }
+<a name="l00377"></a>00377 
+<a name="l00378"></a>00378 <span class="preprocessor"># override to add release clause</span>
+<a name="l00379"></a>00379 <span class="preprocessor"></span>sub _args_to_sql {
+<a name="l00380"></a>00380   my ( $self, $sql_in, $args ) = @_;
+<a name="l00381"></a>00381   <span class="keywordflow">if</span> ( !defined $args-&gt;{ _get_id_field() } ) {
+<a name="l00382"></a>00382 <span class="preprocessor">    # if we&#39;re not searching by dbID, add release as a clause</span>
+<a name="l00383"></a>00383 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ( defined $self-&gt;data_release()-&gt;dbID() ) {
+<a name="l00384"></a>00384       $args-&gt;{data_release_id} = $self-&gt;data_release()-&gt;dbID();
+<a name="l00385"></a>00385     }
+<a name="l00386"></a>00386   }
+<a name="l00387"></a>00387   <span class="keywordflow">return</span> $self-&gt;SUPER::_args_to_sql( $sql_in, $args );
+<a name="l00388"></a>00388 }
+<a name="l00389"></a>00389 
+<a name="l00390"></a>00390 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

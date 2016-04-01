@@ -1,6 +1,6 @@
 <map id="G" name="G">
-<area shape="rect" id="node4" href="$DataReleaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DataReleaseInfo.pm" alt="" coords="266,80,547,107"/>
-<area shape="rect" id="node8" href="$GenomeAssemblyInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeAssemblyInfo.pm" alt="" coords="572,80,884,107"/>
-<area shape="rect" id="node9" href="$GenomeOrganismInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeOrganismInfo.pm" alt="" coords="752,155,1064,181"/>
-<area shape="rect" id="node5" href="$DatabaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DatabaseInfo.pm" alt="" coords="96,155,358,181"/>
+<area shape="rect" id="node4" href="$DataReleaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DataReleaseInfo.pm" alt="" coords="443,80,724,107"/>
+<area shape="rect" id="node8" href="$GenomeAssemblyInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeAssemblyInfo.pm" alt="" coords="56,80,368,107"/>
+<area shape="rect" id="node9" href="$GenomeOrganismInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeOrganismInfo.pm" alt="" coords="5,155,317,181"/>
+<area shape="rect" id="node5" href="$DatabaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DatabaseInfo.pm" alt="" coords="814,155,1076,181"/>
 </map>

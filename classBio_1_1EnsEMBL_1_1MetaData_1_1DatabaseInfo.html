@@ -143,18 +143,20 @@ function toggleVisibility(linkObj) {
 <hr/><a name="details" id="details"></a><h2>Class Summary</h2>
 <div class="textblock"><h2><a class="anchor" id="Synopsis"></a>
 Synopsis</h2>
-<div class="fragment"><pre class="fragment"></pre></div> <h2><a class="anchor" id="Description"></a>
+<div class="fragment"><pre class="fragment">my $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>(-DBNAME=&gt;<span class="stringliteral">&quot;homo_sapiens_core_84_38&quot;</span>, -SUBJECT=&gt;$human_genome);
+print $info-&gt;dbname();
+</pre></div> <h2><a class="anchor" id="Description"></a>
 Description</h2>
  <pre>
-Object encapsulating information about a database
+Object encapsulating information about a database that can be associated with genomes or releases.
 
 </pre> 
-<p>Definition at line <a class="el" href="DatabaseInfo_8pm_source.html#l00014">14</a> of file <a class="el" href="DatabaseInfo_8pm_source.html">DatabaseInfo.pm</a>.</p>
+<p>Definition at line <a class="el" href="DatabaseInfo_8pm_source.html#l00018">18</a> of file <a class="el" href="DatabaseInfo_8pm_source.html">DatabaseInfo.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1a34c3fa71d4be6076403fee9cbda557">_load_child</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a2ef27add9d17c0dd046b9fccb10e13a3">_parse_type</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a00cc4e2961cfdd2124330399200bf4cb">_parse_type</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a24a6f557cf4cb75bcda92048c0cce077">_preload</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a936a8ffb1fb932b5e31786bd81c3a0ad">_unload</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
@@ -166,18 +168,19 @@ Available Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#afc39a30adb5f7687b267766ab1e7a818">division</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1122d7a628b10b4190c4776c461b3b3d">species_id</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#aac0c0106cfe2a21636be225ae783b71e">subject</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public Hashref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#af1b92812b54d3d13a84ac0cf1383f69b">to_hash</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+<a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a388bf3032d358c829d0c86881e9eca4c">subject</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hashref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a93df7e26dd8804a2d8acad128d7af1ae">to_hash</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a41291ea9c5abcecfb3c458c0531e57f2">to_string</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a> ()</td></tr>
 </table>
 <hr/><h2>Method Documentation</h2>
-<a class="anchor" id="a1a34c3fa71d4be6076403fee9cbda557"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::_load_child" ref="a1a34c3fa71d4be6076403fee9cbda557" args="()" -->
+<a class="anchor" id="a1b236763fc118984bee34ca2618e687f"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::_load_child" ref="a1b236763fc118984bee34ca2618e687f" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected Bio::EnsEMBL::MetaData::BaseInfo::_load_child </td>
+          <td class="memname">protected void Bio::EnsEMBL::MetaData::BaseInfo::_load_child </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td><code> [inherited]</code></td>
@@ -185,13 +188,19 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-_load_child" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Lazy load method for loading children from database if not initialised
+  Arg        : Key to find child data in object hash
+  Arg        : Method for loading child data from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#acff50be91e583478e9ec05005c216887">adaptor()</a>
+  Returntype : none
+  Exceptions : none
+  Caller     : Internal
+  Status     : Stable
+ </pre><div id="codesection-_load_child" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_load_child-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_load_child-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_load_child-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1a34c3fa71d4be6076403fee9cbda557">_load_child</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a> {
   my ( $self, $key, $method ) = @_;
   <span class="keywordflow">if</span> ( !defined $self-&gt;{$key} &amp;&amp;
        defined $self-&gt;dbID() &amp;&amp;
@@ -204,12 +213,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a2ef27add9d17c0dd046b9fccb10e13a3"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type" ref="a2ef27add9d17c0dd046b9fccb10e13a3" args="()" -->
+<a class="anchor" id="a00cc4e2961cfdd2124330399200bf4cb"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type" ref="a00cc4e2961cfdd2124330399200bf4cb" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type </td>
+          <td class="memname">protected String Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -217,13 +226,17 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-_parse_type" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Derive type from database name
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-_parse_type" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_parse_type-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_parse_type-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_parse_type-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a2ef27add9d17c0dd046b9fccb10e13a3">_parse_type</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a00cc4e2961cfdd2124330399200bf4cb">_parse_type</a> {
   my ($dbname) = @_;
   <span class="keywordflow">if</span> ( $dbname =~ m/mart/ ) {
     <span class="keywordflow">return</span> <span class="stringliteral">&#39;mart&#39;</span>;
@@ -338,7 +351,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#acff50be91e583478e9ec05005c216887">adaptor</a>};
 }
 </pre></div> </div> 
-<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a17dc05217c517ca2fe7ddc12213dea6b">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>, and <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a29d96e7a145a18364d0de3416d988f11">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
+<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a29d96e7a145a18364d0de3416d988f11">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
 
 </div>
 </div>
@@ -445,7 +458,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>};
 }
 </pre></div> </div> 
-<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a5559e8aacd49d61b3adc34ff33b31d04">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>, and <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#ae2ae7289199643ff4352d80941bdb6cd">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
+<p>Reimplemented in <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#ae2ae7289199643ff4352d80941bdb6cd">Bio::EnsEMBL::MetaData::GenomeInfo</a>.</p>
 
 </div>
 </div>
@@ -475,7 +488,12 @@ Available Methods</h2></td></tr>
 <div id='codesection-dbname-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a> {
   my ( $self, $dbname ) = @_;
-  $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a>} = $dbname <span class="keywordflow">if</span> ( defined $dbname );
+  <span class="keywordflow">if</span> ( defined $dbname ) {
+    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a>} = $dbname;
+    <span class="keywordflow">if</span> ( !defined $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>} ) {
+      $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>} = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a00cc4e2961cfdd2124330399200bf4cb">_parse_type</a>( $self-&gt;dbname() );
+    }
+  }
   <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a>};
 }
 </pre></div> </div> 
@@ -530,12 +548,16 @@ Available Methods</h2></td></tr>
  <div class="fragment"><pre class="fragment">sub <span class="keyword">new</span> {
   my ( $class, @args ) = @_;
   my $self = $class-&gt;SUPER::new(@args);
-  ( $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>}, $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#afc39a30adb5f7687b267766ab1e7a818">division</a>}, $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a>}, $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#aac0c0106cfe2a21636be225ae783b71e">subject</a>}, $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1122d7a628b10b4190c4776c461b3b3d">species_id</a>} ) =
-    rearrange( [ <span class="stringliteral">&#39;TYPE&#39;</span>, <span class="stringliteral">&#39;DIVISION&#39;</span>, <span class="stringliteral">&#39;DBNAME&#39;</span>, <span class="stringliteral">&#39;SUBJECT&#39;</span>, <span class="stringliteral">&#39;SPECIES_ID&#39;</span> ], @args );
+  my $subject;
+  ( $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>}, $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#afc39a30adb5f7687b267766ab1e7a818">division</a>}, $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a>}, $subject,
+    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1122d7a628b10b4190c4776c461b3b3d">species_id</a>} )
+    = rearrange( [ <span class="stringliteral">&#39;TYPE&#39;</span>, <span class="stringliteral">&#39;DIVISION&#39;</span>, <span class="stringliteral">&#39;DBNAME&#39;</span>, <span class="stringliteral">&#39;SUBJECT&#39;</span>, <span class="stringliteral">&#39;SPECIES_ID&#39;</span> ],
+                 @args );
   <span class="keywordflow">if</span> ( !defined $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>} ) {
-    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>} = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a2ef27add9d17c0dd046b9fccb10e13a3">_parse_type</a>( $self-&gt;dbname() );
+    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>} = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a00cc4e2961cfdd2124330399200bf4cb">_parse_type</a>( $self-&gt;dbname() );
   }
   $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1122d7a628b10b4190c4776c461b3b3d">species_id</a>} ||= 1;
+  $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a388bf3032d358c829d0c86881e9eca4c">subject</a>} = $subject;
   <span class="keywordflow">return</span> $self;
 }
 </pre></div> </div> 
@@ -575,12 +597,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="aac0c0106cfe2a21636be225ae783b71e"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::subject" ref="aac0c0106cfe2a21636be225ae783b71e" args="()" -->
+<a class="anchor" id="a388bf3032d358c829d0c86881e9eca4c"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::subject" ref="a388bf3032d358c829d0c86881e9eca4c" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DatabaseInfo::subject </td>
+          <td class="memname">public <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> Bio::EnsEMBL::MetaData::DatabaseInfo::subject </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -588,26 +610,39 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-subject" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : (optional) subject
+  Description: Gets/sets subject that database is associated with
+  Returntype : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> or <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-subject" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-subject-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-subject-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-subject-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#aac0c0106cfe2a21636be225ae783b71e">subject</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a388bf3032d358c829d0c86881e9eca4c">subject</a> {
   my ( $self, $subject ) = @_;
-  $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#aac0c0106cfe2a21636be225ae783b71e">subject</a>} = $subject <span class="keywordflow">if</span> ( defined $subject );
-  <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#aac0c0106cfe2a21636be225ae783b71e">subject</a>};
+  <span class="keywordflow">if</span> ( defined $subject ) {
+    <span class="keywordflow">if</span> ( !$subject-&gt;isa(<span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::GenomeInfo&quot;</span>) &amp;&amp;
+         !$subject-&gt;isa(<span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::DataReleaseInfo&quot;</span>) )
+    {
+      <span class="keywordflow">throw</span>
+<span class="stringliteral">&quot;The subject of a DatabaseInfo object must be GenomeInfo or DataReleaseInfo&quot;</span>;
+    }
+    $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a388bf3032d358c829d0c86881e9eca4c">subject</a>} = $subject;
+  }
+  <span class="keywordflow">return</span> $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a388bf3032d358c829d0c86881e9eca4c">subject</a>};
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="af1b92812b54d3d13a84ac0cf1383f69b"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::to_hash" ref="af1b92812b54d3d13a84ac0cf1383f69b" args="()" -->
+<a class="anchor" id="a93df7e26dd8804a2d8acad128d7af1ae"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DatabaseInfo::to_hash" ref="a93df7e26dd8804a2d8acad128d7af1ae" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Hashref Bio::EnsEMBL::MetaData::DatabaseInfo::to_hash </td>
+          <td class="memname">public String Bio::EnsEMBL::MetaData::DatabaseInfo::to_hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -625,13 +660,19 @@ Available Methods</h2></td></tr>
 </div>
 <div id='codesection-to_hash-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-to_hash-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#af1b92812b54d3d13a84ac0cf1383f69b">to_hash</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a93df7e26dd8804a2d8acad128d7af1ae">to_hash</a> {
   my ($in) = @_;
   <span class="keywordflow">return</span> { <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#afc39a30adb5f7687b267766ab1e7a818">division</a> =&gt; $in-&gt;division(),
            <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a1a7d1be491aa5f4891f68a835997a77c">type</a>     =&gt; $in-&gt;type(),
            <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#a95b6c2a83d5176103cc1f6cc60f2fac0">dbname</a>   =&gt; $in-&gt;dbname(), };
 }
-</pre></div> </div> 
+</pre></div> </div><pre>  Description: Render as string for display
+  Returntype : String
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><p> /** </p>
+
 <p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a6fbbd86e4e29265997aa9adeff7d3a33">Bio::EnsEMBL::MetaData::BaseInfo</a>.</p>
 
 </div>

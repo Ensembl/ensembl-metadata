@@ -127,79 +127,99 @@ function toggleVisibility(linkObj) {
 <a href="UpdateBools_8pm.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
 <a name="l00002"></a>00002 =head1 LICENSE
 <a name="l00003"></a>00003 
-<a name="l00004"></a>00004 Copyright 2015 EMBL-European Bioinformatics Institute
+<a name="l00004"></a>00004 Copyright [2009-2016] EMBL-European Bioinformatics Institute
 <a name="l00005"></a>00005 
 <a name="l00006"></a>00006 Licensed under the Apache License, Version 2.0 (the <span class="stringliteral">&quot;License&quot;</span>);
 <a name="l00007"></a>00007 you may not use <span class="keyword">this</span> file except in compliance with the License.
 <a name="l00008"></a>00008 You may obtain a copy of the License at
 <a name="l00009"></a>00009 
 <a name="l00010"></a>00010      http:<span class="comment">//www.apache.org/licenses/LICENSE-2.0</span>
-<a name="l00011"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1UpdateBools.html">00011</a> 
+<a name="l00011"></a>00011 
 <a name="l00012"></a>00012 Unless required by applicable law or agreed to in writing, software
 <a name="l00013"></a>00013 distributed under the License is distributed on an <span class="stringliteral">&quot;AS IS&quot;</span> BASIS,
 <a name="l00014"></a>00014 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 <a name="l00015"></a>00015 See the License <span class="keywordflow">for</span> the specific language governing permissions and
-<a name="l00016"></a>00016 limitations under the License.
+<a name="l00016"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1UpdateBools.html">00016</a> limitations under the License.
 <a name="l00017"></a>00017 
-<a name="l00018"></a>00018 =cut
+<a name="l00018"></a>00018 =head1 CONTACT
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 use warnings;
-<a name="l00021"></a>00021 use strict;
+<a name="l00020"></a>00020   Please email comments or questions to the <span class="keyword">public</span> Ensembl
+<a name="l00021"></a>00021   developers list at &lt;dev@ensembl.org&gt;.
 <a name="l00022"></a>00022 
-<a name="l00023"></a>00023 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::Pipeline::UpdateBools;
-<a name="l00024"></a>00024 
-<a name="l00025"></a>00025 use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
-<a name="l00026"></a>00026 
-<a name="l00027"></a>00027 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>;
-<a name="l00028"></a>00028 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html">Bio::EnsEMBL::MetaData::AnnotationAnalyzer</a>;
-<a name="l00029"></a>00029 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor</a>;
-<a name="l00030"></a>00030 
-<a name="l00031"></a>00031 use Carp;
-<a name="l00032"></a>00032 use Data::Dumper;
-<a name="l00033"></a>00033 use Log::Log4perl qw(:easy);
-<a name="l00034"></a>00034 Log::Log4perl-&gt;easy_init($INFO);
-<a name="l00035"></a>00035 my $log = get_logger();
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 sub param_defaults {
-<a name="l00038"></a>00038     my ($self) = @_;
-<a name="l00039"></a>00039     <span class="keywordflow">return</span> {};
-<a name="l00040"></a>00040 }
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 sub fetch_input {
-<a name="l00043"></a>00043     my ($self) = @_;
-<a name="l00044"></a>00044     <span class="keywordflow">return</span>;
-<a name="l00045"></a>00045 }
+<a name="l00023"></a>00023   Questions may also be sent to the Ensembl help desk at
+<a name="l00024"></a>00024   &lt;helpdesk@ensembl.org&gt;.
+<a name="l00025"></a>00025 
+<a name="l00026"></a>00026 =head1 NAME
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1UpdateBools.html">Bio::EnsEMBL::MetaData::Pipeline::UpdateBools</a>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 =head1 DESCRIPTION
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 Runnable update genome <span class="keywordtype">boolean</span> columns post-load
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 =head1 AUTHOR
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 Dan Staines
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 =cut
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 use warnings;
+<a name="l00041"></a>00041 use strict;
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::Pipeline::UpdateBools;
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 use base qw/Bio::EnsEMBL::Production::Pipeline::Base/;
 <a name="l00046"></a>00046 
-<a name="l00047"></a>00047 sub run {
-<a name="l00048"></a>00048     my ($self) = @_;
-<a name="l00049"></a>00049     $log-&gt;info(<span class="stringliteral">&quot;Connecting to info database&quot;</span>);
-<a name="l00050"></a>00050     $log-&gt;info(<span class="stringliteral">&quot;Connecting to info database&quot;</span>);
-<a name="l00051"></a>00051     my $dba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor</a>-&gt;new(
-<a name="l00052"></a>00052     -USER =&gt;,
-<a name="l00053"></a>00053     $self-&gt;param(<span class="stringliteral">&#39;info_user&#39;</span>),
-<a name="l00054"></a>00054     -PASS =&gt;,
-<a name="l00055"></a>00055     $self-&gt;param(<span class="stringliteral">&#39;info_pass&#39;</span>),
-<a name="l00056"></a>00056     -HOST =&gt;,
-<a name="l00057"></a>00057     $self-&gt;param(<span class="stringliteral">&#39;info_host&#39;</span>),
-<a name="l00058"></a>00058     -PORT =&gt;,
-<a name="l00059"></a>00059     $self-&gt;param(<span class="stringliteral">&#39;info_port&#39;</span>),
-<a name="l00060"></a>00060     -DBNAME =&gt;,
-<a name="l00061"></a>00061     $self-&gt;param(<span class="stringliteral">&#39;info_dbname&#39;</span>)
-<a name="l00062"></a>00062     );
-<a name="l00063"></a>00063     my $gdba = $dba-&gt;get_GenomeInfoAdaptor();
-<a name="l00064"></a>00064     $log-&gt;info(<span class="stringliteral">&quot;Updating booleans&quot;</span>);
-<a name="l00065"></a>00065     $gdba-&gt;update_booleans();
-<a name="l00066"></a>00066     $log-&gt;info(<span class="stringliteral">&quot;Completed updating booleans&quot;</span>);
-<a name="l00067"></a>00067     <span class="keywordflow">return</span>;
-<a name="l00068"></a>00068 }
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070 sub write_output {
-<a name="l00071"></a>00071     my ($self) = @_;
-<a name="l00072"></a>00072     <span class="keywordflow">return</span>;
-<a name="l00073"></a>00073 }
-<a name="l00074"></a>00074 
-<a name="l00075"></a>00075 1;
-<a name="l00076"></a>00076 
+<a name="l00047"></a>00047 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>;
+<a name="l00048"></a>00048 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html">Bio::EnsEMBL::MetaData::AnnotationAnalyzer</a>;
+<a name="l00049"></a>00049 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor</a>;
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051 use Carp;
+<a name="l00052"></a>00052 use Data::Dumper;
+<a name="l00053"></a>00053 use Log::Log4perl qw(:easy);
+<a name="l00054"></a>00054 Log::Log4perl-&gt;easy_init($INFO);
+<a name="l00055"></a>00055 my $log = get_logger();
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 sub param_defaults {
+<a name="l00058"></a>00058     my ($self) = @_;
+<a name="l00059"></a>00059     <span class="keywordflow">return</span> {};
+<a name="l00060"></a>00060 }
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062 sub fetch_input {
+<a name="l00063"></a>00063     my ($self) = @_;
+<a name="l00064"></a>00064     <span class="keywordflow">return</span>;
+<a name="l00065"></a>00065 }
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 sub run {
+<a name="l00068"></a>00068     my ($self) = @_;
+<a name="l00069"></a>00069     $log-&gt;info(<span class="stringliteral">&quot;Connecting to info database&quot;</span>);
+<a name="l00070"></a>00070     $log-&gt;info(<span class="stringliteral">&quot;Connecting to info database&quot;</span>);
+<a name="l00071"></a>00071     my $dba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor</a>-&gt;new(
+<a name="l00072"></a>00072     -USER =&gt;,
+<a name="l00073"></a>00073     $self-&gt;param(<span class="stringliteral">&#39;info_user&#39;</span>),
+<a name="l00074"></a>00074     -PASS =&gt;,
+<a name="l00075"></a>00075     $self-&gt;param(<span class="stringliteral">&#39;info_pass&#39;</span>),
+<a name="l00076"></a>00076     -HOST =&gt;,
+<a name="l00077"></a>00077     $self-&gt;param(<span class="stringliteral">&#39;info_host&#39;</span>),
+<a name="l00078"></a>00078     -PORT =&gt;,
+<a name="l00079"></a>00079     $self-&gt;param(<span class="stringliteral">&#39;info_port&#39;</span>),
+<a name="l00080"></a>00080     -DBNAME =&gt;,
+<a name="l00081"></a>00081     $self-&gt;param(<span class="stringliteral">&#39;info_dbname&#39;</span>)
+<a name="l00082"></a>00082     );
+<a name="l00083"></a>00083     my $gdba = $dba-&gt;get_GenomeInfoAdaptor();
+<a name="l00084"></a>00084     $log-&gt;info(<span class="stringliteral">&quot;Updating booleans&quot;</span>);
+<a name="l00085"></a>00085     $gdba-&gt;update_booleans();
+<a name="l00086"></a>00086     $log-&gt;info(<span class="stringliteral">&quot;Completed updating booleans&quot;</span>);
+<a name="l00087"></a>00087     <span class="keywordflow">return</span>;
+<a name="l00088"></a>00088 }
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090 sub write_output {
+<a name="l00091"></a>00091     my ($self) = @_;
+<a name="l00092"></a>00092     <span class="keywordflow">return</span>;
+<a name="l00093"></a>00093 }
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095 1;
+<a name="l00096"></a>00096 
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

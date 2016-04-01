@@ -137,172 +137,224 @@ function toggleVisibility(linkObj) {
 <a name="l00011"></a>00011 
 <a name="l00012"></a>00012 Unless required by applicable law or agreed to in writing, software
 <a name="l00013"></a>00013 distributed under the License is distributed on an <span class="stringliteral">&quot;AS IS&quot;</span> BASIS,
-<a name="l00014"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">00014</a> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<a name="l00014"></a>00014 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 <a name="l00015"></a>00015 See the License <span class="keywordflow">for</span> the specific language governing permissions and
 <a name="l00016"></a>00016 limitations under the License.
 <a name="l00017"></a>00017 
-<a name="l00018"></a>00018 =cut
+<a name="l00018"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">00018</a> =head1 CONTACT
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 =pod
-<a name="l00021"></a>00021 
-<a name="l00022"></a>00022 =head1 NAME
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00020"></a>00020   Please email comments or questions to the <span class="keyword">public</span> Ensembl
+<a name="l00021"></a>00021   developers list at &lt;dev@ensembl.org&gt;.
+<a name="l00022"></a>00022 
+<a name="l00023"></a>00023   Questions may also be sent to the Ensembl help desk at
+<a name="l00024"></a>00024   &lt;helpdesk@ensembl.org&gt;.
 <a name="l00025"></a>00025 
-<a name="l00026"></a>00026 =head1 SYNOPSIS
+<a name="l00026"></a>00026 =head1 NAME
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028 =head1 DESCRIPTION
+<a name="l00028"></a>00028 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
 <a name="l00029"></a>00029 
-<a name="l00030"></a>00030 Object encapsulating information about a database
+<a name="l00030"></a>00030 =head1 SYNOPSIS
 <a name="l00031"></a>00031 
-<a name="l00032"></a>00032 =head1 Author
-<a name="l00033"></a>00033 
-<a name="l00034"></a>00034 Dan Staines
-<a name="l00035"></a>00035 
-<a name="l00036"></a>00036 =cut
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DatabaseInfo;
-<a name="l00039"></a>00039 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
-<a name="l00040"></a>00040 use strict;
-<a name="l00041"></a>00041 use warnings;
+<a name="l00032"></a>00032 my $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>(-DBNAME=&gt;<span class="stringliteral">&quot;homo_sapiens_core_84_38&quot;</span>, -SUBJECT=&gt;$human_genome);
+<a name="l00033"></a>00033 print $info-&gt;dbname();
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 =head1 DESCRIPTION
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037 Object encapsulating information about a database that can be associated with genomes or releases.
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 =head1 Author
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 Dan Staines
 <a name="l00042"></a>00042 
-<a name="l00043"></a>00043 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00043"></a>00043 =cut
 <a name="l00044"></a>00044 
-<a name="l00045"></a>00045 =head1 CONSTRUCTOR
-<a name="l00046"></a>00046 =head2 <span class="keyword">new</span>
-<a name="l00047"></a>00047   Arg [-TYPE]  : 
-<a name="l00048"></a>00048        <span class="keywordtype">string</span> - database type
-<a name="l00049"></a>00049   Arg [-DIVISION]    : 
-<a name="l00050"></a>00050        <span class="keywordtype">string</span> : Ensembl division
-<a name="l00051"></a>00051   Arg [-DBNAME] : 
-<a name="l00052"></a>00052        <span class="keywordtype">string</span> - database name
-<a name="l00053"></a>00053 
-<a name="l00054"></a>00054   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>(...);
-<a name="l00055"></a>00055   Description: Creates a <span class="keyword">new</span> release info <span class="keywordtype">object</span>
-<a name="l00056"></a>00056   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
-<a name="l00057"></a>00057   Exceptions : none
-<a name="l00058"></a>00058   Caller     : general
-<a name="l00059"></a>00059   Status     : Stable
-<a name="l00060"></a>00060 
-<a name="l00061"></a>00061 =cut
-<a name="l00062"></a>00062 
-<a name="l00063"></a>00063 sub <span class="keyword">new</span> {
-<a name="l00064"></a>00064   my ( $class, @args ) = @_;
-<a name="l00065"></a>00065   my $self = $class-&gt;SUPER::new(@args);
-<a name="l00066"></a>00066   ( $self-&gt;{type}, $self-&gt;{division}, $self-&gt;{dbname}, $self-&gt;{subject}, $self-&gt;{species_id} ) =
-<a name="l00067"></a>00067     rearrange( [ <span class="stringliteral">&#39;TYPE&#39;</span>, <span class="stringliteral">&#39;DIVISION&#39;</span>, <span class="stringliteral">&#39;DBNAME&#39;</span>, <span class="stringliteral">&#39;SUBJECT&#39;</span>, <span class="stringliteral">&#39;SPECIES_ID&#39;</span> ], @args );
-<a name="l00068"></a>00068   <span class="keywordflow">if</span> ( !defined $self-&gt;{type} ) {
-<a name="l00069"></a>00069     $self-&gt;{type} = _parse_type( $self-&gt;dbname() );
-<a name="l00070"></a>00070   }
-<a name="l00071"></a>00071   $self-&gt;{species_id} ||= 1;
-<a name="l00072"></a>00072   <span class="keywordflow">return</span> $self;
-<a name="l00073"></a>00073 }
-<a name="l00074"></a>00074 
-<a name="l00075"></a>00075 sub _parse_type {
-<a name="l00076"></a>00076   my ($dbname) = @_;
-<a name="l00077"></a>00077   <span class="keywordflow">if</span> ( $dbname =~ m/mart/ ) {
-<a name="l00078"></a>00078     <span class="keywordflow">return</span> <span class="stringliteral">&#39;mart&#39;</span>;
-<a name="l00079"></a>00079   }
-<a name="l00080"></a>00080   <span class="keywordflow">else</span> {
-<a name="l00081"></a>00081     $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
-<a name="l00082"></a>00082 
-<a name="l00083"></a>00083     if ( defined $1 ) {
-<a name="l00084"></a>00084       <span class="keywordflow">return</span> $1;
-<a name="l00085"></a>00085     }
-<a name="l00086"></a>00086     <span class="keywordflow">else</span> {
-<a name="l00087"></a>00087       <span class="keywordflow">return</span> <span class="stringliteral">&#39;other&#39;</span>;
-<a name="l00088"></a>00088     }
-<a name="l00089"></a>00089   }
-<a name="l00090"></a>00090 }
-<a name="l00091"></a>00091 
-<a name="l00092"></a>00092 =head1 ATTRIBUTE METHODS
-<a name="l00093"></a>00093 =head2 division
-<a name="l00094"></a>00094   Arg        : (optional) division to <span class="keyword">set</span>
-<a name="l00095"></a>00095   Description: Gets/sets Ensembl Genomes division
-<a name="l00096"></a>00096   Returntype : <span class="keywordtype">string</span>
-<a name="l00097"></a>00097   Exceptions : none
-<a name="l00098"></a>00098   Caller     : general
-<a name="l00099"></a>00099   Status     : Stable
-<a name="l00100"></a>00100 =cut
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102 sub division {
-<a name="l00103"></a>00103   my ( $self, $division ) = @_;
-<a name="l00104"></a>00104   $self-&gt;{division} = $division <span class="keywordflow">if</span> ( defined $division );
-<a name="l00105"></a>00105   <span class="keywordflow">return</span> $self-&gt;{division};
-<a name="l00106"></a>00106 }
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108 =head2 species_id
-<a name="l00109"></a>00109   Arg        : (optional) species_id to <span class="keyword">set</span>
-<a name="l00110"></a>00110   Description: Gets/sets species_id
-<a name="l00111"></a>00111   Returntype : <span class="keywordtype">string</span>
-<a name="l00112"></a>00112   Exceptions : none
-<a name="l00113"></a>00113   Caller     : general
-<a name="l00114"></a>00114   Status     : Stable
-<a name="l00115"></a>00115 =cut
-<a name="l00116"></a>00116 
-<a name="l00117"></a>00117 sub species_id {
-<a name="l00118"></a>00118   my ( $self, $species_id ) = @_;
-<a name="l00119"></a>00119   $self-&gt;{species_id} = $species_id <span class="keywordflow">if</span> ( defined $species_id );
-<a name="l00120"></a>00120   <span class="keywordflow">return</span> $self-&gt;{species_id};
-<a name="l00121"></a>00121 }
-<a name="l00122"></a>00122 
-<a name="l00123"></a>00123 =head2 dbname
-<a name="l00124"></a>00124   Arg        : (optional) dbname to <span class="keyword">set</span>
-<a name="l00125"></a>00125   Description: Gets/sets dbname
-<a name="l00126"></a>00126   Returntype : <span class="keywordtype">string</span>
-<a name="l00127"></a>00127   Exceptions : none
-<a name="l00128"></a>00128   Caller     : general
-<a name="l00129"></a>00129   Status     : Stable
-<a name="l00130"></a>00130 =cut
-<a name="l00131"></a>00131 
-<a name="l00132"></a>00132 sub dbname {
-<a name="l00133"></a>00133   my ( $self, $dbname ) = @_;
-<a name="l00134"></a>00134   $self-&gt;{dbname} = $dbname <span class="keywordflow">if</span> ( defined $dbname );
-<a name="l00135"></a>00135   <span class="keywordflow">return</span> $self-&gt;{dbname};
-<a name="l00136"></a>00136 }
-<a name="l00137"></a>00137 
-<a name="l00138"></a>00138 =head2 type
-<a name="l00139"></a>00139   Arg        : (optional) database type to <span class="keyword">set</span>
-<a name="l00140"></a>00140   Description: Gets/sets database type
-<a name="l00141"></a>00141   Returntype : <span class="keywordtype">string</span>
-<a name="l00142"></a>00142   Exceptions : none
-<a name="l00143"></a>00143   Caller     : general
-<a name="l00144"></a>00144   Status     : Stable
-<a name="l00145"></a>00145 =cut
-<a name="l00146"></a>00146 
-<a name="l00147"></a>00147 sub type {
-<a name="l00148"></a>00148   my ( $self, $type ) = @_;
-<a name="l00149"></a>00149   $self-&gt;{type} = $type <span class="keywordflow">if</span> ( defined $type );
-<a name="l00150"></a>00150   <span class="keywordflow">return</span> $self-&gt;{type};
-<a name="l00151"></a>00151 }
-<a name="l00152"></a>00152 
-<a name="l00153"></a>00153 sub subject {
-<a name="l00154"></a>00154   my ( $self, $subject ) = @_;
-<a name="l00155"></a>00155   $self-&gt;{subject} = $subject <span class="keywordflow">if</span> ( defined $subject );
-<a name="l00156"></a>00156   <span class="keywordflow">return</span> $self-&gt;{subject};
-<a name="l00157"></a>00157 }
-<a name="l00158"></a>00158 
-<a name="l00159"></a>00159 =head2 to_hash
-<a name="l00160"></a>00160   Description: Render as plain hash suitable <span class="keywordflow">for</span> export as JSON/XML
-<a name="l00161"></a>00161   Returntype : Hashref
-<a name="l00162"></a>00162   Exceptions : none
-<a name="l00163"></a>00163   Caller     : general
-<a name="l00164"></a>00164   Status     : Stable
-<a name="l00165"></a>00165 =cut
-<a name="l00166"></a>00166 
-<a name="l00167"></a>00167 sub to_hash {
-<a name="l00168"></a>00168   my ($in) = @_;
-<a name="l00169"></a>00169   <span class="keywordflow">return</span> { division =&gt; $in-&gt;division(),
-<a name="l00170"></a>00170            type     =&gt; $in-&gt;type(),
-<a name="l00171"></a>00171            dbname   =&gt; $in-&gt;dbname(), };
-<a name="l00172"></a>00172 }
-<a name="l00173"></a>00173 
-<a name="l00174"></a>00174 sub to_string {
-<a name="l00175"></a>00175   my ($self) = @_;
-<a name="l00176"></a>00176   <span class="keywordflow">return</span> join( <span class="charliteral">&#39;/&#39;</span>, $self-&gt;division(), $self-&gt;type(), $self-&gt;dbname() );
-<a name="l00177"></a>00177 }
-<a name="l00178"></a>00178 
-<a name="l00179"></a>00179 1;
+<a name="l00045"></a>00045 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DatabaseInfo;
+<a name="l00046"></a>00046 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
+<a name="l00047"></a>00047 use strict;
+<a name="l00048"></a>00048 use warnings;
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00051"></a>00051 use Bio::EnsEMBL::Utils::Exception qw(<span class="keywordflow">throw</span>);
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 =head1 CONSTRUCTOR
+<a name="l00054"></a>00054 =head2 <span class="keyword">new</span>
+<a name="l00055"></a>00055   Arg [-SUBJECT] : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> or <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00056"></a>00056   Arg [-DBNAME] : <span class="keywordtype">string</span> - database name
+<a name="l00057"></a>00057   Arg [-TYPE]  : 
+<a name="l00058"></a>00058        <span class="keywordtype">string</span> - database type (optional - <span class="keywordflow">if</span> absent derived from dbname)
+<a name="l00059"></a>00059   Arg [-DIVISION]    : 
+<a name="l00060"></a>00060        <span class="keywordtype">string</span> : optional Ensembl division (<span class="keywordflow">for</span> use when subject is DataRelease)
+<a name="l00061"></a>00061   Arg [-SPECIES_ID] : 
+<a name="l00062"></a>00062        Integer - optional species_id (<span class="keywordflow">for</span> use when subject is <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">GenomeInfo</a>)
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>(...);
+<a name="l00065"></a>00065   Description: Creates a <span class="keyword">new</span> database info <span class="keywordtype">object</span>
+<a name="l00066"></a>00066   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00067"></a>00067   Exceptions : none
+<a name="l00068"></a>00068   Caller     : general
+<a name="l00069"></a>00069   Status     : Stable
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 =cut
+<a name="l00072"></a>00072 
+<a name="l00073"></a>00073 sub <span class="keyword">new</span> {
+<a name="l00074"></a>00074   my ( $class, @args ) = @_;
+<a name="l00075"></a>00075   my $self = $class-&gt;SUPER::new(@args);
+<a name="l00076"></a>00076   my $subject;
+<a name="l00077"></a>00077   ( $self-&gt;{type}, $self-&gt;{division}, $self-&gt;{dbname}, $subject,
+<a name="l00078"></a>00078     $self-&gt;{species_id} )
+<a name="l00079"></a>00079     = rearrange( [ <span class="stringliteral">&#39;TYPE&#39;</span>, <span class="stringliteral">&#39;DIVISION&#39;</span>, <span class="stringliteral">&#39;DBNAME&#39;</span>, <span class="stringliteral">&#39;SUBJECT&#39;</span>, <span class="stringliteral">&#39;SPECIES_ID&#39;</span> ],
+<a name="l00080"></a>00080                  @args );
+<a name="l00081"></a>00081   <span class="keywordflow">if</span> ( !defined $self-&gt;{type} ) {
+<a name="l00082"></a>00082     $self-&gt;{type} = _parse_type( $self-&gt;dbname() );
+<a name="l00083"></a>00083   }
+<a name="l00084"></a>00084   $self-&gt;{species_id} ||= 1;
+<a name="l00085"></a>00085   $self-&gt;{subject} = $subject;
+<a name="l00086"></a>00086   <span class="keywordflow">return</span> $self;
+<a name="l00087"></a>00087 }
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089 =head1 ATTRIBUTE METHODS
+<a name="l00090"></a>00090 =head2 division
+<a name="l00091"></a>00091   Arg        : (optional) division to <span class="keyword">set</span>
+<a name="l00092"></a>00092   Description: Gets/sets Ensembl Genomes division
+<a name="l00093"></a>00093   Returntype : <span class="keywordtype">string</span>
+<a name="l00094"></a>00094   Exceptions : none
+<a name="l00095"></a>00095   Caller     : general
+<a name="l00096"></a>00096   Status     : Stable
+<a name="l00097"></a>00097 =cut
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099 sub division {
+<a name="l00100"></a>00100   my ( $self, $division ) = @_;
+<a name="l00101"></a>00101   $self-&gt;{division} = $division <span class="keywordflow">if</span> ( defined $division );
+<a name="l00102"></a>00102   <span class="keywordflow">return</span> $self-&gt;{division};
+<a name="l00103"></a>00103 }
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105 =head2 species_id
+<a name="l00106"></a>00106   Arg        : (optional) species_id to <span class="keyword">set</span>
+<a name="l00107"></a>00107   Description: Gets/sets species_id
+<a name="l00108"></a>00108   Returntype : <span class="keywordtype">string</span>
+<a name="l00109"></a>00109   Exceptions : none
+<a name="l00110"></a>00110   Caller     : general
+<a name="l00111"></a>00111   Status     : Stable
+<a name="l00112"></a>00112 =cut
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114 sub species_id {
+<a name="l00115"></a>00115   my ( $self, $species_id ) = @_;
+<a name="l00116"></a>00116   $self-&gt;{species_id} = $species_id <span class="keywordflow">if</span> ( defined $species_id );
+<a name="l00117"></a>00117   <span class="keywordflow">return</span> $self-&gt;{species_id};
+<a name="l00118"></a>00118 }
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120 =head2 dbname
+<a name="l00121"></a>00121   Arg        : (optional) dbname to <span class="keyword">set</span>
+<a name="l00122"></a>00122   Description: Gets/sets dbname
+<a name="l00123"></a>00123   Returntype : <span class="keywordtype">string</span>
+<a name="l00124"></a>00124   Exceptions : none
+<a name="l00125"></a>00125   Caller     : general
+<a name="l00126"></a>00126   Status     : Stable
+<a name="l00127"></a>00127 =cut
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129 sub dbname {
+<a name="l00130"></a>00130   my ( $self, $dbname ) = @_;
+<a name="l00131"></a>00131   <span class="keywordflow">if</span> ( defined $dbname ) {
+<a name="l00132"></a>00132     $self-&gt;{dbname} = $dbname;
+<a name="l00133"></a>00133     <span class="keywordflow">if</span> ( !defined $self-&gt;{type} ) {
+<a name="l00134"></a>00134       $self-&gt;{type} = _parse_type( $self-&gt;dbname() );
+<a name="l00135"></a>00135     }
+<a name="l00136"></a>00136   }
+<a name="l00137"></a>00137   <span class="keywordflow">return</span> $self-&gt;{dbname};
+<a name="l00138"></a>00138 }
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140 =head2 type
+<a name="l00141"></a>00141   Arg        : (optional) database type to <span class="keyword">set</span>
+<a name="l00142"></a>00142   Description: Gets/sets database type
+<a name="l00143"></a>00143   Returntype : <span class="keywordtype">string</span>
+<a name="l00144"></a>00144   Exceptions : none
+<a name="l00145"></a>00145   Caller     : general
+<a name="l00146"></a>00146   Status     : Stable
+<a name="l00147"></a>00147 =cut
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149 sub type {
+<a name="l00150"></a>00150   my ( $self, $type ) = @_;
+<a name="l00151"></a>00151   $self-&gt;{type} = $type <span class="keywordflow">if</span> ( defined $type );
+<a name="l00152"></a>00152   <span class="keywordflow">return</span> $self-&gt;{type};
+<a name="l00153"></a>00153 }
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 =head2 subject
+<a name="l00156"></a>00156   Arg        : (optional) subject
+<a name="l00157"></a>00157   Description: Gets/sets subject that database is associated with
+<a name="l00158"></a>00158   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> or <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00159"></a>00159   Exceptions : none
+<a name="l00160"></a>00160   Caller     : general
+<a name="l00161"></a>00161   Status     : Stable
+<a name="l00162"></a>00162 =cut
+<a name="l00163"></a>00163 
+<a name="l00164"></a>00164 sub subject {
+<a name="l00165"></a>00165   my ( $self, $subject ) = @_;
+<a name="l00166"></a>00166   <span class="keywordflow">if</span> ( defined $subject ) {
+<a name="l00167"></a>00167     <span class="keywordflow">if</span> ( !$subject-&gt;isa(<span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::GenomeInfo&quot;</span>) &amp;&amp;
+<a name="l00168"></a>00168          !$subject-&gt;isa(<span class="stringliteral">&quot;Bio::EnsEMBL::MetaData::DataReleaseInfo&quot;</span>) )
+<a name="l00169"></a>00169     {
+<a name="l00170"></a>00170       <span class="keywordflow">throw</span>
+<a name="l00171"></a>00171 <span class="stringliteral">&quot;The subject of a DatabaseInfo object must be GenomeInfo or DataReleaseInfo&quot;</span>;
+<a name="l00172"></a>00172     }
+<a name="l00173"></a>00173     $self-&gt;{subject} = $subject;
+<a name="l00174"></a>00174   }
+<a name="l00175"></a>00175   <span class="keywordflow">return</span> $self-&gt;{subject};
+<a name="l00176"></a>00176 }
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 =head2 to_hash
+<a name="l00179"></a>00179   Description: Render as plain hash suitable <span class="keywordflow">for</span> export as JSON/XML
+<a name="l00180"></a>00180   Returntype : Hashref
+<a name="l00181"></a>00181   Exceptions : none
+<a name="l00182"></a>00182   Caller     : general
+<a name="l00183"></a>00183   Status     : Stable
+<a name="l00184"></a>00184 =cut
+<a name="l00185"></a>00185 
+<a name="l00186"></a>00186 sub to_hash {
+<a name="l00187"></a>00187   my ($in) = @_;
+<a name="l00188"></a>00188   <span class="keywordflow">return</span> { division =&gt; $in-&gt;division(),
+<a name="l00189"></a>00189            type     =&gt; $in-&gt;type(),
+<a name="l00190"></a>00190            dbname   =&gt; $in-&gt;dbname(), };
+<a name="l00191"></a>00191 }
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193 =head2 to_hash
+<a name="l00194"></a>00194   Description: Render as <span class="keywordtype">string</span> <span class="keywordflow">for</span> display
+<a name="l00195"></a>00195   Returntype : String
+<a name="l00196"></a>00196   Exceptions : none
+<a name="l00197"></a>00197   Caller     : general
+<a name="l00198"></a>00198   Status     : Stable
+<a name="l00199"></a>00199 =cut
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201 sub to_string {
+<a name="l00202"></a>00202   my ($self) = @_;
+<a name="l00203"></a>00203   <span class="keywordflow">return</span> join( <span class="charliteral">&#39;/&#39;</span>, $self-&gt;division(), $self-&gt;type(), $self-&gt;dbname() );
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206 =head2 _parse_type
+<a name="l00207"></a>00207   Description: Derive type from database name
+<a name="l00208"></a>00208   Returntype : String
+<a name="l00209"></a>00209   Exceptions : none
+<a name="l00210"></a>00210   Caller     : <span class="keyword">internal</span>
+<a name="l00211"></a>00211   Status     : Stable
+<a name="l00212"></a>00212 =cut
+<a name="l00213"></a>00213 
+<a name="l00214"></a>00214 sub _parse_type {
+<a name="l00215"></a>00215   my ($dbname) = @_;
+<a name="l00216"></a>00216   <span class="keywordflow">if</span> ( $dbname =~ m/mart/ ) {
+<a name="l00217"></a>00217     <span class="keywordflow">return</span> <span class="stringliteral">&#39;mart&#39;</span>;
+<a name="l00218"></a>00218   }
+<a name="l00219"></a>00219   <span class="keywordflow">else</span> {
+<a name="l00220"></a>00220     $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
+<a name="l00221"></a>00221 
+<a name="l00222"></a>00222     if ( defined $1 ) {
+<a name="l00223"></a>00223       <span class="keywordflow">return</span> $1;
+<a name="l00224"></a>00224     }
+<a name="l00225"></a>00225     <span class="keywordflow">else</span> {
+<a name="l00226"></a>00226       <span class="keywordflow">return</span> <span class="stringliteral">&#39;other&#39;</span>;
+<a name="l00227"></a>00227     }
+<a name="l00228"></a>00228   }
+<a name="l00229"></a>00229 }
+<a name="l00230"></a>00230 
+<a name="l00231"></a>00231 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

@@ -143,7 +143,8 @@ function toggleVisibility(linkObj) {
 <hr/><a name="details" id="details"></a><h2>Class Summary</h2>
 <div class="textblock"><h2><a class="anchor" id="Synopsis"></a>
 Synopsis</h2>
-<div class="fragment"><pre class="fragment">my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a208b2615ce95c153741debe91c6aca29">build_ensembl_adaptor</a>();
+<div class="fragment"><pre class="fragment"><span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_GenomeInfoAdaptor();
 my $md = $gdba-&gt;fetch_by_name(<span class="stringliteral">&quot;homo_sapiens&quot;</span>);
 </pre></div> <h2><a class="anchor" id="Description"></a>
 Description</h2>
@@ -167,23 +168,30 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-USER=>'anonymo
 -HOST=>'mysql-eg-publicsql.ebi.ac.uk',
 -DBNAME=>'ensembl_metadata');
 
-To find genomes, use the fetch methods e.g.
+To find genomes, use the fetch methods. These will work with the release set on the adaptor
+which is the latest Ensembl release by default.
 
 # find a genome by name
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
+my $genome = $gdba->fetch_by_name('homo_sapiens');
 
 # find and iterate over all genomes
 for my $genome (\@{$gdba->fetch_all()}) {
 	print $genome->name()."\n";
 }
 
-# find and iterate over all genomes from plants
-for my $genome (\@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
+# find and iterate over all genomes with variation
+for my $genome (\@{$gdba->fetch_all_with_variation()}) {
 	print $genome->name()."\n";
 }
 
-# find and iterate over all genomes with variation
-for my $genome (\@{$gdba->fetch_all_with_variation()}) {
+# to change the release
+$gdba->set_ensembl_release(82);
+$gdba->set_ensembl_genomes_release(82);
+
+my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
+
+# find and iterate over all genomes from plants
+for my $genome (\@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
 	print $genome->name()."\n";
 }
 
@@ -199,12 +207,8 @@ for my $genome (\@{$compara->genomes()}) {
 	print $genome->name()."\n";
 }
 
-# to change the release
-$gdba->set_ensembl_release(82);
-$gdba->set_ensembl_genomes_release(82);
-
 </pre> 
-<p>Definition at line <a class="el" href="GenomeInfoAdaptor_8pm_source.html#l00078">78</a> of file <a class="el" href="GenomeInfoAdaptor_8pm_source.html">GenomeInfoAdaptor.pm</a>.</p>
+<p>Definition at line <a class="el" href="GenomeInfoAdaptor_8pm_source.html#l00082">82</a> of file <a class="el" href="GenomeInfoAdaptor_8pm_source.html">GenomeInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
@@ -213,7 +217,7 @@ Available Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ab58303767b81425110b88adc9e2323d1">_cache</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ace600f4648ebeb1ac9e6cd67dd7cae97">_clear_cache</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a5a084321eeb27bc15908e6c208d4b4c1">_fetch_annotations</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#aba862bc5f69125d1e9d1ce7577c84ad4">_fetch_assembly</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#abff1a5f25e8468b16b1797e82afec41f">_fetch_assembly</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ad84de34bae2927d302d3687fba0ea0ff">_fetch_children</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a0326554744cb65c2d36f663264744172">_fetch_comparas</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ab80728eb840c6a16f49cc39b6725d40b">_fetch_data_release</a> ()</td></tr>
@@ -233,7 +237,7 @@ Available Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ae9d208fee2e4f3abb4a61543559a0767">_store_alignments</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a731c55737cd8fe774ea6ddd3e827e4a7">_store_annotations</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a5e21e43816c978e152d9d94b7a011117">_store_cached_obj</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ace1b013fa7e0fd794050151558b748f8">_store_compara</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a5effb9102c99a2db69234f61baec3ad5">_store_compara</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a53d1a1c51ea4c44e449197abbe6f7ffc">_store_databases</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ab6c7c8c7b978aa65a98e89a7046966f9">_store_features</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ae05613f3216781e7517f02a5c81cbfef">_store_variations</a> ()</td></tr>
@@ -320,7 +324,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $self-&gt;SUPER::_args_to_sql( $sql_in, $args );
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a88689efc81e1d0511baf03d370a66dcd">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af0f4ed5e5e2528be363302c280a6cb1a">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -468,12 +472,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="aba862bc5f69125d1e9d1ce7577c84ad4"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_fetch_assembly" ref="aba862bc5f69125d1e9d1ce7577c84ad4" args="()" -->
+<a class="anchor" id="abff1a5f25e8468b16b1797e82afec41f"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_fetch_assembly" ref="abff1a5f25e8468b16b1797e82afec41f" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected void Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_fetch_assembly </td>
+          <td class="memname">protected Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_fetch_assembly </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -481,18 +485,13 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg	     : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> 
-  Description: Add assembly to supplied object
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
- </pre><div id="codesection-_fetch_assembly" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<p>Undocumented method</p>
+<div id="codesection-_fetch_assembly" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_fetch_assembly-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_fetch_assembly-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_fetch_assembly-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#aba862bc5f69125d1e9d1ce7577c84ad4">_fetch_assembly</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#abff1a5f25e8468b16b1797e82afec41f">_fetch_assembly</a> {
   my ( $self, $genome ) = @_;
   <span class="keywordflow">if</span> ( defined $genome-&gt;{assembly_id} ) {
     $genome-&gt;assembly( $self-&gt;db()-&gt;get_GenomeAssemblyInfoAdaptor()
@@ -1071,7 +1070,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;genome_id&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#aed14d34e814f461ef8878b7995f85aba">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a23bbb63b4a6951c881f22f8f8327f9f2">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -1098,7 +1097,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeInfo&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a77195d8968d32f514e812661fd398b01">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ad9daa29802aa14c337f7833b2872caaf">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -1251,12 +1250,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="ace1b013fa7e0fd794050151558b748f8"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_store_compara" ref="ace1b013fa7e0fd794050151558b748f8" args="()" -->
+<a class="anchor" id="a5effb9102c99a2db69234f61baec3ad5"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_store_compara" ref="a5effb9102c99a2db69234f61baec3ad5" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_store_compara </td>
+          <td class="memname">protected void Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::_store_compara </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1264,13 +1263,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-_store_compara" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg	     : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+  Description: Stores the compara analyses for the supplied object
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-_store_compara" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_store_compara-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_store_compara-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_store_compara-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ace1b013fa7e0fd794050151558b748f8">_store_compara</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a5effb9102c99a2db69234f61baec3ad5">_store_compara</a> {
   my ( $self, $genome ) = @_;
 
   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(

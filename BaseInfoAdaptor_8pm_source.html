@@ -127,7 +127,7 @@ function toggleVisibility(linkObj) {
 <a href="BaseInfoAdaptor_8pm.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
 <a name="l00002"></a>00002 =head1 LICENSE
 <a name="l00003"></a>00003 
-<a name="l00004"></a>00004 Copyright [1999-2014] EMBL-European Bioinformatics Institute
+<a name="l00004"></a>00004 Copyright [1999-2016] EMBL-European Bioinformatics Institute
 <a name="l00005"></a>00005 
 <a name="l00006"></a>00006 Licensed under the Apache License, Version 2.0 (the <span class="stringliteral">&quot;License&quot;</span>);
 <a name="l00007"></a>00007 you may not use <span class="keyword">this</span> file except in compliance with the License.
@@ -137,9 +137,9 @@ function toggleVisibility(linkObj) {
 <a name="l00011"></a>00011 
 <a name="l00012"></a>00012 Unless required by applicable law or agreed to in writing, software
 <a name="l00013"></a>00013 distributed under the License is distributed on an <span class="stringliteral">&quot;AS IS&quot;</span> BASIS,
-<a name="l00014"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">00014</a> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<a name="l00014"></a>00014 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 <a name="l00015"></a>00015 See the License <span class="keywordflow">for</span> the specific language governing permissions and
-<a name="l00016"></a>00016 limitations under the License.
+<a name="l00016"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">00016</a> limitations under the License.
 <a name="l00017"></a>00017 
 <a name="l00018"></a>00018 =cut
 <a name="l00019"></a>00019 
@@ -153,328 +153,369 @@ function toggleVisibility(linkObj) {
 <a name="l00027"></a>00027 
 <a name="l00028"></a>00028 Base adaptor <span class="keywordflow">for</span> storing and retrieving objects from MySQL genome_metadata database
 <a name="l00029"></a>00029 
-<a name="l00030"></a>00030 =head1 Author
+<a name="l00030"></a>00030 Provides basic methods <span class="keywordflow">for</span> store/fetch
 <a name="l00031"></a>00031 
-<a name="l00032"></a>00032 Dan Staines
+<a name="l00032"></a>00032 =head1 Author
 <a name="l00033"></a>00033 
-<a name="l00034"></a>00034 =cut
+<a name="l00034"></a>00034 Dan Staines
 <a name="l00035"></a>00035 
-<a name="l00036"></a>00036 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor;
+<a name="l00036"></a>00036 =cut
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038 use strict;
-<a name="l00039"></a>00039 use warnings;
-<a name="l00040"></a>00040 use Carp qw(cluck croak);
-<a name="l00041"></a>00041 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-<a name="l00042"></a>00042 use Bio::EnsEMBL::Utils::Exception qw/<span class="keywordflow">throw</span>/;
-<a name="l00043"></a>00043 use List::MoreUtils qw/natatime/;
-<a name="l00044"></a>00044 
-<a name="l00045"></a>00045 use base qw/Bio::EnsEMBL::DBSQL::BaseAdaptor/;
+<a name="l00038"></a>00038 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor;
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 use strict;
+<a name="l00041"></a>00041 use warnings;
+<a name="l00042"></a>00042 use Carp qw(cluck croak);
+<a name="l00043"></a>00043 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+<a name="l00044"></a>00044 use Bio::EnsEMBL::Utils::Exception qw/<span class="keywordflow">throw</span>/;
+<a name="l00045"></a>00045 use List::MoreUtils qw/natatime/;
 <a name="l00046"></a>00046 
-<a name="l00047"></a>00047 =head1 METHODS
-<a name="l00048"></a>00048 =head2 fetch_all
-<a name="l00049"></a>00049   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
-<a name="l00050"></a>00050   Description: Fetch all genome info
-<a name="l00051"></a>00051   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00052"></a>00052   Exceptions : none
-<a name="l00053"></a>00053   Caller     : general
-<a name="l00054"></a>00054   Status     : Stable
-<a name="l00055"></a>00055 =cut
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057 sub fetch_all {
-<a name="l00058"></a>00058   my ( $self, $keen ) = @_;
-<a name="l00059"></a>00059   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( {}, $keen );
-<a name="l00060"></a>00060 }
-<a name="l00061"></a>00061 
-<a name="l00062"></a>00062 =head2 fetch_by_dbID
-<a name="l00063"></a>00063   Arg        : ID of genome info
-<a name="l00064"></a>00064   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
-<a name="l00065"></a>00065   Description: Fetch genome info <span class="keywordflow">for</span> specified ID
-<a name="l00066"></a>00066   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00067"></a>00067   Exceptions : none
-<a name="l00068"></a>00068   Caller     : <span class="keyword">internal</span>
-<a name="l00069"></a>00069   Status     : Stable
-<a name="l00070"></a>00070 =cut
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072 sub fetch_by_dbID {
-<a name="l00073"></a>00073   my ( $self, $id, $keen ) = @_;
-<a name="l00074"></a>00074   <span class="keywordflow">return</span>
-<a name="l00075"></a>00075     $self-&gt;_first_element( $self-&gt;_fetch_generic_with_args(
-<a name="l00076"></a>00076                                                  { $self-&gt;_get_id_field(), $id }
-<a name="l00077"></a>00077                            ),
-<a name="l00078"></a>00078                            $keen );
-<a name="l00079"></a>00079 }
-<a name="l00080"></a>00080 
-<a name="l00081"></a>00081 =head2 fetch_by_dbIDs
-<a name="l00082"></a>00082   Arg        : IDs of genome info
-<a name="l00083"></a>00083   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
-<a name="l00084"></a>00084   Description: Fetch genome info <span class="keywordflow">for</span> specified ID
-<a name="l00085"></a>00085   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00086"></a>00086   Exceptions : none
-<a name="l00087"></a>00087   Caller     : <span class="keyword">internal</span>
-<a name="l00088"></a>00088   Status     : Stable
-<a name="l00089"></a>00089 =cut
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 sub fetch_by_dbIDs {
-<a name="l00092"></a>00092   my ( $self, $ids, $keen ) = @_;
-<a name="l00093"></a>00093   my @genomes = ();
-<a name="l00094"></a>00094   my $it = natatime 1000, @{$ids};
-<a name="l00095"></a>00095   <span class="keywordflow">while</span> ( my @vals = $it-&gt;() ) {
-<a name="l00096"></a>00096     my $sql =
-<a name="l00097"></a>00097       $self-&gt;_get_base_sql() . <span class="stringliteral">&#39; where &#39;</span> . $self-&gt;_get_id_field() . <span class="stringliteral">&#39; in (&#39;</span> .
-<a name="l00098"></a>00098       join( <span class="charliteral">&#39;,&#39;</span>, @vals ) . <span class="charliteral">&#39;)&#39;</span>;
-<a name="l00099"></a>00099     @genomes = ( @genomes, @{ $self-&gt;_fetch_generic( $sql, [] ) } );
-<a name="l00100"></a>00100   }
-<a name="l00101"></a>00101   <span class="keywordflow">return</span> \@genomes;
-<a name="l00102"></a>00102 }
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104 sub _get_base_sql {
-<a name="l00105"></a>00105   <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Method not implemented in base class&quot;</span>);
-<a name="l00106"></a>00106 }
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108 sub _get_id_field {
-<a name="l00109"></a>00109   <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Method not implemented in base class&quot;</span>);
-<a name="l00110"></a>00110 }
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 sub _get_obj_class {
-<a name="l00113"></a>00113   <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Method not implemented in base class&quot;</span>);
-<a name="l00114"></a>00114 }
-<a name="l00115"></a>00115 
-<a name="l00116"></a>00116 =head2 _fetch_generic_with_args
-<a name="l00117"></a>00117   Arg        : hashref of arguments by column
-<a name="l00118"></a>00118   Arg        : (optional) <span class="keywordflow">if</span> <span class="keyword">set</span> to 1, all children will be fetched
-<a name="l00119"></a>00119   Description: Instantiate a GenomeInfo from the database <span class="keyword">using</span> a 
-<a name="l00120"></a>00120                <span class="keyword">generic</span> method, with the supplied arguments
-<a name="l00121"></a>00121   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00122"></a>00122   Exceptions : none
-<a name="l00123"></a>00123   Caller     : <span class="keyword">internal</span>
-<a name="l00124"></a>00124   Status     : Stable
-<a name="l00125"></a>00125 =cut
-<a name="l00126"></a>00126 
-<a name="l00127"></a>00127 sub _fetch_generic_with_args {
-<a name="l00128"></a>00128   my ( $self, $args, $type, $keen ) = @_;
-<a name="l00129"></a>00129   my ( $sql, $params ) = $self-&gt;_args_to_sql( $self-&gt;_get_base_sql(), $args );
-<a name="l00130"></a>00130   my $info =
-<a name="l00131"></a>00131     $self-&gt;_fetch_generic( $sql, $params, $self-&gt;_get_obj_class(), $keen );
-<a name="l00132"></a>00132   <span class="keywordflow">return</span> $info;
-<a name="l00133"></a>00133 }
-<a name="l00134"></a>00134 
-<a name="l00135"></a>00135 sub _fetch_children {
-<a name="l00136"></a>00136   my ( $self, $i ) = @_;
-<a name="l00137"></a>00137 <span class="preprocessor">  # do nothing</span>
-<a name="l00138"></a>00138 <span class="preprocessor"></span>  <span class="keywordflow">return</span>;
-<a name="l00139"></a>00139 }
-<a name="l00140"></a>00140 
-<a name="l00141"></a>00141 sub _args_to_sql {
-<a name="l00142"></a>00142   my ( $self, $sql_in, $args ) = @_;
-<a name="l00143"></a>00143   my $sql    = $sql_in;
-<a name="l00144"></a>00144   my $params = [];
-<a name="l00145"></a>00145   my $clause = <span class="stringliteral">&#39;&#39;</span>;
-<a name="l00146"></a>00146   <span class="keywordflow">while</span> ( my ( $k, $v ) = each %$args ) {
-<a name="l00147"></a>00147     <span class="keywordflow">if</span> ( $clause ne <span class="stringliteral">&#39;&#39;</span> ) {
-<a name="l00148"></a>00148       $clause .= <span class="stringliteral">&#39; AND &#39;</span>;
-<a name="l00149"></a>00149     }
-<a name="l00150"></a>00150     <span class="keywordflow">if</span> ( ref($v) eq <span class="stringliteral">&#39;ARRAY&#39;</span> ) {
-<a name="l00151"></a>00151       $clause .= <span class="stringliteral">&quot;$k in (&quot;</span> . join( <span class="charliteral">&#39;,&#39;</span>, map { <span class="charliteral">&#39;?&#39;</span> } @$v ) . <span class="stringliteral">&quot;)&quot;</span>;
-<a name="l00152"></a>00152       $params = [ @$params, @$v ];
-<a name="l00153"></a>00153     }
-<a name="l00154"></a>00154     <span class="keywordflow">else</span> {
-<a name="l00155"></a>00155       $clause .= <span class="stringliteral">&quot;$k = ?&quot;</span>;
-<a name="l00156"></a>00156       push @$params, $v;
-<a name="l00157"></a>00157     }
-<a name="l00158"></a>00158   }
-<a name="l00159"></a>00159   <span class="keywordflow">if</span> ( $clause ne <span class="stringliteral">&#39;&#39;</span> ) {
-<a name="l00160"></a>00160     $sql .= <span class="stringliteral">&#39; where &#39;</span> . $clause;
-<a name="l00161"></a>00161   }
-<a name="l00162"></a>00162   <span class="keywordflow">return</span> ( $sql, $params );
-<a name="l00163"></a>00163 }
-<a name="l00164"></a>00164 
-<a name="l00165"></a>00165 =head2 _fetch_generic
-<a name="l00166"></a>00166   Arg        : SQL to use to fetch <span class="keywordtype">object</span>
-<a name="l00167"></a>00167   Arg        : arrayref of bind parameters
-<a name="l00168"></a>00168   Arg        : (optional) <span class="keywordflow">if</span> <span class="keyword">set</span> to 1, all children will be fetched
-<a name="l00169"></a>00169   Description: Instantiate a GenomeInfo from the database <span class="keyword">using</span> the specified SQL
-<a name="l00170"></a>00170   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00171"></a>00171   Exceptions : none
-<a name="l00172"></a>00172   Caller     : <span class="keyword">internal</span>
-<a name="l00173"></a>00173   Status     : Stable
-<a name="l00174"></a>00174 =cut
-<a name="l00175"></a>00175 
-<a name="l00176"></a>00176 sub _fetch_generic {
-<a name="l00177"></a>00177   my ( $self, $sql, $params, $type, $keen ) = @_;
-<a name="l00178"></a>00178   <span class="keywordflow">if</span> ( !defined $type ) {
-<a name="l00179"></a>00179     $type = $self-&gt;_get_obj_class();
-<a name="l00180"></a>00180   }
-<a name="l00181"></a>00181   my $mds = $self-&gt;{dbc}-&gt;sql_helper()-&gt;execute(
-<a name="l00182"></a>00182     -SQL          =&gt; $sql,
-<a name="l00183"></a>00183     -USE_HASHREFS =&gt; 1,
-<a name="l00184"></a>00184     -CALLBACK     =&gt; sub {
-<a name="l00185"></a>00185       my $row = shift @_;
-<a name="l00186"></a>00186       my $md = $self-&gt;_get_cached_obj( $type, $row-&gt;{dbID} );
-<a name="l00187"></a>00187       <span class="keywordflow">if</span> ( !defined $md ) {
-<a name="l00188"></a>00188         $md = bless $row, $type;
-<a name="l00189"></a>00189         $md-&gt;adaptor($self);
-<a name="l00190"></a>00190         $self-&gt;_store_cached_obj($md);
-<a name="l00191"></a>00191       }
-<a name="l00192"></a>00192       <span class="keywordflow">return</span> $md;
-<a name="l00193"></a>00193     },
-<a name="l00194"></a>00194     -PARAMS =&gt; $params );
-<a name="l00195"></a>00195   <span class="keywordflow">if</span> ($keen) {
-<a name="l00196"></a>00196     <span class="keywordflow">for</span> my $md ( @{$mds} ) {
-<a name="l00197"></a>00197       $self-&gt;_fetch_children( $md, $keen );
+<a name="l00047"></a>00047 use base qw/Bio::EnsEMBL::DBSQL::BaseAdaptor/;
+<a name="l00048"></a>00048 
+<a name="l00049"></a>00049 =head1 METHODS
+<a name="l00050"></a>00050 =head2 fetch_all
+<a name="l00051"></a>00051   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
+<a name="l00052"></a>00052   Description: Fetch all genome info
+<a name="l00053"></a>00053   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00054"></a>00054   Exceptions : none
+<a name="l00055"></a>00055   Caller     : general
+<a name="l00056"></a>00056   Status     : Stable
+<a name="l00057"></a>00057 =cut
+<a name="l00058"></a>00058 
+<a name="l00059"></a>00059 sub fetch_all {
+<a name="l00060"></a>00060   my ( $self, $keen ) = @_;
+<a name="l00061"></a>00061   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( {}, $keen );
+<a name="l00062"></a>00062 }
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 =head2 fetch_by_dbID
+<a name="l00065"></a>00065   Arg        : ID of genome info
+<a name="l00066"></a>00066   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
+<a name="l00067"></a>00067   Description: Fetch genome info <span class="keywordflow">for</span> specified ID
+<a name="l00068"></a>00068   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00069"></a>00069   Exceptions : none
+<a name="l00070"></a>00070   Caller     : <span class="keyword">internal</span>
+<a name="l00071"></a>00071   Status     : Stable
+<a name="l00072"></a>00072 =cut
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 sub fetch_by_dbID {
+<a name="l00075"></a>00075   my ( $self, $id, $keen ) = @_;
+<a name="l00076"></a>00076   <span class="keywordflow">return</span>
+<a name="l00077"></a>00077     $self-&gt;_first_element( $self-&gt;_fetch_generic_with_args(
+<a name="l00078"></a>00078                                                  { $self-&gt;_get_id_field(), $id }
+<a name="l00079"></a>00079                            ),
+<a name="l00080"></a>00080                            $keen );
+<a name="l00081"></a>00081 }
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 =head2 fetch_by_dbIDs
+<a name="l00084"></a>00084   Arg        : IDs of genome info
+<a name="l00085"></a>00085   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
+<a name="l00086"></a>00086   Description: Fetch genome info <span class="keywordflow">for</span> specified ID
+<a name="l00087"></a>00087   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00088"></a>00088   Exceptions : none
+<a name="l00089"></a>00089   Caller     : <span class="keyword">internal</span>
+<a name="l00090"></a>00090   Status     : Stable
+<a name="l00091"></a>00091 =cut
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093 sub fetch_by_dbIDs {
+<a name="l00094"></a>00094   my ( $self, $ids, $keen ) = @_;
+<a name="l00095"></a>00095   my @genomes = ();
+<a name="l00096"></a>00096   my $it = natatime 1000, @{$ids};
+<a name="l00097"></a>00097   <span class="keywordflow">while</span> ( my @vals = $it-&gt;() ) {
+<a name="l00098"></a>00098     my $sql =
+<a name="l00099"></a>00099       $self-&gt;_get_base_sql() . <span class="stringliteral">&#39; where &#39;</span> . $self-&gt;_get_id_field() . <span class="stringliteral">&#39; in (&#39;</span> .
+<a name="l00100"></a>00100       join( <span class="charliteral">&#39;,&#39;</span>, @vals ) . <span class="charliteral">&#39;)&#39;</span>;
+<a name="l00101"></a>00101     @genomes = ( @genomes, @{ $self-&gt;_fetch_generic( $sql, [] ) } );
+<a name="l00102"></a>00102   }
+<a name="l00103"></a>00103   <span class="keywordflow">return</span> \@genomes;
+<a name="l00104"></a>00104 }
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106 =head1 INTERNAL METHODS
+<a name="l00107"></a>00107 =head2 _get_base_sql
+<a name="l00108"></a>00108   Description: Base SQL <span class="keywordflow">for</span> fetching <span class="keywordtype">object</span> - must be implemented 
+<a name="l00109"></a>00109   Returntype : String
+<a name="l00110"></a>00110   Exceptions : none
+<a name="l00111"></a>00111   Caller     : <span class="keyword">internal</span>
+<a name="l00112"></a>00112   Status     : Stable
+<a name="l00113"></a>00113 =cut
+<a name="l00114"></a>00114 sub _get_base_sql {
+<a name="l00115"></a>00115   <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Method not implemented in base class&quot;</span>);
+<a name="l00116"></a>00116 }
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118 =head2 _get_id_field
+<a name="l00119"></a>00119   Description: Database column containing dbID - must be implemented 
+<a name="l00120"></a>00120   Returntype : String
+<a name="l00121"></a>00121   Exceptions : none
+<a name="l00122"></a>00122   Caller     : <span class="keyword">internal</span>
+<a name="l00123"></a>00123   Status     : Stable
+<a name="l00124"></a>00124 =cut
+<a name="l00125"></a>00125 sub _get_id_field {
+<a name="l00126"></a>00126   <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Method not implemented in base class&quot;</span>);
+<a name="l00127"></a>00127 }
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129 =head2 _get_obj_class
+<a name="l00130"></a>00130   Description: Class of <span class="keywordtype">object</span> retrieved - must be implemented 
+<a name="l00131"></a>00131   Returntype : String
+<a name="l00132"></a>00132   Exceptions : none
+<a name="l00133"></a>00133   Caller     : <span class="keyword">internal</span>
+<a name="l00134"></a>00134   Status     : Stable
+<a name="l00135"></a>00135 =cut
+<a name="l00136"></a>00136 sub _get_obj_class {
+<a name="l00137"></a>00137   <span class="keywordflow">throw</span>(<span class="stringliteral">&quot;Method not implemented in base class&quot;</span>);
+<a name="l00138"></a>00138 }
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140 =head2 _fetch_generic_with_args
+<a name="l00141"></a>00141   Arg        : hashref of arguments by column
+<a name="l00142"></a>00142   Arg        : (optional) <span class="keywordflow">if</span> <span class="keyword">set</span> to 1, all children will be fetched
+<a name="l00143"></a>00143   Description: Instantiate a GenomeInfo from the database <span class="keyword">using</span> a 
+<a name="l00144"></a>00144                <span class="keyword">generic</span> method, with the supplied arguments
+<a name="l00145"></a>00145   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00146"></a>00146   Exceptions : none
+<a name="l00147"></a>00147   Caller     : <span class="keyword">internal</span>
+<a name="l00148"></a>00148   Status     : Stable
+<a name="l00149"></a>00149 =cut
+<a name="l00150"></a>00150 
+<a name="l00151"></a>00151 sub _fetch_generic_with_args {
+<a name="l00152"></a>00152   my ( $self, $args, $type, $keen ) = @_;
+<a name="l00153"></a>00153   my ( $sql, $params ) = $self-&gt;_args_to_sql( $self-&gt;_get_base_sql(), $args );
+<a name="l00154"></a>00154   my $info =
+<a name="l00155"></a>00155     $self-&gt;_fetch_generic( $sql, $params, $self-&gt;_get_obj_class(), $keen );
+<a name="l00156"></a>00156   <span class="keywordflow">return</span> $info;
+<a name="l00157"></a>00157 }
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159 =head2 _get_obj_class
+<a name="l00160"></a>00160   Description: Load children of <span class="keywordtype">object</span> - no-op implementation, can be overridden
+<a name="l00161"></a>00161   Arg        : Object to retrieve children <span class="keywordflow">for</span>
+<a name="l00162"></a>00162   Returntype : non
+<a name="l00163"></a>00163   Exceptions : none
+<a name="l00164"></a>00164   Caller     : <span class="keyword">internal</span>
+<a name="l00165"></a>00165   Status     : Stable
+<a name="l00166"></a>00166 =cut
+<a name="l00167"></a>00167 sub _fetch_children {
+<a name="l00168"></a>00168   my ( $self, $i ) = @_;
+<a name="l00169"></a>00169 <span class="preprocessor">  # do nothing</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>  <span class="keywordflow">return</span>;
+<a name="l00171"></a>00171 }
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173 =head2 _args_to_sql
+<a name="l00174"></a>00174   Description: Add where clauses to SQL given arguments
+<a name="l00175"></a>00175   Arg        : String - Base SQL
+<a name="l00176"></a>00176   Arg        : Hashref - arguments
+<a name="l00177"></a>00177   Returntype : String
+<a name="l00178"></a>00178   Exceptions : none
+<a name="l00179"></a>00179   Caller     : <span class="keyword">internal</span>
+<a name="l00180"></a>00180   Status     : Stable
+<a name="l00181"></a>00181 =cut
+<a name="l00182"></a>00182 sub _args_to_sql {
+<a name="l00183"></a>00183   my ( $self, $sql_in, $args ) = @_;
+<a name="l00184"></a>00184   my $sql    = $sql_in;
+<a name="l00185"></a>00185   my $params = [];
+<a name="l00186"></a>00186   my $clause = <span class="stringliteral">&#39;&#39;</span>;
+<a name="l00187"></a>00187   <span class="keywordflow">while</span> ( my ( $k, $v ) = each %$args ) {
+<a name="l00188"></a>00188     <span class="keywordflow">if</span> ( $clause ne <span class="stringliteral">&#39;&#39;</span> ) {
+<a name="l00189"></a>00189       $clause .= <span class="stringliteral">&#39; AND &#39;</span>;
+<a name="l00190"></a>00190     }
+<a name="l00191"></a>00191     <span class="keywordflow">if</span> ( ref($v) eq <span class="stringliteral">&#39;ARRAY&#39;</span> ) {
+<a name="l00192"></a>00192       $clause .= <span class="stringliteral">&quot;$k in (&quot;</span> . join( <span class="charliteral">&#39;,&#39;</span>, map { <span class="charliteral">&#39;?&#39;</span> } @$v ) . <span class="stringliteral">&quot;)&quot;</span>;
+<a name="l00193"></a>00193       $params = [ @$params, @$v ];
+<a name="l00194"></a>00194     }
+<a name="l00195"></a>00195     <span class="keywordflow">else</span> {
+<a name="l00196"></a>00196       $clause .= <span class="stringliteral">&quot;$k = ?&quot;</span>;
+<a name="l00197"></a>00197       push @$params, $v;
 <a name="l00198"></a>00198     }
 <a name="l00199"></a>00199   }
-<a name="l00200"></a>00200   <span class="keywordflow">return</span> $mds;
-<a name="l00201"></a>00201 } ## end sub _fetch_generic
-<a name="l00202"></a>00202 
-<a name="l00203"></a>00203 =head2 _get_division_id
-<a name="l00204"></a>00204   Arg        : division name
-<a name="l00205"></a>00205   Description: Return ID <span class="keywordflow">for</span> division, storing <span class="keywordflow">if</span> required
-<a name="l00206"></a>00206   Returntype : none
-<a name="l00207"></a>00207   Exceptions : none
-<a name="l00208"></a>00208   Caller     : <span class="keyword">internal</span>
-<a name="l00209"></a>00209   Status     : Stable
-<a name="l00210"></a>00210 =cut
-<a name="l00211"></a>00211 
-<a name="l00212"></a>00212 my $division_names = { <span class="stringliteral">&#39;Ensembl&#39;</span>         =&gt; <span class="charliteral">&#39;E&#39;</span>,
-<a name="l00213"></a>00213                        <span class="stringliteral">&#39;EnsemblGenomes&#39;</span>  =&gt; <span class="stringliteral">&#39;EG&#39;</span>,
-<a name="l00214"></a>00214                        <span class="stringliteral">&#39;EnsemblBacteria&#39;</span> =&gt; <span class="stringliteral">&#39;EB&#39;</span>,
-<a name="l00215"></a>00215                        <span class="stringliteral">&#39;EnsemblMetazoa&#39;</span>  =&gt; <span class="stringliteral">&#39;EM&#39;</span>,
-<a name="l00216"></a>00216                        <span class="stringliteral">&#39;EnsemblPlants&#39;</span>   =&gt; <span class="stringliteral">&#39;EPl&#39;</span>,
-<a name="l00217"></a>00217                        <span class="stringliteral">&#39;EnsemblProtists&#39;</span> =&gt; <span class="stringliteral">&#39;EPr&#39;</span>,
-<a name="l00218"></a>00218                        <span class="stringliteral">&#39;EnsemblFungi&#39;</span>    =&gt; <span class="stringliteral">&#39;EF&#39;</span> };
-<a name="l00219"></a>00219 
-<a name="l00220"></a>00220 sub _get_division_id {
-<a name="l00221"></a>00221   my ( $self, $division, $short_name ) = @_;
-<a name="l00222"></a>00222 
-<a name="l00223"></a>00223   my $div_id = $self-&gt;_cache(<span class="stringliteral">&#39;division&#39;</span>)-&gt;{$division};
-<a name="l00224"></a>00224 
-<a name="l00225"></a>00225   <span class="keywordflow">if</span> ( !defined $div_id ) {
-<a name="l00226"></a>00226 
-<a name="l00227"></a>00227     $div_id = $self-&gt;{dbc}-&gt;sql_helper()-&gt;transaction(
-<a name="l00228"></a>00228       -CALLBACK =&gt; sub {
-<a name="l00229"></a>00229         my ($dbc) = @_;
-<a name="l00230"></a>00230         my $id;
-<a name="l00231"></a>00231         my $ids =
-<a name="l00232"></a>00232           $dbc-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00233"></a>00233                         -SQL =&gt; <span class="stringliteral">&#39;select division_id from division where name=?&#39;</span>,
-<a name="l00234"></a>00234                         -PARAMS =&gt; [$division] );
-<a name="l00235"></a>00235         <span class="keywordflow">if</span> ( scalar(@$ids) == 0 ) {
-<a name="l00236"></a>00236 <span class="preprocessor">          # not found so create</span>
-<a name="l00237"></a>00237 <span class="preprocessor"></span>          <span class="keywordflow">if</span> ( !defined $short_name ) {
-<a name="l00238"></a>00238             $short_name = $division_names-&gt;{$division};
-<a name="l00239"></a>00239             <span class="keywordflow">if</span> ( !defined $short_name ) {
-<a name="l00240"></a>00240               $short_name = $division;
-<a name="l00241"></a>00241               $short_name =~ s/[a-z]+<span class="comment">//g;</span>
-<a name="l00242"></a>00242             }
-<a name="l00243"></a>00243           }
-<a name="l00244"></a>00244           $dbc-&gt;sql_helper-&gt;execute_update(
-<a name="l00245"></a>00245             -SQL      =&gt; <span class="stringliteral">&#39;insert into division (name,short_name) values(?,?)&#39;</span>,
-<a name="l00246"></a>00246             -CALLBACK =&gt; sub {
-<a name="l00247"></a>00247               my ( $sth, $dbh, $rv ) = @_;
-<a name="l00248"></a>00248               $id = $dbh-&gt;{mysql_insertid};
-<a name="l00249"></a>00249             },
-<a name="l00250"></a>00250             -PARAMS =&gt; [ $division, $short_name ] );
-<a name="l00251"></a>00251         }
-<a name="l00252"></a>00252         <span class="keywordflow">else</span> {
-<a name="l00253"></a>00253           $id = $ids-&gt;[0];
-<a name="l00254"></a>00254         }
-<a name="l00255"></a>00255         <span class="keywordflow">return</span> $id;
-<a name="l00256"></a>00256       } );
-<a name="l00257"></a>00257     $self-&gt;_cache(<span class="stringliteral">&#39;division&#39;</span>)-&gt;{$division} = $div_id;
-<a name="l00258"></a>00258   } ## end <span class="keywordflow">if</span> ( !defined $div_id )
-<a name="l00259"></a>00259   
-<a name="l00260"></a>00260   <span class="keywordflow">return</span> $div_id;
-<a name="l00261"></a>00261 } ## end sub _get_division_id
-<a name="l00262"></a>00262 
-<a name="l00263"></a>00263 =head2 _cache
-<a name="l00264"></a>00264   Arg        : type of <span class="keywordtype">object</span> <span class="keywordflow">for</span> cache
-<a name="l00265"></a>00265   Description: Return <span class="keyword">internal</span> cache <span class="keywordflow">for</span> given type
-<a name="l00266"></a>00266   Returntype : none
-<a name="l00267"></a>00267   Exceptions : none
-<a name="l00268"></a>00268   Caller     : <span class="keyword">internal</span>
-<a name="l00269"></a>00269   Status     : Stable
-<a name="l00270"></a>00270 =cut
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272 sub _cache {
-<a name="l00273"></a>00273   my ( $self, $type ) = @_;
-<a name="l00274"></a>00274   <span class="keywordflow">if</span> ( !defined $self-&gt;{cache} || !defined $self-&gt;{cache}{$type} ) {
-<a name="l00275"></a>00275     $self-&gt;{cache}{$type} = {};
-<a name="l00276"></a>00276   }
-<a name="l00277"></a>00277   <span class="keywordflow">return</span> $self-&gt;{cache}{$type};
-<a name="l00278"></a>00278 }
-<a name="l00279"></a>00279 
-<a name="l00280"></a>00280 =head2 _clear_cache
-<a name="l00281"></a>00281   Arg        : (optional) type of <span class="keywordtype">object</span> to clear
-<a name="l00282"></a>00282   Description: Clear <span class="keyword">internal</span> cache (optionally just one type)
-<a name="l00283"></a>00283   Returntype : none
-<a name="l00284"></a>00284   Exceptions : none
-<a name="l00285"></a>00285   Caller     : <span class="keyword">internal</span>
-<a name="l00286"></a>00286   Status     : Stable
-<a name="l00287"></a>00287 =cut
-<a name="l00288"></a>00288 
-<a name="l00289"></a>00289 sub _clear_cache {
-<a name="l00290"></a>00290   my ( $self, $type ) = @_;
-<a name="l00291"></a>00291   <span class="keywordflow">if</span> ( defined $type ) {
-<a name="l00292"></a>00292     $self-&gt;{cache}{$type} = {};
-<a name="l00293"></a>00293   }
-<a name="l00294"></a>00294   <span class="keywordflow">else</span> {
-<a name="l00295"></a>00295     $self-&gt;{cache} = {};
-<a name="l00296"></a>00296   }
-<a name="l00297"></a>00297   <span class="keywordflow">return</span>;
-<a name="l00298"></a>00298 }
-<a name="l00299"></a>00299 
-<a name="l00300"></a>00300 =head2 _get_cached_obj
-<a name="l00301"></a>00301   Arg        : type of <span class="keywordtype">object</span> to retrieve
-<a name="l00302"></a>00302   Arg        : ID of <span class="keywordtype">object</span> to retrieve
-<a name="l00303"></a>00303   Description: Retrieve <span class="keywordtype">object</span> from <span class="keyword">internal</span> cache
-<a name="l00304"></a>00304   Returntype : <span class="keywordtype">object</span>
-<a name="l00305"></a>00305   Exceptions : none
-<a name="l00306"></a>00306   Caller     : <span class="keyword">internal</span>
-<a name="l00307"></a>00307   Status     : Stable
-<a name="l00308"></a>00308 =cut
-<a name="l00309"></a>00309 
-<a name="l00310"></a>00310 sub _get_cached_obj {
-<a name="l00311"></a>00311   my ( $self, $type, $id ) = @_;
-<a name="l00312"></a>00312   <span class="keywordflow">return</span> $self-&gt;_cache($type)-&gt;{$id};
-<a name="l00313"></a>00313 }
-<a name="l00314"></a>00314 
-<a name="l00315"></a>00315 =head2 _store_cached_obj
-<a name="l00316"></a>00316   Arg        : type of <span class="keywordtype">object</span> to store
-<a name="l00317"></a>00317   Arg        : <span class="keywordtype">object</span> to store
-<a name="l00318"></a>00318   Description: Store <span class="keywordtype">object</span> in <span class="keyword">internal</span> cache
-<a name="l00319"></a>00319   Returntype : none
-<a name="l00320"></a>00320   Exceptions : none
-<a name="l00321"></a>00321   Caller     : <span class="keyword">internal</span>
-<a name="l00322"></a>00322   Status     : Stable
-<a name="l00323"></a>00323 =cut
-<a name="l00324"></a>00324 
-<a name="l00325"></a>00325 sub _store_cached_obj {
-<a name="l00326"></a>00326   my ( $self, $obj ) = @_;
-<a name="l00327"></a>00327   my $type = ref $obj;
-<a name="l00328"></a>00328   $self-&gt;_cache($type)-&gt;{ $obj-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#ae2ae7289199643ff4352d80941bdb6cd">dbID</a>() } = $obj;
-<a name="l00329"></a>00329   <span class="keywordflow">return</span>;
-<a name="l00330"></a>00330 }
-<a name="l00331"></a>00331 
-<a name="l00332"></a>00332 =head2 _first_element
-<a name="l00333"></a>00333   Arg        : arrayref
-<a name="l00334"></a>00334   Description: Utility method to <span class="keywordflow">return</span> the first element in a list, undef <span class="keywordflow">if</span> empty
-<a name="l00335"></a>00335   Returntype : arrayref element
-<a name="l00336"></a>00336   Exceptions : none
-<a name="l00337"></a>00337   Caller     : <span class="keyword">internal</span>
-<a name="l00338"></a>00338   Status     : Stable
-<a name="l00339"></a>00339 =cut
+<a name="l00200"></a>00200   <span class="keywordflow">if</span> ( $clause ne <span class="stringliteral">&#39;&#39;</span> ) {
+<a name="l00201"></a>00201     $sql .= <span class="stringliteral">&#39; where &#39;</span> . $clause;
+<a name="l00202"></a>00202   }
+<a name="l00203"></a>00203   <span class="keywordflow">return</span> ( $sql, $params );
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206 =head2 _fetch_generic
+<a name="l00207"></a>00207   Arg        : SQL to use to fetch <span class="keywordtype">object</span>
+<a name="l00208"></a>00208   Arg        : arrayref of bind parameters
+<a name="l00209"></a>00209   Arg        : (optional) <span class="keywordflow">if</span> <span class="keyword">set</span> to 1, all children will be fetched
+<a name="l00210"></a>00210   Description: Instantiate a GenomeInfo from the database <span class="keyword">using</span> the specified SQL
+<a name="l00211"></a>00211   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00212"></a>00212   Exceptions : none
+<a name="l00213"></a>00213   Caller     : <span class="keyword">internal</span>
+<a name="l00214"></a>00214   Status     : Stable
+<a name="l00215"></a>00215 =cut
+<a name="l00216"></a>00216 
+<a name="l00217"></a>00217 sub _fetch_generic {
+<a name="l00218"></a>00218   my ( $self, $sql, $params, $type, $keen ) = @_;
+<a name="l00219"></a>00219   <span class="keywordflow">if</span> ( !defined $type ) {
+<a name="l00220"></a>00220     $type = $self-&gt;_get_obj_class();
+<a name="l00221"></a>00221   }
+<a name="l00222"></a>00222   my $mds = $self-&gt;{dbc}-&gt;sql_helper()-&gt;execute(
+<a name="l00223"></a>00223     -SQL          =&gt; $sql,
+<a name="l00224"></a>00224     -USE_HASHREFS =&gt; 1,
+<a name="l00225"></a>00225     -CALLBACK     =&gt; sub {
+<a name="l00226"></a>00226       my $row = shift @_;
+<a name="l00227"></a>00227       my $md = $self-&gt;_get_cached_obj( $type, $row-&gt;{dbID} );
+<a name="l00228"></a>00228       <span class="keywordflow">if</span> ( !defined $md ) {
+<a name="l00229"></a>00229         $md = bless $row, $type;
+<a name="l00230"></a>00230         $md-&gt;adaptor($self);
+<a name="l00231"></a>00231         $self-&gt;_store_cached_obj($md);
+<a name="l00232"></a>00232       }
+<a name="l00233"></a>00233       <span class="keywordflow">return</span> $md;
+<a name="l00234"></a>00234     },
+<a name="l00235"></a>00235     -PARAMS =&gt; $params );
+<a name="l00236"></a>00236   <span class="keywordflow">if</span> ($keen) {
+<a name="l00237"></a>00237     <span class="keywordflow">for</span> my $md ( @{$mds} ) {
+<a name="l00238"></a>00238       $self-&gt;_fetch_children( $md, $keen );
+<a name="l00239"></a>00239     }
+<a name="l00240"></a>00240   }
+<a name="l00241"></a>00241   <span class="keywordflow">return</span> $mds;
+<a name="l00242"></a>00242 } ## end sub _fetch_generic
+<a name="l00243"></a>00243 
+<a name="l00244"></a>00244 =head2 _get_division_id
+<a name="l00245"></a>00245   Arg        : division name
+<a name="l00246"></a>00246   Description: Return ID <span class="keywordflow">for</span> division, storing <span class="keywordflow">if</span> required
+<a name="l00247"></a>00247   Returntype : none
+<a name="l00248"></a>00248   Exceptions : none
+<a name="l00249"></a>00249   Caller     : <span class="keyword">internal</span>
+<a name="l00250"></a>00250   Status     : Stable
+<a name="l00251"></a>00251 =cut
+<a name="l00252"></a>00252 
+<a name="l00253"></a>00253 my $division_names = { <span class="stringliteral">&#39;Ensembl&#39;</span>         =&gt; <span class="charliteral">&#39;E&#39;</span>,
+<a name="l00254"></a>00254                        <span class="stringliteral">&#39;EnsemblGenomes&#39;</span>  =&gt; <span class="stringliteral">&#39;EG&#39;</span>,
+<a name="l00255"></a>00255                        <span class="stringliteral">&#39;EnsemblBacteria&#39;</span> =&gt; <span class="stringliteral">&#39;EB&#39;</span>,
+<a name="l00256"></a>00256                        <span class="stringliteral">&#39;EnsemblMetazoa&#39;</span>  =&gt; <span class="stringliteral">&#39;EM&#39;</span>,
+<a name="l00257"></a>00257                        <span class="stringliteral">&#39;EnsemblPlants&#39;</span>   =&gt; <span class="stringliteral">&#39;EPl&#39;</span>,
+<a name="l00258"></a>00258                        <span class="stringliteral">&#39;EnsemblProtists&#39;</span> =&gt; <span class="stringliteral">&#39;EPr&#39;</span>,
+<a name="l00259"></a>00259                        <span class="stringliteral">&#39;EnsemblFungi&#39;</span>    =&gt; <span class="stringliteral">&#39;EF&#39;</span> };
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261 sub _get_division_id {
+<a name="l00262"></a>00262   my ( $self, $division, $short_name ) = @_;
+<a name="l00263"></a>00263 
+<a name="l00264"></a>00264   my $div_id = $self-&gt;_cache(<span class="stringliteral">&#39;division&#39;</span>)-&gt;{$division};
+<a name="l00265"></a>00265 
+<a name="l00266"></a>00266   <span class="keywordflow">if</span> ( !defined $div_id ) {
+<a name="l00267"></a>00267 
+<a name="l00268"></a>00268     $div_id = $self-&gt;{dbc}-&gt;sql_helper()-&gt;transaction(
+<a name="l00269"></a>00269       -CALLBACK =&gt; sub {
+<a name="l00270"></a>00270         my ($dbc) = @_;
+<a name="l00271"></a>00271         my $id;
+<a name="l00272"></a>00272         my $ids =
+<a name="l00273"></a>00273           $dbc-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00274"></a>00274                         -SQL =&gt; <span class="stringliteral">&#39;select division_id from division where name=?&#39;</span>,
+<a name="l00275"></a>00275                         -PARAMS =&gt; [$division] );
+<a name="l00276"></a>00276         <span class="keywordflow">if</span> ( scalar(@$ids) == 0 ) {
+<a name="l00277"></a>00277 <span class="preprocessor">          # not found so create</span>
+<a name="l00278"></a>00278 <span class="preprocessor"></span>          <span class="keywordflow">if</span> ( !defined $short_name ) {
+<a name="l00279"></a>00279             $short_name = $division_names-&gt;{$division};
+<a name="l00280"></a>00280             <span class="keywordflow">if</span> ( !defined $short_name ) {
+<a name="l00281"></a>00281               $short_name = $division;
+<a name="l00282"></a>00282               $short_name =~ s/[a-z]+<span class="comment">//g;</span>
+<a name="l00283"></a>00283             }
+<a name="l00284"></a>00284           }
+<a name="l00285"></a>00285           $dbc-&gt;sql_helper-&gt;execute_update(
+<a name="l00286"></a>00286             -SQL      =&gt; <span class="stringliteral">&#39;insert into division (name,short_name) values(?,?)&#39;</span>,
+<a name="l00287"></a>00287             -CALLBACK =&gt; sub {
+<a name="l00288"></a>00288               my ( $sth, $dbh, $rv ) = @_;
+<a name="l00289"></a>00289               $id = $dbh-&gt;{mysql_insertid};
+<a name="l00290"></a>00290             },
+<a name="l00291"></a>00291             -PARAMS =&gt; [ $division, $short_name ] );
+<a name="l00292"></a>00292         }
+<a name="l00293"></a>00293         <span class="keywordflow">else</span> {
+<a name="l00294"></a>00294           $id = $ids-&gt;[0];
+<a name="l00295"></a>00295         }
+<a name="l00296"></a>00296         <span class="keywordflow">return</span> $id;
+<a name="l00297"></a>00297       } );
+<a name="l00298"></a>00298     $self-&gt;_cache(<span class="stringliteral">&#39;division&#39;</span>)-&gt;{$division} = $div_id;
+<a name="l00299"></a>00299   } ## end <span class="keywordflow">if</span> ( !defined $div_id )
+<a name="l00300"></a>00300   
+<a name="l00301"></a>00301   <span class="keywordflow">return</span> $div_id;
+<a name="l00302"></a>00302 } ## end sub _get_division_id
+<a name="l00303"></a>00303 
+<a name="l00304"></a>00304 =head2 _cache
+<a name="l00305"></a>00305   Arg        : type of <span class="keywordtype">object</span> <span class="keywordflow">for</span> cache
+<a name="l00306"></a>00306   Description: Return <span class="keyword">internal</span> cache <span class="keywordflow">for</span> given type
+<a name="l00307"></a>00307   Returntype : none
+<a name="l00308"></a>00308   Exceptions : none
+<a name="l00309"></a>00309   Caller     : <span class="keyword">internal</span>
+<a name="l00310"></a>00310   Status     : Stable
+<a name="l00311"></a>00311 =cut
+<a name="l00312"></a>00312 
+<a name="l00313"></a>00313 sub _cache {
+<a name="l00314"></a>00314   my ( $self, $type ) = @_;
+<a name="l00315"></a>00315   <span class="keywordflow">if</span> ( !defined $self-&gt;{cache} || !defined $self-&gt;{cache}{$type} ) {
+<a name="l00316"></a>00316     $self-&gt;{cache}{$type} = {};
+<a name="l00317"></a>00317   }
+<a name="l00318"></a>00318   <span class="keywordflow">return</span> $self-&gt;{cache}{$type};
+<a name="l00319"></a>00319 }
+<a name="l00320"></a>00320 
+<a name="l00321"></a>00321 =head2 _clear_cache
+<a name="l00322"></a>00322   Arg        : (optional) type of <span class="keywordtype">object</span> to clear
+<a name="l00323"></a>00323   Description: Clear <span class="keyword">internal</span> cache (optionally just one type)
+<a name="l00324"></a>00324   Returntype : none
+<a name="l00325"></a>00325   Exceptions : none
+<a name="l00326"></a>00326   Caller     : <span class="keyword">internal</span>
+<a name="l00327"></a>00327   Status     : Stable
+<a name="l00328"></a>00328 =cut
+<a name="l00329"></a>00329 
+<a name="l00330"></a>00330 sub _clear_cache {
+<a name="l00331"></a>00331   my ( $self, $type ) = @_;
+<a name="l00332"></a>00332   <span class="keywordflow">if</span> ( defined $type ) {
+<a name="l00333"></a>00333     $self-&gt;{cache}{$type} = {};
+<a name="l00334"></a>00334   }
+<a name="l00335"></a>00335   <span class="keywordflow">else</span> {
+<a name="l00336"></a>00336     $self-&gt;{cache} = {};
+<a name="l00337"></a>00337   }
+<a name="l00338"></a>00338   <span class="keywordflow">return</span>;
+<a name="l00339"></a>00339 }
 <a name="l00340"></a>00340 
-<a name="l00341"></a>00341 sub _first_element {
-<a name="l00342"></a>00342   my ( $self, $arr ) = @_;
-<a name="l00343"></a>00343   <span class="keywordflow">if</span> ( defined $arr &amp;&amp; scalar(@$arr) &gt; 0 ) {
-<a name="l00344"></a>00344     <span class="keywordflow">return</span> $arr-&gt;[0];
-<a name="l00345"></a>00345   }
-<a name="l00346"></a>00346   <span class="keywordflow">else</span> {
-<a name="l00347"></a>00347     <span class="keywordflow">return</span> undef;
-<a name="l00348"></a>00348   }
-<a name="l00349"></a>00349 }
+<a name="l00341"></a>00341 =head2 _get_cached_obj
+<a name="l00342"></a>00342   Arg        : type of <span class="keywordtype">object</span> to retrieve
+<a name="l00343"></a>00343   Arg        : ID of <span class="keywordtype">object</span> to retrieve
+<a name="l00344"></a>00344   Description: Retrieve <span class="keywordtype">object</span> from <span class="keyword">internal</span> cache
+<a name="l00345"></a>00345   Returntype : <span class="keywordtype">object</span>
+<a name="l00346"></a>00346   Exceptions : none
+<a name="l00347"></a>00347   Caller     : <span class="keyword">internal</span>
+<a name="l00348"></a>00348   Status     : Stable
+<a name="l00349"></a>00349 =cut
 <a name="l00350"></a>00350 
-<a name="l00351"></a>00351 1;
+<a name="l00351"></a>00351 sub _get_cached_obj {
+<a name="l00352"></a>00352   my ( $self, $type, $id ) = @_;
+<a name="l00353"></a>00353   <span class="keywordflow">return</span> $self-&gt;_cache($type)-&gt;{$id};
+<a name="l00354"></a>00354 }
+<a name="l00355"></a>00355 
+<a name="l00356"></a>00356 =head2 _store_cached_obj
+<a name="l00357"></a>00357   Arg        : type of <span class="keywordtype">object</span> to store
+<a name="l00358"></a>00358   Arg        : <span class="keywordtype">object</span> to store
+<a name="l00359"></a>00359   Description: Store <span class="keywordtype">object</span> in <span class="keyword">internal</span> cache
+<a name="l00360"></a>00360   Returntype : none
+<a name="l00361"></a>00361   Exceptions : none
+<a name="l00362"></a>00362   Caller     : <span class="keyword">internal</span>
+<a name="l00363"></a>00363   Status     : Stable
+<a name="l00364"></a>00364 =cut
+<a name="l00365"></a>00365 
+<a name="l00366"></a>00366 sub _store_cached_obj {
+<a name="l00367"></a>00367   my ( $self, $obj ) = @_;
+<a name="l00368"></a>00368   my $type = ref $obj;
+<a name="l00369"></a>00369   $self-&gt;_cache($type)-&gt;{ $obj-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#ae2ae7289199643ff4352d80941bdb6cd">dbID</a>() } = $obj;
+<a name="l00370"></a>00370   <span class="keywordflow">return</span>;
+<a name="l00371"></a>00371 }
+<a name="l00372"></a>00372 
+<a name="l00373"></a>00373 =head2 _first_element
+<a name="l00374"></a>00374   Arg        : arrayref
+<a name="l00375"></a>00375   Description: Utility method to <span class="keywordflow">return</span> the first element in a list, undef <span class="keywordflow">if</span> empty
+<a name="l00376"></a>00376   Returntype : arrayref element
+<a name="l00377"></a>00377   Exceptions : none
+<a name="l00378"></a>00378   Caller     : <span class="keyword">internal</span>
+<a name="l00379"></a>00379   Status     : Stable
+<a name="l00380"></a>00380 =cut
+<a name="l00381"></a>00381 
+<a name="l00382"></a>00382 sub _first_element {
+<a name="l00383"></a>00383   my ( $self, $arr ) = @_;
+<a name="l00384"></a>00384   <span class="keywordflow">if</span> ( defined $arr &amp;&amp; scalar(@$arr) &gt; 0 ) {
+<a name="l00385"></a>00385     <span class="keywordflow">return</span> $arr-&gt;[0];
+<a name="l00386"></a>00386   }
+<a name="l00387"></a>00387   <span class="keywordflow">else</span> {
+<a name="l00388"></a>00388     <span class="keywordflow">return</span> undef;
+<a name="l00389"></a>00389   }
+<a name="l00390"></a>00390 }
+<a name="l00391"></a>00391 
+<a name="l00392"></a>00392 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

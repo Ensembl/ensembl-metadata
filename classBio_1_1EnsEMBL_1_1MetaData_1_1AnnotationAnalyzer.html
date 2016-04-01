@@ -132,38 +132,47 @@ function toggleVisibility(linkObj) {
 <!-- doxytag: class="Bio::EnsEMBL::MetaData::AnnotationAnalyzer" -->
 <p><a href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer-members.html">List of all members.</a></p>
 <hr/><a name="details" id="details"></a><h2>Class Summary</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="AnnotationAnalyzer_8pm_source.html#l00009">9</a> of file <a class="el" href="AnnotationAnalyzer_8pm_source.html">AnnotationAnalyzer.pm</a>.</p>
+<div class="textblock"><h2><a class="anchor" id="Synopsis"></a>
+Synopsis</h2>
+<div class="fragment"><pre class="fragment">my $anal = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html">Bio::EnsEMBL::MetaData::AnnotationAnalyzer</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5f4168a9b1eaea0d3834ced9f9949cc8">new</a>();
+my $details = $anal-&gt;analyze_annotation($dba);
+</pre></div> <h2><a class="anchor" id="Description"></a>
+Description</h2>
+ <pre>
+Utility class for counting xrefs, variations etc. associated with a genome
+
+</pre> 
+<p>Definition at line <a class="el" href="AnnotationAnalyzer_8pm_source.html#l00021">21</a> of file <a class="el" href="AnnotationAnalyzer_8pm_source.html">AnnotationAnalyzer.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a72e895e7731ea2ba7174481f4e8da168">analyze_alignments</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a093f11c42f4e17339674264854198ea1">analyze_annotation</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5280d7e9f61ec42b3bd8ef72b5810826">analyze_compara</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a99b05e64655cd1b094e0b92c0794277e">analyze_features</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#abf7cb0b5f3d535b4478b0f4e42986427">analyze_tracks</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a3321c3344c844d54614371a92176f43a">analyze_variation</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a0c9b2b4c3561f9218ec1bc0ad54629e5">count_by_biotype</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a67fa26f5e735c6097a817c66db1f30d8">count_by_interpro</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a3b73145d9d367653f31d56a5242b7268">count_by_xref</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#ad2e6b739390d872a156f2487db9c435e">count_features</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a808fbaee85beea1def855552ab9c3653">count_genotypes</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5b421fb061759eb73bc47b56374bdd28">count_interpro</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#ae2a11a8fb8f38e3b3bf7dd194564b185">count_interpro_domains</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a490bfd2f42a5b298a4dfff858b266521">count_phenotypes</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a9da42e7a824e64bf3ee5816b64efb242">count_structural_variations</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a4a84177b03f78aaa3443ec8042d1e9ca">count_toplevel</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aa616185b763894e5dc2c6e7007989938">count_variations</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a27cefaf1245fe032b4f2c4c60ee3798e">count_xrefs</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a042490ef3b46395a294a5a9c35e11120">analyze_alignments</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a7edeceef17b3ff1c761dc20f8f64b281">analyze_annotation</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aa0cd3200a6539ad8d1b85a5686f37525">analyze_compara</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a0716a89a2ac3527d9379b7f7d38dd738">analyze_features</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aebfb6fd82021d7730d548cccea941d68">analyze_tracks</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a18c347e3e223473fdadf22b94ac3db97">analyze_variation</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a28ba9929a4f20f16d83198d866e54d58">count_by_biotype</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a47985aa409cda7c9bf24a4852d8da311">count_by_interpro</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a282e53d51f66d3bddf0a484e13b2c253">count_by_xref</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hashref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a968cb097a84aa3997572cf6830432db5">count_features</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hashref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a3a34c2301e88a8bf222224e123e4f192">count_genotypes</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#af1c956c14c3e1340fe9700de173e81c6">count_interpro</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a79f6ba911fda918bc0f3bf705e728507">count_interpro_domains</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a26a752422284398e530716f9513b93a6">count_phenotypes</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hashref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5c616639af76865a3d01da32ac9c8685">count_structural_variations</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#af30433391a1972fe05b0dd44f11ed72b">count_toplevel</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Hashref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a4599cef2d5fae4032837d7f812b394c0">count_variations</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aeed885c6354d1bfb7686e0913752f285">count_xrefs</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5f4168a9b1eaea0d3834ced9f9949cc8">new</a> ()</td></tr>
 </table>
 <hr/><h2>Method Documentation</h2>
-<a class="anchor" id="a72e895e7731ea2ba7174481f4e8da168"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_alignments" ref="a72e895e7731ea2ba7174481f4e8da168" args="()" -->
+<a class="anchor" id="a042490ef3b46395a294a5a9c35e11120"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_alignments" ref="a042490ef3b46395a294a5a9c35e11120" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_alignments </td>
+          <td class="memname">public Hash Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_alignments </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -171,13 +180,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-analyze_alignments" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes alignments for sequences to the assembly 
+  Returntype : Hash ref - keys are source_type (e.g. RNA seq), values are arrayrefs of hashrefs containing track details (source_name,description,source_url)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-analyze_alignments" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-analyze_alignments-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-analyze_alignments-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-analyze_alignments-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a72e895e7731ea2ba7174481f4e8da168">analyze_alignments</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a042490ef3b46395a294a5a9c35e11120">analyze_alignments</a> {
   my ( $self, $dba ) = @_;
   my $ali = {};
   my $pf = $self-&gt;count_features( $dba, <span class="stringliteral">&#39;protein_align_feature&#39;</span> );
@@ -193,12 +207,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a093f11c42f4e17339674264854198ea1"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_annotation" ref="a093f11c42f4e17339674264854198ea1" args="()" -->
+<a class="anchor" id="a7edeceef17b3ff1c761dc20f8f64b281"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_annotation" ref="a7edeceef17b3ff1c761dc20f8f64b281" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_annotation </td>
+          <td class="memname">public Hash Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_annotation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -206,47 +220,56 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-analyze_annotation" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes annotation content of the supplied core DB
+  Returntype : 	Hash ref with the following keys:
+					nProteinCoding - number of protein coding genes
+					nProteinCodingUniProtKBSwissProt - number of protein coding genes with at least one SwissPROT entry
+					nProteinCodingUniProtKBTrEMBL - number of protein coding genes with at least one TrEMBL entry
+					nProteinCodingGO - number of protein coding genes with at least one GO term
+					nProteinCodingInterPro - number of protein coding genes with at least one InterPro match
+					nUniProtKBSwissProt - number of distinct UniProtKB/TrEMBL entries matching at least one translation
+					nUniProtKBTrEMBL - number of distinct UniProtKB/TrEMBL entries matching at least one translation
+					nGO - number of distinct GO terms matching at least one translation
+					nInterPro - number of distinct InterPro entries matching at least one feature
+					nInterProDomains - number of distinct protein features matching an InterPro domains
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-analyze_annotation" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-analyze_annotation-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-analyze_annotation-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-analyze_annotation-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a093f11c42f4e17339674264854198ea1">analyze_annotation</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a7edeceef17b3ff1c761dc20f8f64b281">analyze_annotation</a> {
   my ( $self, $dba ) = @_;
-  $self-&gt;{logger}
-    -&gt;debug( <span class="stringliteral">&quot;Analysing annotation for &quot;</span> . $dba-&gt;species() );
+  $self-&gt;{logger}-&gt;debug( <span class="stringliteral">&quot;Analysing annotation for &quot;</span> . $dba-&gt;species() );
   <span class="keywordflow">return</span> {
-    nProteinCoding =&gt; $self-&gt;count_by_biotype( $dba, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
-    nProteinCodingGO =&gt;
-      $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;GO&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
-    nProteinCodingUniProtKB =&gt;
-      $self-&gt;count_by_xref( $dba,
-                            [ <span class="stringliteral">&#39;Uniprot/SWISSPROT&#39;</span>, <span class="stringliteral">&#39;Uniprot/SPTREMBL&#39;</span> ],
-                            <span class="stringliteral">&#39;protein_coding&#39;</span> ),
-    nProteinCodingUniProtKBSwissProt =&gt;
-      $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;Uniprot/SWISSPROT&#39;</span>,
-                            <span class="stringliteral">&#39;protein_coding&#39;</span> ),
-    nProteinCodingUniProtKBTrEMBL =&gt;
-      $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;Uniprot/SPTREMBL&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span>
-      ),
-    nProteinCodingInterPro =&gt; $self-&gt;count_by_interpro($dba),
-    nGO =&gt; $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;GO&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
-    nUniProtKBSwissProt =&gt;
-      $self-&gt;count_xrefs( $dba, <span class="stringliteral">&#39;Uniprot/SWISSPROT&#39;</span> ),
-    nUniProtKBTrEMBL =&gt; $self-&gt;count_xrefs( $dba, <span class="stringliteral">&#39;Uniprot/SPTREMBL&#39;</span> ),
-    nInterPro        =&gt; $self-&gt;count_interpro($dba),
-    nInterProDomains =&gt; $self-&gt;count_interpro_domains($dba) };
-} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a093f11c42f4e17339674264854198ea1">analyze_annotation</a>
+      nProteinCoding =&gt; $self-&gt;count_by_biotype( $dba, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
+      nProteinCodingGO =&gt; $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;GO&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
+      nProteinCodingUniProtKB =&gt;
+        $self-&gt;count_by_xref( $dba, [ <span class="stringliteral">&#39;Uniprot/SWISSPROT&#39;</span>, <span class="stringliteral">&#39;Uniprot/SPTREMBL&#39;</span> ],
+                              <span class="stringliteral">&#39;protein_coding&#39;</span> ),
+      nProteinCodingUniProtKBSwissProt =&gt;
+        $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;Uniprot/SWISSPROT&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
+      nProteinCodingUniProtKBTrEMBL =&gt;
+        $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;Uniprot/SPTREMBL&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
+      nProteinCodingInterPro =&gt; $self-&gt;count_by_interpro($dba),
+      nGO =&gt; $self-&gt;count_by_xref( $dba, <span class="stringliteral">&#39;GO&#39;</span>, <span class="stringliteral">&#39;protein_coding&#39;</span> ),
+      nUniProtKBSwissProt =&gt; $self-&gt;count_xrefs( $dba, <span class="stringliteral">&#39;Uniprot/SWISSPROT&#39;</span> ),
+      nUniProtKBTrEMBL    =&gt; $self-&gt;count_xrefs( $dba, <span class="stringliteral">&#39;Uniprot/SPTREMBL&#39;</span> ),
+      nInterPro           =&gt; $self-&gt;count_interpro($dba),
+      nInterProDomains =&gt; $self-&gt;count_interpro_domains($dba) };
+}
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a5280d7e9f61ec42b3bd8ef72b5810826"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_compara" ref="a5280d7e9f61ec42b3bd8ef72b5810826" args="()" -->
+<a class="anchor" id="aa0cd3200a6539ad8d1b85a5686f37525"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_compara" ref="aa0cd3200a6539ad8d1b85a5686f37525" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_compara </td>
+          <td class="memname">public Hash Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_compara </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -254,21 +277,27 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-analyze_compara" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : Bio::EnsEMBL::Compara::DBSQL::DBAdaptor
+  Description: Analyzes compara methods found in the supplied compara database involving the supplied core species
+  Returntype : 	Hash ref (keys are method names, values are arrays of partner species)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-analyze_compara" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-analyze_compara-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-analyze_compara-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-analyze_compara-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5280d7e9f61ec42b3bd8ef72b5810826">analyze_compara</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aa0cd3200a6539ad8d1b85a5686f37525">analyze_compara</a> {
   my ( $self, $dba, $core ) = @_;
   my $compara = {};
   eval {
     my $gdb =
-      $dba-&gt;get_GenomeDBAdaptor()
-      -&gt;fetch_by_registry_name( $core-&gt;species() );
-    <span class="keywordflow">for</span> my $mlss ( @{$dba-&gt;get_MethodLinkSpeciesSetAdaptor()
-                       -&gt;fetch_all_by_GenomeDB($gdb) } )
+      $dba-&gt;get_GenomeDBAdaptor()-&gt;fetch_by_registry_name( $core-&gt;species() );
+    <span class="keywordflow">for</span> my $mlss (
+       @{ $dba-&gt;get_MethodLinkSpeciesSetAdaptor()-&gt;fetch_all_by_GenomeDB($gdb) }
+      )
     {
       my $t = $mlss-&gt;method()-&gt;type();
       next
@@ -286,16 +315,16 @@ Available Methods</h2></td></tr>
     warn <span class="stringliteral">&quot;No compara entry found for &quot;</span> . $dba-&gt;species();
   }
   <span class="keywordflow">return</span> $compara;
-} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5280d7e9f61ec42b3bd8ef72b5810826">analyze_compara</a>
+} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aa0cd3200a6539ad8d1b85a5686f37525">analyze_compara</a>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a99b05e64655cd1b094e0b92c0794277e"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_features" ref="a99b05e64655cd1b094e0b92c0794277e" args="()" -->
+<a class="anchor" id="a0716a89a2ac3527d9379b7f7d38dd738"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_features" ref="a0716a89a2ac3527d9379b7f7d38dd738" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_features </td>
+          <td class="memname">public Hash Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_features </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -303,28 +332,31 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-analyze_features" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes features found in the supplied core/otherfeatures database (simple_feature,repeat_feature,protein_align_feature,dna_align_features)
+  Returntype : 	Hash ref (keys are feature tables, values are hashrefs of count by analysis name)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-analyze_features" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-analyze_features-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-analyze_features-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-analyze_features-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a99b05e64655cd1b094e0b92c0794277e">analyze_features</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a0716a89a2ac3527d9379b7f7d38dd738">analyze_features</a> {
   my ( $self, $dba ) = @_;
-  <span class="keywordflow">return</span> {
-      simpleFeatures =&gt; $self-&gt;count_features( $dba, <span class="stringliteral">&#39;simple_feature&#39;</span> ),
-      repeatFeatures =&gt; $self-&gt;count_features( $dba, <span class="stringliteral">&#39;repeat_feature&#39;</span> )
-  };
+  <span class="keywordflow">return</span> { simpleFeatures =&gt; $self-&gt;count_features( $dba, <span class="stringliteral">&#39;simple_feature&#39;</span> ),
+           repeatFeatures =&gt; $self-&gt;count_features( $dba, <span class="stringliteral">&#39;repeat_feature&#39;</span> ) };
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="abf7cb0b5f3d535b4478b0f4e42986427"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_tracks" ref="abf7cb0b5f3d535b4478b0f4e42986427" args="()" -->
+<a class="anchor" id="aebfb6fd82021d7730d548cccea941d68"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_tracks" ref="aebfb6fd82021d7730d548cccea941d68" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_tracks </td>
+          <td class="memname">public Hash Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_tracks </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -332,13 +364,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-analyze_tracks" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Analyzes tracks attached to the supplied core database
+  Returntype : Hash ref - keys are source_type (e.g. RNA seq), values are arrayrefs of hashrefs containing track details (source_name,description,source_url)
+  Exceptions : none
+  Caller     : general
+  Status     : Stable	
+ </pre><div id="codesection-analyze_tracks" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-analyze_tracks-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-analyze_tracks-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-analyze_tracks-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#abf7cb0b5f3d535b4478b0f4e42986427">analyze_tracks</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aebfb6fd82021d7730d548cccea941d68">analyze_tracks</a> {
   my ( $self, $species, $division ) = @_;
   $species = ucfirst($species);
   ( $division = lc $division ) =~ s/ensembl<span class="comment">//;</span>
@@ -384,16 +421,16 @@ Available Methods</h2></td></tr>
     }
   }
   <span class="keywordflow">return</span> $bams;
-} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#abf7cb0b5f3d535b4478b0f4e42986427">analyze_tracks</a>
+} ## end sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aebfb6fd82021d7730d548cccea941d68">analyze_tracks</a>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a3321c3344c844d54614371a92176f43a"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_variation" ref="a3321c3344c844d54614371a92176f43a" args="()" -->
+<a class="anchor" id="a18c347e3e223473fdadf22b94ac3db97"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_variation" ref="a18c347e3e223473fdadf22b94ac3db97" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_variation </td>
+          <td class="memname">public Hash Bio::EnsEMBL::MetaData::AnnotationAnalyzer::analyze_variation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -401,29 +438,37 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-analyze_variation" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Analyzes variation found in the supplied variation database
+  Returntype : 	Hash ref with the following keys
+					variations - count of variations per source
+					structuralVariations - count of structural variations per source
+					genotypes - count of genotypes per sample
+					phenotypes - count of variation annotations per phenotype
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-analyze_variation" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-analyze_variation-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-analyze_variation-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-analyze_variation-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a3321c3344c844d54614371a92176f43a">analyze_variation</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a18c347e3e223473fdadf22b94ac3db97">analyze_variation</a> {
   my ( $self, $dba ) = @_;
-  <span class="keywordflow">return</span> {
-       variations           =&gt; $self-&gt;count_variations($dba),
-       structuralVariations =&gt; $self-&gt;count_structural_variations($dba),
-       genotypes            =&gt; $self-&gt;count_genotypes($dba),
-       phenotypes           =&gt; $self-&gt;count_phenotypes($dba) };
+  <span class="keywordflow">return</span> { variations           =&gt; $self-&gt;count_variations($dba),
+           structuralVariations =&gt; $self-&gt;count_structural_variations($dba),
+           genotypes            =&gt; $self-&gt;count_genotypes($dba),
+           phenotypes           =&gt; $self-&gt;count_phenotypes($dba) };
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a0c9b2b4c3561f9218ec1bc0ad54629e5"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_biotype" ref="a0c9b2b4c3561f9218ec1bc0ad54629e5" args="()" -->
+<a class="anchor" id="a28ba9929a4f20f16d83198d866e54d58"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_biotype" ref="a28ba9929a4f20f16d83198d866e54d58" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_biotype </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_biotype </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -431,25 +476,31 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_by_biotype" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : String (biotype)
+  Description: Returns count of genes with specified biotype
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_by_biotype" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_by_biotype-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_by_biotype-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_by_biotype-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a0c9b2b4c3561f9218ec1bc0ad54629e5">count_by_biotype</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a28ba9929a4f20f16d83198d866e54d58">count_by_biotype</a> {
   my ( $self, $dba, $biotype ) = @_;
   <span class="keywordflow">return</span> $dba-&gt;get_GeneAdaptor()-&gt;count_all_by_biotype($biotype);
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a67fa26f5e735c6097a817c66db1f30d8"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_interpro" ref="a67fa26f5e735c6097a817c66db1f30d8" args="()" -->
+<a class="anchor" id="a47985aa409cda7c9bf24a4852d8da311"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_interpro" ref="a47985aa409cda7c9bf24a4852d8da311" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_interpro </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_interpro </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -457,29 +508,34 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_by_interpro" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of genes with InterPro domains
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_by_interpro" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_by_interpro-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_by_interpro-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_by_interpro-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a67fa26f5e735c6097a817c66db1f30d8">count_by_interpro</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a47985aa409cda7c9bf24a4852d8da311">count_by_interpro</a> {
   my ( $self, $dba ) = @_;
   <span class="keywordflow">return</span>
     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                                       -SQL    =&gt; $count_by_interpro,
-                                       -PARAMS =&gt; [ $dba-&gt;species_id() ]
+                                               -SQL    =&gt; $count_by_interpro,
+                                               -PARAMS =&gt; [ $dba-&gt;species_id() ]
     );
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a3b73145d9d367653f31d56a5242b7268"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_xref" ref="a3b73145d9d367653f31d56a5242b7268" args="()" -->
+<a class="anchor" id="a282e53d51f66d3bddf0a484e13b2c253"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_xref" ref="a282e53d51f66d3bddf0a484e13b2c253" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_xref </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_by_xref </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -487,16 +543,23 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_by_xref" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : Arrayref of dbnames 
+  Arg        : (optional) String (biotype)
+  Description: Returns count of genes with specified cross-reference
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_by_xref" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_by_xref-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_by_xref-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_by_xref-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a3b73145d9d367653f31d56a5242b7268">count_by_xref</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a282e53d51f66d3bddf0a484e13b2c253">count_by_xref</a> {
   my ( $self, $dba, $db_names, $biotype ) = @_;
   $self-&gt;{logger}-&gt;debug( <span class="stringliteral">&quot;Counting genes by &quot;</span> .
-              join( <span class="stringliteral">&quot;,&quot;</span>, $db_names ) . <span class="stringliteral">&quot; xref for &quot;</span> . $dba-&gt;species() );
+                      join( <span class="stringliteral">&quot;,&quot;</span>, $db_names ) . <span class="stringliteral">&quot; xref for &quot;</span> . $dba-&gt;species() );
   $db_names = [$db_names] <span class="keywordflow">if</span> ( ref($db_names) ne <span class="stringliteral">&#39;ARRAY&#39;</span> );
   my $sql = $xref_gene_sql;
   my $db_name = join <span class="charliteral">&#39;,&#39;</span>, map { <span class="stringliteral">&quot;\&quot;$_\&quot;&quot;</span> } @$db_names;
@@ -514,12 +577,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="ad2e6b739390d872a156f2487db9c435e"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_features" ref="ad2e6b739390d872a156f2487db9c435e" args="()" -->
+<a class="anchor" id="a968cb097a84aa3997572cf6830432db5"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_features" ref="a968cb097a84aa3997572cf6830432db5" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_features </td>
+          <td class="memname">public Hashref Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_features </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -527,31 +590,34 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_features" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : String - feature type (e.g. RepeatFeature)
+  Description: Returns count of specified feature by analysis
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_features" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_features-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_features-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_features-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#ad2e6b739390d872a156f2487db9c435e">count_features</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a968cb097a84aa3997572cf6830432db5">count_features</a> {
   my ( $self, $dba, $table ) = @_;
   my $sql = $count_features;
   $sql =~ s/TABLE/$table/;
-  <span class="keywordflow">return</span>
-    $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_into_hash(
-                                       -SQL    =&gt; $sql,
-                                       -PARAMS =&gt; [ $dba-&gt;species_id() ]
-    );
+  <span class="keywordflow">return</span> $dba-&gt;dbc()-&gt;sql_helper()
+    -&gt;execute_into_hash( -SQL =&gt; $sql, -PARAMS =&gt; [ $dba-&gt;species_id() ] );
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a808fbaee85beea1def855552ab9c3653"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_genotypes" ref="a808fbaee85beea1def855552ab9c3653" args="()" -->
+<a class="anchor" id="a3a34c2301e88a8bf222224e123e4f192"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_genotypes" ref="a3a34c2301e88a8bf222224e123e4f192" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_genotypes </td>
+          <td class="memname">public Hashref Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_genotypes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -559,13 +625,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_genotypes" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of genotypes by source
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_genotypes" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_genotypes-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_genotypes-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_genotypes-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a808fbaee85beea1def855552ab9c3653">count_genotypes</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a3a34c2301e88a8bf222224e123e4f192">count_genotypes</a> {
   my ( $self, $dba ) = @_;
   my $cnt = {};
   eval {
@@ -578,12 +649,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a5b421fb061759eb73bc47b56374bdd28"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro" ref="a5b421fb061759eb73bc47b56374bdd28" args="()" -->
+<a class="anchor" id="af1c956c14c3e1340fe9700de173e81c6"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro" ref="af1c956c14c3e1340fe9700de173e81c6" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -591,29 +662,34 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_interpro" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of InterPro cross-references
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_interpro" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_interpro-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_interpro-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_interpro-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5b421fb061759eb73bc47b56374bdd28">count_interpro</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#af1c956c14c3e1340fe9700de173e81c6">count_interpro</a> {
   my ( $self, $dba ) = @_;
   <span class="keywordflow">return</span>
     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                                       -SQL    =&gt; $count_interpro,
-                                       -PARAMS =&gt; [ $dba-&gt;species_id() ]
+                                               -SQL    =&gt; $count_interpro,
+                                               -PARAMS =&gt; [ $dba-&gt;species_id() ]
     );
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="ae2a11a8fb8f38e3b3bf7dd194564b185"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro_domains" ref="ae2a11a8fb8f38e3b3bf7dd194564b185" args="()" -->
+<a class="anchor" id="a79f6ba911fda918bc0f3bf705e728507"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro_domains" ref="a79f6ba911fda918bc0f3bf705e728507" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro_domains </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_interpro_domains </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -621,29 +697,34 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_interpro_domains" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of InterPro domains
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_interpro_domains" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_interpro_domains-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_interpro_domains-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_interpro_domains-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#ae2a11a8fb8f38e3b3bf7dd194564b185">count_interpro_domains</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a79f6ba911fda918bc0f3bf705e728507">count_interpro_domains</a> {
   my ( $self, $dba ) = @_;
   <span class="keywordflow">return</span>
     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                                       -SQL =&gt; $count_interpro_domains,
-                                       -PARAMS =&gt; [ $dba-&gt;species_id() ]
+                                               -SQL =&gt; $count_interpro_domains,
+                                               -PARAMS =&gt; [ $dba-&gt;species_id() ]
     );
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a490bfd2f42a5b298a4dfff858b266521"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_phenotypes" ref="a490bfd2f42a5b298a4dfff858b266521" args="()" -->
+<a class="anchor" id="a26a752422284398e530716f9513b93a6"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_phenotypes" ref="a26a752422284398e530716f9513b93a6" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_phenotypes </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_phenotypes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -651,13 +732,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_phenotypes" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of phenotypes by name
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_phenotypes" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_phenotypes-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_phenotypes-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_phenotypes-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a490bfd2f42a5b298a4dfff858b266521">count_phenotypes</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a26a752422284398e530716f9513b93a6">count_phenotypes</a> {
   my ( $self, $dba ) = @_;
   <span class="keywordflow">return</span> $dba-&gt;dbc()-&gt;sql_helper()
     -&gt;execute_into_hash( -SQL =&gt; $count_phenotypes, -PARAMS =&gt; [] );
@@ -665,12 +751,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a9da42e7a824e64bf3ee5816b64efb242"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_structural_variations" ref="a9da42e7a824e64bf3ee5816b64efb242" args="()" -->
+<a class="anchor" id="a5c616639af76865a3d01da32ac9c8685"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_structural_variations" ref="a5c616639af76865a3d01da32ac9c8685" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_structural_variations </td>
+          <td class="memname">public Hashref Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_structural_variations </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -678,28 +764,31 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_structural_variations" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of structural variations by source
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_structural_variations" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_structural_variations-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_structural_variations-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_structural_variations-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a9da42e7a824e64bf3ee5816b64efb242">count_structural_variations</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a5c616639af76865a3d01da32ac9c8685">count_structural_variations</a> {
   my ( $self, $dba ) = @_;
-  <span class="keywordflow">return</span>
-    $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_into_hash(
-                                    -SQL =&gt; $count_structural_variation,
-                                    -PARAMS =&gt; [] );
+  <span class="keywordflow">return</span> $dba-&gt;dbc()-&gt;sql_helper()
+    -&gt;execute_into_hash( -SQL =&gt; $count_structural_variation, -PARAMS =&gt; [] );
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a4a84177b03f78aaa3443ec8042d1e9ca"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_toplevel" ref="a4a84177b03f78aaa3443ec8042d1e9ca" args="()" -->
+<a class="anchor" id="af30433391a1972fe05b0dd44f11ed72b"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_toplevel" ref="af30433391a1972fe05b0dd44f11ed72b" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_toplevel </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_toplevel </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -707,29 +796,34 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_toplevel" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Description: Returns count of top-level regions
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_toplevel" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_toplevel-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_toplevel-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_toplevel-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a4a84177b03f78aaa3443ec8042d1e9ca">count_toplevel</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#af30433391a1972fe05b0dd44f11ed72b">count_toplevel</a> {
   my ( $self, $dba ) = @_;
   <span class="keywordflow">return</span>
     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                                       -SQL    =&gt; $count_toplevel,
-                                       -PARAMS =&gt; [ $dba-&gt;species_id() ]
+                                               -SQL    =&gt; $count_toplevel,
+                                               -PARAMS =&gt; [ $dba-&gt;species_id() ]
     );
 }
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="aa616185b763894e5dc2c6e7007989938"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_variations" ref="aa616185b763894e5dc2c6e7007989938" args="()" -->
+<a class="anchor" id="a4599cef2d5fae4032837d7f812b394c0"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_variations" ref="a4599cef2d5fae4032837d7f812b394c0" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_variations </td>
+          <td class="memname">public Hashref Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_variations </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -737,13 +831,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_variations" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::Variation::DBSQL::DBAdaptor
+  Description: Returns count of variations by source
+  Returntype : Hashref
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_variations" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_variations-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_variations-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_variations-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aa616185b763894e5dc2c6e7007989938">count_variations</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a4599cef2d5fae4032837d7f812b394c0">count_variations</a> {
   my ( $self, $dba ) = @_;
   <span class="keywordflow">return</span> $dba-&gt;dbc()-&gt;sql_helper()
     -&gt;execute_into_hash( -SQL =&gt; $count_variation, -PARAMS =&gt; [] );
@@ -751,12 +850,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a27cefaf1245fe032b4f2c4c60ee3798e"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_xrefs" ref="a27cefaf1245fe032b4f2c4c60ee3798e" args="()" -->
+<a class="anchor" id="aeed885c6354d1bfb7686e0913752f285"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_xrefs" ref="aeed885c6354d1bfb7686e0913752f285" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_xrefs </td>
+          <td class="memname">public Int Bio::EnsEMBL::MetaData::AnnotationAnalyzer::count_xrefs </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -764,31 +863,37 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-count_xrefs" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : Bio::EnsEMBL::DBSQL::DBAdaptor
+  Arg        : One or more dbnames
+  Description: Returns count of numbers of cross-references to supplied database(s)
+  Returntype : Integer
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-count_xrefs" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-count_xrefs-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-count_xrefs-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-count_xrefs-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#a27cefaf1245fe032b4f2c4c60ee3798e">count_xrefs</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html#aeed885c6354d1bfb7686e0913752f285">count_xrefs</a> {
   my $self = shift;
   my $dba  = shift;
   my $tot  = 0;
   <span class="keywordflow">for</span> my $db_name (@_) {
     $tot +=
       $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                             -SQL    =&gt; $gene_xref_count_sql,
-                             -PARAMS =&gt; [ $dba-&gt;species_id(), $db_name ]
+                                     -SQL    =&gt; $gene_xref_count_sql,
+                                     -PARAMS =&gt; [ $dba-&gt;species_id(), $db_name ]
       );
     $tot +=
       $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                             -SQL    =&gt; $transcript_xref_count_sql,
-                             -PARAMS =&gt; [ $dba-&gt;species_id(), $db_name ]
+                                     -SQL    =&gt; $transcript_xref_count_sql,
+                                     -PARAMS =&gt; [ $dba-&gt;species_id(), $db_name ]
       );
     $tot +=
       $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-                             -SQL    =&gt; $translation_xref_count_sql,
-                             -PARAMS =&gt; [ $dba-&gt;species_id(), $db_name ]
+                                     -SQL    =&gt; $translation_xref_count_sql,
+                                     -PARAMS =&gt; [ $dba-&gt;species_id(), $db_name ]
       );
   }
   <span class="keywordflow">return</span> $tot;

@@ -124,190 +124,275 @@ function toggleVisibility(linkObj) {
 <div class="title">MetaDataDumper.pm</div>  </div>
 </div>
 <div class="contents">
-<a href="MetaDataDumper_8pm.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 =head1 LICENSE
-<a name="l00002"></a>00002 
-<a name="l00003"></a>00003 Copyright [2009-2014] EMBL-European Bioinformatics Institute
-<a name="l00004"></a>00004 
-<a name="l00005"></a>00005 Licensed under the Apache License, Version 2.0 (the <span class="stringliteral">&quot;License&quot;</span>);
-<a name="l00006"></a>00006 you may not use <span class="keyword">this</span> file except in compliance with the License.
-<a name="l00007"></a>00007 You may obtain a copy of the License at
-<a name="l00008"></a>00008 
-<a name="l00009"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">00009</a>      http:<span class="comment">//www.apache.org/licenses/LICENSE-2.0</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 Unless required by applicable law or agreed to in writing, software
-<a name="l00012"></a>00012 distributed under the License is distributed on an <span class="stringliteral">&quot;AS IS&quot;</span> BASIS,
-<a name="l00013"></a>00013 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-<a name="l00014"></a>00014 See the License <span class="keywordflow">for</span> the specific language governing permissions and
-<a name="l00015"></a>00015 limitations under the License.
-<a name="l00016"></a>00016 
-<a name="l00017"></a>00017 =cut
-<a name="l00018"></a>00018 
+<a href="MetaDataDumper_8pm.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
+<a name="l00002"></a>00002 =head1 LICENSE
+<a name="l00003"></a>00003 
+<a name="l00004"></a>00004 Copyright [2009-2016] EMBL-European Bioinformatics Institute
+<a name="l00005"></a>00005 
+<a name="l00006"></a>00006 Licensed under the Apache License, Version 2.0 (the <span class="stringliteral">&quot;License&quot;</span>);
+<a name="l00007"></a>00007 you may not use <span class="keyword">this</span> file except in compliance with the License.
+<a name="l00008"></a>00008 You may obtain a copy of the License at
+<a name="l00009"></a>00009 
+<a name="l00010"></a>00010      http:<span class="comment">//www.apache.org/licenses/LICENSE-2.0</span>
+<a name="l00011"></a>00011 
+<a name="l00012"></a>00012 Unless required by applicable law or agreed to in writing, software
+<a name="l00013"></a>00013 distributed under the License is distributed on an <span class="stringliteral">&quot;AS IS&quot;</span> BASIS,
+<a name="l00014"></a>00014 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<a name="l00015"></a>00015 See the License <span class="keywordflow">for</span> the specific language governing permissions and
+<a name="l00016"></a>00016 limitations under the License.
+<a name="l00017"></a>00017 
+<a name="l00018"></a>00018 =head1 CONTACT
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 =pod
-<a name="l00021"></a>00021 
-<a name="l00022"></a>00022 =head1 CONTACT
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024   Please email comments or questions to the <span class="keyword">public</span> Ensembl
-<a name="l00025"></a>00025   developers list at &lt;dev@ensembl.org&gt;.
-<a name="l00026"></a>00026 
-<a name="l00027"></a>00027   Questions may also be sent to the Ensembl help desk at
-<a name="l00028"></a>00028   &lt;helpdesk@ensembl.org&gt;.
-<a name="l00029"></a>00029  
-<a name="l00030"></a>00030 =cut
+<a name="l00020"></a>00020   Please email comments or questions to the <span class="keyword">public</span> Ensembl
+<a name="l00021"></a>00021   developers list at &lt;dev@ensembl.org&gt;.
+<a name="l00022"></a>00022 
+<a name="l00023"></a>00023   Questions may also be sent to the Ensembl help desk at
+<a name="l00024"></a>00024   &lt;helpdesk@ensembl.org&gt;.
+<a name="l00025"></a>00025 
+<a name="l00026"></a>00026 =head1 NAME
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">Bio::EnsEMBL::MetaData::MetaDataDumper</a>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 =head1 SYNOPSIS
 <a name="l00031"></a>00031 
-<a name="l00032"></a>00032 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::MetaDataDumper;
-<a name="l00033"></a>00033 use Bio::EnsEMBL::Utils::Exception qw/<span class="keywordflow">throw</span>/;
-<a name="l00034"></a>00034 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00035"></a>00035 use Log::Log4perl qw(get_logger);
-<a name="l00036"></a>00036 use Data::Dumper;
-<a name="l00037"></a>00037 use Carp qw(croak cluck);
-<a name="l00038"></a>00038 use strict;
-<a name="l00039"></a>00039 use warnings;
-<a name="l00040"></a>00040 
-<a name="l00041"></a>00041 sub <span class="keyword">new</span> {
-<a name="l00042"></a>00042   my ($proto, @args) = @_;
-<a name="l00043"></a>00043   my $class = ref($proto) || $proto;
-<a name="l00044"></a>00044   my $self = bless({}, $class);
-<a name="l00045"></a>00045   $self-&gt;{logger} = get_logger();
-<a name="l00046"></a>00046   ($self-&gt;{file}) = rearrange([<span class="stringliteral">&#39;FILE&#39;</span>], @args);
-<a name="l00047"></a>00047   $self-&gt;{all} = <span class="stringliteral">&#39;all&#39;</span>;
-<a name="l00048"></a>00048   <span class="keywordflow">return</span> $self;
-<a name="l00049"></a>00049 }
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 sub start {
-<a name="l00052"></a>00052   my ($self, $divisions, $file, $dump_all) = @_;
-<a name="l00053"></a>00053   $self-&gt;{files}     = {};
-<a name="l00054"></a>00054   $self-&gt;{filenames} = {};
-<a name="l00055"></a>00055   $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Opening output files&quot;</span>);
-<a name="l00056"></a>00056   <span class="keywordflow">for</span> my $division (@{$divisions}) {
-<a name="l00057"></a>00057     (my $out_file = $file) =~ s/(.+)(\.[^.]+)$/$1_$division$2/;
-<a name="l00058"></a>00058     my $fh;
-<a name="l00059"></a>00059     $self-&gt;logger()
-<a name="l00060"></a>00060       -&gt;debug(<span class="stringliteral">&quot;Opening output file $out_file for division $division&quot;</span>);
-<a name="l00061"></a>00061     open($fh, <span class="charliteral">&#39;&gt;&#39;</span>, $out_file) ||
-<a name="l00062"></a>00062       croak <span class="stringliteral">&quot;Could not open $out_file for writing&quot;</span>;
-<a name="l00063"></a>00063     $self-&gt;{files}-&gt;{$division}     = $fh;
-<a name="l00064"></a>00064     $self-&gt;{filenames}-&gt;{$division} = $out_file;
-<a name="l00065"></a>00065     $self-&gt;{count}{$division}     = 0;
-<a name="l00066"></a>00066   }
-<a name="l00067"></a>00067   <span class="keywordflow">if</span> (defined $dump_all &amp;&amp; $dump_all==1) {
-<a name="l00068"></a>00068     my $fh;
-<a name="l00069"></a>00069     $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Opening output file $file&quot;</span>);
-<a name="l00070"></a>00070     open($fh, <span class="charliteral">&#39;&gt;&#39;</span>, $file) || croak <span class="stringliteral">&quot;Could not open $file for writing&quot;</span>;
-<a name="l00071"></a>00071     $self-&gt;{files}-&gt;{$self-&gt;{all}}     = $fh;
-<a name="l00072"></a>00072     $self-&gt;{filenames}-&gt;{$self-&gt;{all}} = $file;
-<a name="l00073"></a>00073     $self-&gt;{count}{$self-&gt;{all}}     = 0;
-<a name="l00074"></a>00074   }
-<a name="l00075"></a>00075   $self-&gt;{files_handles} = {};
-<a name="l00076"></a>00076   $self-&gt;logger()
-<a name="l00077"></a>00077     -&gt;debug(
-<a name="l00078"></a>00078         <span class="stringliteral">&quot;Opened &quot;</span> . scalar(values %{$self-&gt;{files}}) . <span class="stringliteral">&quot; output files&quot;</span>);
-<a name="l00079"></a>00079   <span class="keywordflow">return</span>;
-<a name="l00080"></a>00080 } ## end sub start
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082 sub end {
-<a name="l00083"></a>00083   my ($self) = @_;
-<a name="l00084"></a>00084   $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Closing all file handles&quot;</span>);
-<a name="l00085"></a>00085   <span class="keywordflow">for</span> my $fh (values %{$self-&gt;{files}}) {
-<a name="l00086"></a>00086     $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Closing file handle&quot;</span>);
-<a name="l00087"></a>00087     close($fh) || cluck <span class="stringliteral">&quot;Could not close file handle for writing&quot;</span>;
-<a name="l00088"></a>00088   }
-<a name="l00089"></a>00089   $self-&gt;logger()
-<a name="l00090"></a>00090     -&gt;debug(
-<a name="l00091"></a>00091         <span class="stringliteral">&quot;Closed &quot;</span> . scalar(values %{$self-&gt;{files}}) . <span class="stringliteral">&quot; file handles&quot;</span>);
-<a name="l00092"></a>00092   <span class="keywordflow">return</span>;
-<a name="l00093"></a>00093 }
-<a name="l00094"></a>00094 
-<a name="l00095"></a>00095 sub write_metadata {
-<a name="l00096"></a>00096   my ($self, $metadata, $division) = @_;
-<a name="l00097"></a>00097   my $fh = $self-&gt;{files}{$division};
-<a name="l00098"></a>00098   <span class="keywordflow">if</span> (defined $fh) {
-<a name="l00099"></a>00099     $self-&gt;_write_metadata_to_file($metadata, $fh, $self-&gt;{count}-&gt;{$division});
-<a name="l00100"></a>00100     $self-&gt;{count}-&gt;{$division} += 1;
-<a name="l00101"></a>00101   }
-<a name="l00102"></a>00102   <span class="keywordflow">return</span>;
-<a name="l00103"></a>00103 }
-<a name="l00104"></a>00104 
-<a name="l00105"></a>00105 sub _write_metadata_to_file {
-<a name="l00106"></a>00106   my ($self, $metadata, $fh) = @_;
-<a name="l00107"></a>00107   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Unimplemented subroutine do_dump() in &quot;</span> .
-<a name="l00108"></a>00108     ref($self) . <span class="stringliteral">&quot;. Please implement&quot;</span>;
-<a name="l00109"></a>00109   <span class="keywordflow">return</span>;
-<a name="l00110"></a>00110 }
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 sub dump_metadata {
-<a name="l00113"></a>00113   my ($self, $metadata, $file, $divisions, $dump_all) = @_;
-<a name="l00114"></a>00114 <span class="preprocessor">  # start</span>
-<a name="l00115"></a>00115 <span class="preprocessor"></span>  $self-&gt;start($file, $divisions, $dump_all);
-<a name="l00116"></a>00116 <span class="preprocessor">  # iterate</span>
-<a name="l00117"></a>00117 <span class="preprocessor"></span>  <span class="keywordflow">for</span> my $md (@$metadata) {
-<a name="l00118"></a>00118     <span class="keywordflow">if</span> (scalar(@$divisions) &gt; 1) {
-<a name="l00119"></a>00119       $self-&gt;write_metadata($md, $self-&gt;{all});
-<a name="l00120"></a>00120     }
-<a name="l00121"></a>00121     $self-&gt;write_metadata($md, $md-&gt;{division});
-<a name="l00122"></a>00122   }
-<a name="l00123"></a>00123 <span class="preprocessor">  # end</span>
-<a name="l00124"></a>00124 <span class="preprocessor"></span>  $self-&gt;end();
-<a name="l00125"></a>00125   <span class="keywordflow">return</span>;
-<a name="l00126"></a>00126 
-<a name="l00127"></a>00127 }
-<a name="l00128"></a>00128 
-<a name="l00129"></a>00129 sub logger {
-<a name="l00130"></a>00130   my ($self) = @_;
-<a name="l00131"></a>00131   <span class="keywordflow">return</span> $self-&gt;{logger};
-<a name="l00132"></a>00132 }
-<a name="l00133"></a>00133 
-<a name="l00134"></a>00134 sub yesno {
-<a name="l00135"></a>00135   my ($self, $num) = @_;
-<a name="l00136"></a>00136   <span class="keywordflow">return</span> (defined $num &amp;&amp; $num + 0 &gt; 0) ? <span class="charliteral">&#39;Y&#39;</span> : <span class="charliteral">&#39;N&#39;</span>;
-<a name="l00137"></a>00137 }
-<a name="l00138"></a>00138 
-<a name="l00139"></a>00139 sub metadata_to_hash {
-<a name="l00140"></a>00140   my ($self, $metadata) = @_;
-<a name="l00141"></a>00141   my $genomes = [];
-<a name="l00142"></a>00142   <span class="keywordflow">for</span> my $md (@{$metadata}) {
-<a name="l00143"></a>00143     push @$genomes, $md-&gt;to_hash(1);
-<a name="l00144"></a>00144   }
-<a name="l00145"></a>00145   <span class="keywordflow">return</span> {genome =&gt; $genomes};
-<a name="l00146"></a>00146 }
-<a name="l00147"></a>00147 
-<a name="l00148"></a>00148 1;
-<a name="l00149"></a>00149 
-<a name="l00150"></a>00150 __END__
-<a name="l00151"></a>00151 
-<a name="l00152"></a>00152 =pod
-<a name="l00153"></a>00153 
-<a name="l00154"></a>00154 =head1 NAME
-<a name="l00155"></a>00155 
-<a name="l00156"></a>00156 Bio::EnsEMBL::MetaData::DetailsDumper
-<a name="l00157"></a>00157 
-<a name="l00158"></a>00158 =head1 SYNOPSIS
-<a name="l00159"></a>00159 
-<a name="l00160"></a>00160 =head1 DESCRIPTION
-<a name="l00161"></a>00161 
-<a name="l00162"></a>00162 Base <span class="keyword">class </span>for rendering details 
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164 =head1 SUBROUTINES/METHODS
-<a name="l00165"></a>00165 
-<a name="l00166"></a>00166 =head2 <span class="keyword">new</span>
-<a name="l00167"></a>00167 
-<a name="l00168"></a>00168 =head2 dump_metadata
-<a name="l00169"></a>00169 Description : Render supplied metadata
-<a name="l00170"></a>00170 Arugment: Hash of metadata provided by MetaDataProcessor
-<a name="l00171"></a>00171 
-<a name="l00172"></a>00172 =head1 AUTHOR
-<a name="l00173"></a>00173 
-<a name="l00174"></a>00174 dstaines
-<a name="l00175"></a>00175 
-<a name="l00176"></a>00176 =head1 MAINTAINER
-<a name="l00177"></a>00177 
-<a name="l00178"></a>00178 $Author$
-<a name="l00179"></a>00179 
-<a name="l00180"></a>00180 =head1 VERSION
-<a name="l00181"></a>00181 
-<a name="l00182"></a>00182 $Revision$
-<a name="l00183"></a>00183 
-<a name="l00184"></a>00184 =cut
+<a name="l00032"></a>00032 <span class="preprocessor"># usage of concrete implementations</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>my $dumper = Bio::EnsEMBL::MetaData::MetaDataDumper::MyDumper-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html#a120c95b87885db7256b55492cdd677de">new</a>();
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor"># sequential dumping to multiple files in parallel</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span>my $opts = {
+<a name="l00037"></a>00037   division =&gt; [<span class="stringliteral">&#39;EnsemblFungi&#39;</span>,<span class="stringliteral">&#39;EnsemblProtists&#39;</span>];
+<a name="l00038"></a>00038   file =&gt; <span class="stringliteral">&#39;MyFile.txt&#39;</span>
+<a name="l00039"></a>00039 };
+<a name="l00040"></a>00040 <span class="preprocessor"># set to dump to common &quot;all&quot; file as well as division</span>
+<a name="l00041"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">00041</a> <span class="preprocessor"></span>$dump_all = 1;
+<a name="l00042"></a>00042 <span class="preprocessor"># open files</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span>$dumper-&gt;start($opts-&gt;{division}, $dumper-&gt;{file}, $dump_all);
+<a name="l00044"></a>00044 <span class="keywordflow">for</span> my $md (@metadata) {
+<a name="l00045"></a>00045   $dumper-&gt;write_metadata($md, $dump_all); # dump to divisions and 
+<a name="l00046"></a>00046 }
+<a name="l00047"></a>00047 <span class="preprocessor"># close files</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span>$dumper-&gt;end($opts-&gt;{division}, $dumper-&gt;{file}, $dump_all);
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 <span class="preprocessor"># dumping in one go (can be expensive to render)</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span>$dumper-&gt;dump_metadata(\@metadata, <span class="stringliteral">&quot;my_file.txt&quot;</span>, [<span class="stringliteral">&#39;EnsemblMetazoa&#39;</span>], $dump_all);
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 =head1 DESCRIPTION
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055 Base <span class="keyword">class </span>for rendering details from an instance of Bio::EnsEMBL::MetaData::GenomeInfo. 
+<a name="l00056"></a>00056 Designed for dumping to multiple per-division files in parallel including a common &quot;all&quot; 
+<a name="l00057"></a>00057 file, (using start, write_metadata and end) or for one-off use (using dump_metadata).
+<a name="l00058"></a>00058 
+<a name="l00059"></a>00059 =head1 AUTHOR
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061 Dan Staines
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 =cut
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 package Bio::EnsEMBL::MetaData::MetaDataDumper;
+<a name="l00066"></a>00066 use Bio::EnsEMBL::Utils::Exception qw/throw/;
+<a name="l00067"></a>00067 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00068"></a>00068 use Log::Log4perl qw(get_logger);
+<a name="l00069"></a>00069 use Data::Dumper;
+<a name="l00070"></a>00070 use Carp qw(croak cluck);
+<a name="l00071"></a>00071 use strict;
+<a name="l00072"></a>00072 use warnings;
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 =head1 SUBROUTINES/METHODS
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076 =head2 new
+<a name="l00077"></a>00077   Description: Creates a new dumper object
+<a name="l00078"></a>00078   Returntype : Bio::EnsEMBL::MetaData::MetaDataDumper
+<a name="l00079"></a>00079   Exceptions : none
+<a name="l00080"></a>00080   Caller     : internal
+<a name="l00081"></a>00081   Status     : Stable
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 =cut
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 sub new {
+<a name="l00086"></a>00086   my ( $proto, @args ) = @_;
+<a name="l00087"></a>00087   my $class = ref($proto) || $proto;
+<a name="l00088"></a>00088   my $self = bless( {}, $class );
+<a name="l00089"></a>00089   $self-&gt;{logger} = get_logger();
+<a name="l00090"></a>00090   $self-&gt;{all}    = <span class="stringliteral">&#39;all&#39;</span>;
+<a name="l00091"></a>00091   <span class="keywordflow">return</span> $self;
+<a name="l00092"></a>00092 }
+<a name="l00093"></a>00093 
+<a name="l00094"></a>00094 =head2 dump_metadata
+<a name="l00095"></a>00095   Description: Write supplied metadata to file
+<a name="l00096"></a>00096   Arg        : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00097"></a>00097   Arg        : File to write to
+<a name="l00098"></a>00098   Arg        : Arrayref of divisions
+<a name="l00099"></a>00099   Arg        : Whether to dump to <span class="stringliteral">&quot;all&quot;</span> file
+<a name="l00100"></a>00100   Returntype : none
+<a name="l00101"></a>00101   Exceptions : none
+<a name="l00102"></a>00102   Caller     : general
+<a name="l00103"></a>00103   Status     : Stable
+<a name="l00104"></a>00104 =cut
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106 sub dump_metadata {
+<a name="l00107"></a>00107   my ( $self, $metadata, $file, $divisions, $dump_all ) = @_;
+<a name="l00108"></a>00108 <span class="preprocessor">  # start</span>
+<a name="l00109"></a>00109 <span class="preprocessor"></span>  $self-&gt;start( $file, $divisions, $dump_all );
+<a name="l00110"></a>00110 <span class="preprocessor">  # iterate</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span>  <span class="keywordflow">for</span> my $md (@$metadata) {
+<a name="l00112"></a>00112     <span class="keywordflow">if</span> ( scalar(@$divisions) &gt; 1 ) {
+<a name="l00113"></a>00113       $self-&gt;write_metadata( $md, $self-&gt;{all} );
+<a name="l00114"></a>00114     }
+<a name="l00115"></a>00115     $self-&gt;write_metadata( $md, $md-&gt;{division} );
+<a name="l00116"></a>00116   }
+<a name="l00117"></a>00117 <span class="preprocessor">  # end</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>  $self-&gt;end();
+<a name="l00119"></a>00119   <span class="keywordflow">return</span>;
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121 }
+<a name="l00122"></a>00122 
+<a name="l00123"></a>00123 =head2 write_metadata
+<a name="l00124"></a>00124   Arg        : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00125"></a>00125   Arg        : Division to write to
+<a name="l00126"></a>00126   Description: Write metadata to division files
+<a name="l00127"></a>00127   Returntype : none
+<a name="l00128"></a>00128   Exceptions : none
+<a name="l00129"></a>00129   Caller     : general
+<a name="l00130"></a>00130   Status     : Stable
+<a name="l00131"></a>00131 =cut
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 sub write_metadata {
+<a name="l00134"></a>00134   my ( $self, $metadata, $division ) = @_;
+<a name="l00135"></a>00135   my $fh = $self-&gt;{files}{$division};
+<a name="l00136"></a>00136   <span class="keywordflow">if</span> ( defined $fh ) {
+<a name="l00137"></a>00137     $self-&gt;_write_metadata_to_file( $metadata, $fh,
+<a name="l00138"></a>00138                                     $self-&gt;{count}-&gt;{$division} );
+<a name="l00139"></a>00139     $self-&gt;{count}-&gt;{$division} += 1;
+<a name="l00140"></a>00140   }
+<a name="l00141"></a>00141   <span class="keywordflow">return</span>;
+<a name="l00142"></a>00142 }
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 =head2 start
+<a name="l00145"></a>00145   Description: Start writing to output file(s)
+<a name="l00146"></a>00146   Arg        : Arrayref of strings representing divisions to dump
+<a name="l00147"></a>00147   Arg        : Basename of file to write to
+<a name="l00148"></a>00148   Arg        : Whether to dump to &quot;all&quot; file
+<a name="l00149"></a>00149   Returntype : none
+<a name="l00150"></a>00150   Exceptions : none
+<a name="l00151"></a>00151   Caller     : internal
+<a name="l00152"></a>00152   Status     : Stable
+<a name="l00153"></a>00153 =cut
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 sub start {
+<a name="l00156"></a>00156   my ( $self, $divisions, $file, $dump_all ) = @_;
+<a name="l00157"></a>00157   $self-&gt;{files}     = {};
+<a name="l00158"></a>00158   $self-&gt;{filenames} = {};
+<a name="l00159"></a>00159   $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Opening output files&quot;</span>);
+<a name="l00160"></a>00160   <span class="keywordflow">for</span> my $division ( @{$divisions} ) {
+<a name="l00161"></a>00161     ( my $out_file = $file ) =~ s/(.+)(\.[^.]+)$/$1_$division$2/;
+<a name="l00162"></a>00162     my $fh;
+<a name="l00163"></a>00163     $self-&gt;logger()
+<a name="l00164"></a>00164       -&gt;debug(<span class="stringliteral">&quot;Opening output file $out_file for division $division&quot;</span>);
+<a name="l00165"></a>00165     open( $fh, <span class="charliteral">&#39;&gt;&#39;</span>, $out_file ) || croak <span class="stringliteral">&quot;Could not open $out_file for writing&quot;</span>;
+<a name="l00166"></a>00166     $self-&gt;{files}-&gt;{$division}     = $fh;
+<a name="l00167"></a>00167     $self-&gt;{filenames}-&gt;{$division} = $out_file;
+<a name="l00168"></a>00168     $self-&gt;{count}{$division}       = 0;
+<a name="l00169"></a>00169   }
+<a name="l00170"></a>00170   <span class="keywordflow">if</span> ( defined $dump_all &amp;&amp; $dump_all == 1 ) {
+<a name="l00171"></a>00171     my $fh;
+<a name="l00172"></a>00172     $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Opening output file $file&quot;</span>);
+<a name="l00173"></a>00173     open( $fh, <span class="charliteral">&#39;&gt;&#39;</span>, $file ) || croak <span class="stringliteral">&quot;Could not open $file for writing&quot;</span>;
+<a name="l00174"></a>00174     $self-&gt;{files}-&gt;{ $self-&gt;{all} }     = $fh;
+<a name="l00175"></a>00175     $self-&gt;{filenames}-&gt;{ $self-&gt;{all} } = $file;
+<a name="l00176"></a>00176     $self-&gt;{count}{ $self-&gt;{all} }       = 0;
+<a name="l00177"></a>00177   }
+<a name="l00178"></a>00178   $self-&gt;{files_handles} = {};
+<a name="l00179"></a>00179   $self-&gt;logger()
+<a name="l00180"></a>00180     -&gt;debug(
+<a name="l00181"></a>00181            <span class="stringliteral">&quot;Opened &quot;</span> . scalar( values %{ $self-&gt;{files} } ) . <span class="stringliteral">&quot; output files&quot;</span> );
+<a name="l00182"></a>00182   <span class="keywordflow">return</span>;
+<a name="l00183"></a>00183 } ## end sub start
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185 =head2 end
+<a name="l00186"></a>00186   Description: Stop writing to output file(s) and close handles
+<a name="l00187"></a>00187   Returntype : none
+<a name="l00188"></a>00188   Exceptions : none
+<a name="l00189"></a>00189   Caller     : internal
+<a name="l00190"></a>00190   Status     : Stable
+<a name="l00191"></a>00191 =cut
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193 sub end {
+<a name="l00194"></a>00194   my ($self) = @_;
+<a name="l00195"></a>00195   $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Closing all file handles&quot;</span>);
+<a name="l00196"></a>00196   <span class="keywordflow">for</span> my $fh ( values %{ $self-&gt;{files} } ) {
+<a name="l00197"></a>00197     $self-&gt;logger()-&gt;debug(<span class="stringliteral">&quot;Closing file handle&quot;</span>);
+<a name="l00198"></a>00198     close($fh) || cluck <span class="stringliteral">&quot;Could not close file handle for writing&quot;</span>;
+<a name="l00199"></a>00199   }
+<a name="l00200"></a>00200   $self-&gt;logger()
+<a name="l00201"></a>00201     -&gt;debug(
+<a name="l00202"></a>00202            <span class="stringliteral">&quot;Closed &quot;</span> . scalar( values %{ $self-&gt;{files} } ) . <span class="stringliteral">&quot; file handles&quot;</span> );
+<a name="l00203"></a>00203   <span class="keywordflow">return</span>;
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206 =head2 _write_metadata_to_file
+<a name="l00207"></a>00207   Arg        : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00208"></a>00208   Arg        : File handle to write to
+<a name="l00209"></a>00209   Description: Stub <span class="keywordflow">for</span> writing to a file - implement in subclasses
+<a name="l00210"></a>00210   Returntype : none
+<a name="l00211"></a>00211   Exceptions : none
+<a name="l00212"></a>00212   Caller     : <span class="keyword">internal</span>
+<a name="l00213"></a>00213   Status     : Stable
+<a name="l00214"></a>00214 =cut
+<a name="l00215"></a>00215 
+<a name="l00216"></a>00216 sub _write_metadata_to_file {
+<a name="l00217"></a>00217   my ( $self, $metadata, $fh ) = @_;
+<a name="l00218"></a>00218   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Unimplemented subroutine do_dump() in &quot;</span> . ref($self) .
+<a name="l00219"></a>00219     <span class="stringliteral">&quot;. Please implement&quot;</span>;
+<a name="l00220"></a>00220   <span class="keywordflow">return</span>;
+<a name="l00221"></a>00221 }
+<a name="l00222"></a>00222 
+<a name="l00223"></a>00223 =head1 INTERNAL METHODS
+<a name="l00224"></a>00224 =head2 logger
+<a name="l00225"></a>00225   Description: Get logger
+<a name="l00226"></a>00226   Returntype : Log4perl::Logger
+<a name="l00227"></a>00227   Exceptions : none
+<a name="l00228"></a>00228   Caller     : <span class="keyword">internal</span>
+<a name="l00229"></a>00229   Status     : Stable
+<a name="l00230"></a>00230 =cut
+<a name="l00231"></a>00231 
+<a name="l00232"></a>00232 sub logger {
+<a name="l00233"></a>00233   my ($self) = @_;
+<a name="l00234"></a>00234   <span class="keywordflow">return</span> $self-&gt;{logger};
+<a name="l00235"></a>00235 }
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237 =head2 yesno
+<a name="l00238"></a>00238   Description: Turn defined/integer into Y/N
+<a name="l00239"></a>00239   Arg        : Integer 1/0
+<a name="l00240"></a>00240   Returntype : String
+<a name="l00241"></a>00241   Exceptions : none
+<a name="l00242"></a>00242   Caller     : <span class="keyword">internal</span>
+<a name="l00243"></a>00243   Status     : Stable
+<a name="l00244"></a>00244 =cut
+<a name="l00245"></a>00245 
+<a name="l00246"></a>00246 sub yesno {
+<a name="l00247"></a>00247   my ( $self, $num ) = @_;
+<a name="l00248"></a>00248   <span class="keywordflow">return</span> ( defined $num &amp;&amp; $num + 0 &gt; 0 ) ? <span class="charliteral">&#39;Y&#39;</span> : <span class="charliteral">&#39;N&#39;</span>;
+<a name="l00249"></a>00249 }
+<a name="l00250"></a>00250 
+<a name="l00251"></a>00251 =head2 metadata_to_hash
+<a name="l00252"></a>00252   Description: Turn metadata into hash
+<a name="l00253"></a>00253   Arg        : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00254"></a>00254   Returntype : Hashref
+<a name="l00255"></a>00255   Exceptions : none
+<a name="l00256"></a>00256   Caller     : <span class="keyword">internal</span>
+<a name="l00257"></a>00257   Status     : Stable
+<a name="l00258"></a>00258 =cut
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 sub metadata_to_hash {
+<a name="l00261"></a>00261   my ( $self, $metadata ) = @_;
+<a name="l00262"></a>00262   my $genomes = [];
+<a name="l00263"></a>00263   <span class="keywordflow">for</span> my $md ( @{$metadata} ) {
+<a name="l00264"></a>00264     push @$genomes, $md-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a4d9ae95216e2871a828f771a4c0d2f3d">to_hash</a>(1);
+<a name="l00265"></a>00265   }
+<a name="l00266"></a>00266   <span class="keywordflow">return</span> { genome =&gt; $genomes };
+<a name="l00267"></a>00267 }
+<a name="l00268"></a>00268 
+<a name="l00269"></a>00269 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

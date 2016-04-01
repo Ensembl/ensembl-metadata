@@ -143,69 +143,26 @@ function toggleVisibility(linkObj) {
 <hr/><a name="details" id="details"></a><h2>Class Summary</h2>
 <div class="textblock"><h2><a class="anchor" id="Synopsis"></a>
 Synopsis</h2>
-<div class="fragment"><pre class="fragment">my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_adaptor();
-my $md = $gdba-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a76c2418354c61a9d2fd07dd2c881df74">fetch_by_name</a>(<span class="stringliteral">&quot;arabidopsis_thaliana&quot;</span>);
+<div class="fragment"><pre class="fragment"><span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_DataReleaseInfoAdaptor();
+<span class="preprocessor"># find the latest e! release</span>
+<span class="preprocessor"></span>my $release = $adaptor-&gt;fetch_current_ensembl_release();
+<span class="preprocessor"># find associated databases</span>
+<span class="preprocessor">$adaptor-&gt;fetch_databases($release);</span>
 </pre></div> <h2><a class="anchor" id="Description"></a>
 Description</h2>
  <pre>
-Adaptor for storing and retrieving GenomeInfo objects from MySQL genome_info database
-
-To start working with an adaptor:
-
-# getting an adaptor
-## adaptor for latest public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor();
-## adaptor for specified public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor(21);
-## manually specify a given database
-my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
--USER=>'anonymous',
--PORT=>4157,
--HOST=>'mysql-eg-publicsql.ebi.ac.uk',
--DBNAME=>'genome_info_21');
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
-
-To find genomes, use the fetch methods e.g.
-
-# find a genome by name
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
-
-# find and iterate over all genomes
-for my $genome (\@{$gdba->fetch_all()}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes from plants
-for my $genome (\@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes with variation
-for my $genome (\@{$gdba->fetch_all_with_variation()}) {
-	print $genome->name()."\n";
-}
-
-# find all comparas for the division of interest
-my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');
-
-# find the peptide compara
-my ($compara) = grep {$_->is_peptide_compara()} \@$comparas;
-print $compara->division()." ".$compara->method()."(".$compara->dbname().")\n";
-
-# print out all the genomes in this compara
-for my $genome (\@{$compara->genomes()}) {
-	print $genome->name()."\n";
-}
+Adaptor for storing and retrieving DataRelease objects from MySQL genome_info database
 
 </pre> 
-<p>Definition at line <a class="el" href="DataReleaseInfoAdaptor_8pm_source.html#l00067">67</a> of file <a class="el" href="DataReleaseInfoAdaptor_8pm_source.html">DataReleaseInfoAdaptor.pm</a>.</p>
+<p>Definition at line <a class="el" href="DataReleaseInfoAdaptor_8pm_source.html#l00024">24</a> of file <a class="el" href="DataReleaseInfoAdaptor_8pm_source.html">DataReleaseInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a88689efc81e1d0511baf03d370a66dcd">_args_to_sql</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af0f4ed5e5e2528be363302c280a6cb1a">_args_to_sql</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ab58303767b81425110b88adc9e2323d1">_cache</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ace600f4648ebeb1ac9e6cd67dd7cae97">_clear_cache</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#ad65a7123c66efc368097c272776aadc1">_fetch_children</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">protected&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a1998fb155fa4ee55ac0ff85e965a035c">_fetch_children</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a3f7498dde19106a79c66d07c64497b7f">_fetch_databases</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected Arrayref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ab819ea77abf1fed2cfee69b343702249">_fetch_generic</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">protected Arrayref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af1296b61e5b8f2c20990062806a28009">_fetch_generic_with_args</a> ()</td></tr>
@@ -222,21 +179,25 @@ Available Methods</h2></td></tr>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a5e7ddcf6f5ed0516c6357a0eb112012b">fetch_by_dbID</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a62b6a7c963d480a08591ad20f5ab0454">fetch_by_dbIDs</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#afbe954d071220f76409a450edd22aace">fetch_by_ensembl_genomes_release</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#abcbefac7330403fe9f5d156e8cf74669">fetch_by_ensembl_release</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#adb13370210f3222370c9796dffa2948b">fetch_current_ensembl_genomes_release</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a4cbb3de8a522f431a96fdc84e82f4de1">fetch_current_ensembl_release</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+<a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#af3c7460665ca07959732b29af35900ad">fetch_by_ensembl_genomes_release</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+<a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#abe6f9f3199d95dd869a2f6589a6afbb2">fetch_by_ensembl_release</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+<a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a8814a7d70bf3d0a505f623437ef4d2eb">fetch_current_ensembl_genomes_release</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+<a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#ae58788f19c57713cfa88a61a6591b8a8">fetch_current_ensembl_release</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a9ae42ea75e6fde96526dce739ab6d59b">fetch_databases</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a88d5d737e6a6537eddb1ae2f05404d4b">store</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a7cc30ee4c471bdf8d249780dec74538d">update</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a5686671965f099c11181d69798c2d1dd">update</a> ()</td></tr>
 </table>
 <hr/><h2>Method Documentation</h2>
-<a class="anchor" id="a88689efc81e1d0511baf03d370a66dcd"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::_args_to_sql" ref="a88689efc81e1d0511baf03d370a66dcd" args="()" -->
+<a class="anchor" id="af0f4ed5e5e2528be363302c280a6cb1a"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::_args_to_sql" ref="af0f4ed5e5e2528be363302c280a6cb1a" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor::_args_to_sql </td>
+          <td class="memname">protected String Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor::_args_to_sql </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td><code> [inherited]</code></td>
@@ -244,13 +205,19 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-_args_to_sql" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Add where clauses to SQL given arguments
+  Arg        : String - Base SQL
+  Arg        : Hashref - arguments
+  Returntype : String
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+ </pre><div id="codesection-_args_to_sql" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_args_to_sql-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_args_to_sql-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_args_to_sql-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a88689efc81e1d0511baf03d370a66dcd">_args_to_sql</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af0f4ed5e5e2528be363302c280a6cb1a">_args_to_sql</a> {
   my ( $self, $sql_in, $args ) = @_;
   my $sql    = $sql_in;
   my $params = [];
@@ -349,12 +316,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="ad65a7123c66efc368097c272776aadc1"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::_fetch_children" ref="ad65a7123c66efc368097c272776aadc1" args="()" -->
+<a class="anchor" id="a1998fb155fa4ee55ac0ff85e965a035c"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::_fetch_children" ref="a1998fb155fa4ee55ac0ff85e965a035c" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">protected void Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::_fetch_children </td>
+          <td class="memname">protected Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::_fetch_children </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -362,18 +329,13 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<pre>  Arg	     : Arrayref of <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-  Description: Fetch all children of specified genome info object
-  Returntype : none
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
- </pre><div id="codesection-_fetch_children" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<p>Undocumented method</p>
+<div id="codesection-_fetch_children" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-_fetch_children-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-_fetch_children-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-_fetch_children-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#ad65a7123c66efc368097c272776aadc1">_fetch_children</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a1998fb155fa4ee55ac0ff85e965a035c">_fetch_children</a> {
   my ( $self, $md ) = @_;
   $self-&gt;_fetch_databases($md);
   <span class="keywordflow">return</span>;
@@ -699,7 +661,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;data_release_id&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#aed14d34e814f461ef8878b7995f85aba">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a23bbb63b4a6951c881f22f8f8327f9f2">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -726,7 +688,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DataReleaseInfo&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a77195d8968d32f514e812661fd398b01">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ad9daa29802aa14c337f7833b2872caaf">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -905,12 +867,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="afbe954d071220f76409a450edd22aace"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_genomes_release" ref="afbe954d071220f76409a450edd22aace" args="()" -->
+<a class="anchor" id="af3c7460665ca07959732b29af35900ad"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_genomes_release" ref="af3c7460665ca07959732b29af35900ad" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_genomes_release </td>
+          <td class="memname">public <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_genomes_release </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -918,13 +880,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-fetch_by_ensembl_genomes_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : String - Ensembl Genomes Release
+  Description: Retrieve details for the specified Ensembl Genomes release
+  Returntype : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_by_ensembl_genomes_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-fetch_by_ensembl_genomes_release-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-fetch_by_ensembl_genomes_release-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-fetch_by_ensembl_genomes_release-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#afbe954d071220f76409a450edd22aace">fetch_by_ensembl_genomes_release</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#af3c7460665ca07959732b29af35900ad">fetch_by_ensembl_genomes_release</a> {
   my ( $self, $release ) = @_;
   <span class="keywordflow">return</span>
     $self-&gt;_first_element(
@@ -935,12 +902,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="abcbefac7330403fe9f5d156e8cf74669"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_release" ref="abcbefac7330403fe9f5d156e8cf74669" args="()" -->
+<a class="anchor" id="abe6f9f3199d95dd869a2f6589a6afbb2"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_release" ref="abe6f9f3199d95dd869a2f6589a6afbb2" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_release </td>
+          <td class="memname">public <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_by_ensembl_release </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -948,13 +915,18 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-fetch_by_ensembl_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : String - Ensembl Release
+  Description: Retrieve details for the specified Ensembl release
+  Returntype : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_by_ensembl_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-fetch_by_ensembl_release-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-fetch_by_ensembl_release-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-fetch_by_ensembl_release-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#abcbefac7330403fe9f5d156e8cf74669">fetch_by_ensembl_release</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#abe6f9f3199d95dd869a2f6589a6afbb2">fetch_by_ensembl_release</a> {
   my ( $self, $release ) = @_;
   <span class="keywordflow">return</span>
     $self-&gt;_first_element(
@@ -966,12 +938,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="adb13370210f3222370c9796dffa2948b"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_genomes_release" ref="adb13370210f3222370c9796dffa2948b" args="()" -->
+<a class="anchor" id="a8814a7d70bf3d0a505f623437ef4d2eb"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_genomes_release" ref="a8814a7d70bf3d0a505f623437ef4d2eb" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_genomes_release </td>
+          <td class="memname">public <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_genomes_release </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -979,13 +951,17 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-fetch_current_ensembl_genomes_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Retrieve details for the current Ensembl Genomes release
+  Returntype : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_current_ensembl_genomes_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-fetch_current_ensembl_genomes_release-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-fetch_current_ensembl_genomes_release-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-fetch_current_ensembl_genomes_release-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#adb13370210f3222370c9796dffa2948b">fetch_current_ensembl_genomes_release</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a8814a7d70bf3d0a505f623437ef4d2eb">fetch_current_ensembl_genomes_release</a> {
   my ($self) = @_;
   <span class="keywordflow">return</span>
     $self-&gt;_first_element(
@@ -997,12 +973,12 @@ Available Methods</h2></td></tr>
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a4cbb3de8a522f431a96fdc84e82f4de1"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_release" ref="a4cbb3de8a522f431a96fdc84e82f4de1" args="()" -->
+<a class="anchor" id="ae58788f19c57713cfa88a61a6591b8a8"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_release" ref="ae58788f19c57713cfa88a61a6591b8a8" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_release </td>
+          <td class="memname">public <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::fetch_current_ensembl_release </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1010,13 +986,17 @@ Available Methods</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-fetch_current_ensembl_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Description: Retrieve details for the current Ensembl release
+  Returntype : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_current_ensembl_release" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-fetch_current_ensembl_release-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-fetch_current_ensembl_release-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-fetch_current_ensembl_release-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a4cbb3de8a522f431a96fdc84e82f4de1">fetch_current_ensembl_release</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#ae58788f19c57713cfa88a61a6591b8a8">fetch_current_ensembl_release</a> {
   my ($self) = @_;
   <span class="keywordflow">return</span>
     $self-&gt;_first_element(
@@ -1141,12 +1121,12 @@ q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a7cc30ee4c471bdf8d249780dec74538d"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::update" ref="a7cc30ee4c471bdf8d249780dec74538d" args="()" -->
+<a class="anchor" id="a5686671965f099c11181d69798c2d1dd"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::update" ref="a5686671965f099c11181d69798c2d1dd" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::update </td>
+          <td class="memname">public void Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor::update </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1154,13 +1134,18 @@ q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-update" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg        : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+  Description: Update the supplied object (must be previously stored)
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-update" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-update-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-update-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-update-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a7cc30ee4c471bdf8d249780dec74538d">update</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a5686671965f099c11181d69798c2d1dd">update</a> {
   my ( $self, $data_release ) = @_;
   <span class="keywordflow">if</span> ( !defined $data_release-&gt;dbID() ) {
     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
@@ -1168,7 +1153,7 @@ q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,
 
   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
     -SQL =&gt;
-q/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a7cc30ee4c471bdf8d249780dec74538d">update</a> data_release <span class="keyword">set</span> ensembl_version=?, ensembl_genomes_version=?, release_date=? where data_release_id=?/,
+q/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html#a5686671965f099c11181d69798c2d1dd">update</a> data_release <span class="keyword">set</span> ensembl_version=?, ensembl_genomes_version=?, release_date=? where data_release_id=?/,
     -PARAMS =&gt; [ $data_release-&gt;ensembl_version(),
                  $data_release-&gt;ensembl_genomes_version(),
                  $data_release-&gt;release_date(),

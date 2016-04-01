@@ -143,62 +143,19 @@ function toggleVisibility(linkObj) {
 <hr/><a name="details" id="details"></a><h2>Class Summary</h2>
 <div class="textblock"><h2><a class="anchor" id="Synopsis"></a>
 Synopsis</h2>
-<div class="fragment"><pre class="fragment">my $gdba = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_adaptor();
-my $md = $gdba-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a76c2418354c61a9d2fd07dd2c881df74">fetch_by_name</a>(<span class="stringliteral">&quot;arabidopsis_thaliana&quot;</span>);
+<div class="fragment"><pre class="fragment"><span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_GenomeComparaInfoAdaptor();
+my @comparas = $adaptor-&gt;fetch_all_by_method(<span class="stringliteral">&#39;PROTEIN_TREES&#39;</span>);
+<span class="keywordflow">for</span> my $genome (@{@comparas[0]-&gt;genomes()}) {
+  print $genome-&gt;name().<span class="stringliteral">&quot;\n&quot;</span>;
+}
 </pre></div> <h2><a class="anchor" id="Description"></a>
 Description</h2>
  <pre>
-Adaptor for storing and retrieving GenomeInfo objects from MySQL genome_info database
-
-To start working with an adaptor:
-
-# getting an adaptor
-## adaptor for latest public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor();
-## adaptor for specified public EG release
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_eg_adaptor(21);
-## manually specify a given database
-my $dbc = Bio::EnsEMBL::DBSQL::DBConnection->new(
--USER=>'anonymous',
--PORT=>4157,
--HOST=>'mysql-eg-publicsql.ebi.ac.uk',
--DBNAME=>'genome_info_21');
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-DBC=>$dbc);
-
-To find genomes, use the fetch methods e.g.
-
-# find a genome by name
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
-
-# find and iterate over all genomes
-for my $genome (\@{$gdba->fetch_all()}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes from plants
-for my $genome (\@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
-	print $genome->name()."\n";
-}
-
-# find and iterate over all genomes with variation
-for my $genome (\@{$gdba->fetch_all_with_variation()}) {
-	print $genome->name()."\n";
-}
-
-# find all comparas for the division of interest
-my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');
-
-# find the peptide compara
-my ($compara) = grep {$_->is_peptide_compara()} \@$comparas;
-print $compara->division()." ".$compara->method()."(".$compara->dbname().")\n";
-
-# print out all the genomes in this compara
-for my $genome (\@{$compara->genomes()}) {
-	print $genome->name()."\n";
-}
+Adaptor for storing and retrieving GenomeComparaInfo objects from MySQL genome_info database
 
 </pre> 
-<p>Definition at line <a class="el" href="GenomeComparaInfoAdaptor_8pm_source.html#l00069">69</a> of file <a class="el" href="GenomeComparaInfoAdaptor_8pm_source.html">GenomeComparaInfoAdaptor.pm</a>.</p>
+<p>Definition at line <a class="el" href="GenomeComparaInfoAdaptor_8pm_source.html#l00026">26</a> of file <a class="el" href="GenomeComparaInfoAdaptor_8pm_source.html">GenomeComparaInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
@@ -220,12 +177,13 @@ Available Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#ab7602b878020a21e07ce4d0fa8265bdd">data_release</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#acfa41c718138cc68d924d0fb5c550105">fetch_all</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a7f788189aefe46673db15b180506c2ee">fetch_all_by_division</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a7c6b08ce5294ccb3e96da3fe904f2a03">fetch_all_by_method</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Array&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a684c8efcaddc134791b04104db37390e">fetch_all_by_method</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a5e7ddcf6f5ed0516c6357a0eb112012b">fetch_by_dbID</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a62b6a7c963d480a08591ad20f5ab0454">fetch_by_dbIDs</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a335e04543abb1d389277111692266af6">fetch_by_dbname_method_set</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
+<a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a2751af7a847320bcf34059bdd5ead53e">fetch_by_dbname_method_set</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public Arrayref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a34b8b89ab9cb894d3d9296eaabb3b442">fetch_databases</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a7401ff6a88de6aa679b93e99f82b8c3b">fetch_division_databases</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a4f78eb4e307bf38b84bd0ae5005bdc26">set_ensembl_genomes_release</a> ()</td></tr>
@@ -264,7 +222,7 @@ Available Methods</h2></td></tr>
   <span class="keywordflow">return</span> $self-&gt;SUPER::_args_to_sql( $sql_in, $args );
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a88689efc81e1d0511baf03d370a66dcd">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#af0f4ed5e5e2528be363302c280a6cb1a">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -691,7 +649,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;compara_analysis_id&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#aed14d34e814f461ef8878b7995f85aba">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a23bbb63b4a6951c881f22f8f8327f9f2">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -718,7 +676,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeComparaInfo&#39;</span>;
 }
 </pre></div> </div> 
-<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a77195d8968d32f514e812661fd398b01">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
+<p>Reimplemented from <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#ad9daa29802aa14c337f7833b2872caaf">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>.</p>
 
 </div>
 </div>
@@ -902,12 +860,12 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a7c6b08ce5294ccb3e96da3fe904f2a03"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_all_by_method" ref="a7c6b08ce5294ccb3e96da3fe904f2a03" args="()" -->
+<a class="anchor" id="a684c8efcaddc134791b04104db37390e"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_all_by_method" ref="a684c8efcaddc134791b04104db37390e" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_all_by_method </td>
+          <td class="memname">public Array Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_all_by_method </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -915,13 +873,18 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-fetch_all_by_method" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg	     : Method of compara analyses to retrieve
+  Description: Fetch compara specified compara analysis
+  Returntype : array ref of  <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_all_by_method" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-fetch_all_by_method-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-fetch_all_by_method-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-fetch_all_by_method-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a7c6b08ce5294ccb3e96da3fe904f2a03">fetch_all_by_method</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a684c8efcaddc134791b04104db37390e">fetch_all_by_method</a> {
   my ( $self, $method ) = @_;
   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { method =&gt; $method } );
 }
@@ -1004,12 +967,12 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
 </pre></div> </div> 
 </div>
 </div>
-<a class="anchor" id="a335e04543abb1d389277111692266af6"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_by_dbname_method_set" ref="a335e04543abb1d389277111692266af6" args="()" -->
+<a class="anchor" id="a2751af7a847320bcf34059bdd5ead53e"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_by_dbname_method_set" ref="a2751af7a847320bcf34059bdd5ead53e" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_by_dbname_method_set </td>
+          <td class="memname">public <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a> Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor::fetch_by_dbname_method_set </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1017,13 +980,20 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
       </table>
 </div>
 <div class="memdoc">
-<p>Undocumented method</p>
-<div id="codesection-fetch_by_dbname_method_set" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+<pre>  Arg	     : DBName of compara analyses to retrieve
+  Arg	     : Method of compara analyses to retrieve
+  Arg	     : Set of compara analyses to retrieve
+  Description: Fetch specified compara analysis
+  Returntype : <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_by_dbname_method_set" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
 	<img id='codesection-fetch_by_dbname_method_set-trigger' src='closed.png' style='display:inline'><b>Code:</b>
 </div>
 <div id='codesection-fetch_by_dbname_method_set-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-fetch_by_dbname_method_set-content' class='dyncontent' style='display: none;'> 
- <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a335e04543abb1d389277111692266af6">fetch_by_dbname_method_set</a> {
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html#a2751af7a847320bcf34059bdd5ead53e">fetch_by_dbname_method_set</a> {
   my ( $self, $dbname, $method, $set_name ) = @_;
   <span class="keywordflow">return</span>
     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html#a6058ff28c9d19fd3a1307961b308c2d3">_first_element</a>(

@@ -127,7 +127,7 @@ function toggleVisibility(linkObj) {
 <a href="DataReleaseInfo_8pm.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
 <a name="l00002"></a>00002 =head1 LICENSE
 <a name="l00003"></a>00003 
-<a name="l00004"></a>00004 Copyright [1999-2014] EMBL-European Bioinformatics Institute
+<a name="l00004"></a>00004 Copyright [1999-2016] EMBL-European Bioinformatics Institute
 <a name="l00005"></a>00005 
 <a name="l00006"></a>00006 Licensed under the Apache License, Version 2.0 (the <span class="stringliteral">&quot;License&quot;</span>);
 <a name="l00007"></a>00007 you may not use <span class="keyword">this</span> file except in compliance with the License.
@@ -141,194 +141,197 @@ function toggleVisibility(linkObj) {
 <a name="l00015"></a>00015 See the License <span class="keywordflow">for</span> the specific language governing permissions and
 <a name="l00016"></a>00016 limitations under the License.
 <a name="l00017"></a>00017 
-<a name="l00018"></a>00018 =cut
+<a name="l00018"></a>00018 =head1 CONTACT
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 =pod
-<a name="l00021"></a>00021 
-<a name="l00022"></a>00022 =head1 NAME
-<a name="l00023"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">00023</a> 
-<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00020"></a>00020   Please email comments or questions to the <span class="keyword">public</span> Ensembl
+<a name="l00021"></a>00021   developers list at &lt;dev@ensembl.org&gt;.
+<a name="l00022"></a>00022 
+<a name="l00023"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">00023</a>   Questions may also be sent to the Ensembl help desk at
+<a name="l00024"></a>00024   &lt;helpdesk@ensembl.org&gt;.
 <a name="l00025"></a>00025 
-<a name="l00026"></a>00026 =head1 SYNOPSIS
+<a name="l00026"></a>00026 =head1 NAME
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028       my $release_info =
-<a name="l00029"></a>00029         Bio::EnsEMBL::MetaData::GenomeDataReleaseInfo-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a4891753f517a25bc09902adc4724acf2">new</a>(
-<a name="l00030"></a>00030                                    -ENSEMBL_VERSION=&gt;83,
-<a name="l00031"></a>00031                                    -EG_VERSION=&gt;30,
-<a name="l00032"></a>00032                                    -DATE=&gt;<span class="stringliteral">&#39;2015-12-07&#39;</span>);
-<a name="l00033"></a>00033 
-<a name="l00034"></a>00034 =head1 DESCRIPTION
-<a name="l00035"></a>00035 
-<a name="l00036"></a>00036 Object encapsulating information about a particular release of Ensembl or Ensembl Genomes
+<a name="l00028"></a>00028 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 =head1 SYNOPSIS
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032       my $release_info =
+<a name="l00033"></a>00033         Bio::EnsEMBL::MetaData::GenomeDataReleaseInfo-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a4891753f517a25bc09902adc4724acf2">new</a>(
+<a name="l00034"></a>00034                                    -ENSEMBL_VERSION=&gt;83,
+<a name="l00035"></a>00035                                    -EG_VERSION=&gt;30,
+<a name="l00036"></a>00036                                    -DATE=&gt;<span class="stringliteral">&#39;2015-12-07&#39;</span>);
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038 =head1 Author
+<a name="l00038"></a>00038 =head1 DESCRIPTION
 <a name="l00039"></a>00039 
-<a name="l00040"></a>00040 Dan Staines
+<a name="l00040"></a>00040 Object encapsulating information about a particular release of Ensembl or Ensembl Genomes
 <a name="l00041"></a>00041 
-<a name="l00042"></a>00042 =cut
+<a name="l00042"></a>00042 =head1 Author
 <a name="l00043"></a>00043 
-<a name="l00044"></a>00044 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DataReleaseInfo;
-<a name="l00045"></a>00045 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
-<a name="l00046"></a>00046 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>;
-<a name="l00047"></a>00047 use strict;
-<a name="l00048"></a>00048 use warnings;
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00051"></a>00051 use POSIX <span class="stringliteral">&#39;strftime&#39;</span>;
-<a name="l00052"></a>00052 use Bio::EnsEMBL::ApiVersion;
+<a name="l00044"></a>00044 Dan Staines
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 =cut
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DataReleaseInfo;
+<a name="l00049"></a>00049 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
+<a name="l00050"></a>00050 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>;
+<a name="l00051"></a>00051 use strict;
+<a name="l00052"></a>00052 use warnings;
 <a name="l00053"></a>00053 
-<a name="l00054"></a>00054 =head1 CONSTRUCTOR
-<a name="l00055"></a>00055 =head2 <span class="keyword">new</span>
-<a name="l00056"></a>00056   Arg [-ENSEMBL_VERSION]  : 
-<a name="l00057"></a>00057        <span class="keywordtype">int</span> - Ensembl version (by <span class="keywordflow">default</span> current version from API)
-<a name="l00058"></a>00058   Arg [-EG_VERSION]    : 
-<a name="l00059"></a>00059        <span class="keywordtype">int</span> - optional Ensembl Genomes version
-<a name="l00060"></a>00060   Arg [-RELEASE_DATE] : 
-<a name="l00061"></a>00061        <span class="keywordtype">string</span> - date of the release as YYYY-MM-DD
-<a name="l00062"></a>00062 
-<a name="l00063"></a>00063   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a4891753f517a25bc09902adc4724acf2">new</a>(...);
-<a name="l00064"></a>00064   Description: Creates a <span class="keyword">new</span> release info <span class="keywordtype">object</span>
-<a name="l00065"></a>00065   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
-<a name="l00066"></a>00066   Exceptions : none
-<a name="l00067"></a>00067   Caller     : general
-<a name="l00068"></a>00068   Status     : Stable
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070 =cut
-<a name="l00071"></a>00071 sub <span class="keyword">new</span> {
-<a name="l00072"></a>00072     my ( $class, @args ) = @_;
-<a name="l00073"></a>00073     my $self = $class-&gt;SUPER::new(@args);
-<a name="l00074"></a>00074     ( $self-&gt;{ensembl_version}, $self-&gt;{ensembl_genomes_version}, $self-&gt;{release_date} ) =
-<a name="l00075"></a>00075       rearrange( [ <span class="stringliteral">&#39;ENSEMBL_VERSION&#39;</span>, <span class="stringliteral">&#39;ENSEMBL_GENOMES_VERSION&#39;</span>, <span class="stringliteral">&#39;RELEASE_DATE&#39;</span> ], @args );
-<a name="l00076"></a>00076     $self-&gt;{ensembl_version} ||= software_version();
-<a name="l00077"></a>00077     $self-&gt;{release_date} ||= strftime <span class="stringliteral">&#39;%Y-%m-%d&#39;</span>, localtime;
-<a name="l00078"></a>00078     <span class="keywordflow">return</span> $self;
-<a name="l00079"></a>00079 }
-<a name="l00080"></a>00080 
-<a name="l00081"></a>00081 =head1 ATTRIBUTE METHODS
-<a name="l00082"></a>00082 =head2 ensembl_version
-<a name="l00083"></a>00083   Arg        : (optional) version to <span class="keyword">set</span>
-<a name="l00084"></a>00084   Description: Gets/sets name Ensembl version
-<a name="l00085"></a>00085   Returntype : <span class="keywordtype">string</span>
-<a name="l00086"></a>00086   Exceptions : none
-<a name="l00087"></a>00087   Caller     : general
-<a name="l00088"></a>00088   Status     : Stable
-<a name="l00089"></a>00089 =cut
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 sub ensembl_version {
-<a name="l00092"></a>00092     my ( $self, $arg ) = @_;
-<a name="l00093"></a>00093     $self-&gt;{ensembl_version} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00094"></a>00094     <span class="keywordflow">return</span> $self-&gt;{ensembl_version};
-<a name="l00095"></a>00095 }
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 =head2 ensembl_genomes_version
-<a name="l00098"></a>00098   Arg        : (optional) version to <span class="keyword">set</span>
-<a name="l00099"></a>00099   Description: Gets/sets name Ensembl version
-<a name="l00100"></a>00100   Returntype : <span class="keywordtype">string</span>
-<a name="l00101"></a>00101   Exceptions : none
-<a name="l00102"></a>00102   Caller     : general
-<a name="l00103"></a>00103   Status     : Stable
-<a name="l00104"></a>00104 =cut
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 sub ensembl_genomes_version {
-<a name="l00107"></a>00107     my ( $self, $arg ) = @_;
-<a name="l00108"></a>00108     $self-&gt;{ensembl_genomes_version} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00109"></a>00109     <span class="keywordflow">return</span> $self-&gt;{ensembl_genomes_version};
-<a name="l00110"></a>00110 }
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 sub is_current {
-<a name="l00113"></a>00113     my ( $self, $arg ) = @_;
-<a name="l00114"></a>00114     $self-&gt;{is_current} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00115"></a>00115     <span class="keywordflow">return</span> $self-&gt;{is_current};
-<a name="l00116"></a>00116 }
-<a name="l00117"></a>00117 
-<a name="l00118"></a>00118 sub add_database {
-<a name="l00119"></a>00119   my ( $self, $dbname, $division ) = @_;
-<a name="l00120"></a>00120   push @{$self-&gt;{databases}}, <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>(-DBNAME=&gt;$dbname, -DIVISION=&gt;$division, -SUBJECT =&gt; $self);
-<a name="l00121"></a>00121   <span class="keywordflow">return</span>;
-<a name="l00122"></a>00122 }
-<a name="l00123"></a>00123 
-<a name="l00124"></a>00124 sub databases {
-<a name="l00125"></a>00125   my ($self, $databases) = @_;
-<a name="l00126"></a>00126   <span class="keywordflow">if</span>(defined $databases) {
-<a name="l00127"></a>00127     $self-&gt;{databases} = $databases;
-<a name="l00128"></a>00128   }
-<a name="l00129"></a>00129   $self-&gt;_load_child( <span class="stringliteral">&#39;databases&#39;</span>, <span class="stringliteral">&#39;_fetch_databases&#39;</span> );
-<a name="l00130"></a>00130   <span class="keywordflow">return</span> $self-&gt;{databases};
-<a name="l00131"></a>00131 }
-<a name="l00132"></a>00132 
-<a name="l00133"></a>00133 =head2 release_date
-<a name="l00134"></a>00134   Arg        : (optional) version to <span class="keyword">set</span>
-<a name="l00135"></a>00135   Description: Gets/sets name Ensembl version
-<a name="l00136"></a>00136   Returntype : <span class="keywordtype">string</span>
-<a name="l00137"></a>00137   Exceptions : none
-<a name="l00138"></a>00138   Caller     : general
-<a name="l00139"></a>00139   Status     : Stable
-<a name="l00140"></a>00140 =cut
-<a name="l00141"></a>00141 
-<a name="l00142"></a>00142 sub release_date {
-<a name="l00143"></a>00143     my ( $self, $arg ) = @_;
-<a name="l00144"></a>00144     $self-&gt;{release_date} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00145"></a>00145     <span class="keywordflow">return</span> $self-&gt;{release_date};
-<a name="l00146"></a>00146 }
-<a name="l00147"></a>00147 
-<a name="l00148"></a>00148 =head2 to_hash
-<a name="l00149"></a>00149   Description: Render as plain hash suitable <span class="keywordflow">for</span> export as JSON/XML
-<a name="l00150"></a>00150   Returntype : Hashref
-<a name="l00151"></a>00151   Exceptions : none
-<a name="l00152"></a>00152   Caller     : general
-<a name="l00153"></a>00153   Status     : Stable
-<a name="l00154"></a>00154 =cut
-<a name="l00155"></a>00155 
-<a name="l00156"></a>00156 sub to_hash {
-<a name="l00157"></a>00157     my ($in) = @_;
-<a name="l00158"></a>00158     <span class="keywordflow">return</span> { ensembl_version =&gt; $in-&gt;ensembl_version(),
-<a name="l00159"></a>00159              ensembl_genomes_version      =&gt; $in-&gt;ensembl_genomes_version(),
-<a name="l00160"></a>00160              release_date            =&gt; $in-&gt;release_date(), };
-<a name="l00161"></a>00161 }
-<a name="l00162"></a>00162 
-<a name="l00163"></a>00163 sub to_string {
-<a name="l00164"></a>00164     my ($self) = @_;
-<a name="l00165"></a>00165     <span class="keywordflow">return</span>
-<a name="l00166"></a>00166       join( <span class="charliteral">&#39;/&#39;</span>,
-<a name="l00167"></a>00167             $self-&gt;ensembl_version(), ($self-&gt;ensembl_genomes_version()||<span class="charliteral">&#39;-&#39;</span>), ( $self-&gt;release_date() ) );
-<a name="l00168"></a>00168 }
-<a name="l00169"></a>00169 
-<a name="l00170"></a>00170 =head1 INTERNAL METHODS
-<a name="l00171"></a>00171 =head2 dbID
-<a name="l00172"></a>00172   Arg        : (optional) dbID to <span class="keyword">set</span> <span class="keyword">set</span>
-<a name="l00173"></a>00173   Description: Gets/sets <span class="keyword">internal</span> data_release_id used as database primary key
-<a name="l00174"></a>00174   Returntype : dbID <span class="keywordtype">string</span>
-<a name="l00175"></a>00175   Exceptions : none
-<a name="l00176"></a>00176   Caller     : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
-<a name="l00177"></a>00177   Status     : Stable
-<a name="l00178"></a>00178 =cut
-<a name="l00179"></a>00179 
-<a name="l00180"></a>00180 sub dbID {
-<a name="l00181"></a>00181     my ( $self, $arg ) = @_;
-<a name="l00182"></a>00182     <span class="keywordflow">if</span> ( defined $arg ) {
-<a name="l00183"></a>00183         $self-&gt;{dbID} = $arg;
-<a name="l00184"></a>00184     }
-<a name="l00185"></a>00185     <span class="keywordflow">return</span> $self-&gt;{dbID};
-<a name="l00186"></a>00186 }
-<a name="l00187"></a>00187 
-<a name="l00188"></a>00188 =head2 adaptor
-<a name="l00189"></a>00189   Arg        : (optional) adaptor to <span class="keyword">set</span> <span class="keyword">set</span>
-<a name="l00190"></a>00190   Description: Gets/sets GenomeInfoAdaptor
-<a name="l00191"></a>00191   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
-<a name="l00192"></a>00192   Exceptions : none
-<a name="l00193"></a>00193   Caller     : Internal
-<a name="l00194"></a>00194   Status     : Stable
-<a name="l00195"></a>00195 =cut
-<a name="l00196"></a>00196 
-<a name="l00197"></a>00197 sub adaptor {
-<a name="l00198"></a>00198     my ( $self, $arg ) = @_;
-<a name="l00199"></a>00199     <span class="keywordflow">if</span> ( defined $arg ) {
-<a name="l00200"></a>00200         $self-&gt;{adaptor} = $arg;
-<a name="l00201"></a>00201     }
-<a name="l00202"></a>00202     <span class="keywordflow">return</span> $self-&gt;{adaptor};
-<a name="l00203"></a>00203 }
-<a name="l00204"></a>00204 
-<a name="l00205"></a>00205 1;
+<a name="l00054"></a>00054 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00055"></a>00055 use POSIX <span class="stringliteral">&#39;strftime&#39;</span>;
+<a name="l00056"></a>00056 use Bio::EnsEMBL::ApiVersion;
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 =head1 CONSTRUCTOR
+<a name="l00059"></a>00059 =head2 <span class="keyword">new</span>
+<a name="l00060"></a>00060   Arg [-ENSEMBL_VERSION]  : 
+<a name="l00061"></a>00061        <span class="keywordtype">int</span> - Ensembl version (by <span class="keywordflow">default</span> current version from API)
+<a name="l00062"></a>00062   Arg [-EG_VERSION]    : 
+<a name="l00063"></a>00063        <span class="keywordtype">int</span> - optional Ensembl Genomes version
+<a name="l00064"></a>00064   Arg [-RELEASE_DATE] : 
+<a name="l00065"></a>00065        <span class="keywordtype">string</span> - date of the release as YYYY-MM-DD
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html#a4891753f517a25bc09902adc4724acf2">new</a>(...);
+<a name="l00068"></a>00068   Description: Creates a <span class="keyword">new</span> release info <span class="keywordtype">object</span>
+<a name="l00069"></a>00069   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00070"></a>00070   Exceptions : none
+<a name="l00071"></a>00071   Caller     : general
+<a name="l00072"></a>00072   Status     : Stable
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 =cut
+<a name="l00075"></a>00075 sub <span class="keyword">new</span> {
+<a name="l00076"></a>00076     my ( $class, @args ) = @_;
+<a name="l00077"></a>00077     my $self = $class-&gt;SUPER::new(@args);
+<a name="l00078"></a>00078     ( $self-&gt;{ensembl_version}, $self-&gt;{ensembl_genomes_version}, $self-&gt;{release_date} ) =
+<a name="l00079"></a>00079       rearrange( [ <span class="stringliteral">&#39;ENSEMBL_VERSION&#39;</span>, <span class="stringliteral">&#39;ENSEMBL_GENOMES_VERSION&#39;</span>, <span class="stringliteral">&#39;RELEASE_DATE&#39;</span> ], @args );
+<a name="l00080"></a>00080     $self-&gt;{ensembl_version} ||= software_version();
+<a name="l00081"></a>00081     $self-&gt;{release_date} ||= strftime <span class="stringliteral">&#39;%Y-%m-%d&#39;</span>, localtime;
+<a name="l00082"></a>00082     <span class="keywordflow">return</span> $self;
+<a name="l00083"></a>00083 }
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 =head1 ATTRIBUTE METHODS
+<a name="l00086"></a>00086 =head2 ensembl_version
+<a name="l00087"></a>00087   Arg        : (optional) version to <span class="keyword">set</span>
+<a name="l00088"></a>00088   Description: Gets/sets name Ensembl version
+<a name="l00089"></a>00089   Returntype : <span class="keywordtype">string</span>
+<a name="l00090"></a>00090   Exceptions : none
+<a name="l00091"></a>00091   Caller     : general
+<a name="l00092"></a>00092   Status     : Stable
+<a name="l00093"></a>00093 =cut
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095 sub ensembl_version {
+<a name="l00096"></a>00096     my ( $self, $arg ) = @_;
+<a name="l00097"></a>00097     $self-&gt;{ensembl_version} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00098"></a>00098     <span class="keywordflow">return</span> $self-&gt;{ensembl_version};
+<a name="l00099"></a>00099 }
+<a name="l00100"></a>00100 
+<a name="l00101"></a>00101 =head2 ensembl_genomes_version
+<a name="l00102"></a>00102   Arg        : (optional) version to <span class="keyword">set</span>
+<a name="l00103"></a>00103   Description: Gets/sets name Ensembl version
+<a name="l00104"></a>00104   Returntype : <span class="keywordtype">string</span>
+<a name="l00105"></a>00105   Exceptions : none
+<a name="l00106"></a>00106   Caller     : general
+<a name="l00107"></a>00107   Status     : Stable
+<a name="l00108"></a>00108 =cut
+<a name="l00109"></a>00109 
+<a name="l00110"></a>00110 sub ensembl_genomes_version {
+<a name="l00111"></a>00111     my ( $self, $arg ) = @_;
+<a name="l00112"></a>00112     $self-&gt;{ensembl_genomes_version} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00113"></a>00113     <span class="keywordflow">return</span> $self-&gt;{ensembl_genomes_version};
+<a name="l00114"></a>00114 }
+<a name="l00115"></a>00115 =head2 is_current
+<a name="l00116"></a>00116   Arg        : (optional) Integer to <span class="keyword">set</span> <span class="keywordflow">if</span> current
+<a name="l00117"></a>00117   Description: Gets/sets <span class="keywordflow">if</span> release is current
+<a name="l00118"></a>00118   Returntype : Integer (1 <span class="keywordflow">if</span> current)
+<a name="l00119"></a>00119   Exceptions : none
+<a name="l00120"></a>00120   Caller     : general
+<a name="l00121"></a>00121   Status     : Stable
+<a name="l00122"></a>00122 =cut
+<a name="l00123"></a>00123 sub is_current {
+<a name="l00124"></a>00124     my ( $self, $arg ) = @_;
+<a name="l00125"></a>00125     $self-&gt;{is_current} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00126"></a>00126     <span class="keywordflow">return</span> $self-&gt;{is_current};
+<a name="l00127"></a>00127 }
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129 =head2 databases
+<a name="l00130"></a>00130   Arg        : (optional) Arrayref of DatabaseInfo objects
+<a name="l00131"></a>00131   Description: Databases associated with <span class="keyword">this</span> release
+<a name="l00132"></a>00132   Returntype : None
+<a name="l00133"></a>00133   Exceptions : none
+<a name="l00134"></a>00134   Caller     : general
+<a name="l00135"></a>00135   Status     : Stable
+<a name="l00136"></a>00136 =cut
+<a name="l00137"></a>00137 sub databases {
+<a name="l00138"></a>00138   my ($self, $databases) = @_;
+<a name="l00139"></a>00139   <span class="keywordflow">if</span>(defined $databases) {
+<a name="l00140"></a>00140     $self-&gt;{databases} = $databases;
+<a name="l00141"></a>00141   }
+<a name="l00142"></a>00142   $self-&gt;_load_child( <span class="stringliteral">&#39;databases&#39;</span>, <span class="stringliteral">&#39;_fetch_databases&#39;</span> );
+<a name="l00143"></a>00143   <span class="keywordflow">return</span> $self-&gt;{databases};
+<a name="l00144"></a>00144 }
+<a name="l00145"></a>00145 
+<a name="l00146"></a>00146 =head2 release_date
+<a name="l00147"></a>00147   Arg        : (optional) version to <span class="keyword">set</span>
+<a name="l00148"></a>00148   Description: Gets/sets name Ensembl version
+<a name="l00149"></a>00149   Returntype : <span class="keywordtype">string</span>
+<a name="l00150"></a>00150   Exceptions : none
+<a name="l00151"></a>00151   Caller     : general
+<a name="l00152"></a>00152   Status     : Stable
+<a name="l00153"></a>00153 =cut
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 sub release_date {
+<a name="l00156"></a>00156     my ( $self, $arg ) = @_;
+<a name="l00157"></a>00157     $self-&gt;{release_date} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00158"></a>00158     <span class="keywordflow">return</span> $self-&gt;{release_date};
+<a name="l00159"></a>00159 }
+<a name="l00160"></a>00160 
+<a name="l00161"></a>00161 =head1 UTILITY METHODS
+<a name="l00162"></a>00162 =head2 add_database
+<a name="l00163"></a>00163   Arg        : String - Name of database
+<a name="l00164"></a>00164   Arg        : String - Name of Ensembl division
+<a name="l00165"></a>00165   Description: Associate a database with <span class="keyword">this</span> release
+<a name="l00166"></a>00166   Returntype : None
+<a name="l00167"></a>00167   Exceptions : none
+<a name="l00168"></a>00168   Caller     : general
+<a name="l00169"></a>00169   Status     : Stable
+<a name="l00170"></a>00170 =cut
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172 sub add_database {
+<a name="l00173"></a>00173   my ( $self, $dbname, $division ) = @_;
+<a name="l00174"></a>00174   push @{$self-&gt;{databases}}, <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>(-DBNAME=&gt;$dbname, -DIVISION=&gt;$division, -SUBJECT =&gt; $self);
+<a name="l00175"></a>00175   <span class="keywordflow">return</span>;
+<a name="l00176"></a>00176 }
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 =head2 to_hash
+<a name="l00179"></a>00179   Description: Render as plain hash suitable <span class="keywordflow">for</span> export as JSON/XML
+<a name="l00180"></a>00180   Returntype : Hashref
+<a name="l00181"></a>00181   Exceptions : none
+<a name="l00182"></a>00182   Caller     : general
+<a name="l00183"></a>00183   Status     : Stable
+<a name="l00184"></a>00184 =cut
+<a name="l00185"></a>00185 
+<a name="l00186"></a>00186 sub to_hash {
+<a name="l00187"></a>00187     my ($in) = @_;
+<a name="l00188"></a>00188     <span class="keywordflow">return</span> { ensembl_version =&gt; $in-&gt;ensembl_version(),
+<a name="l00189"></a>00189              ensembl_genomes_version      =&gt; $in-&gt;ensembl_genomes_version(),
+<a name="l00190"></a>00190              release_date            =&gt; $in-&gt;release_date(), };
+<a name="l00191"></a>00191 }
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193 =head2 to_hash
+<a name="l00194"></a>00194   Description: Render as <span class="keywordtype">string</span> <span class="keywordflow">for</span> display
+<a name="l00195"></a>00195   Returntype : String
+<a name="l00196"></a>00196   Exceptions : none
+<a name="l00197"></a>00197   Caller     : general
+<a name="l00198"></a>00198   Status     : Stable
+<a name="l00199"></a>00199 =cut
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201 sub to_string {
+<a name="l00202"></a>00202     my ($self) = @_;
+<a name="l00203"></a>00203     <span class="keywordflow">return</span>
+<a name="l00204"></a>00204       join( <span class="charliteral">&#39;/&#39;</span>,
+<a name="l00205"></a>00205             $self-&gt;ensembl_version(), ($self-&gt;ensembl_genomes_version()||<span class="charliteral">&#39;-&#39;</span>), ( $self-&gt;release_date() ) );
+<a name="l00206"></a>00206 }
+<a name="l00207"></a>00207 
+<a name="l00208"></a>00208 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

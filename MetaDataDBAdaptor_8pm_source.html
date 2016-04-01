@@ -145,7 +145,7 @@ function toggleVisibility(linkObj) {
 <a name="l00019"></a>00019 
 <a name="l00020"></a>00020 =head1 CONTACT
 <a name="l00021"></a>00021 
-<a name="l00022"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html">00022</a>   Please email comments or questions to the <span class="keyword">public</span> Ensembl
+<a name="l00022"></a>00022   Please email comments or questions to the <span class="keyword">public</span> Ensembl
 <a name="l00023"></a>00023   developers list at &lt;dev@ensembl.org&gt;.
 <a name="l00024"></a>00024 
 <a name="l00025"></a>00025   Questions may also be sent to the Ensembl help desk at
@@ -160,63 +160,78 @@ function toggleVisibility(linkObj) {
 <a name="l00034"></a>00034 =head1 DESCRIPTION
 <a name="l00035"></a>00035 
 <a name="l00036"></a>00036 Specialised DBAdaptor <span class="keywordflow">for</span> connecting to the ensembl_metadata MySQL database
-<a name="l00037"></a>00037 
+<a name="l00037"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html">00037</a> 
 <a name="l00038"></a>00038 =head1 SYNOPSIS
 <a name="l00039"></a>00039 
-<a name="l00040"></a>00040                                       
-<a name="l00041"></a>00041 =head DESCRIPTION
+<a name="l00040"></a>00040 <span class="preprocessor"># instantiate directly</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span>my $dba = Bio::EnsEMBL::DBSQL::MetaDataDBAdaptor-&gt;new();
 <a name="l00042"></a>00042 
-<a name="l00043"></a>00043 A specialised DBAdaptor allowing connection to a metadata database. 
-<a name="l00044"></a>00044 Can be used to retrieve an instance of Bio::EnsEMBL::DBSQL::GenomeInfoAdaptor.
+<a name="l00043"></a>00043 <span class="preprocessor"># retrieve from Registry</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span>my $dba = Bio::EnsEMBL::Registry-&gt;get_DBAdaptor(<span class="stringliteral">&quot;multi&quot;</span>, <span class="stringliteral">&quot;metadata&quot;</span>);
 <a name="l00045"></a>00045 
-<a name="l00046"></a>00046 =head1 AUTHOR
-<a name="l00047"></a>00047 
-<a name="l00048"></a>00048 dstaines
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 =head1 MAINTANER
-<a name="l00051"></a>00051 
-<a name="l00052"></a>00052 $Author$
-<a name="l00053"></a>00053 
-<a name="l00054"></a>00054 =head1 VERSION
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056 $Revision$
-<a name="l00057"></a>00057 =cut        
-<a name="l00058"></a>00058 
-<a name="l00059"></a>00059 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+<a name="l00046"></a>00046 <span class="preprocessor"># retrieve adaptors</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span>my $adaptor = $dba-&gt;get_GenomeInfoAdaptor();
+<a name="l00048"></a>00048                                       
+<a name="l00049"></a>00049 =head DESCRIPTION
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051 A specialised DBAdaptor allowing connection to a metadata database. 
+<a name="l00052"></a>00052 Can be used to retrieve instances of:
+<a name="l00053"></a>00053     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00054"></a>00054     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DataReleaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor</a>
+<a name="l00055"></a>00055     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor</a>
+<a name="l00056"></a>00056     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor</a>
+<a name="l00057"></a>00057     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeAssemblyInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor</a>
+<a name="l00058"></a>00058     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor</a>
+<a name="l00059"></a>00059 
 <a name="l00060"></a>00060 
-<a name="l00061"></a>00061 use strict;
-<a name="l00062"></a>00062 use warnings;
-<a name="l00063"></a>00063 
-<a name="l00064"></a>00064 use base qw ( Bio::EnsEMBL::DBSQL::DBAdaptor );
-<a name="l00065"></a>00065 use Data::Dumper;
+<a name="l00061"></a>00061 =head1 AUTHOR
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 dstaines
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 =head1 MAINTANER
 <a name="l00066"></a>00066 
-<a name="l00067"></a>00067 use Bio::EnsEMBL::Utils::Exception qw(<span class="keywordflow">throw</span>);
+<a name="l00067"></a>00067 $Author$
 <a name="l00068"></a>00068 
-<a name="l00069"></a>00069 =head1 SUBROUTINES/METHODS
+<a name="l00069"></a>00069 =head1 VERSION
 <a name="l00070"></a>00070 
-<a name="l00071"></a>00071 =head2 get_available_adaptors   
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073     Description : Retrieve all adaptors supported by <span class="keyword">this</span> database
-<a name="l00074"></a>00074     Returns     : Hash of adaptor modules by name
-<a name="l00075"></a>00075 =cut
-<a name="l00076"></a>00076 
-<a name="l00077"></a>00077 sub get_available_adaptors {
-<a name="l00078"></a>00078   <span class="keywordflow">return</span> {
-<a name="l00079"></a>00079     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">GenomeInfo</a>      =&gt; <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor&#39;</span>,
-<a name="l00080"></a>00080     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">DataReleaseInfo</a> =&gt; <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor&#39;</span>,
-<a name="l00081"></a>00081     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">GenomeComparaInfo</a> =&gt;
-<a name="l00082"></a>00082       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor&#39;</span>,
-<a name="l00083"></a>00083     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">GenomeOrganismInfo</a> =&gt;
-<a name="l00084"></a>00084       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor&#39;</span>,
-<a name="l00085"></a>00085     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html">GenomeAssemblyInfo</a> =&gt;
-<a name="l00086"></a>00086       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor&#39;</span>,
-<a name="l00087"></a>00087     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">DatabaseInfo</a> =&gt;
-<a name="l00088"></a>00088       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor&#39;</span>,
-<a name="l00089"></a>00089     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">EventInfo</a> =&gt; <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor&#39;</span> };
-<a name="l00090"></a>00090 }
+<a name="l00071"></a>00071 $Revision$
+<a name="l00072"></a>00072 =cut        
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076 use strict;
+<a name="l00077"></a>00077 use warnings;
+<a name="l00078"></a>00078 
+<a name="l00079"></a>00079 use base qw ( Bio::EnsEMBL::DBSQL::DBAdaptor );
+<a name="l00080"></a>00080 use Data::Dumper;
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082 use Bio::EnsEMBL::Utils::Exception qw(<span class="keywordflow">throw</span>);
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084 =head1 SUBROUTINES/METHODS
+<a name="l00085"></a>00085 
+<a name="l00086"></a>00086 =head2 get_available_adaptors   
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088     Description : Retrieve all adaptors supported by <span class="keyword">this</span> database
+<a name="l00089"></a>00089     Returns     : Hash of adaptor modules by name
+<a name="l00090"></a>00090 =cut
 <a name="l00091"></a>00091 
-<a name="l00092"></a>00092 1;
-<a name="l00093"></a>00093 
+<a name="l00092"></a>00092 sub get_available_adaptors {
+<a name="l00093"></a>00093   <span class="keywordflow">return</span> {
+<a name="l00094"></a>00094     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">GenomeInfo</a>      =&gt; <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor&#39;</span>,
+<a name="l00095"></a>00095     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">DataReleaseInfo</a> =&gt; <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::DataReleaseInfoAdaptor&#39;</span>,
+<a name="l00096"></a>00096     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">GenomeComparaInfo</a> =&gt;
+<a name="l00097"></a>00097       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor&#39;</span>,
+<a name="l00098"></a>00098     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">GenomeOrganismInfo</a> =&gt;
+<a name="l00099"></a>00099       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor&#39;</span>,
+<a name="l00100"></a>00100     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html">GenomeAssemblyInfo</a> =&gt;
+<a name="l00101"></a>00101       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::GenomeAssemblyInfoAdaptor&#39;</span>,
+<a name="l00102"></a>00102     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">DatabaseInfo</a> =&gt;
+<a name="l00103"></a>00103       <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor&#39;</span>,
+<a name="l00104"></a>00104     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">EventInfo</a> =&gt; <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::DBSQL::EventInfoAdaptor&#39;</span> };
+<a name="l00105"></a>00105 }
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107 1;
+<a name="l00108"></a>00108 
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">
