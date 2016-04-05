@@ -358,7 +358,7 @@ q/select distinct(genome_id) from genome_compara_analysis where compara_analysis
           -PARAMS => [ $compara->dbID() ] );
       } )
     {
-      push @$genomes, $self->get_GenomeInfoAdaptor()->fetch_by_dbID($genome_id);
+      push @$genomes, $self->db()->get_GenomeInfoAdaptor()->fetch_by_dbID($genome_id);
     }
     $compara->genomes($genomes);
   }
