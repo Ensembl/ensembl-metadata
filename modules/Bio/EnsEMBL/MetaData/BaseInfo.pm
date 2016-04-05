@@ -101,7 +101,7 @@ sub to_hash {
       push @{$out}, to_hash( $item, $keen );
     }
   }
-  elsif ( $type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' ) {
+  elsif ( $type eq 'HASH' || $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ ) {
     $out = {};
     while ( my ( $key, $val ) = each %$in ) {
       if ( $key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger' ) {
@@ -112,11 +112,7 @@ sub to_hash {
         }
         $out->{$key} = to_hash( $val, $keen );
       }
-
     }
-  }
-  elsif ( $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ ) {
-    $out = $in->to_hash($keen);
   }
   else {
     $out = $in;
