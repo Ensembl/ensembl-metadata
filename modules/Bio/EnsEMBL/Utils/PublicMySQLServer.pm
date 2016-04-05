@@ -37,6 +37,7 @@ Bio::EnsEMBL::Utils::PublicMySQLServer
 
 =head1 DESCRIPTION
 
+Provides access to arguments needed to access EG and Ensembl public MySQL servers
 
 =cut
 
