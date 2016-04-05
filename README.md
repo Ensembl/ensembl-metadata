@@ -11,7 +11,9 @@ In addition, additional Perl modules are required, listed in [the cpan dependenc
 
 # Usage
 
-Full Perl documentation can be found at .... Some usage examples are shown below.
+Full Perl documentation can be found at http://ensembl.github.io/ensembl-metadata/.
+
+Some usage examples are shown below. Example scripts can also be found in the [misc-scripts](misc-scripts) directory. 
 
 ## Basic usage
 The main entry point for this API is the GenomeInfoAdaptor. This can be retrieved in a number of ways:
@@ -131,3 +133,16 @@ The following diagram shows the MySQL schema used by `ensembl-metadata`. The col
 ## LookUp
 Bio::EnsEMBL::LookUp is a base class providing access to DBAdaptors without the need to query all core DBAdaptors via the Registry, which does not scale with 1000s of genomes.
 There are two implementations, LocalLookUp (which uses an internal hash) and RemoteLookUp (which uses the metadata database). 
+
+### LocalLookUp
+LocalLookUp queries all databases in the registry and stores details in an internal hash which is then used for successive fetch calls. After an initial load, this hash is stored on disk as lookup_cache.json and then reloaded as required. A JSON file of this kind can also be supplied as a constructor argument.
+
+DBAdaptors returned are those referenced by the original registry, or constructed using the properties of the original adaptors.
+
+### RemoteLookUp
+RemoteLookUp uses an instance of Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor to find details of genomes to instantiate.
+
+The DBAdaptors returned are constructed using MySQL details supplied by an instance of Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider. By default, this provider supplies the details of the Ensembl or Ensembl Genomes public MySQL servers as determined by the division to which the genome belongs. Alternative implementations can be supplied, including Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider which is instantiated internally where the standard -USER, -HOST etc. arguments passed to RemoteLookUp.
+
+### PublicMySQLServer
+Bio::EnsEMBL::Utils::PublicMySQLServer contains the credentials for accessing the Ensembl and Ensembl Genomes public MySQL servers.
