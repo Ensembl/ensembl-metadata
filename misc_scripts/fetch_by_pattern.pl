@@ -49,7 +49,7 @@ print "Building helper\n";
 my $helper = Bio::EnsEMBL::LookUp->new();
 
 print "Getting DBAs for escherichia_coli_.*\n";
-my @dbas = @{$helper->get_all_by_name_pattern('escherichia_coli.*')};   
+my @dbas = @{$helper->get_all_by_name_pattern('drosophila.*')};   
 for my $dba (@dbas) {
 	# work with DBA as normal
 	my $genes = $dba->get_GeneAdaptor()->fetch_all();

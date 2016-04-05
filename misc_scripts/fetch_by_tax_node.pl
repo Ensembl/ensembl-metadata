@@ -51,7 +51,7 @@ use Bio::EnsEMBL::LookUp;
 print "Building helper\n";
 my $helper = Bio::EnsEMBL::LookUp->new();
 
-my $taxid = 562;
+my $taxid = 7215;
 print "Finding descendants for $taxid\n";
 my @dbas = @{$helper->get_all_by_taxon_branch($taxid)};
 print "Found ".scalar @dbas." descendants\n";

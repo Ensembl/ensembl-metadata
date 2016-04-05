@@ -51,7 +51,7 @@ use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 
 # find all comparas for the division of interest
-my $comparas = $gdba->fetch_all_compara_by_division('EnsemblPlants');
+my $comparas = $gdba->db()->get_GenomeComparaInfoAdaptor()->fetch_all_by_division('EnsemblPlants');
 # find the peptide compara
 my ($compara) = grep {$_->is_peptide_compara()} @$comparas;
 print $compara->division()." ".$compara->method()."(".$compara->dbname().")\n";
