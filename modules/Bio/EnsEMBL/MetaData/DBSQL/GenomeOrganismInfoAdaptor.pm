@@ -53,7 +53,9 @@ use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
+use Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor;
 use List::MoreUtils qw(natatime);
+use Scalar::Util qw(looks_like_number);
 
 =head1 METHODS
 =cut
@@ -422,9 +424,11 @@ sub taxonomy_adaptor {
   }
   else {
     if ( !defined $self->{taxonomy_adaptor} ) {
-      # try and get from the registry
-      my $tax_dba =
-        Bio::EnsEMBL::Registry->get_DBAdaptor( "multi", "taxonomy" );
+      my $tax_dba;
+      eval {
+        # try and get from the registry
+        $tax_dba = Bio::EnsEMBL::Registry->get_DBAdaptor( "multi", "taxonomy" );
+      };
       if ( !defined $tax_dba ) {
         # can't find, so try and create alongside metadata
         my $args = { -USER   => $self->db()->dbc()->user(),
@@ -433,8 +437,7 @@ sub taxonomy_adaptor {
                      -HOST   => $self->db()->dbc()->host(),
                      -DBNAME => 'ncbi_taxonomy' };
         $tax_dba =
-          Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor->new(%$args)
-          ->(%$args);
+          Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor->new(%$args);
       }
       if ( defined $tax_dba ) {
         $self->{taxonomy_adaptor} = $tax_dba->get_TaxonomyNodeAdaptor();

@@ -130,7 +130,7 @@ use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 =cut
 
 sub build_ensembl_adaptor {
-  my ($release) = @_;
+  my ( $self, $release ) = @_;
   my $args = e_args();
   $args->{-DBNAME} = 'ensembl_metadata';
   my $adaptor =
@@ -152,7 +152,7 @@ sub build_ensembl_adaptor {
 =cut
 
 sub build_ensembl_genomes_adaptor {
-  my ($release) = @_;
+  my ( $self, $release ) = @_;
   my $args = eg_args();
   $args->{-DBNAME} = 'ensembl_metadata';
   my $adaptor =
@@ -506,6 +506,53 @@ sub fetch_all_by_organisms {
     $self->_fetch_generic_with_args( { 'organism_id',
                                        [ map { $_->dbID() } @$organisms ] },
                                      $keen );
+}
+
+=head2 fetch_by_taxonomy_id
+  Arg	     : Taxonomy ID
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch genome info for specified taxonomy node
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_by_taxonomy_id {
+  my ( $self, $id, $keen ) = @_;
+  return $self->fetch_all_by_organisms(
+                   $self->_organism_adaptor()->fetch_all_by_taxonomy_id($id) );
+}
+
+=head2 fetch_by_taxonomy_ids
+  Arg	     : Arrayref of Taxonomy ID
+  Description: Fetch genome info for specified taxonomy nodes (batch)
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_by_taxonomy_ids {
+  my ( $self, $ids ) = @_;
+  return $self->fetch_all_by_organisms(
+                  $self->_organism_adaptor()->fetch_all_by_taxonomy_ids($ids) );
+}
+
+=head2 fetch_all_by_taxonomy_branch
+  Arg	     : Bio::EnsEMBL::TaxonomyNode
+  Description: Fetch organism info for specified taxonomy node and its children
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_by_taxonomy_branch {
+  my ( $self, $root, $keen ) = @_;
+  return $self->fetch_all_by_organisms(
+      $self->_organism_adaptor()->fetch_all_by_taxonomy_branch( $root, $keen ) )
+    ;
 }
 
 =head2 fetch_by_assembly 
@@ -919,7 +966,8 @@ sub _fetch_databases {
   croak
     "Cannot fetch databases for a GenomeInfo object that has not been stored"
     if !defined $genome->dbID();
-  $genome->{databases} = $self->db()->get_DatabaseInfoAdaptor()->fetch_databases($genome);
+  $genome->{databases} =
+    $self->db()->get_DatabaseInfoAdaptor()->fetch_databases($genome);
   return;
 }
 
@@ -1055,7 +1103,6 @@ sub _fetch_children {
   return;
 }
 
-
 =head2 _store_features
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the features for the supplied object
@@ -1178,6 +1225,7 @@ sub _store_alignments {
   }
   return;
 }
+
 =head2 _store_compara
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the compara analyses for the supplied object
@@ -1186,6 +1234,7 @@ sub _store_alignments {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _store_compara {
   my ( $self, $genome ) = @_;
 
@@ -1206,7 +1255,6 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
   return;
 
 }
-
 
 my $base_genome_fetch_sql =
   q/select genome_id as dbID, division.name as division, genebuild, 
