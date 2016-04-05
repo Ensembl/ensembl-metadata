@@ -74,7 +74,7 @@ sub new {
   return $self;
 }
 
-=head1
+=head1 METHODS
 
 =head2 to_hash
   Description: Render object as plain hash suitable for export as JSON/XML
