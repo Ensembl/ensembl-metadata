@@ -252,7 +252,7 @@ sub to_hash {
 			  is_dna_compara     => $in->is_dna_compara(), };
   $out->{genomes} = [];
   for my $genome ( @{ $in->genomes() } ) {
-	push @{ $out->{genomes} }, $genome->species();
+	   push @{ $out->{genomes} }, $genome->name();
   }
   return $out;
 }
