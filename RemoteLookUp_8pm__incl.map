@@ -1,10 +1,12 @@
 <map id="G" name="G">
-<area shape="rect" id="node7" href="$GenomeInfoAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/GenomeInfoAdaptor.pm" alt="" coords="1502,80,1852,107"/>
-<area shape="rect" id="node18" href="$PublicMySQLServer_8pm.html" title="Bio/EnsEMBL/Utils/PublicMySQLServer.pm" alt="" coords="1930,155,2200,181"/>
-<area shape="rect" id="node9" href="$GenomeInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeInfo.pm" alt="" coords="1021,155,1277,181"/>
-<area shape="rect" id="node20" href="$MetaDataDBAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/MetaDataDBAdaptor.pm" alt="" coords="1501,155,1853,181"/>
-<area shape="rect" id="node10" href="$DataReleaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DataReleaseInfo.pm" alt="" coords="1169,229,1449,256"/>
-<area shape="rect" id="node14" href="$GenomeAssemblyInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeAssemblyInfo.pm" alt="" coords="781,229,1093,256"/>
-<area shape="rect" id="node15" href="$GenomeOrganismInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeOrganismInfo.pm" alt="" coords="787,304,1099,331"/>
-<area shape="rect" id="node11" href="$DatabaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DatabaseInfo.pm" alt="" coords="1174,304,1436,331"/>
+<area shape="rect" id="node7" href="$GenomeInfoAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/GenomeInfoAdaptor.pm" alt="" coords="1147,80,1497,107"/>
+<area shape="rect" id="node21" href="$MySQLServerProvider_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/MySQLServerProvider.pm" alt="" coords="1674,80,2035,107"/>
+<area shape="rect" id="node22" href="$ParameterMySQLServerProvider_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/ParameterMySQLServerProvider.pm" alt="" coords="189,229,609,256"/>
+<area shape="rect" id="node9" href="$GenomeInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeInfo.pm" alt="" coords="1027,155,1284,181"/>
+<area shape="rect" id="node18" href="$PublicMySQLServer_8pm.html" title="Bio/EnsEMBL/Utils/PublicMySQLServer.pm" alt="" coords="1917,155,2187,181"/>
+<area shape="rect" id="node20" href="$MetaDataDBAdaptor_8pm.html" title="Bio/EnsEMBL/MetaData/DBSQL/MetaDataDBAdaptor.pm" alt="" coords="1539,155,1892,181"/>
+<area shape="rect" id="node10" href="$DataReleaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DataReleaseInfo.pm" alt="" coords="1215,229,1496,256"/>
+<area shape="rect" id="node14" href="$GenomeAssemblyInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeAssemblyInfo.pm" alt="" coords="807,229,1119,256"/>
+<area shape="rect" id="node15" href="$GenomeOrganismInfo_8pm.html" title="Bio/EnsEMBL/MetaData/GenomeOrganismInfo.pm" alt="" coords="837,304,1149,331"/>
+<area shape="rect" id="node11" href="$DatabaseInfo_8pm.html" title="Bio/EnsEMBL/MetaData/DatabaseInfo.pm" alt="" coords="1225,304,1487,331"/>
 </map>

@@ -26,6 +26,8 @@ var NAVTREE =
       [ "Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MetaDataDBAdaptor.html", null ],
       [ "Bio::EnsEMBL::MetaData::MetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html", null ],
       [ "Bio::EnsEMBL::MetaData::MetaDataProcessor", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1ParameterMySQLServerProvider.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessCompara.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenome.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenomes__conf.html", null ],
@@ -70,6 +72,9 @@ var NAVTREE =
         [ "Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1XMLMetaDataDumper.html", null ]
       ] ],
       [ "Bio::EnsEMBL::MetaData::MetaDataProcessor", "classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html", null ],
+      [ "Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html", [
+        [ "Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider", "classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1ParameterMySQLServerProvider.html", null ]
+      ] ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessCompara.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenome.html", null ],
       [ "Bio::EnsEMBL::MetaData::Pipeline::ProcessGenomes_conf", "classBio_1_1EnsEMBL_1_1MetaData_1_1Pipeline_1_1ProcessGenomes__conf.html", null ],
@@ -112,6 +117,8 @@ var NAVTREE =
       [ "Bio/EnsEMBL/MetaData/DBSQL/GenomeInfoAdaptor.pm", "GenomeInfoAdaptor_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DBSQL/GenomeOrganismInfoAdaptor.pm", "GenomeOrganismInfoAdaptor_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/DBSQL/MetaDataDBAdaptor.pm", "MetaDataDBAdaptor_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/MySQLServerProvider.pm", "MySQLServerProvider_8pm.html", null ],
+      [ "Bio/EnsEMBL/MetaData/DBSQL/ParameterMySQLServerProvider.pm", "ParameterMySQLServerProvider_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/MetaDataDumper/JsonMetaDataDumper.pm", "JsonMetaDataDumper_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/MetaDataDumper/TextMetaDataDumper.pm", "TextMetaDataDumper_8pm.html", null ],
       [ "Bio/EnsEMBL/MetaData/MetaDataDumper/TT2MetaDataDumper.pm", "TT2MetaDataDumper_8pm.html", null ],

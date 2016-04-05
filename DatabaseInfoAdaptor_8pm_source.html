@@ -147,13 +147,13 @@ function toggleVisibility(linkObj) {
 <a name="l00021"></a>00021 
 <a name="l00022"></a>00022 =head1 NAME
 <a name="l00023"></a>00023 
-<a name="l00024"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html">00024</a> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor</a>
+<a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor</a>
 <a name="l00025"></a>00025 
 <a name="l00026"></a>00026 =head1 SYNOPSIS
 <a name="l00027"></a>00027 
 <a name="l00028"></a>00028 <span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
 <a name="l00029"></a>00029 <span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_DatabaseInfoAdaptor();
-<a name="l00030"></a>00030 $adaptor-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html#a2564851b48864a88a1052a87e665f414">fetch_databases</a>($info);
+<a name="l00030"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html">00030</a> $adaptor-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1DatabaseInfoAdaptor.html#a2564851b48864a88a1052a87e665f414">fetch_databases</a>($info);
 <a name="l00031"></a>00031 
 <a name="l00032"></a>00032 =head1 DESCRIPTION
 <a name="l00033"></a>00033 
@@ -161,298 +161,304 @@ function toggleVisibility(linkObj) {
 <a name="l00035"></a>00035 
 <a name="l00036"></a>00036 Uses delegate pattern to handle objects differently according to their subject objects.
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038 =head1 Author
+<a name="l00038"></a>00038 =head1 AUTHOR
 <a name="l00039"></a>00039 
 <a name="l00040"></a>00040 Dan Staines
 <a name="l00041"></a>00041 
-<a name="l00042"></a>00042 =cut
+<a name="l00042"></a>00042 =head1 SEE ALSO
 <a name="l00043"></a>00043 
-<a name="l00044"></a>00044 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor;
-<a name="l00045"></a>00045 
-<a name="l00046"></a>00046 use strict;
-<a name="l00047"></a>00047 use warnings;
-<a name="l00048"></a>00048 
-<a name="l00049"></a>00049 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 use Carp qw(cluck croak);
-<a name="l00052"></a>00052 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-<a name="l00053"></a>00053 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>;
-<a name="l00054"></a>00054 use List::MoreUtils qw(natatime);
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056 =head1 METHODS
-<a name="l00057"></a>00057 =head2 store
-<a name="l00058"></a>00058   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
-<a name="l00059"></a>00059   Description: Store the supplied <span class="keywordtype">object</span>
-<a name="l00060"></a>00060   Returntype : none
-<a name="l00061"></a>00061   Exceptions : none
-<a name="l00062"></a>00062   Caller     : general
-<a name="l00063"></a>00063   Status     : Stable
-<a name="l00064"></a>00064 =cut
-<a name="l00065"></a>00065 
-<a name="l00066"></a>00066 sub store {
-<a name="l00067"></a>00067   my ( $self, $database ) = @_;
-<a name="l00068"></a>00068 <span class="preprocessor">  # delegate to appropriate method for the subject</span>
-<a name="l00069"></a>00069 <span class="preprocessor"></span>  my $ref = ref( $database-&gt;subject() );
-<a name="l00070"></a>00070   $ref =~ s/.*:([^:]+)$/store_$1/;
-<a name="l00071"></a>00071   $self-&gt;$ref($database);
-<a name="l00072"></a>00072   <span class="keywordflow">return</span>;
-<a name="l00073"></a>00073 }
-<a name="l00074"></a>00074 
-<a name="l00075"></a>00075 =head2 update
-<a name="l00076"></a>00076   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
-<a name="l00077"></a>00077   Description: Update the supplied object (must be previously stored)
-<a name="l00078"></a>00078   Returntype : none
-<a name="l00079"></a>00079   Exceptions : none
-<a name="l00080"></a>00080   Caller     : general
-<a name="l00081"></a>00081   Status     : Stable
-<a name="l00082"></a>00082 =cut
-<a name="l00083"></a>00083 
-<a name="l00084"></a>00084 sub update {
-<a name="l00085"></a>00085   my ( $self, $database ) = @_;
-<a name="l00086"></a>00086 <span class="preprocessor">  # delegate to appropriate method for the subject</span>
-<a name="l00087"></a>00087 <span class="preprocessor"></span>  my $ref = ref( $database-&gt;subject() );
-<a name="l00088"></a>00088   $ref =~ s/.*:([^:]+)$/update_$1/;
-<a name="l00089"></a>00089   $self-&gt;$ref($database);
-<a name="l00090"></a>00090   <span class="keywordflow">return</span>;
-<a name="l00091"></a>00091 }
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 =head2 fetch_databases
-<a name="l00094"></a>00094   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> 
-<a name="l00095"></a>00095                or <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00096"></a>00096   Arg        : String - Optional division
-<a name="l00097"></a>00097   Description: Find the databases associated with the supplied <span class="keywordtype">object</span>
-<a name="l00098"></a>00098   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> 
-<a name="l00099"></a>00099   Exceptions : none
-<a name="l00100"></a>00100   Caller     : general
-<a name="l00101"></a>00101   Status     : Stable
-<a name="l00102"></a>00102 =cut
-<a name="l00103"></a>00103 sub fetch_databases {
-<a name="l00104"></a>00104   my ( $self, $subject, $division ) = @_;
-<a name="l00105"></a>00105 <span class="preprocessor">  # delegate to appropriate method for the subject</span>
-<a name="l00106"></a>00106 <span class="preprocessor"></span>  my $ref = ref($subject);
-<a name="l00107"></a>00107   $ref =~ s/.*:([^:]+)$/fetch_databases_$1/;
-<a name="l00108"></a>00108   <span class="keywordflow">return</span> $self-&gt;$ref($subject);
-<a name="l00109"></a>00109 }
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111 =head1 INTERNAL METHODS
-<a name="l00112"></a>00112 =head2 store_DataReleaseInfo
-<a name="l00113"></a>00113   Description: Implementation of store <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> 
-<a name="l00114"></a>00114   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
-<a name="l00115"></a>00115   Returntype : none
-<a name="l00116"></a>00116   Exceptions : none
-<a name="l00117"></a>00117   Caller     : general
-<a name="l00118"></a>00118   Status     : Stable
-<a name="l00119"></a>00119 =cut
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121 sub store_DataReleaseInfo {
-<a name="l00122"></a>00122   my ( $self, $data_release_database ) = @_;
-<a name="l00123"></a>00123   <span class="keywordflow">if</span> ( !defined $data_release_database-&gt;dbID() ) {
-<a name="l00124"></a>00124     my ($dbID) = @{
-<a name="l00125"></a>00125       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00126"></a>00126         -SQL =&gt; q/select data_release_database_id from data_release_database 
-<a name="l00127"></a>00127 where dbname=? and data_release_id=?/,
-<a name="l00128"></a>00128         -PARAMS =&gt; [ $data_release_database-&gt;dbname(),
-<a name="l00129"></a>00129                      $data_release_database-&gt;subject()-&gt;dbID() ] ) };
-<a name="l00130"></a>00130 
-<a name="l00131"></a>00131     <span class="keywordflow">if</span> ( defined $dbID ) {
-<a name="l00132"></a>00132       $data_release_database-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
-<a name="l00133"></a>00133       $data_release_database-&gt;adaptor($self);
-<a name="l00134"></a>00134     }
-<a name="l00135"></a>00135     <span class="keywordflow">if</span> ( defined $data_release_database-&gt;dbID() ) {
-<a name="l00136"></a>00136       $self-&gt;update($data_release_database);
-<a name="l00137"></a>00137     }
-<a name="l00138"></a>00138     <span class="keywordflow">else</span> {
-<a name="l00139"></a>00139       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00140"></a>00140         -SQL =&gt;
-<a name="l00141"></a>00141 q/insert into data_release_database(data_release_id,type,division_id,dbname) 
-<a name="l00142"></a>00142 values (?,?,?,?)/,
-<a name="l00143"></a>00143         -PARAMS =&gt; [ $data_release_database-&gt;subject()-&gt;dbID(),
-<a name="l00144"></a>00144                      $data_release_database-&gt;type(),
-<a name="l00145"></a>00145                      $self-&gt;_get_division_id( $data_release_database-&gt;division()
-<a name="l00146"></a>00146                      ),
-<a name="l00147"></a>00147                      $data_release_database-&gt;dbname() ],
-<a name="l00148"></a>00148         -CALLBACK =&gt; sub {
-<a name="l00149"></a>00149           my ( $sth, $dbh, $rv ) = @_;
-<a name="l00150"></a>00150           $data_release_database-&gt;dbID( $dbh-&gt;{mysql_insertid} );
-<a name="l00151"></a>00151         } );
-<a name="l00152"></a>00152       $data_release_database-&gt;adaptor($self);
-<a name="l00153"></a>00153       $self-&gt;_store_cached_obj($data_release_database);
-<a name="l00154"></a>00154     }
-<a name="l00155"></a>00155   } ## end <span class="keywordflow">if</span> ( !defined $data_release_database...)
-<a name="l00156"></a>00156   <span class="keywordflow">return</span>;
-<a name="l00157"></a>00157 } ## end sub store_DataReleaseInfo
-<a name="l00158"></a>00158 
-<a name="l00159"></a>00159 =head2 update_DataReleaseInfo
-<a name="l00160"></a>00160   Description: Implementation of update <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
-<a name="l00161"></a>00161   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
-<a name="l00162"></a>00162   Returntype : none
-<a name="l00163"></a>00163   Exceptions : none
-<a name="l00164"></a>00164   Caller     : general
-<a name="l00165"></a>00165   Status     : Stabl
-<a name="l00166"></a>00166 =cut
-<a name="l00167"></a>00167 
-<a name="l00168"></a>00168 sub update_DataReleaseInfo {
-<a name="l00169"></a>00169   my ( $self, $database ) = @_;
-<a name="l00170"></a>00170   <span class="keywordflow">if</span> ( !defined $database-&gt;dbID() ) {
-<a name="l00171"></a>00171     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
-<a name="l00172"></a>00172   }
+<a name="l00044"></a>00044 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00045"></a>00045 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00046"></a>00046 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048 =cut
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::DatabaseInfoAdaptor;
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 use strict;
+<a name="l00053"></a>00053 use warnings;
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 use Carp qw(cluck croak);
+<a name="l00058"></a>00058 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+<a name="l00059"></a>00059 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>;
+<a name="l00060"></a>00060 use List::MoreUtils qw(natatime);
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062 =head1 METHODS
+<a name="l00063"></a>00063 =head2 store
+<a name="l00064"></a>00064   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00065"></a>00065   Description: Store the supplied <span class="keywordtype">object</span>
+<a name="l00066"></a>00066   Returntype : none
+<a name="l00067"></a>00067   Exceptions : none
+<a name="l00068"></a>00068   Caller     : general
+<a name="l00069"></a>00069   Status     : Stable
+<a name="l00070"></a>00070 =cut
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 sub store {
+<a name="l00073"></a>00073   my ( $self, $database ) = @_;
+<a name="l00074"></a>00074 <span class="preprocessor">  # delegate to appropriate method for the subject</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span>  my $ref = ref( $database-&gt;subject() );
+<a name="l00076"></a>00076   $ref =~ s/.*:([^:]+)$/store_$1/;
+<a name="l00077"></a>00077   $self-&gt;$ref($database);
+<a name="l00078"></a>00078   <span class="keywordflow">return</span>;
+<a name="l00079"></a>00079 }
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081 =head2 update
+<a name="l00082"></a>00082   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00083"></a>00083   Description: Update the supplied object (must be previously stored)
+<a name="l00084"></a>00084   Returntype : none
+<a name="l00085"></a>00085   Exceptions : none
+<a name="l00086"></a>00086   Caller     : general
+<a name="l00087"></a>00087   Status     : Stable
+<a name="l00088"></a>00088 =cut
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090 sub update {
+<a name="l00091"></a>00091   my ( $self, $database ) = @_;
+<a name="l00092"></a>00092 <span class="preprocessor">  # delegate to appropriate method for the subject</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span>  my $ref = ref( $database-&gt;subject() );
+<a name="l00094"></a>00094   $ref =~ s/.*:([^:]+)$/update_$1/;
+<a name="l00095"></a>00095   $self-&gt;$ref($database);
+<a name="l00096"></a>00096   <span class="keywordflow">return</span>;
+<a name="l00097"></a>00097 }
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099 =head2 fetch_databases
+<a name="l00100"></a>00100   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> 
+<a name="l00101"></a>00101                or Bio::EnsEMBL::MetaData::GenomeInfo
+<a name="l00102"></a>00102   Arg        : String - Optional division
+<a name="l00103"></a>00103   Description: Find the databases associated with the supplied <span class="keywordtype">object</span>
+<a name="l00104"></a>00104   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> 
+<a name="l00105"></a>00105   Exceptions : none
+<a name="l00106"></a>00106   Caller     : general
+<a name="l00107"></a>00107   Status     : Stable
+<a name="l00108"></a>00108 =cut
+<a name="l00109"></a>00109 sub fetch_databases {
+<a name="l00110"></a>00110   my ( $self, $subject, $division ) = @_;
+<a name="l00111"></a>00111 <span class="preprocessor">  # delegate to appropriate method for the subject</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span>  my $ref = ref($subject);
+<a name="l00113"></a>00113   $ref =~ s/.*:([^:]+)$/fetch_databases_$1/;
+<a name="l00114"></a>00114   <span class="keywordflow">return</span> $self-&gt;$ref($subject);
+<a name="l00115"></a>00115 }
+<a name="l00116"></a>00116 
+<a name="l00117"></a>00117 =head1 INTERNAL METHODS
+<a name="l00118"></a>00118 =head2 store_DataReleaseInfo
+<a name="l00119"></a>00119   Description: Implementation of store <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> 
+<a name="l00120"></a>00120   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00121"></a>00121   Returntype : none
+<a name="l00122"></a>00122   Exceptions : none
+<a name="l00123"></a>00123   Caller     : general
+<a name="l00124"></a>00124   Status     : Stable
+<a name="l00125"></a>00125 =cut
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127 sub store_DataReleaseInfo {
+<a name="l00128"></a>00128   my ( $self, $data_release_database ) = @_;
+<a name="l00129"></a>00129   <span class="keywordflow">if</span> ( !defined $data_release_database-&gt;dbID() ) {
+<a name="l00130"></a>00130     my ($dbID) = @{
+<a name="l00131"></a>00131       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00132"></a>00132         -SQL =&gt; q/select data_release_database_id from data_release_database 
+<a name="l00133"></a>00133 where dbname=? and data_release_id=?/,
+<a name="l00134"></a>00134         -PARAMS =&gt; [ $data_release_database-&gt;dbname(),
+<a name="l00135"></a>00135                      $data_release_database-&gt;subject()-&gt;dbID() ] ) };
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137     <span class="keywordflow">if</span> ( defined $dbID ) {
+<a name="l00138"></a>00138       $data_release_database-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
+<a name="l00139"></a>00139       $data_release_database-&gt;adaptor($self);
+<a name="l00140"></a>00140     }
+<a name="l00141"></a>00141     <span class="keywordflow">if</span> ( defined $data_release_database-&gt;dbID() ) {
+<a name="l00142"></a>00142       $self-&gt;update($data_release_database);
+<a name="l00143"></a>00143     }
+<a name="l00144"></a>00144     <span class="keywordflow">else</span> {
+<a name="l00145"></a>00145       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00146"></a>00146         -SQL =&gt;
+<a name="l00147"></a>00147 q/insert into data_release_database(data_release_id,type,division_id,dbname) 
+<a name="l00148"></a>00148 values (?,?,?,?)/,
+<a name="l00149"></a>00149         -PARAMS =&gt; [ $data_release_database-&gt;subject()-&gt;dbID(),
+<a name="l00150"></a>00150                      $data_release_database-&gt;type(),
+<a name="l00151"></a>00151                      $self-&gt;_get_division_id( $data_release_database-&gt;division()
+<a name="l00152"></a>00152                      ),
+<a name="l00153"></a>00153                      $data_release_database-&gt;dbname() ],
+<a name="l00154"></a>00154         -CALLBACK =&gt; sub {
+<a name="l00155"></a>00155           my ( $sth, $dbh, $rv ) = @_;
+<a name="l00156"></a>00156           $data_release_database-&gt;dbID( $dbh-&gt;{mysql_insertid} );
+<a name="l00157"></a>00157         } );
+<a name="l00158"></a>00158       $data_release_database-&gt;adaptor($self);
+<a name="l00159"></a>00159       $self-&gt;_store_cached_obj($data_release_database);
+<a name="l00160"></a>00160     }
+<a name="l00161"></a>00161   } ## end <span class="keywordflow">if</span> ( !defined $data_release_database...)
+<a name="l00162"></a>00162   <span class="keywordflow">return</span>;
+<a name="l00163"></a>00163 } ## end sub store_DataReleaseInfo
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165 =head2 update_DataReleaseInfo
+<a name="l00166"></a>00166   Description: Implementation of update <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00167"></a>00167   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00168"></a>00168   Returntype : none
+<a name="l00169"></a>00169   Exceptions : none
+<a name="l00170"></a>00170   Caller     : general
+<a name="l00171"></a>00171   Status     : Stabl
+<a name="l00172"></a>00172 =cut
 <a name="l00173"></a>00173 
-<a name="l00174"></a>00174   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00175"></a>00175     -SQL =&gt;
-<a name="l00176"></a>00176 q/update data_release_database <span class="keyword">set</span> data_release_id=?, type=?, division_id=?, dbname=? 
-<a name="l00177"></a>00177 where data_release_database_id=?/,
-<a name="l00178"></a>00178     -PARAMS =&gt; [ $database-&gt;subject()-&gt;dbID(),
-<a name="l00179"></a>00179                  $database-&gt;type(),
-<a name="l00180"></a>00180                  $self-&gt;_get_division_id( $database-&gt;division() ),
-<a name="l00181"></a>00181                  $database-&gt;dbname() ] );
-<a name="l00182"></a>00182   <span class="keywordflow">return</span>;
-<a name="l00183"></a>00183 }
-<a name="l00184"></a>00184 
-<a name="l00185"></a>00185 =head2 store_GenomeInfo
-<a name="l00186"></a>00186   Description: Implementation of store <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00187"></a>00187   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
-<a name="l00188"></a>00188   Returntype : none
-<a name="l00189"></a>00189   Exceptions : none
-<a name="l00190"></a>00190   Caller     : general
-<a name="l00191"></a>00191   Status     : Stable
-<a name="l00192"></a>00192 =cut
-<a name="l00193"></a>00193 
-<a name="l00194"></a>00194 sub store_GenomeInfo {
-<a name="l00195"></a>00195   my ( $self, $genome_database ) = @_;
-<a name="l00196"></a>00196   <span class="keywordflow">if</span> ( !defined $genome_database-&gt;dbID() ) {
-<a name="l00197"></a>00197     my ($dbID) = @{
-<a name="l00198"></a>00198       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00199"></a>00199         -SQL =&gt; q/select genome_database_id from genome_database 
-<a name="l00200"></a>00200 where dbname=? and genome_id=?/,
-<a name="l00201"></a>00201         -PARAMS =&gt;
-<a name="l00202"></a>00202           [ $genome_database-&gt;dbname(), $genome_database-&gt;subject()-&gt;dbID() ] )
-<a name="l00203"></a>00203     };
-<a name="l00204"></a>00204 
-<a name="l00205"></a>00205     <span class="keywordflow">if</span> ( defined $dbID ) {
-<a name="l00206"></a>00206       $genome_database-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
-<a name="l00207"></a>00207       $genome_database-&gt;adaptor($self);
-<a name="l00208"></a>00208     }
-<a name="l00209"></a>00209     <span class="keywordflow">if</span> ( defined $genome_database-&gt;dbID() ) {
-<a name="l00210"></a>00210       $self-&gt;update($genome_database);
-<a name="l00211"></a>00211     }
-<a name="l00212"></a>00212     <span class="keywordflow">else</span> {
-<a name="l00213"></a>00213       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00214"></a>00214         -SQL =&gt; q/insert into genome_database(genome_id,type,species_id,dbname) 
-<a name="l00215"></a>00215 values (?,?,?,?)/,
-<a name="l00216"></a>00216         -PARAMS =&gt; [ $genome_database-&gt;subject()-&gt;dbID(),
-<a name="l00217"></a>00217                      $genome_database-&gt;type(),
-<a name="l00218"></a>00218                      ( $genome_database-&gt;species_id() || 1 ),
-<a name="l00219"></a>00219                      $genome_database-&gt;dbname() ],
-<a name="l00220"></a>00220         -CALLBACK =&gt; sub {
-<a name="l00221"></a>00221           my ( $sth, $dbh, $rv ) = @_;
-<a name="l00222"></a>00222           $genome_database-&gt;dbID( $dbh-&gt;{mysql_insertid} );
-<a name="l00223"></a>00223         } );
-<a name="l00224"></a>00224       $genome_database-&gt;adaptor($self);
-<a name="l00225"></a>00225       $self-&gt;_store_cached_obj($genome_database);
-<a name="l00226"></a>00226     }
-<a name="l00227"></a>00227   } ## end <span class="keywordflow">if</span> ( !defined $genome_database...)
-<a name="l00228"></a>00228   <span class="keywordflow">return</span>;
-<a name="l00229"></a>00229 } ## end sub store_GenomeInfo
-<a name="l00230"></a>00230 
-<a name="l00231"></a>00231 =head2 update_GenomeInfo
-<a name="l00232"></a>00232   Description: Implementation of update <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00233"></a>00233   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
-<a name="l00234"></a>00234   Returntype : none
-<a name="l00235"></a>00235   Exceptions : none
-<a name="l00236"></a>00236   Caller     : general
-<a name="l00237"></a>00237   Status     : Stabl
-<a name="l00238"></a>00238 =cut
-<a name="l00239"></a>00239 
-<a name="l00240"></a>00240 sub update_GenomeInfo {
-<a name="l00241"></a>00241   my ( $self, $database ) = @_;
-<a name="l00242"></a>00242   <span class="keywordflow">if</span> ( !defined $database-&gt;dbID() ) {
-<a name="l00243"></a>00243     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
-<a name="l00244"></a>00244   }
+<a name="l00174"></a>00174 sub update_DataReleaseInfo {
+<a name="l00175"></a>00175   my ( $self, $database ) = @_;
+<a name="l00176"></a>00176   <span class="keywordflow">if</span> ( !defined $database-&gt;dbID() ) {
+<a name="l00177"></a>00177     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
+<a name="l00178"></a>00178   }
+<a name="l00179"></a>00179 
+<a name="l00180"></a>00180   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00181"></a>00181     -SQL =&gt;
+<a name="l00182"></a>00182 q/update data_release_database <span class="keyword">set</span> data_release_id=?, type=?, division_id=?, dbname=? 
+<a name="l00183"></a>00183 where data_release_database_id=?/,
+<a name="l00184"></a>00184     -PARAMS =&gt; [ $database-&gt;subject()-&gt;dbID(),
+<a name="l00185"></a>00185                  $database-&gt;type(),
+<a name="l00186"></a>00186                  $self-&gt;_get_division_id( $database-&gt;division() ),
+<a name="l00187"></a>00187                  $database-&gt;dbname() ] );
+<a name="l00188"></a>00188   <span class="keywordflow">return</span>;
+<a name="l00189"></a>00189 }
+<a name="l00190"></a>00190 
+<a name="l00191"></a>00191 =head2 store_GenomeInfo
+<a name="l00192"></a>00192   Description: Implementation of store <span class="keywordflow">for</span> Bio::EnsEMBL::MetaData::GenomeInfo
+<a name="l00193"></a>00193   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00194"></a>00194   Returntype : none
+<a name="l00195"></a>00195   Exceptions : none
+<a name="l00196"></a>00196   Caller     : general
+<a name="l00197"></a>00197   Status     : Stable
+<a name="l00198"></a>00198 =cut
+<a name="l00199"></a>00199 
+<a name="l00200"></a>00200 sub store_GenomeInfo {
+<a name="l00201"></a>00201   my ( $self, $genome_database ) = @_;
+<a name="l00202"></a>00202   <span class="keywordflow">if</span> ( !defined $genome_database-&gt;dbID() ) {
+<a name="l00203"></a>00203     my ($dbID) = @{
+<a name="l00204"></a>00204       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00205"></a>00205         -SQL =&gt; q/select genome_database_id from genome_database 
+<a name="l00206"></a>00206 where dbname=? and genome_id=?/,
+<a name="l00207"></a>00207         -PARAMS =&gt;
+<a name="l00208"></a>00208           [ $genome_database-&gt;dbname(), $genome_database-&gt;subject()-&gt;dbID() ] )
+<a name="l00209"></a>00209     };
+<a name="l00210"></a>00210 
+<a name="l00211"></a>00211     <span class="keywordflow">if</span> ( defined $dbID ) {
+<a name="l00212"></a>00212       $genome_database-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
+<a name="l00213"></a>00213       $genome_database-&gt;adaptor($self);
+<a name="l00214"></a>00214     }
+<a name="l00215"></a>00215     <span class="keywordflow">if</span> ( defined $genome_database-&gt;dbID() ) {
+<a name="l00216"></a>00216       $self-&gt;update($genome_database);
+<a name="l00217"></a>00217     }
+<a name="l00218"></a>00218     <span class="keywordflow">else</span> {
+<a name="l00219"></a>00219       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00220"></a>00220         -SQL =&gt; q/insert into genome_database(genome_id,type,species_id,dbname) 
+<a name="l00221"></a>00221 values (?,?,?,?)/,
+<a name="l00222"></a>00222         -PARAMS =&gt; [ $genome_database-&gt;subject()-&gt;dbID(),
+<a name="l00223"></a>00223                      $genome_database-&gt;type(),
+<a name="l00224"></a>00224                      ( $genome_database-&gt;species_id() || 1 ),
+<a name="l00225"></a>00225                      $genome_database-&gt;dbname() ],
+<a name="l00226"></a>00226         -CALLBACK =&gt; sub {
+<a name="l00227"></a>00227           my ( $sth, $dbh, $rv ) = @_;
+<a name="l00228"></a>00228           $genome_database-&gt;dbID( $dbh-&gt;{mysql_insertid} );
+<a name="l00229"></a>00229         } );
+<a name="l00230"></a>00230       $genome_database-&gt;adaptor($self);
+<a name="l00231"></a>00231       $self-&gt;_store_cached_obj($genome_database);
+<a name="l00232"></a>00232     }
+<a name="l00233"></a>00233   } ## end <span class="keywordflow">if</span> ( !defined $genome_database...)
+<a name="l00234"></a>00234   <span class="keywordflow">return</span>;
+<a name="l00235"></a>00235 } ## end sub store_GenomeInfo
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237 =head2 update_GenomeInfo
+<a name="l00238"></a>00238   Description: Implementation of update <span class="keywordflow">for</span> Bio::EnsEMBL::MetaData::GenomeInfo
+<a name="l00239"></a>00239   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>
+<a name="l00240"></a>00240   Returntype : none
+<a name="l00241"></a>00241   Exceptions : none
+<a name="l00242"></a>00242   Caller     : general
+<a name="l00243"></a>00243   Status     : Stabl
+<a name="l00244"></a>00244 =cut
 <a name="l00245"></a>00245 
-<a name="l00246"></a>00246   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00247"></a>00247     -SQL =&gt;
-<a name="l00248"></a>00248       q/update genome_database <span class="keyword">set</span> genome_id=?, type=?, species_id=?, dbname=? 
-<a name="l00249"></a>00249 where genome_database_id=?/,
-<a name="l00250"></a>00250     -PARAMS =&gt; [ $database-&gt;subject()-&gt;dbID(), $database-&gt;type(),
-<a name="l00251"></a>00251                  ( $database-&gt;species_id() || 1 ), $database-&gt;dbname() ] );
-<a name="l00252"></a>00252   <span class="keywordflow">return</span>;
-<a name="l00253"></a>00253 }
-<a name="l00254"></a>00254 
-<a name="l00255"></a>00255 =head2 fetch_databases_DataReleaseInfo
-<a name="l00256"></a>00256   Description: Implementation of fetch_databases <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
-<a name="l00257"></a>00257   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> 
-<a name="l00258"></a>00258   Description: Find the databases associated with the supplied <span class="keywordtype">object</span>
-<a name="l00259"></a>00259   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> 
-<a name="l00260"></a>00260   Exceptions : none
-<a name="l00261"></a>00261   Caller     : general
-<a name="l00262"></a>00262   Status     : Stable
-<a name="l00263"></a>00263 =cut
-<a name="l00264"></a>00264 
-<a name="l00265"></a>00265 sub fetch_databases_DataReleaseInfo {
-<a name="l00266"></a>00266   my ( $self, $release, $division ) = @_;
-<a name="l00267"></a>00267   my $sql = q/select dbname,type,d.name from data_release_database 
-<a name="l00268"></a>00268 join division d <span class="keyword">using</span> (division_id) where data_release_id=?/;
-<a name="l00269"></a>00269   my $params = [ $release-&gt;dbID() ];
-<a name="l00270"></a>00270   <span class="keywordflow">if</span> ( defined $division ) {
-<a name="l00271"></a>00271     $sql .= <span class="stringliteral">&#39; and (d.name=? or d.short_name=?)&#39;</span>;
-<a name="l00272"></a>00272     $params = [ @$params, $division, $division ];
-<a name="l00273"></a>00273   }
-<a name="l00274"></a>00274 
-<a name="l00275"></a>00275   my $databases = [];
-<a name="l00276"></a>00276 
-<a name="l00277"></a>00277   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
-<a name="l00278"></a>00278     -SQL      =&gt; $sql,
-<a name="l00279"></a>00279     -CALLBACK =&gt; sub {
-<a name="l00280"></a>00280       my @row = @{ shift @_ };
-<a name="l00281"></a>00281       push @{$databases},
-<a name="l00282"></a>00282         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>( -SUBJECT  =&gt; $release,
-<a name="l00283"></a>00283                                                    -DBNAME   =&gt; $row[0],
-<a name="l00284"></a>00284                                                    -TYPE     =&gt; $row[1],
-<a name="l00285"></a>00285                                                    -DIVISION =&gt; $row[2] );
-<a name="l00286"></a>00286       <span class="keywordflow">return</span>;
-<a name="l00287"></a>00287     },
-<a name="l00288"></a>00288     -PARAMS =&gt; $params );
-<a name="l00289"></a>00289 
-<a name="l00290"></a>00290   <span class="keywordflow">return</span> $databases;
-<a name="l00291"></a>00291 } ## end sub fetch_databases_DataReleaseInfo
-<a name="l00292"></a>00292 
-<a name="l00293"></a>00293 =head2 fetch_databases_GenomeInfo
-<a name="l00294"></a>00294   Description: Implementation of fetch_databases <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00295"></a>00295   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00296"></a>00296   Arg        : String - Optional division
-<a name="l00297"></a>00297   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> 
-<a name="l00298"></a>00298   Exceptions : none
-<a name="l00299"></a>00299   Caller     : general
-<a name="l00300"></a>00300   Status     : Stable
-<a name="l00301"></a>00301 =cut
-<a name="l00302"></a>00302 
-<a name="l00303"></a>00303 sub fetch_databases_GenomeInfo {
-<a name="l00304"></a>00304 
-<a name="l00305"></a>00305   my ( $self, $genome ) = @_;
-<a name="l00306"></a>00306   my $sql =
-<a name="l00307"></a>00307     q/select genome_database_id, dbname, type, species_id from genome_database 
-<a name="l00308"></a>00308 where genome_id=?/;
-<a name="l00309"></a>00309   my $params    = [ $genome-&gt;dbID() ];
-<a name="l00310"></a>00310   my $databases = [];
-<a name="l00311"></a>00311 
-<a name="l00312"></a>00312   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
-<a name="l00313"></a>00313     -SQL      =&gt; $sql,
-<a name="l00314"></a>00314     -CALLBACK =&gt; sub {
-<a name="l00315"></a>00315       my @row = @{ shift @_ };
-<a name="l00316"></a>00316       push @{$databases},
-<a name="l00317"></a>00317         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>( -SUBJECT    =&gt; $genome,
-<a name="l00318"></a>00318                                                    -DBID       =&gt; $row[0],
-<a name="l00319"></a>00319                                                    -DBNAME     =&gt; $row[1],
-<a name="l00320"></a>00320                                                    -TYPE       =&gt; $row[2],
-<a name="l00321"></a>00321                                                    -SPECIES_ID =&gt; $row[3] );
-<a name="l00322"></a>00322       <span class="keywordflow">return</span>;
-<a name="l00323"></a>00323     },
-<a name="l00324"></a>00324     -PARAMS =&gt; $params );
-<a name="l00325"></a>00325 
-<a name="l00326"></a>00326   <span class="keywordflow">return</span> $databases;
-<a name="l00327"></a>00327 } ## end sub fetch_databases_GenomeInfo
-<a name="l00328"></a>00328 
-<a name="l00329"></a>00329 1;
+<a name="l00246"></a>00246 sub update_GenomeInfo {
+<a name="l00247"></a>00247   my ( $self, $database ) = @_;
+<a name="l00248"></a>00248   <span class="keywordflow">if</span> ( !defined $database-&gt;dbID() ) {
+<a name="l00249"></a>00249     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
+<a name="l00250"></a>00250   }
+<a name="l00251"></a>00251 
+<a name="l00252"></a>00252   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00253"></a>00253     -SQL =&gt;
+<a name="l00254"></a>00254       q/update genome_database <span class="keyword">set</span> genome_id=?, type=?, species_id=?, dbname=? 
+<a name="l00255"></a>00255 where genome_database_id=?/,
+<a name="l00256"></a>00256     -PARAMS =&gt; [ $database-&gt;subject()-&gt;dbID(), $database-&gt;type(),
+<a name="l00257"></a>00257                  ( $database-&gt;species_id() || 1 ), $database-&gt;dbname() ] );
+<a name="l00258"></a>00258   <span class="keywordflow">return</span>;
+<a name="l00259"></a>00259 }
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261 =head2 fetch_databases_DataReleaseInfo
+<a name="l00262"></a>00262   Description: Implementation of fetch_databases <span class="keywordflow">for</span> <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a>
+<a name="l00263"></a>00263   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DataReleaseInfo.html">Bio::EnsEMBL::MetaData::DataReleaseInfo</a> 
+<a name="l00264"></a>00264   Description: Find the databases associated with the supplied <span class="keywordtype">object</span>
+<a name="l00265"></a>00265   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> 
+<a name="l00266"></a>00266   Exceptions : none
+<a name="l00267"></a>00267   Caller     : general
+<a name="l00268"></a>00268   Status     : Stable
+<a name="l00269"></a>00269 =cut
+<a name="l00270"></a>00270 
+<a name="l00271"></a>00271 sub fetch_databases_DataReleaseInfo {
+<a name="l00272"></a>00272   my ( $self, $release, $division ) = @_;
+<a name="l00273"></a>00273   my $sql = q/select dbname,type,d.name from data_release_database 
+<a name="l00274"></a>00274 join division d <span class="keyword">using</span> (division_id) where data_release_id=?/;
+<a name="l00275"></a>00275   my $params = [ $release-&gt;dbID() ];
+<a name="l00276"></a>00276   <span class="keywordflow">if</span> ( defined $division ) {
+<a name="l00277"></a>00277     $sql .= <span class="stringliteral">&#39; and (d.name=? or d.short_name=?)&#39;</span>;
+<a name="l00278"></a>00278     $params = [ @$params, $division, $division ];
+<a name="l00279"></a>00279   }
+<a name="l00280"></a>00280 
+<a name="l00281"></a>00281   my $databases = [];
+<a name="l00282"></a>00282 
+<a name="l00283"></a>00283   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
+<a name="l00284"></a>00284     -SQL      =&gt; $sql,
+<a name="l00285"></a>00285     -CALLBACK =&gt; sub {
+<a name="l00286"></a>00286       my @row = @{ shift @_ };
+<a name="l00287"></a>00287       push @{$databases},
+<a name="l00288"></a>00288         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>( -SUBJECT  =&gt; $release,
+<a name="l00289"></a>00289                                                    -DBNAME   =&gt; $row[0],
+<a name="l00290"></a>00290                                                    -TYPE     =&gt; $row[1],
+<a name="l00291"></a>00291                                                    -DIVISION =&gt; $row[2] );
+<a name="l00292"></a>00292       <span class="keywordflow">return</span>;
+<a name="l00293"></a>00293     },
+<a name="l00294"></a>00294     -PARAMS =&gt; $params );
+<a name="l00295"></a>00295 
+<a name="l00296"></a>00296   <span class="keywordflow">return</span> $databases;
+<a name="l00297"></a>00297 } ## end sub fetch_databases_DataReleaseInfo
+<a name="l00298"></a>00298 
+<a name="l00299"></a>00299 =head2 fetch_databases_GenomeInfo
+<a name="l00300"></a>00300   Description: Implementation of fetch_databases <span class="keywordflow">for</span> Bio::EnsEMBL::MetaData::GenomeInfo
+<a name="l00301"></a>00301   Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+<a name="l00302"></a>00302   Arg        : String - Optional division
+<a name="l00303"></a>00303   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> 
+<a name="l00304"></a>00304   Exceptions : none
+<a name="l00305"></a>00305   Caller     : general
+<a name="l00306"></a>00306   Status     : Stable
+<a name="l00307"></a>00307 =cut
+<a name="l00308"></a>00308 
+<a name="l00309"></a>00309 sub fetch_databases_GenomeInfo {
+<a name="l00310"></a>00310 
+<a name="l00311"></a>00311   my ( $self, $genome ) = @_;
+<a name="l00312"></a>00312   my $sql =
+<a name="l00313"></a>00313     q/select genome_database_id, dbname, type, species_id from genome_database 
+<a name="l00314"></a>00314 where genome_id=?/;
+<a name="l00315"></a>00315   my $params    = [ $genome-&gt;dbID() ];
+<a name="l00316"></a>00316   my $databases = [];
+<a name="l00317"></a>00317 
+<a name="l00318"></a>00318   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
+<a name="l00319"></a>00319     -SQL      =&gt; $sql,
+<a name="l00320"></a>00320     -CALLBACK =&gt; sub {
+<a name="l00321"></a>00321       my @row = @{ shift @_ };
+<a name="l00322"></a>00322       push @{$databases},
+<a name="l00323"></a>00323         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html#acfbda123d7a8008ed849f44ad444e9b4">new</a>( -SUBJECT    =&gt; $genome,
+<a name="l00324"></a>00324                                                    -DBID       =&gt; $row[0],
+<a name="l00325"></a>00325                                                    -DBNAME     =&gt; $row[1],
+<a name="l00326"></a>00326                                                    -TYPE       =&gt; $row[2],
+<a name="l00327"></a>00327                                                    -SPECIES_ID =&gt; $row[3] );
+<a name="l00328"></a>00328       <span class="keywordflow">return</span>;
+<a name="l00329"></a>00329     },
+<a name="l00330"></a>00330     -PARAMS =&gt; $params );
+<a name="l00331"></a>00331 
+<a name="l00332"></a>00332   <span class="keywordflow">return</span> $databases;
+<a name="l00333"></a>00333 } ## end sub fetch_databases_GenomeInfo
+<a name="l00334"></a>00334 
+<a name="l00335"></a>00335 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

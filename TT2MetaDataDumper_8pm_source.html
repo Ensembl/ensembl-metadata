@@ -141,10 +141,10 @@ function toggleVisibility(linkObj) {
 <a name="l00015"></a>00015 limitations under the License.
 <a name="l00016"></a>00016 
 <a name="l00017"></a>00017 =head1 CONTACT
-<a name="l00018"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TT2MetaDataDumper.html">00018</a> 
+<a name="l00018"></a>00018 
 <a name="l00019"></a>00019   Please email comments or questions to the <span class="keyword">public</span> Ensembl
 <a name="l00020"></a>00020   developers list at &lt;dev@ensembl.org&gt;.
-<a name="l00021"></a>00021 
+<a name="l00021"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper_1_1TT2MetaDataDumper.html">00021</a> 
 <a name="l00022"></a>00022   Questions may also be sent to the Ensembl help desk at
 <a name="l00023"></a>00023   &lt;helpdesk@ensembl.org&gt;.
 <a name="l00024"></a>00024 
@@ -159,178 +159,181 @@ function toggleVisibility(linkObj) {
 <a name="l00033"></a>00033 Implementation to dump metadata details to a TemplateToolKit file.
 <a name="l00034"></a>00034 See <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">Bio::EnsEMBL::MetaData::MetaDataDumper</a> <span class="keywordflow">for</span> method details.
 <a name="l00035"></a>00035 
-<a name="l00036"></a>00036 =head1 AUTHOR
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 Dan Staines
-<a name="l00039"></a>00039 
-<a name="l00040"></a>00040 =cut
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper;
-<a name="l00043"></a>00043 use base qw( <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">Bio::EnsEMBL::MetaData::MetaDataDumper</a> );
-<a name="l00044"></a>00044 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00045"></a>00045 use Carp;
-<a name="l00046"></a>00046 use XML::Simple;
-<a name="l00047"></a>00047 use strict;
-<a name="l00048"></a>00048 use warnings;
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 sub <span class="keyword">new</span> {
-<a name="l00051"></a>00051   my ($proto, @args) = @_;
-<a name="l00052"></a>00052   my $self = $proto-&gt;SUPER::new(@args);
-<a name="l00053"></a>00053   $self-&gt;{file}     ||= <span class="stringliteral">&#39;species.tt2&#39;</span>;
-<a name="l00054"></a>00054   $self-&gt;{division} ||= <span class="stringliteral">&#39;Ensembl&#39;</span>;
-<a name="l00055"></a>00055   $self-&gt;{div_links} = {
-<a name="l00056"></a>00056                       EnsemblBacteria =&gt; <span class="stringliteral">&quot;http://bacteria.ensembl.org/&quot;</span>,
-<a name="l00057"></a>00057                       EnsemblFungi    =&gt; <span class="stringliteral">&quot;http://fungi.ensembl.org/&quot;</span>,
-<a name="l00058"></a>00058                       EnsemblMetazoa  =&gt; <span class="stringliteral">&quot;http://metazoa.ensembl.org/&quot;</span>,
-<a name="l00059"></a>00059                       EnsemblProtists =&gt; <span class="stringliteral">&quot;http://protists.ensembl.org/&quot;</span>,
-<a name="l00060"></a>00060                       EnsemblPlants   =&gt; <span class="stringliteral">&quot;http://plants.ensembl.org/&quot;</span>,
-<a name="l00061"></a>00061                       Ensembl         =&gt; <span class="stringliteral">&quot;http://www.ensembl.org/&quot;</span>,};
-<a name="l00062"></a>00062   $self-&gt;{div_names} = {EnsemblBacteria =&gt; <span class="stringliteral">&quot;Bacteria&quot;</span>,
-<a name="l00063"></a>00063                         EnsemblFungi    =&gt; <span class="stringliteral">&quot;Fungi&quot;</span>,
-<a name="l00064"></a>00064                         EnsemblMetazoa  =&gt; <span class="stringliteral">&quot;Metazoa&quot;</span>,
-<a name="l00065"></a>00065                         EnsemblProtists =&gt; <span class="stringliteral">&quot;Protists&quot;</span>,
-<a name="l00066"></a>00066                         EnsemblPlants   =&gt; <span class="stringliteral">&quot;Plants&quot;</span>,
-<a name="l00067"></a>00067                         Ensembl         =&gt; <span class="stringliteral">&quot;Ensembl&quot;</span>,};
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069   <span class="keywordflow">return</span> $self;
-<a name="l00070"></a>00070 }
+<a name="l00036"></a>00036 =head1 SEE ALSO
+<a name="l00037"></a>00037 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">Bio::EnsEMBL::MetaData::MetaDataDumper</a>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 =head1 AUTHOR
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 Dan Staines
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 =cut
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::MetaDataDumper::TT2MetaDataDumper;
+<a name="l00046"></a>00046 use base qw( <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataDumper.html">Bio::EnsEMBL::MetaData::MetaDataDumper</a> );
+<a name="l00047"></a>00047 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00048"></a>00048 use Carp;
+<a name="l00049"></a>00049 use XML::Simple;
+<a name="l00050"></a>00050 use strict;
+<a name="l00051"></a>00051 use warnings;
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 sub <span class="keyword">new</span> {
+<a name="l00054"></a>00054   my ($proto, @args) = @_;
+<a name="l00055"></a>00055   my $self = $proto-&gt;SUPER::new(@args);
+<a name="l00056"></a>00056   $self-&gt;{file}     ||= <span class="stringliteral">&#39;species.tt2&#39;</span>;
+<a name="l00057"></a>00057   $self-&gt;{division} ||= <span class="stringliteral">&#39;Ensembl&#39;</span>;
+<a name="l00058"></a>00058   $self-&gt;{div_links} = {
+<a name="l00059"></a>00059                       EnsemblBacteria =&gt; <span class="stringliteral">&quot;http://bacteria.ensembl.org/&quot;</span>,
+<a name="l00060"></a>00060                       EnsemblFungi    =&gt; <span class="stringliteral">&quot;http://fungi.ensembl.org/&quot;</span>,
+<a name="l00061"></a>00061                       EnsemblMetazoa  =&gt; <span class="stringliteral">&quot;http://metazoa.ensembl.org/&quot;</span>,
+<a name="l00062"></a>00062                       EnsemblProtists =&gt; <span class="stringliteral">&quot;http://protists.ensembl.org/&quot;</span>,
+<a name="l00063"></a>00063                       EnsemblPlants   =&gt; <span class="stringliteral">&quot;http://plants.ensembl.org/&quot;</span>,
+<a name="l00064"></a>00064                       Ensembl         =&gt; <span class="stringliteral">&quot;http://www.ensembl.org/&quot;</span>,};
+<a name="l00065"></a>00065   $self-&gt;{div_names} = {EnsemblBacteria =&gt; <span class="stringliteral">&quot;Bacteria&quot;</span>,
+<a name="l00066"></a>00066                         EnsemblFungi    =&gt; <span class="stringliteral">&quot;Fungi&quot;</span>,
+<a name="l00067"></a>00067                         EnsemblMetazoa  =&gt; <span class="stringliteral">&quot;Metazoa&quot;</span>,
+<a name="l00068"></a>00068                         EnsemblProtists =&gt; <span class="stringliteral">&quot;Protists&quot;</span>,
+<a name="l00069"></a>00069                         EnsemblPlants   =&gt; <span class="stringliteral">&quot;Plants&quot;</span>,
+<a name="l00070"></a>00070                         Ensembl         =&gt; <span class="stringliteral">&quot;Ensembl&quot;</span>,};
 <a name="l00071"></a>00071 
-<a name="l00072"></a>00072 sub do_dump {
-<a name="l00073"></a>00073   my ($self, $metadata, $outfile) = @_;
-<a name="l00074"></a>00074   my $eg_version = $metadata-&gt;{genome}-&gt;[0]-&gt;{dbname};
-<a name="l00075"></a>00075   $eg_version =~ s/[a-z]+_([0-9]+)_[0-9]+_[0-9]+/$1/;
-<a name="l00076"></a>00076   my $td  = &#39;&lt;td&gt;&#39;;
-<a name="l00077"></a>00077   my $tdx = &#39;&lt;/td&gt;&#39;;
-<a name="l00078"></a>00078   my $tr  = &#39;&lt;tr&gt;&#39;;
-<a name="l00079"></a>00079   my $trx = &#39;&lt;/tr&gt;&#39;;
-<a name="l00080"></a>00080   open(my $tt2_file, &#39;&gt;&#39;, $outfile) ||
-<a name="l00081"></a>00081     croak &quot;Could not write to &quot; . $outfile;
-<a name="l00082"></a>00082   print $tt2_file &lt;&lt;&quot;ENDHEAD&quot;;
-<a name="l00083"></a>00083     &lt;style type=&quot;text/css&quot; title=&quot;currentStyle&quot;&gt;
-<a name="l00084"></a>00084         \@import &quot;/static/css/grid.css&quot;;
-<a name="l00085"></a>00085     &lt;/style&gt;
-<a name="l00086"></a>00086 
-<a name="l00087"></a>00087     &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot; src=&quot;/static/js/jquery.dataTables.min.js&quot;&gt;&lt;/script&gt;
-<a name="l00088"></a>00088 
-<a name="l00089"></a>00089     &lt;script type=&quot;text/javascript&quot;&gt;
-<a name="l00090"></a>00090     $(document).ready( function () {
-<a name="l00091"></a>00091     $(<span class="stringliteral">&#39;#species_list&#39;</span>).dataTable({
-<a name="l00092"></a>00092     <span class="stringliteral">&quot;sPaginationType&quot;</span>: <span class="stringliteral">&quot;full_numbers&quot;</span>,
-<a name="l00093"></a>00093     <span class="stringliteral">&quot;iDisplayLength&quot;</span>: 25,
-<a name="l00094"></a>00094     <span class="stringliteral">&quot;aLengthMenu&quot;</span>: [[25, 50, 100, -1], [25, 50, 100, <span class="stringliteral">&quot;All&quot;</span>]]
-<a name="l00095"></a>00095 });
-<a name="l00096"></a>00096 } );
-<a name="l00097"></a>00097 &lt;/script&gt; 
-<a name="l00098"></a>00098 &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;static&quot;</span>&gt;
-<a name="l00099"></a>00099 &lt;h2&gt;Ensembl Genomes Release $eg_version&lt;/h2&gt;
-<a name="l00100"></a>00100 &lt;p&gt;Ensembl Genomes species metadata are also available via FTP: &lt;a href=<span class="stringliteral">&quot;ftp://ftp.ensemblgenomes.org/pub/current/species.txt&quot;</span>&gt;Tabular text&lt;/a&gt; | &lt;a href=<span class="stringliteral">&quot;ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.json&quot;</span>&gt;JSON&lt;/a&gt; | &lt;a href=<span class="stringliteral">&quot;ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.xml&quot;</span>&gt;XML&lt;/a&gt;&lt;/p&gt; 
-<a name="l00101"></a>00101 &lt;table cellpadding=<span class="stringliteral">&quot;0&quot;</span> cellspacing=<span class="stringliteral">&quot;0&quot;</span> border=<span class="stringliteral">&quot;1px dotted #eeeeee&quot;</span>
-<a name="l00102"></a>00102 <span class="keyword">class</span>=<span class="stringliteral">&quot;display&quot;</span> <span class="keywordtype">id</span>=<span class="stringliteral">&quot;species_list&quot;</span>&gt;
-<a name="l00103"></a>00103 &lt;thead&gt; 
-<a name="l00104"></a>00104   &lt;tr&gt;
-<a name="l00105"></a>00105   &lt;th&gt;Species&lt;/th&gt;&lt;th&gt;Division&lt;/th&gt;&lt;th&gt;Taxonomy ID&lt;/th&gt;&lt;th&gt;Assembly&lt;/th&gt;&lt;th&gt;Genebuild&lt;/th&gt;&lt;th&gt;Variation&lt;/th&gt;&lt;th&gt;Pan compara&lt;/th&gt;&lt;th&gt;Genome alignments&lt;/th&gt;&lt;th&gt;Other alignments&lt;/th&gt;
-<a name="l00106"></a>00106   &lt;/tr&gt;
-<a name="l00107"></a>00107   &lt;/thead&gt;
-<a name="l00108"></a>00108   &lt;tbody&gt;
-<a name="l00109"></a>00109 ENDHEAD
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111   <span class="keywordflow">for</span> my $md (@{$metadata-&gt;{genome}}) {
-<a name="l00112"></a>00112     my $div_link = $self-&gt;{div_links}-&gt;{$md-&gt;{division}};
-<a name="l00113"></a>00113     my $div_name = $self-&gt;{div_names}-&gt;{$md-&gt;{division}};
-<a name="l00114"></a>00114     <span class="keywordflow">if</span> (!defined $div_link) {
-<a name="l00115"></a>00115       croak <span class="stringliteral">&quot;No division defined for $md-&gt;{name}&quot;</span>;
-<a name="l00116"></a>00116     }
-<a name="l00117"></a>00117     $div_link .= $md-&gt;{species};
-<a name="l00118"></a>00118     print $tt2_file join(<span class="stringliteral">&quot;&quot;</span>,
-<a name="l00119"></a>00119                          ($tr,
-<a name="l00120"></a>00120                           $td,
-<a name="l00121"></a>00121                           <span class="stringliteral">&quot;&lt;a href=&#39;${div_link}&#39;&gt;&quot;</span>,
-<a name="l00122"></a>00122                           $md-&gt;{name},
-<a name="l00123"></a>00123                           <span class="stringliteral">&#39;&lt;/a&gt;&#39;</span>,
-<a name="l00124"></a>00124                           $tdx,
-<a name="l00125"></a>00125                           $td,
-<a name="l00126"></a>00126                           <span class="stringliteral">&quot;&lt;a href=&#39;&quot;</span>,
-<a name="l00127"></a>00127                           $div_link,
-<a name="l00128"></a>00128                           <span class="stringliteral">&quot;&#39;&gt;&quot;</span>,
-<a name="l00129"></a>00129                           $div_name,
-<a name="l00130"></a>00130                           <span class="stringliteral">&#39;&lt;/a&gt;&#39;</span>,
-<a name="l00131"></a>00131                           $td,
-<a name="l00132"></a>00132                           <span class="stringliteral">&quot;&lt;a href=&#39;http://www.uniprot.org/taxonomy/&quot;</span> .
-<a name="l00133"></a>00133                             $md-&gt;{taxonomy_id} .
-<a name="l00134"></a>00134                             <span class="stringliteral">&quot;&#39;&gt;&quot;</span> . $md-&gt;{taxonomy_id} . <span class="stringliteral">&quot;&lt;/a&gt;&quot;</span>,
-<a name="l00135"></a>00135                           $tdx,
-<a name="l00136"></a>00136                           $td,
-<a name="l00137"></a>00137                           $md-&gt;{assembly_name},
+<a name="l00072"></a>00072   <span class="keywordflow">return</span> $self;
+<a name="l00073"></a>00073 }
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075 sub do_dump {
+<a name="l00076"></a>00076   my ($self, $metadata, $outfile) = @_;
+<a name="l00077"></a>00077   my $eg_version = $metadata-&gt;{genome}-&gt;[0]-&gt;{dbname};
+<a name="l00078"></a>00078   $eg_version =~ s/[a-z]+_([0-9]+)_[0-9]+_[0-9]+/$1/;
+<a name="l00079"></a>00079   my $td  = &#39;&lt;td&gt;&#39;;
+<a name="l00080"></a>00080   my $tdx = &#39;&lt;/td&gt;&#39;;
+<a name="l00081"></a>00081   my $tr  = &#39;&lt;tr&gt;&#39;;
+<a name="l00082"></a>00082   my $trx = &#39;&lt;/tr&gt;&#39;;
+<a name="l00083"></a>00083   open(my $tt2_file, &#39;&gt;&#39;, $outfile) ||
+<a name="l00084"></a>00084     croak &quot;Could not write to &quot; . $outfile;
+<a name="l00085"></a>00085   print $tt2_file &lt;&lt;&quot;ENDHEAD&quot;;
+<a name="l00086"></a>00086     &lt;style type=&quot;text/css&quot; title=&quot;currentStyle&quot;&gt;
+<a name="l00087"></a>00087         \@import &quot;/static/css/grid.css&quot;;
+<a name="l00088"></a>00088     &lt;/style&gt;
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090     &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot; src=&quot;/static/js/jquery.dataTables.min.js&quot;&gt;&lt;/script&gt;
+<a name="l00091"></a>00091 
+<a name="l00092"></a>00092     &lt;script type=&quot;text/javascript&quot;&gt;
+<a name="l00093"></a>00093     $(document).ready( function () {
+<a name="l00094"></a>00094     $(<span class="stringliteral">&#39;#species_list&#39;</span>).dataTable({
+<a name="l00095"></a>00095     <span class="stringliteral">&quot;sPaginationType&quot;</span>: <span class="stringliteral">&quot;full_numbers&quot;</span>,
+<a name="l00096"></a>00096     <span class="stringliteral">&quot;iDisplayLength&quot;</span>: 25,
+<a name="l00097"></a>00097     <span class="stringliteral">&quot;aLengthMenu&quot;</span>: [[25, 50, 100, -1], [25, 50, 100, <span class="stringliteral">&quot;All&quot;</span>]]
+<a name="l00098"></a>00098 });
+<a name="l00099"></a>00099 } );
+<a name="l00100"></a>00100 &lt;/script&gt; 
+<a name="l00101"></a>00101 &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;static&quot;</span>&gt;
+<a name="l00102"></a>00102 &lt;h2&gt;Ensembl Genomes Release $eg_version&lt;/h2&gt;
+<a name="l00103"></a>00103 &lt;p&gt;Ensembl Genomes species metadata are also available via FTP: &lt;a href=<span class="stringliteral">&quot;ftp://ftp.ensemblgenomes.org/pub/current/species.txt&quot;</span>&gt;Tabular text&lt;/a&gt; | &lt;a href=<span class="stringliteral">&quot;ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.json&quot;</span>&gt;JSON&lt;/a&gt; | &lt;a href=<span class="stringliteral">&quot;ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.xml&quot;</span>&gt;XML&lt;/a&gt;&lt;/p&gt; 
+<a name="l00104"></a>00104 &lt;table cellpadding=<span class="stringliteral">&quot;0&quot;</span> cellspacing=<span class="stringliteral">&quot;0&quot;</span> border=<span class="stringliteral">&quot;1px dotted #eeeeee&quot;</span>
+<a name="l00105"></a>00105 <span class="keyword">class</span>=<span class="stringliteral">&quot;display&quot;</span> <span class="keywordtype">id</span>=<span class="stringliteral">&quot;species_list&quot;</span>&gt;
+<a name="l00106"></a>00106 &lt;thead&gt; 
+<a name="l00107"></a>00107   &lt;tr&gt;
+<a name="l00108"></a>00108   &lt;th&gt;Species&lt;/th&gt;&lt;th&gt;Division&lt;/th&gt;&lt;th&gt;Taxonomy ID&lt;/th&gt;&lt;th&gt;Assembly&lt;/th&gt;&lt;th&gt;Genebuild&lt;/th&gt;&lt;th&gt;Variation&lt;/th&gt;&lt;th&gt;Pan compara&lt;/th&gt;&lt;th&gt;Genome alignments&lt;/th&gt;&lt;th&gt;Other alignments&lt;/th&gt;
+<a name="l00109"></a>00109   &lt;/tr&gt;
+<a name="l00110"></a>00110   &lt;/thead&gt;
+<a name="l00111"></a>00111   &lt;tbody&gt;
+<a name="l00112"></a>00112 ENDHEAD
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114   <span class="keywordflow">for</span> my $md (@{$metadata-&gt;{genome}}) {
+<a name="l00115"></a>00115     my $div_link = $self-&gt;{div_links}-&gt;{$md-&gt;{division}};
+<a name="l00116"></a>00116     my $div_name = $self-&gt;{div_names}-&gt;{$md-&gt;{division}};
+<a name="l00117"></a>00117     <span class="keywordflow">if</span> (!defined $div_link) {
+<a name="l00118"></a>00118       croak <span class="stringliteral">&quot;No division defined for $md-&gt;{name}&quot;</span>;
+<a name="l00119"></a>00119     }
+<a name="l00120"></a>00120     $div_link .= $md-&gt;{species};
+<a name="l00121"></a>00121     print $tt2_file join(<span class="stringliteral">&quot;&quot;</span>,
+<a name="l00122"></a>00122                          ($tr,
+<a name="l00123"></a>00123                           $td,
+<a name="l00124"></a>00124                           <span class="stringliteral">&quot;&lt;a href=&#39;${div_link}&#39;&gt;&quot;</span>,
+<a name="l00125"></a>00125                           $md-&gt;{name},
+<a name="l00126"></a>00126                           <span class="stringliteral">&#39;&lt;/a&gt;&#39;</span>,
+<a name="l00127"></a>00127                           $tdx,
+<a name="l00128"></a>00128                           $td,
+<a name="l00129"></a>00129                           <span class="stringliteral">&quot;&lt;a href=&#39;&quot;</span>,
+<a name="l00130"></a>00130                           $div_link,
+<a name="l00131"></a>00131                           <span class="stringliteral">&quot;&#39;&gt;&quot;</span>,
+<a name="l00132"></a>00132                           $div_name,
+<a name="l00133"></a>00133                           <span class="stringliteral">&#39;&lt;/a&gt;&#39;</span>,
+<a name="l00134"></a>00134                           $td,
+<a name="l00135"></a>00135                           <span class="stringliteral">&quot;&lt;a href=&#39;http://www.uniprot.org/taxonomy/&quot;</span> .
+<a name="l00136"></a>00136                             $md-&gt;{taxonomy_id} .
+<a name="l00137"></a>00137                             <span class="stringliteral">&quot;&#39;&gt;&quot;</span> . $md-&gt;{taxonomy_id} . <span class="stringliteral">&quot;&lt;/a&gt;&quot;</span>,
 <a name="l00138"></a>00138                           $tdx,
 <a name="l00139"></a>00139                           $td,
-<a name="l00140"></a>00140                           $md-&gt;{genebuild},
+<a name="l00140"></a>00140                           $md-&gt;{assembly_name},
 <a name="l00141"></a>00141                           $tdx,
 <a name="l00142"></a>00142                           $td,
-<a name="l00143"></a>00143                           $self-&gt;yesno($self-&gt;count_variation($md)),
+<a name="l00143"></a>00143                           $md-&gt;{genebuild},
 <a name="l00144"></a>00144                           $tdx,
 <a name="l00145"></a>00145                           $td,
-<a name="l00146"></a>00146                           $self-&gt;yesno($md-&gt;{pan_species}),
+<a name="l00146"></a>00146                           $self-&gt;yesno($self-&gt;count_variation($md)),
 <a name="l00147"></a>00147                           $tdx,
 <a name="l00148"></a>00148                           $td,
-<a name="l00149"></a>00149                           $self-&gt;yesno($self-&gt;count_dna_compara($md)),
+<a name="l00149"></a>00149                           $self-&gt;yesno($md-&gt;{pan_species}),
 <a name="l00150"></a>00150                           $tdx,
 <a name="l00151"></a>00151                           $td,
-<a name="l00152"></a>00152                           $self-&gt;yesno($self-&gt;count_alignments($md)),
+<a name="l00152"></a>00152                           $self-&gt;yesno($self-&gt;count_dna_compara($md)),
 <a name="l00153"></a>00153                           $tdx,
-<a name="l00154"></a>00154                           $trx,
-<a name="l00155"></a>00155                           <span class="stringliteral">&quot;\n&quot;</span>));
-<a name="l00156"></a>00156   } ## end <span class="keywordflow">for</span> my $md (@{$metadata...})
-<a name="l00157"></a>00157   print $tt2_file &lt;&lt;<span class="stringliteral">&#39;ENDFOOT&#39;</span>;
-<a name="l00158"></a>00158 &lt;/tbody&gt;
-<a name="l00159"></a>00159 &lt;tfoot&gt;
-<a name="l00160"></a>00160 &lt;tr&gt;
-<a name="l00161"></a>00161   &lt;th&gt;Species&lt;/th&gt;&lt;th&gt;Division&lt;/th&gt;&lt;th&gt;Taxonomy ID&lt;/th&gt;&lt;th&gt;Assembly&lt;/th&gt;&lt;th&gt;Genebuild&lt;/th&gt;&lt;th&gt;Variation&lt;/th&gt;&lt;th&gt;Pan compara&lt;/th&gt;&lt;th&gt;Genome alignments&lt;/th&gt;&lt;th&gt;Other alignments&lt;/th&gt;
-<a name="l00162"></a>00162 &lt;/tr&gt;
-<a name="l00163"></a>00163 &lt;/tfoot&gt;
-<a name="l00164"></a>00164 &lt;/table&gt;
-<a name="l00165"></a>00165 &lt;/div&gt;
-<a name="l00166"></a>00166 ENDFOOT
-<a name="l00167"></a>00167   close $tt2_file;
-<a name="l00168"></a>00168   <span class="keywordflow">return</span>;
-<a name="l00169"></a>00169 } ## end sub do_dump
-<a name="l00170"></a>00170 
-<a name="l00171"></a>00171 1;
-<a name="l00172"></a>00172 
-<a name="l00173"></a>00173 __END__
-<a name="l00174"></a>00174 
-<a name="l00175"></a>00175 =pod
-<a name="l00176"></a>00176 
-<a name="l00177"></a>00177 =head1 NAME
-<a name="l00178"></a>00178 
-<a name="l00179"></a>00179 Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
-<a name="l00180"></a>00180 
-<a name="l00181"></a>00181 =head1 SYNOPSIS
-<a name="l00182"></a>00182 
-<a name="l00183"></a>00183 =head1 DESCRIPTION
-<a name="l00184"></a>00184 
-<a name="l00185"></a>00185 implementation to dump metadata details to an XML file
-<a name="l00186"></a>00186 
-<a name="l00187"></a>00187 =head1 SUBROUTINES/METHODS
-<a name="l00188"></a>00188 
-<a name="l00189"></a>00189 =head2 <span class="keyword">new</span>
-<a name="l00190"></a>00190 
-<a name="l00191"></a>00191 =head2 dump_metadata
-<a name="l00192"></a>00192 Description : Dump metadata to the file supplied by the constructor 
-<a name="l00193"></a>00193 Argument : Hash of details
-<a name="l00194"></a>00194 
-<a name="l00195"></a>00195 =head1 AUTHOR
-<a name="l00196"></a>00196 
-<a name="l00197"></a>00197 dstaines
-<a name="l00198"></a>00198 
-<a name="l00199"></a>00199 =head1 MAINTAINER
-<a name="l00200"></a>00200 
-<a name="l00201"></a>00201 $Author$
-<a name="l00202"></a>00202 
-<a name="l00203"></a>00203 =head1 VERSION
-<a name="l00204"></a>00204 
-<a name="l00205"></a>00205 $Revision$
-<a name="l00206"></a>00206 
-<a name="l00207"></a>00207 =cut
+<a name="l00154"></a>00154                           $td,
+<a name="l00155"></a>00155                           $self-&gt;yesno($self-&gt;count_alignments($md)),
+<a name="l00156"></a>00156                           $tdx,
+<a name="l00157"></a>00157                           $trx,
+<a name="l00158"></a>00158                           <span class="stringliteral">&quot;\n&quot;</span>));
+<a name="l00159"></a>00159   } ## end <span class="keywordflow">for</span> my $md (@{$metadata...})
+<a name="l00160"></a>00160   print $tt2_file &lt;&lt;<span class="stringliteral">&#39;ENDFOOT&#39;</span>;
+<a name="l00161"></a>00161 &lt;/tbody&gt;
+<a name="l00162"></a>00162 &lt;tfoot&gt;
+<a name="l00163"></a>00163 &lt;tr&gt;
+<a name="l00164"></a>00164   &lt;th&gt;Species&lt;/th&gt;&lt;th&gt;Division&lt;/th&gt;&lt;th&gt;Taxonomy ID&lt;/th&gt;&lt;th&gt;Assembly&lt;/th&gt;&lt;th&gt;Genebuild&lt;/th&gt;&lt;th&gt;Variation&lt;/th&gt;&lt;th&gt;Pan compara&lt;/th&gt;&lt;th&gt;Genome alignments&lt;/th&gt;&lt;th&gt;Other alignments&lt;/th&gt;
+<a name="l00165"></a>00165 &lt;/tr&gt;
+<a name="l00166"></a>00166 &lt;/tfoot&gt;
+<a name="l00167"></a>00167 &lt;/table&gt;
+<a name="l00168"></a>00168 &lt;/div&gt;
+<a name="l00169"></a>00169 ENDFOOT
+<a name="l00170"></a>00170   close $tt2_file;
+<a name="l00171"></a>00171   <span class="keywordflow">return</span>;
+<a name="l00172"></a>00172 } ## end sub do_dump
+<a name="l00173"></a>00173 
+<a name="l00174"></a>00174 1;
+<a name="l00175"></a>00175 
+<a name="l00176"></a>00176 __END__
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 =pod
+<a name="l00179"></a>00179 
+<a name="l00180"></a>00180 =head1 NAME
+<a name="l00181"></a>00181 
+<a name="l00182"></a>00182 Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper
+<a name="l00183"></a>00183 
+<a name="l00184"></a>00184 =head1 SYNOPSIS
+<a name="l00185"></a>00185 
+<a name="l00186"></a>00186 =head1 DESCRIPTION
+<a name="l00187"></a>00187 
+<a name="l00188"></a>00188 implementation to dump metadata details to an XML file
+<a name="l00189"></a>00189 
+<a name="l00190"></a>00190 =head1 SUBROUTINES/METHODS
+<a name="l00191"></a>00191 
+<a name="l00192"></a>00192 =head2 <span class="keyword">new</span>
+<a name="l00193"></a>00193 
+<a name="l00194"></a>00194 =head2 dump_metadata
+<a name="l00195"></a>00195 Description : Dump metadata to the file supplied by the constructor 
+<a name="l00196"></a>00196 Argument : Hash of details
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198 =head1 AUTHOR
+<a name="l00199"></a>00199 
+<a name="l00200"></a>00200 dstaines
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202 =head1 MAINTAINER
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204 $Author$
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206 =head1 VERSION
+<a name="l00207"></a>00207 
+<a name="l00208"></a>00208 $Revision$
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 =cut
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

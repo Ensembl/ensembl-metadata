@@ -148,8 +148,11 @@ Base adaptor for storing and retrieving objects from MySQL genome_metadata datab
 
 Provides basic methods for store/fetch
 
-</pre> 
-<p>Definition at line <a class="el" href="BaseInfoAdaptor_8pm_source.html#l00016">16</a> of file <a class="el" href="BaseInfoAdaptor_8pm_source.html">BaseInfoAdaptor.pm</a>.</p>
+</pre> <h2><a class="anchor" id="See-also"></a>
+See-also</h2>
+<p><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a> </p>
+
+<p>Definition at line <a class="el" href="BaseInfoAdaptor_8pm_source.html#l00021">21</a> of file <a class="el" href="BaseInfoAdaptor_8pm_source.html">BaseInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
@@ -364,6 +367,7 @@ Available Methods</h2></td></tr>
       my $row = shift @_;
       my $md = $self-&gt;_get_cached_obj( $type, $row-&gt;{dbID} );
       <span class="keywordflow">if</span> ( !defined $md ) {
+        load $type;
         $md = bless $row, $type;
         $md-&gt;adaptor($self);
         $self-&gt;_store_cached_obj($md);

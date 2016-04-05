@@ -207,8 +207,11 @@ for my $genome (\@{$compara->genomes()}) {
 	print $genome->name()."\n";
 }
 
-</pre> 
-<p>Definition at line <a class="el" href="GenomeInfoAdaptor_8pm_source.html#l00082">82</a> of file <a class="el" href="GenomeInfoAdaptor_8pm_source.html">GenomeInfoAdaptor.pm</a>.</p>
+</pre> <h2><a class="anchor" id="See-also"></a>
+See-also</h2>
+<p><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a> <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeAssemblyInfo.html">Bio::EnsEMBL::MetaData::GenomeAssemblyInfo</a> <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a> </p>
+
+<p>Definition at line <a class="el" href="GenomeInfoAdaptor_8pm_source.html#l00089">89</a> of file <a class="el" href="GenomeInfoAdaptor_8pm_source.html">GenomeInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
@@ -261,6 +264,9 @@ Available Methods</h2></td></tr>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#ae6967dcf3b250eb16090361b3b1a89d0">fetch_all_by_sequence_accession_unversioned</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public <br class="typebreak"/>
 <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#adecc1b4c16b41431b932557b14046d49">fetch_all_by_sequence_accession_versioned</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public Arrayref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a0604c3cd59b0d4e810e6b0b8a5fc77b1">fetch_all_by_taxonomy_branch</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a3a13ce6372c2b3bf0856257175fbb358">fetch_all_by_taxonomy_id</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#af42c662597fbccba78015c20b573755d">fetch_all_by_taxonomy_ids</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public Arrayref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a002d91b77b42db84a981b5afc93f61ca">fetch_all_with_compara</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public Arrayref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a53240182bccf4e7e4a2285d51cbdeaf5">fetch_all_with_genome_alignments</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a1d294314726c9e3a82b15994903c846a">fetch_all_with_other_alignments</a> ()</td></tr>
@@ -652,7 +658,8 @@ Available Methods</h2></td></tr>
   croak
     <span class="stringliteral">&quot;Cannot fetch databases for a GenomeInfo object that has not been stored&quot;</span>
     <span class="keywordflow">if</span> !defined $genome-&gt;dbID();
-  $genome-&gt;{databases} = $self-&gt;db()-&gt;get_DatabaseInfoAdaptor()-&gt;fetch_databases($genome);
+  $genome-&gt;{databases} =
+    $self-&gt;db()-&gt;get_DatabaseInfoAdaptor()-&gt;fetch_databases($genome);
   <span class="keywordflow">return</span>;
 }
 </pre></div> </div> 
@@ -740,6 +747,7 @@ Available Methods</h2></td></tr>
       my $row = shift @_;
       my $md = $self-&gt;_get_cached_obj( $type, $row-&gt;{dbID} );
       <span class="keywordflow">if</span> ( !defined $md ) {
+        load $type;
         $md = bless $row, $type;
         $md-&gt;adaptor($self);
         $self-&gt;_store_cached_obj($md);
@@ -1439,7 +1447,7 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
 <div id='codesection-build_ensembl_adaptor-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-build_ensembl_adaptor-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a208b2615ce95c153741debe91c6aca29">build_ensembl_adaptor</a> {
-  my ($release) = @_;
+  my ( $self, $release ) = @_;
   my $args = e_args();
   $args-&gt;{-DBNAME} = <span class="stringliteral">&#39;ensembl_metadata&#39;</span>;
   my $adaptor =
@@ -1478,7 +1486,7 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
 <div id='codesection-build_ensembl_genomes_adaptor-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
 <div id='codesection-build_ensembl_genomes_adaptor-content' class='dyncontent' style='display: none;'> 
  <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#aa892bb1501e0bd0bbea154ed46dde3bc">build_ensembl_genomes_adaptor</a> {
-  my ($release) = @_;
+  my ( $self, $release ) = @_;
   my $args = eg_args();
   $args-&gt;{-DBNAME} = <span class="stringliteral">&#39;ensembl_metadata&#39;</span>;
   my $adaptor =
@@ -1880,6 +1888,93 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
   my $ass =
     $self-&gt;_assembly_adaptor()-&gt;fetch_all_sequence_accession_versioned($id);
   <span class="keywordflow">return</span> $self-&gt;fetch_all_by_assemblies( $ass, $keen );
+}
+</pre></div> </div> 
+</div>
+</div>
+<a class="anchor" id="a0604c3cd59b0d4e810e6b0b8a5fc77b1"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::fetch_all_by_taxonomy_branch" ref="a0604c3cd59b0d4e810e6b0b8a5fc77b1" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">public Arrayref Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::fetch_all_by_taxonomy_branch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<pre>  Arg	     : Bio::EnsEMBL::TaxonomyNode
+  Description: Fetch organism info for specified taxonomy node and its children
+  Returntype : arrayref of <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+ </pre><div id="codesection-fetch_all_by_taxonomy_branch" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+	<img id='codesection-fetch_all_by_taxonomy_branch-trigger' src='closed.png' style='display:inline'><b>Code:</b>
+</div>
+<div id='codesection-fetch_all_by_taxonomy_branch-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
+<div id='codesection-fetch_all_by_taxonomy_branch-content' class='dyncontent' style='display: none;'> 
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a0604c3cd59b0d4e810e6b0b8a5fc77b1">fetch_all_by_taxonomy_branch</a> {
+  my ( $self, $root, $keen ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;fetch_all_by_organisms(
+      $self-&gt;_organism_adaptor()-&gt;fetch_all_by_taxonomy_branch( $root, $keen ) )
+    ;
+}
+</pre></div> </div> 
+</div>
+</div>
+<a class="anchor" id="a3a13ce6372c2b3bf0856257175fbb358"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::fetch_all_by_taxonomy_id" ref="a3a13ce6372c2b3bf0856257175fbb358" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::fetch_all_by_taxonomy_id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Undocumented method</p>
+<div id="codesection-fetch_all_by_taxonomy_id" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+	<img id='codesection-fetch_all_by_taxonomy_id-trigger' src='closed.png' style='display:inline'><b>Code:</b>
+</div>
+<div id='codesection-fetch_all_by_taxonomy_id-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
+<div id='codesection-fetch_all_by_taxonomy_id-content' class='dyncontent' style='display: none;'> 
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#a3a13ce6372c2b3bf0856257175fbb358">fetch_all_by_taxonomy_id</a> {
+  my ( $self, $id, $keen ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;fetch_all_by_organisms(
+                   $self-&gt;_organism_adaptor()-&gt;fetch_all_by_taxonomy_id($id) );
+}
+</pre></div> </div> 
+</div>
+</div>
+<a class="anchor" id="af42c662597fbccba78015c20b573755d"></a><!-- doxytag: member="Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::fetch_all_by_taxonomy_ids" ref="af42c662597fbccba78015c20b573755d" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">public Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor::fetch_all_by_taxonomy_ids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Undocumented method</p>
+<div id="codesection-fetch_all_by_taxonomy_ids" class="dynheader closed" style="cursor:pointer;" onclick="return toggleVisibility(this)">  
+	<img id='codesection-fetch_all_by_taxonomy_ids-trigger' src='closed.png' style='display:inline'><b>Code:</b>
+</div>
+<div id='codesection-fetch_all_by_taxonomy_ids-summary' class='dyncontent' style='display:block;font-size:small;'>click to view</div>
+<div id='codesection-fetch_all_by_taxonomy_ids-content' class='dyncontent' style='display: none;'> 
+ <div class="fragment"><pre class="fragment">sub <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#af42c662597fbccba78015c20b573755d">fetch_all_by_taxonomy_ids</a> {
+  my ( $self, $ids ) = @_;
+  <span class="keywordflow">return</span> $self-&gt;fetch_all_by_organisms(
+                  $self-&gt;_organism_adaptor()-&gt;fetch_all_by_taxonomy_ids($ids) );
 }
 </pre></div> </div> 
 </div>

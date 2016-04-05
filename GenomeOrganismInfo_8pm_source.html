@@ -142,12 +142,12 @@ function toggleVisibility(linkObj) {
 <a name="l00016"></a>00016 limitations under the License.
 <a name="l00017"></a>00017 
 <a name="l00018"></a>00018 =head1 CONTACT
-<a name="l00019"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">00019</a> 
+<a name="l00019"></a>00019 
 <a name="l00020"></a>00020   Please email comments or questions to the <span class="keyword">public</span> Ensembl
 <a name="l00021"></a>00021   developers list at &lt;dev@ensembl.org&gt;.
 <a name="l00022"></a>00022 
 <a name="l00023"></a>00023   Questions may also be sent to the Ensembl help desk at
-<a name="l00024"></a>00024   &lt;helpdesk@ensembl.org&gt;.
+<a name="l00024"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">00024</a>   &lt;helpdesk@ensembl.org&gt;.
 <a name="l00025"></a>00025   
 <a name="l00026"></a>00026 =head1 NAME
 <a name="l00027"></a>00027 
@@ -164,218 +164,223 @@ function toggleVisibility(linkObj) {
 <a name="l00038"></a>00038 
 <a name="l00039"></a>00039 Object encapsulating information about the organism to which a particular genome belongs
 <a name="l00040"></a>00040 
-<a name="l00041"></a>00041 =head1 Author
+<a name="l00041"></a>00041 =head1 SEE ALSO
 <a name="l00042"></a>00042 
-<a name="l00043"></a>00043 Dan Staines
-<a name="l00044"></a>00044 
-<a name="l00045"></a>00045 =cut
-<a name="l00046"></a>00046 
-<a name="l00047"></a>00047 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
-<a name="l00048"></a>00048 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
-<a name="l00049"></a>00049 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00050"></a>00050 use strict;
-<a name="l00051"></a>00051 use warnings;
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 =head1 CONSTRUCTOR
-<a name="l00054"></a>00054 =head2 <span class="keyword">new</span>
-<a name="l00055"></a>00055   Arg [-NAME]  : 
-<a name="l00056"></a>00056        <span class="keywordtype">string</span> - human readable version of the name of the organism
-<a name="l00057"></a>00057   Arg [-SPECIES]    : 
-<a name="l00058"></a>00058        <span class="keywordtype">string</span> - computable version of the name of the organism (lower <span class="keywordflow">case</span>, no spaces)
-<a name="l00059"></a>00059    Arg [-TAXONOMY_ID] :
-<a name="l00060"></a>00060         <span class="keywordtype">string</span> - NCBI taxonomy identifier
-<a name="l00061"></a>00061   Arg [-SPECIES_TAXONOMY_ID] :
-<a name="l00062"></a>00062         <span class="keywordtype">string</span> - NCBI taxonomy identifier of species to which <span class="keyword">this</span> organism belongs
-<a name="l00063"></a>00063   Arg [-STRAIN]:
-<a name="l00064"></a>00064         <span class="keywordtype">string</span> - name of strain to which organism belongs
-<a name="l00065"></a>00065   Arg [-SEROTYPE]:
-<a name="l00066"></a>00066         <span class="keywordtype">string</span> - name of serotype to which organism belongs
-<a name="l00067"></a>00067   Arg [-IS_REFERENCE]:
-<a name="l00068"></a>00068         <span class="keywordtype">bool</span> - 1 <span class="keywordflow">if</span> <span class="keyword">this</span> organism is the reference <span class="keywordflow">for</span> its species
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html#a45df4057d6d932199e0b5fcb06a8ceef">new</a>(...);
-<a name="l00071"></a>00071   Description: Creates a <span class="keyword">new</span> info <span class="keywordtype">object</span>
-<a name="l00072"></a>00072   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00073"></a>00073   Exceptions : none
-<a name="l00074"></a>00074   Caller     : general
-<a name="l00075"></a>00075   Status     : Stable
-<a name="l00076"></a>00076 
-<a name="l00077"></a>00077 =cut
-<a name="l00078"></a>00078 
-<a name="l00079"></a>00079 sub <span class="keyword">new</span> {
-<a name="l00080"></a>00080   my ( $class, @args ) = @_;
-<a name="l00081"></a>00081   my $self = $class-&gt;SUPER::new(@args);
-<a name="l00082"></a>00082   ( $self-&gt;{display_name}, $self-&gt;{name},
-<a name="l00083"></a>00083     $self-&gt;{strain},       $self-&gt;{serotype},
-<a name="l00084"></a>00084     $self-&gt;{is_reference}, $self-&gt;{taxonomy_id},
-<a name="l00085"></a>00085     $self-&gt;{species_taxonomy_id} )
-<a name="l00086"></a>00086     = rearrange( [ <span class="stringliteral">&#39;DISPLAY_NAME&#39;</span>, <span class="stringliteral">&#39;NAME&#39;</span>,
-<a name="l00087"></a>00087                    <span class="stringliteral">&#39;STRAIN&#39;</span>,       <span class="stringliteral">&#39;SEROTYPE&#39;</span>,
-<a name="l00088"></a>00088                    <span class="stringliteral">&#39;IS_REFERENCE&#39;</span>, <span class="stringliteral">&#39;TAXONOMY_ID&#39;</span>,
-<a name="l00089"></a>00089                    <span class="stringliteral">&#39;SPECIES_TAXONOMY_ID&#39;</span> ],
-<a name="l00090"></a>00090                  @args );
-<a name="l00091"></a>00091   $self-&gt;{is_reference} ||= 0;
-<a name="l00092"></a>00092   <span class="keywordflow">return</span> $self;
-<a name="l00093"></a>00093 }
-<a name="l00094"></a>00094 
-<a name="l00095"></a>00095 =head1 ATTRIBUTE METHODS
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 =head2 name
-<a name="l00098"></a>00098   Arg        : (optional) computationally safe name <span class="keywordflow">for</span> species name to <span class="keyword">set</span>
-<a name="l00099"></a>00099   Description: Gets/sets computationally safe name <span class="keywordflow">for</span> species name <span class="keywordflow">for</span> genome
-<a name="l00100"></a>00100   Returntype : <span class="keywordtype">string</span>
-<a name="l00101"></a>00101   Exceptions : none
-<a name="l00102"></a>00102   Caller     : general
-<a name="l00103"></a>00103   Status     : Stable
-<a name="l00104"></a>00104 =cut
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 sub name {
-<a name="l00107"></a>00107   my ( $self, $arg ) = @_;
-<a name="l00108"></a>00108   $self-&gt;{name} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00109"></a>00109   <span class="keywordflow">return</span> $self-&gt;{name};
-<a name="l00110"></a>00110 }
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 =head2 display_name
-<a name="l00113"></a>00113   Arg        : (optional) display_name to <span class="keyword">set</span>
-<a name="l00114"></a>00114   Description: Gets/sets display_name 
-<a name="l00115"></a>00115   Returntype : <span class="keywordtype">string</span>
-<a name="l00116"></a>00116   Exceptions : none
-<a name="l00117"></a>00117   Caller     : general
-<a name="l00118"></a>00118   Status     : Stable
-<a name="l00119"></a>00119 =cut
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121 sub display_name {
-<a name="l00122"></a>00122   my ( $self, $display_name ) = @_;
-<a name="l00123"></a>00123   $self-&gt;{display_name} = $display_name <span class="keywordflow">if</span> ( defined $display_name );
-<a name="l00124"></a>00124   <span class="keywordflow">return</span> $self-&gt;{display_name};
-<a name="l00125"></a>00125 }
-<a name="l00126"></a>00126 
-<a name="l00127"></a>00127 =head2 strain
-<a name="l00128"></a>00128   Arg        : (optional) strain to <span class="keyword">set</span>
-<a name="l00129"></a>00129   Description: Gets/sets strain of genome
-<a name="l00130"></a>00130   Returntype : <span class="keywordtype">string</span>
-<a name="l00131"></a>00131   Exceptions : none
-<a name="l00132"></a>00132   Caller     : general
-<a name="l00133"></a>00133   Status     : Stable
-<a name="l00134"></a>00134 =cut
-<a name="l00135"></a>00135 
-<a name="l00136"></a>00136 sub strain {
-<a name="l00137"></a>00137   my ( $self, $arg ) = @_;
-<a name="l00138"></a>00138   $self-&gt;{strain} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00139"></a>00139   <span class="keywordflow">return</span> $self-&gt;{strain};
-<a name="l00140"></a>00140 }
-<a name="l00141"></a>00141 
-<a name="l00142"></a>00142 =head2 serotype
-<a name="l00143"></a>00143   Arg        : (optional) serotype to <span class="keyword">set</span>
-<a name="l00144"></a>00144   Description: Gets/sets serotype
-<a name="l00145"></a>00145   Returntype : <span class="keywordtype">string</span>
-<a name="l00146"></a>00146   Exceptions : none
-<a name="l00147"></a>00147   Caller     : general
-<a name="l00148"></a>00148   Status     : Stable
-<a name="l00149"></a>00149 =cut
-<a name="l00150"></a>00150 
-<a name="l00151"></a>00151 sub serotype {
-<a name="l00152"></a>00152   my ( $self, $arg ) = @_;
-<a name="l00153"></a>00153   $self-&gt;{serotype} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00154"></a>00154   <span class="keywordflow">return</span> $self-&gt;{serotype};
-<a name="l00155"></a>00155 }
-<a name="l00156"></a>00156 
-<a name="l00157"></a>00157 =head2 taxonomy_id
-<a name="l00158"></a>00158   Arg        : (optional) taxonomy_id to <span class="keyword">set</span>
-<a name="l00159"></a>00159   Description: Gets/sets NCBI taxonomy ID
-<a name="l00160"></a>00160   Returntype : <span class="keywordtype">string</span>
-<a name="l00161"></a>00161   Exceptions : none
-<a name="l00162"></a>00162   Caller     : general
-<a name="l00163"></a>00163   Status     : Stable
-<a name="l00164"></a>00164 =cut
-<a name="l00165"></a>00165 
-<a name="l00166"></a>00166 sub taxonomy_id {
-<a name="l00167"></a>00167   my ( $self, $taxonomy_id ) = @_;
-<a name="l00168"></a>00168   $self-&gt;{taxonomy_id} = $taxonomy_id <span class="keywordflow">if</span> ( defined $taxonomy_id );
-<a name="l00169"></a>00169   <span class="keywordflow">return</span> $self-&gt;{taxonomy_id};
-<a name="l00170"></a>00170 }
-<a name="l00171"></a>00171 
-<a name="l00172"></a>00172 =head2 species_taxonomy_id
-<a name="l00173"></a>00173   Arg        : (optional) taxonomy_id to <span class="keyword">set</span>
-<a name="l00174"></a>00174   Description: Gets/sets NCBI taxonomy ID of species to which <span class="keyword">this</span> belongs
-<a name="l00175"></a>00175   Returntype : <span class="keywordtype">string</span>
-<a name="l00176"></a>00176   Exceptions : none
-<a name="l00177"></a>00177   Caller     : general
-<a name="l00178"></a>00178   Status     : Stable
-<a name="l00179"></a>00179 =cut
-<a name="l00180"></a>00180 
-<a name="l00181"></a>00181 sub species_taxonomy_id {
-<a name="l00182"></a>00182   my ( $self, $taxonomy_id ) = @_;
-<a name="l00183"></a>00183   $self-&gt;{species_taxonomy_id} = $taxonomy_id <span class="keywordflow">if</span> ( defined $taxonomy_id );
-<a name="l00184"></a>00184   <span class="keywordflow">return</span> $self-&gt;{species_taxonomy_id};
-<a name="l00185"></a>00185 }
-<a name="l00186"></a>00186 
-<a name="l00187"></a>00187 =head2 aliases
-<a name="l00188"></a>00188   Arg        : (optional) arrayref of aliases to <span class="keyword">set</span>
-<a name="l00189"></a>00189   Description: Gets/sets aliases by which the genome is also known 
-<a name="l00190"></a>00190   Returntype : Arrayref of aliases
-<a name="l00191"></a>00191   Exceptions : none
-<a name="l00192"></a>00192   Caller     : general
-<a name="l00193"></a>00193   Status     : Stable
-<a name="l00194"></a>00194 =cut
-<a name="l00195"></a>00195 
-<a name="l00196"></a>00196 sub aliases {
-<a name="l00197"></a>00197   my ( $self, $aliases ) = @_;
-<a name="l00198"></a>00198   <span class="keywordflow">if</span> ( defined $aliases ) {
-<a name="l00199"></a>00199     $self-&gt;{aliases} = $aliases;
-<a name="l00200"></a>00200   }
-<a name="l00201"></a>00201   $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a>( <span class="stringliteral">&#39;aliases&#39;</span>, <span class="stringliteral">&#39;_fetch_aliases&#39;</span> );
-<a name="l00202"></a>00202   <span class="keywordflow">return</span> $self-&gt;{aliases};
-<a name="l00203"></a>00203 }
-<a name="l00204"></a>00204 
-<a name="l00205"></a>00205 =head2 publications
-<a name="l00206"></a>00206   Arg        : (optional) arrayref of pubmed IDs to <span class="keyword">set</span>
-<a name="l00207"></a>00207   Description: Gets/sets PubMed IDs <span class="keywordflow">for</span> publications associated with the genome
-<a name="l00208"></a>00208   Returntype : Arrayref of PubMed IDs
-<a name="l00209"></a>00209   Exceptions : none
-<a name="l00210"></a>00210   Caller     : general
-<a name="l00211"></a>00211   Status     : Stable
-<a name="l00212"></a>00212 =cut
-<a name="l00213"></a>00213 
-<a name="l00214"></a>00214 sub publications {
-<a name="l00215"></a>00215   my ( $self, $publications ) = @_;
-<a name="l00216"></a>00216   <span class="keywordflow">if</span> ( defined $publications ) {
-<a name="l00217"></a>00217     $self-&gt;{publications} = $publications;
-<a name="l00218"></a>00218   }
-<a name="l00219"></a>00219   $self-&gt;_load_child( <span class="stringliteral">&#39;publications&#39;</span>, <span class="stringliteral">&#39;_fetch_publications&#39;</span> );
-<a name="l00220"></a>00220   <span class="keywordflow">return</span> $self-&gt;{publications};
-<a name="l00221"></a>00221 }
-<a name="l00222"></a>00222 
-<a name="l00223"></a>00223 =head2 is_reference
-<a name="l00224"></a>00224   Arg        : (optional) whether organism is reference
-<a name="l00225"></a>00225   Description: Gets/sets whether <span class="keyword">this</span> organism is the reference <span class="keywordflow">for</span> its species
-<a name="l00226"></a>00226   Returntype : <span class="keywordtype">string</span>
-<a name="l00227"></a>00227   Exceptions : none
-<a name="l00228"></a>00228   Caller     : general
-<a name="l00229"></a>00229   Status     : Stable
-<a name="l00230"></a>00230 =cut
-<a name="l00231"></a>00231 
-<a name="l00232"></a>00232 sub is_reference {
-<a name="l00233"></a>00233   my ( $self, $is_reference ) = @_;
-<a name="l00234"></a>00234   $self-&gt;{is_reference} = $is_reference <span class="keywordflow">if</span> ( defined $is_reference );
-<a name="l00235"></a>00235   <span class="keywordflow">return</span> $self-&gt;{is_reference};
-<a name="l00236"></a>00236 }
-<a name="l00237"></a>00237 
-<a name="l00238"></a>00238 =head1 UTILITY METHODS
-<a name="l00239"></a>00239 =head2 to_string
-<a name="l00240"></a>00240   Description: Render as plain <span class="keywordtype">string</span>
-<a name="l00241"></a>00241   Returntype : <span class="keywordtype">string</span>
-<a name="l00242"></a>00242   Exceptions : none
-<a name="l00243"></a>00243   Caller     : general
-<a name="l00244"></a>00244   Status     : Stable
-<a name="l00245"></a>00245 =cut
-<a name="l00246"></a>00246 
-<a name="l00247"></a>00247 sub to_string {
-<a name="l00248"></a>00248   my ($self) = @_;
-<a name="l00249"></a>00249   <span class="keywordflow">return</span> $self-&gt;name();
-<a name="l00250"></a>00250 }
+<a name="l00043"></a>00043 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>
+<a name="l00044"></a>00044 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor</a>
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 =head1 AUTHOR
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048 Dan Staines
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 =cut
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
+<a name="l00053"></a>00053 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
+<a name="l00054"></a>00054 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00055"></a>00055 use strict;
+<a name="l00056"></a>00056 use warnings;
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 =head1 CONSTRUCTOR
+<a name="l00059"></a>00059 =head2 <span class="keyword">new</span>
+<a name="l00060"></a>00060   Arg [-NAME]  : 
+<a name="l00061"></a>00061        <span class="keywordtype">string</span> - human readable version of the name of the organism
+<a name="l00062"></a>00062   Arg [-SPECIES]    : 
+<a name="l00063"></a>00063        <span class="keywordtype">string</span> - computable version of the name of the organism (lower <span class="keywordflow">case</span>, no spaces)
+<a name="l00064"></a>00064    Arg [-TAXONOMY_ID] :
+<a name="l00065"></a>00065         <span class="keywordtype">string</span> - NCBI taxonomy identifier
+<a name="l00066"></a>00066   Arg [-SPECIES_TAXONOMY_ID] :
+<a name="l00067"></a>00067         <span class="keywordtype">string</span> - NCBI taxonomy identifier of species to which <span class="keyword">this</span> organism belongs
+<a name="l00068"></a>00068   Arg [-STRAIN]:
+<a name="l00069"></a>00069         <span class="keywordtype">string</span> - name of strain to which organism belongs
+<a name="l00070"></a>00070   Arg [-SEROTYPE]:
+<a name="l00071"></a>00071         <span class="keywordtype">string</span> - name of serotype to which organism belongs
+<a name="l00072"></a>00072   Arg [-IS_REFERENCE]:
+<a name="l00073"></a>00073         <span class="keywordtype">bool</span> - 1 <span class="keywordflow">if</span> <span class="keyword">this</span> organism is the reference <span class="keywordflow">for</span> its species
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html#a45df4057d6d932199e0b5fcb06a8ceef">new</a>(...);
+<a name="l00076"></a>00076   Description: Creates a <span class="keyword">new</span> info <span class="keywordtype">object</span>
+<a name="l00077"></a>00077   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
+<a name="l00078"></a>00078   Exceptions : none
+<a name="l00079"></a>00079   Caller     : general
+<a name="l00080"></a>00080   Status     : Stable
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082 =cut
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084 sub <span class="keyword">new</span> {
+<a name="l00085"></a>00085   my ( $class, @args ) = @_;
+<a name="l00086"></a>00086   my $self = $class-&gt;SUPER::new(@args);
+<a name="l00087"></a>00087   ( $self-&gt;{display_name}, $self-&gt;{name},
+<a name="l00088"></a>00088     $self-&gt;{strain},       $self-&gt;{serotype},
+<a name="l00089"></a>00089     $self-&gt;{is_reference}, $self-&gt;{taxonomy_id},
+<a name="l00090"></a>00090     $self-&gt;{species_taxonomy_id} )
+<a name="l00091"></a>00091     = rearrange( [ <span class="stringliteral">&#39;DISPLAY_NAME&#39;</span>, <span class="stringliteral">&#39;NAME&#39;</span>,
+<a name="l00092"></a>00092                    <span class="stringliteral">&#39;STRAIN&#39;</span>,       <span class="stringliteral">&#39;SEROTYPE&#39;</span>,
+<a name="l00093"></a>00093                    <span class="stringliteral">&#39;IS_REFERENCE&#39;</span>, <span class="stringliteral">&#39;TAXONOMY_ID&#39;</span>,
+<a name="l00094"></a>00094                    <span class="stringliteral">&#39;SPECIES_TAXONOMY_ID&#39;</span> ],
+<a name="l00095"></a>00095                  @args );
+<a name="l00096"></a>00096   $self-&gt;{is_reference} ||= 0;
+<a name="l00097"></a>00097   <span class="keywordflow">return</span> $self;
+<a name="l00098"></a>00098 }
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100 =head1 ATTRIBUTE METHODS
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102 =head2 name
+<a name="l00103"></a>00103   Arg        : (optional) computationally safe name <span class="keywordflow">for</span> species name to <span class="keyword">set</span>
+<a name="l00104"></a>00104   Description: Gets/sets computationally safe name <span class="keywordflow">for</span> species name <span class="keywordflow">for</span> genome
+<a name="l00105"></a>00105   Returntype : <span class="keywordtype">string</span>
+<a name="l00106"></a>00106   Exceptions : none
+<a name="l00107"></a>00107   Caller     : general
+<a name="l00108"></a>00108   Status     : Stable
+<a name="l00109"></a>00109 =cut
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111 sub name {
+<a name="l00112"></a>00112   my ( $self, $arg ) = @_;
+<a name="l00113"></a>00113   $self-&gt;{name} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00114"></a>00114   <span class="keywordflow">return</span> $self-&gt;{name};
+<a name="l00115"></a>00115 }
+<a name="l00116"></a>00116 
+<a name="l00117"></a>00117 =head2 display_name
+<a name="l00118"></a>00118   Arg        : (optional) display_name to <span class="keyword">set</span>
+<a name="l00119"></a>00119   Description: Gets/sets display_name 
+<a name="l00120"></a>00120   Returntype : <span class="keywordtype">string</span>
+<a name="l00121"></a>00121   Exceptions : none
+<a name="l00122"></a>00122   Caller     : general
+<a name="l00123"></a>00123   Status     : Stable
+<a name="l00124"></a>00124 =cut
+<a name="l00125"></a>00125 
+<a name="l00126"></a>00126 sub display_name {
+<a name="l00127"></a>00127   my ( $self, $display_name ) = @_;
+<a name="l00128"></a>00128   $self-&gt;{display_name} = $display_name <span class="keywordflow">if</span> ( defined $display_name );
+<a name="l00129"></a>00129   <span class="keywordflow">return</span> $self-&gt;{display_name};
+<a name="l00130"></a>00130 }
+<a name="l00131"></a>00131 
+<a name="l00132"></a>00132 =head2 strain
+<a name="l00133"></a>00133   Arg        : (optional) strain to <span class="keyword">set</span>
+<a name="l00134"></a>00134   Description: Gets/sets strain of genome
+<a name="l00135"></a>00135   Returntype : <span class="keywordtype">string</span>
+<a name="l00136"></a>00136   Exceptions : none
+<a name="l00137"></a>00137   Caller     : general
+<a name="l00138"></a>00138   Status     : Stable
+<a name="l00139"></a>00139 =cut
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141 sub strain {
+<a name="l00142"></a>00142   my ( $self, $arg ) = @_;
+<a name="l00143"></a>00143   $self-&gt;{strain} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00144"></a>00144   <span class="keywordflow">return</span> $self-&gt;{strain};
+<a name="l00145"></a>00145 }
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147 =head2 serotype
+<a name="l00148"></a>00148   Arg        : (optional) serotype to <span class="keyword">set</span>
+<a name="l00149"></a>00149   Description: Gets/sets serotype
+<a name="l00150"></a>00150   Returntype : <span class="keywordtype">string</span>
+<a name="l00151"></a>00151   Exceptions : none
+<a name="l00152"></a>00152   Caller     : general
+<a name="l00153"></a>00153   Status     : Stable
+<a name="l00154"></a>00154 =cut
+<a name="l00155"></a>00155 
+<a name="l00156"></a>00156 sub serotype {
+<a name="l00157"></a>00157   my ( $self, $arg ) = @_;
+<a name="l00158"></a>00158   $self-&gt;{serotype} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00159"></a>00159   <span class="keywordflow">return</span> $self-&gt;{serotype};
+<a name="l00160"></a>00160 }
+<a name="l00161"></a>00161 
+<a name="l00162"></a>00162 =head2 taxonomy_id
+<a name="l00163"></a>00163   Arg        : (optional) taxonomy_id to <span class="keyword">set</span>
+<a name="l00164"></a>00164   Description: Gets/sets NCBI taxonomy ID
+<a name="l00165"></a>00165   Returntype : <span class="keywordtype">string</span>
+<a name="l00166"></a>00166   Exceptions : none
+<a name="l00167"></a>00167   Caller     : general
+<a name="l00168"></a>00168   Status     : Stable
+<a name="l00169"></a>00169 =cut
+<a name="l00170"></a>00170 
+<a name="l00171"></a>00171 sub taxonomy_id {
+<a name="l00172"></a>00172   my ( $self, $taxonomy_id ) = @_;
+<a name="l00173"></a>00173   $self-&gt;{taxonomy_id} = $taxonomy_id <span class="keywordflow">if</span> ( defined $taxonomy_id );
+<a name="l00174"></a>00174   <span class="keywordflow">return</span> $self-&gt;{taxonomy_id};
+<a name="l00175"></a>00175 }
+<a name="l00176"></a>00176 
+<a name="l00177"></a>00177 =head2 species_taxonomy_id
+<a name="l00178"></a>00178   Arg        : (optional) taxonomy_id to <span class="keyword">set</span>
+<a name="l00179"></a>00179   Description: Gets/sets NCBI taxonomy ID of species to which <span class="keyword">this</span> belongs
+<a name="l00180"></a>00180   Returntype : <span class="keywordtype">string</span>
+<a name="l00181"></a>00181   Exceptions : none
+<a name="l00182"></a>00182   Caller     : general
+<a name="l00183"></a>00183   Status     : Stable
+<a name="l00184"></a>00184 =cut
+<a name="l00185"></a>00185 
+<a name="l00186"></a>00186 sub species_taxonomy_id {
+<a name="l00187"></a>00187   my ( $self, $taxonomy_id ) = @_;
+<a name="l00188"></a>00188   $self-&gt;{species_taxonomy_id} = $taxonomy_id <span class="keywordflow">if</span> ( defined $taxonomy_id );
+<a name="l00189"></a>00189   <span class="keywordflow">return</span> $self-&gt;{species_taxonomy_id};
+<a name="l00190"></a>00190 }
+<a name="l00191"></a>00191 
+<a name="l00192"></a>00192 =head2 aliases
+<a name="l00193"></a>00193   Arg        : (optional) arrayref of aliases to <span class="keyword">set</span>
+<a name="l00194"></a>00194   Description: Gets/sets aliases by which the genome is also known 
+<a name="l00195"></a>00195   Returntype : Arrayref of aliases
+<a name="l00196"></a>00196   Exceptions : none
+<a name="l00197"></a>00197   Caller     : general
+<a name="l00198"></a>00198   Status     : Stable
+<a name="l00199"></a>00199 =cut
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201 sub aliases {
+<a name="l00202"></a>00202   my ( $self, $aliases ) = @_;
+<a name="l00203"></a>00203   <span class="keywordflow">if</span> ( defined $aliases ) {
+<a name="l00204"></a>00204     $self-&gt;{aliases} = $aliases;
+<a name="l00205"></a>00205   }
+<a name="l00206"></a>00206   $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a>( <span class="stringliteral">&#39;aliases&#39;</span>, <span class="stringliteral">&#39;_fetch_aliases&#39;</span> );
+<a name="l00207"></a>00207   <span class="keywordflow">return</span> $self-&gt;{aliases};
+<a name="l00208"></a>00208 }
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 =head2 publications
+<a name="l00211"></a>00211   Arg        : (optional) arrayref of pubmed IDs to <span class="keyword">set</span>
+<a name="l00212"></a>00212   Description: Gets/sets PubMed IDs <span class="keywordflow">for</span> publications associated with the genome
+<a name="l00213"></a>00213   Returntype : Arrayref of PubMed IDs
+<a name="l00214"></a>00214   Exceptions : none
+<a name="l00215"></a>00215   Caller     : general
+<a name="l00216"></a>00216   Status     : Stable
+<a name="l00217"></a>00217 =cut
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219 sub publications {
+<a name="l00220"></a>00220   my ( $self, $publications ) = @_;
+<a name="l00221"></a>00221   <span class="keywordflow">if</span> ( defined $publications ) {
+<a name="l00222"></a>00222     $self-&gt;{publications} = $publications;
+<a name="l00223"></a>00223   }
+<a name="l00224"></a>00224   $self-&gt;_load_child( <span class="stringliteral">&#39;publications&#39;</span>, <span class="stringliteral">&#39;_fetch_publications&#39;</span> );
+<a name="l00225"></a>00225   <span class="keywordflow">return</span> $self-&gt;{publications};
+<a name="l00226"></a>00226 }
+<a name="l00227"></a>00227 
+<a name="l00228"></a>00228 =head2 is_reference
+<a name="l00229"></a>00229   Arg        : (optional) whether organism is reference
+<a name="l00230"></a>00230   Description: Gets/sets whether <span class="keyword">this</span> organism is the reference <span class="keywordflow">for</span> its species
+<a name="l00231"></a>00231   Returntype : <span class="keywordtype">string</span>
+<a name="l00232"></a>00232   Exceptions : none
+<a name="l00233"></a>00233   Caller     : general
+<a name="l00234"></a>00234   Status     : Stable
+<a name="l00235"></a>00235 =cut
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237 sub is_reference {
+<a name="l00238"></a>00238   my ( $self, $is_reference ) = @_;
+<a name="l00239"></a>00239   $self-&gt;{is_reference} = $is_reference <span class="keywordflow">if</span> ( defined $is_reference );
+<a name="l00240"></a>00240   <span class="keywordflow">return</span> $self-&gt;{is_reference};
+<a name="l00241"></a>00241 }
+<a name="l00242"></a>00242 
+<a name="l00243"></a>00243 =head1 UTILITY METHODS
+<a name="l00244"></a>00244 =head2 to_string
+<a name="l00245"></a>00245   Description: Render as plain <span class="keywordtype">string</span>
+<a name="l00246"></a>00246   Returntype : <span class="keywordtype">string</span>
+<a name="l00247"></a>00247   Exceptions : none
+<a name="l00248"></a>00248   Caller     : general
+<a name="l00249"></a>00249   Status     : Stable
+<a name="l00250"></a>00250 =cut
 <a name="l00251"></a>00251 
-<a name="l00252"></a>00252 1;
+<a name="l00252"></a>00252 sub to_string {
+<a name="l00253"></a>00253   my ($self) = @_;
+<a name="l00254"></a>00254   <span class="keywordflow">return</span> $self-&gt;name();
+<a name="l00255"></a>00255 }
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

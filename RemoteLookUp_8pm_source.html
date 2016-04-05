@@ -159,15 +159,15 @@ function toggleVisibility(linkObj) {
 <a name="l00033"></a>00033 
 <a name="l00034"></a>00034 =head1 SYNOPSIS
 <a name="l00035"></a>00035 
-<a name="l00036"></a>00036 my $adaptor = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#aa892bb1501e0bd0bbea154ed46dde3bc">build_ensembl_genomes_adaptor</a>();
+<a name="l00036"></a>00036 my $adaptor = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;build_ensembl_genomesadaptor();
 <a name="l00037"></a>00037 my $lookup = Bio::EnsEMBL::RemoteLookUp-&gt;new(-ADAPTOR=&gt;$adaptor);
 <a name="l00038"></a>00038 my $dbas = $lookup-&gt;registry()-&gt;get_all();
-<a name="l00039"></a><a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1RemoteLookUp.html">00039</a> $dbas = $lookup-&gt;get_all_by_taxon_id(388919);
+<a name="l00039"></a>00039 $dbas = $lookup-&gt;get_all_by_taxon_id(388919);
 <a name="l00040"></a>00040 $dbas = $lookup-&gt;get_by_name_pattern(<span class="stringliteral">&quot;Escherichia.*&quot;</span>);
 <a name="l00041"></a>00041 
 <a name="l00042"></a>00042 =head1 DESCRIPTION
 <a name="l00043"></a>00043 
-<a name="l00044"></a>00044 This module is an implementation of <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp.html">Bio::EnsEMBL::LookUp</a> that uses <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a> to
+<a name="l00044"></a><a class="code" href="classBio_1_1EnsEMBL_1_1LookUp_1_1RemoteLookUp.html">00044</a> This module is an implementation of <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp.html">Bio::EnsEMBL::LookUp</a> that uses <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a> to
 <a name="l00045"></a>00045 access a MySQL database containing information about Ensembl and Ensembl Genomes contents and then instantiate DBAdaptors.
 <a name="l00046"></a>00046 
 <a name="l00047"></a>00047 To instantiate <span class="keyword">using</span> the <span class="keyword">public</span> Ensembl/EG servers <span class="keywordflow">for</span> creating DBAdaptors:
@@ -179,393 +179,382 @@ function toggleVisibility(linkObj) {
 <a name="l00053"></a>00053     my $lookup = Bio::EnsEMBL::LookUp::RemoteLookUp-&gt;new(-USER=&gt;$user, -HOST=&gt;$host, -PORT=&gt;$port, -ADAPTOR=&gt;$adaptor);
 <a name="l00054"></a>00054 
 <a name="l00055"></a>00055 Once constructed, the <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp.html">LookUp</a> instance can be used as documented in <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp.html">Bio::EnsEMBL::LookUp</a>.
-<a name="l00056"></a>00056   
-<a name="l00057"></a>00057 =head1 AUTHOR
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 =head1 SEE ALSO
 <a name="l00058"></a>00058 
-<a name="l00059"></a>00059 dstaines
+<a name="l00059"></a>00059 <a class="code" href="classBio_1_1EnsEMBL_1_1LookUp.html">Bio::EnsEMBL::LookUp</a>
 <a name="l00060"></a>00060 
-<a name="l00061"></a>00061 =head1 MAINTANER
+<a name="l00061"></a>00061 =head1 AUTHOR
 <a name="l00062"></a>00062 
-<a name="l00063"></a>00063 $Author$
+<a name="l00063"></a>00063 Dan Staines
 <a name="l00064"></a>00064 
-<a name="l00065"></a>00065 =head1 VERSION
+<a name="l00065"></a>00065 =cut
 <a name="l00066"></a>00066 
-<a name="l00067"></a>00067 $Revision$
+<a name="l00067"></a>00067 <span class="keyword">package </span>Bio::EnsEMBL::LookUp::RemoteLookUp;
 <a name="l00068"></a>00068 
-<a name="l00069"></a>00069 =cut
-<a name="l00070"></a>00070 
-<a name="l00071"></a>00071 <span class="keyword">package </span>Bio::EnsEMBL::LookUp::RemoteLookUp;
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 use warnings;
-<a name="l00074"></a>00074 use strict;
-<a name="l00075"></a>00075 use Bio::EnsEMBL::DBSQL::DBAdaptor;
-<a name="l00076"></a>00076 use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
-<a name="l00077"></a>00077 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00078"></a>00078 use Bio::EnsEMBL::Utils::Exception qw(<span class="keywordflow">throw</span> warning);
-<a name="l00079"></a>00079 use Bio::EnsEMBL::Utils::Scalar qw(assert_ref check_ref);
-<a name="l00080"></a>00080 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>;
-<a name="l00081"></a>00081 use <a class="code" href="classBio_1_1EnsEMBL_1_1Utils_1_1PublicMySQLServer.html">Bio::EnsEMBL::Utils::PublicMySQLServer</a> qw/e_args eg_args/;
-<a name="l00082"></a>00082 use Carp;
-<a name="l00083"></a>00083 use List::MoreUtils qw(uniq);
-<a name="l00084"></a>00084 
-<a name="l00085"></a>00085 =head1 SUBROUTINES/METHODS
-<a name="l00086"></a>00086 
-<a name="l00087"></a>00087 =head2 <span class="keyword">new</span>
-<a name="l00088"></a>00088   Arg [-ADAPTOR]    : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
-<a name="l00089"></a>00089   Arg [-REGISTRY]   : Registry to obtain DBAdaptors from
-<a name="l00090"></a>00090   Arg [-HOST]       : Host containing DBAdaptors
-<a name="l00091"></a>00091   Arg [-PORT]       : Port  <span class="keywordflow">for</span> DBAdaptors
-<a name="l00092"></a>00092   Arg [-USER]       : User <span class="keywordflow">for</span> DBAdaptors
-<a name="l00093"></a>00093   Arg [-PASS]       : Password <span class="keywordflow">for</span> DBAdaptors
-<a name="l00094"></a>00094   Description       : Creates a <span class="keyword">new</span> instance of <span class="keyword">this</span> <span class="keywordtype">object</span>. 
-<a name="l00095"></a>00095   Returntype        : Instance of lookup
-<a name="l00096"></a>00096   Status            : Stable
-<a name="l00097"></a>00097   Example           : 
-<a name="l00098"></a>00098   my $lookup = Bio::EnsEMBL::RemoteLookUp-&gt;new();
-<a name="l00099"></a>00099 =cut
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101 sub <span class="keyword">new</span> {
-<a name="l00102"></a>00102   my ( $class, @args ) = @_;
-<a name="l00103"></a>00103   my $self = bless( {}, ref($class) || $class );
-<a name="l00104"></a>00104   ( $self-&gt;{_adaptor}, $self-&gt;{registry}, $self-&gt;{user},
-<a name="l00105"></a>00105     $self-&gt;{pass},     $self-&gt;{host},     $self-&gt;{port} )
-<a name="l00106"></a>00106     = rearrange( [ <span class="stringliteral">&#39;ADAPTOR&#39;</span>, <span class="stringliteral">&#39;REGISTRY&#39;</span>, <span class="stringliteral">&#39;USER&#39;</span>, <span class="stringliteral">&#39;PASS&#39;</span>, <span class="stringliteral">&#39;HOST&#39;</span>, <span class="stringliteral">&#39;PORT&#39;</span> ],
+<a name="l00069"></a>00069 use warnings;
+<a name="l00070"></a>00070 use strict;
+<a name="l00071"></a>00071 use Bio::EnsEMBL::DBSQL::DBAdaptor;
+<a name="l00072"></a>00072 use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
+<a name="l00073"></a>00073 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00074"></a>00074 use Bio::EnsEMBL::Utils::Exception qw(<span class="keywordflow">throw</span> warning);
+<a name="l00075"></a>00075 use Bio::EnsEMBL::Utils::Scalar qw(assert_ref check_ref);
+<a name="l00076"></a>00076 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>;
+<a name="l00077"></a>00077 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html">Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider</a>;
+<a name="l00078"></a>00078 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1ParameterMySQLServerProvider.html">Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider</a>;
+<a name="l00079"></a>00079 use Carp;
+<a name="l00080"></a>00080 use List::MoreUtils qw(uniq);
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082 =head1 SUBROUTINES/METHODS
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084 =head2 <span class="keyword">new</span>
+<a name="l00085"></a>00085   Arg [-ADAPTOR]    : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00086"></a>00086   Arg [-REGISTRY]   : Registry to obtain DBAdaptors from
+<a name="l00087"></a>00087   Arg [-PROVIDER]   : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html">Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider</a>
+<a name="l00088"></a>00088   Arg [-HOST]       : Host containing DBAdaptors
+<a name="l00089"></a>00089   Arg [-PORT]       : Port  <span class="keywordflow">for</span> DBAdaptors
+<a name="l00090"></a>00090   Arg [-USER]       : User <span class="keywordflow">for</span> DBAdaptors
+<a name="l00091"></a>00091   Arg [-PASS]       : Password <span class="keywordflow">for</span> DBAdaptors
+<a name="l00092"></a>00092   Description       : Creates a <span class="keyword">new</span> instance of <span class="keyword">this</span> <span class="keywordtype">object</span>. 
+<a name="l00093"></a>00093   Returntype        : Instance of lookup
+<a name="l00094"></a>00094   Status            : Stable
+<a name="l00095"></a>00095   Example           : 
+<a name="l00096"></a>00096   my $lookup = Bio::EnsEMBL::RemoteLookUp-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html#a99d52e0639658ed62bee3e590ba5093d">new</a>();
+<a name="l00097"></a>00097 =cut
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099 sub <span class="keyword">new</span> {
+<a name="l00100"></a>00100   my ( $class, @args ) = @_;
+<a name="l00101"></a>00101   my $self = bless( {}, ref($class) || $class );
+<a name="l00102"></a>00102   ( $self-&gt;{_adaptor}, $self-&gt;{registry}, $self-&gt;{user},
+<a name="l00103"></a>00103     $self-&gt;{pass},     $self-&gt;{host},     $self-&gt;{port},
+<a name="l00104"></a>00104     $self-&gt;{provider} )
+<a name="l00105"></a>00105     = rearrange( [ <span class="stringliteral">&#39;ADAPTOR&#39;</span>, <span class="stringliteral">&#39;REGISTRY&#39;</span>, <span class="stringliteral">&#39;USER&#39;</span>, <span class="stringliteral">&#39;PASS&#39;</span>,
+<a name="l00106"></a>00106                    <span class="stringliteral">&#39;HOST&#39;</span>,    <span class="stringliteral">&#39;PORT&#39;</span>,     <span class="stringliteral">&#39;PROVIDER&#39;</span> ],
 <a name="l00107"></a>00107                  @args );
-<a name="l00108"></a>00108   $self-&gt;{dba_cache} = {};
-<a name="l00109"></a>00109   $self-&gt;{registry} ||= q/Bio::EnsEMBL::Registry/;
-<a name="l00110"></a>00110   <span class="keywordflow">return</span> $self;
-<a name="l00111"></a>00111 }
-<a name="l00112"></a>00112 
-<a name="l00113"></a>00113 =head2 genome_to_dba
-<a name="l00114"></a>00114     Description : Build a Bio::EnsEMBL::DBSQL::DBAdaptor instance with the supplied info <span class="keywordtype">object</span>
-<a name="l00115"></a>00115     Argument    : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00116"></a>00116     Exceptions  : None
-<a name="l00117"></a>00117     Return type : Bio::EnsEMBL::DBSQL::DBAdaptor
-<a name="l00118"></a>00118 =cut
-<a name="l00119"></a>00119 
-<a name="l00120"></a>00120 sub genome_to_dba {
-<a name="l00121"></a>00121   my ( $self, $genome_info ) = @_;
-<a name="l00122"></a>00122   my $dba;
-<a name="l00123"></a>00123   <span class="keywordflow">if</span> ( defined $genome_info ) {
-<a name="l00124"></a>00124     assert_ref( $genome_info, <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeInfo&#39;</span> );
-<a name="l00125"></a>00125     $dba = $self-&gt;_cache()-&gt;{ $genome_info-&gt;dbID() };
-<a name="l00126"></a>00126     <span class="keywordflow">if</span> ( !defined $dba ) {
-<a name="l00127"></a>00127 
-<a name="l00128"></a>00128       my $args = $self-&gt;_get_args($genome_info);
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130       $args-&gt;{-DBNAME}     = $genome_info-&gt;dbname();
-<a name="l00131"></a>00131       $args-&gt;{-SPECIES}    = $genome_info-&gt;name();
-<a name="l00132"></a>00132       $args-&gt;{-SPECIES_ID} = $genome_info-&gt;species_id();
-<a name="l00133"></a>00133       $args-&gt;{-MULTISPECIES_DB} =
-<a name="l00134"></a>00134         $genome_info-&gt;dbname() =~ m/_collection_/ ? 1 : 0;
-<a name="l00135"></a>00135       $args-&gt;{-GROUP} = <span class="stringliteral">&#39;core&#39;</span>;
-<a name="l00136"></a>00136 
-<a name="l00137"></a>00137       $dba = Bio::EnsEMBL::DBSQL::DBAdaptor-&gt;new(%$args);
+<a name="l00108"></a>00108   <span class="keywordflow">if</span> ( !defined $self-&gt;{provider} ) {
+<a name="l00109"></a>00109 <span class="preprocessor">    # provider is used to figure out where DBAs come from</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ( defined $self-&gt;{host} ) {
+<a name="l00111"></a>00111 <span class="preprocessor">      # we have a host, so use a fixed provider</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span>      $self-&gt;{provider} =
+<a name="l00113"></a>00113         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1ParameterMySQLServerProvider.html">Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1ParameterMySQLServerProvider.html#a4c2be382fd5ad6935ef145d5823cc0a4">new</a>(
+<a name="l00114"></a>00114                                                          -HOST =&gt; $self-&gt;{host},
+<a name="l00115"></a>00115                                                          -POR  =&gt; $self-&gt;{port},
+<a name="l00116"></a>00116                                                          -USER =&gt; $self-&gt;{user},
+<a name="l00117"></a>00117                                                          -PASS =&gt; $self-&gt;{pass}
+<a name="l00118"></a>00118         );
+<a name="l00119"></a>00119     }
+<a name="l00120"></a>00120     <span class="keywordflow">else</span> {
+<a name="l00121"></a>00121 <span class="preprocessor">      # default is the public provider</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span>      $self-&gt;{provider} =
+<a name="l00123"></a>00123         <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html">Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1MySQLServerProvider.html#a99d52e0639658ed62bee3e590ba5093d">new</a>();
+<a name="l00124"></a>00124     }
+<a name="l00125"></a>00125   }
+<a name="l00126"></a>00126   $self-&gt;{dba_cache} = {};
+<a name="l00127"></a>00127   $self-&gt;{registry} ||= q/Bio::EnsEMBL::Registry/;
+<a name="l00128"></a>00128   <span class="keywordflow">return</span> $self;
+<a name="l00129"></a>00129 } ## end sub <span class="keyword">new</span>
+<a name="l00130"></a>00130 
+<a name="l00131"></a>00131 =head2 genome_to_dba
+<a name="l00132"></a>00132     Description : Build a Bio::EnsEMBL::DBSQL::DBAdaptor instance with the supplied info <span class="keywordtype">object</span>
+<a name="l00133"></a>00133     Argument    : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00134"></a>00134     Argument    : (optional) Group to use
+<a name="l00135"></a>00135     Exceptions  : None
+<a name="l00136"></a>00136     Return type : Bio::EnsEMBL::DBSQL::DBAdaptor
+<a name="l00137"></a>00137 =cut
 <a name="l00138"></a>00138 
-<a name="l00139"></a>00139       $self-&gt;_cache()-&gt;{ $genome_info-&gt;dbID() } = $dba;
-<a name="l00140"></a>00140 
-<a name="l00141"></a>00141     }
-<a name="l00142"></a>00142   }
-<a name="l00143"></a>00143   <span class="keywordflow">return</span> $dba;
-<a name="l00144"></a>00144 } ## end sub genome_to_dba
-<a name="l00145"></a>00145 
-<a name="l00146"></a>00146 =head2 genomes_to_dbas
-<a name="l00147"></a>00147     Description : Build a <span class="keyword">set</span> of Bio::EnsEMBL::DBSQL::DBAdaptor instances with the supplied info objects
-<a name="l00148"></a>00148     Argument    : array ref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00149"></a>00149     Exceptions  : None
-<a name="l00150"></a>00150     Return type : array ref of Bio::EnsEMBL::DBSQL::DBAdaptor
-<a name="l00151"></a>00151 =cut
-<a name="l00152"></a>00152 
-<a name="l00153"></a>00153 sub genomes_to_dbas {
-<a name="l00154"></a>00154   my ( $self, $genomes ) = @_;
-<a name="l00155"></a>00155   my $dbas = [];
-<a name="l00156"></a>00156   <span class="keywordflow">if</span> ( defined $genomes ) {
-<a name="l00157"></a>00157     <span class="keywordflow">for</span> my $genome ( @{$genomes} ) {
-<a name="l00158"></a>00158       push @$dbas, $self-&gt;genome_to_dba($genome);
-<a name="l00159"></a>00159     }
-<a name="l00160"></a>00160   }
-<a name="l00161"></a>00161   <span class="keywordflow">return</span> $dbas;
-<a name="l00162"></a>00162 }
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164 =head2 compara_to_dba
-<a name="l00165"></a>00165     Description : Build a Bio::EnsEMBL::Compara::DBSQL::DBAdaptor instance with the supplied info <span class="keywordtype">object</span>
-<a name="l00166"></a>00166     Argument    : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00167"></a>00167     Exceptions  : None
-<a name="l00168"></a>00168     Return type : Arrayref of strings
-<a name="l00169"></a>00169 =cut
-<a name="l00170"></a>00170 
-<a name="l00171"></a>00171 sub compara_to_dba {
-<a name="l00172"></a>00172   my ( $self, $genome_info ) = @_;
-<a name="l00173"></a>00173   assert_ref( $genome_info, <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeComparaInfo&#39;</span> );
-<a name="l00174"></a>00174   my $dba = $self-&gt;_cache()-&gt;{compara}-&gt;{ $genome_info-&gt;dbID() };
-<a name="l00175"></a>00175   <span class="keywordflow">if</span> ( !defined $dba ) {
-<a name="l00176"></a>00176     my $div = $genome_info-&gt;division();
-<a name="l00177"></a>00177     <span class="keywordflow">if</span> ( !$div eq <span class="stringliteral">&#39;Ensembl&#39;</span> ) {
-<a name="l00178"></a>00178       $div = <span class="stringliteral">&#39;multi&#39;</span>;
-<a name="l00179"></a>00179     }
+<a name="l00139"></a>00139 sub genome_to_dba {
+<a name="l00140"></a>00140   my ( $self, $genome_info ) = @_;
+<a name="l00141"></a>00141   my $dba;
+<a name="l00142"></a>00142   <span class="keywordflow">if</span> ( defined $genome_info ) {
+<a name="l00143"></a>00143     assert_ref( $genome_info, <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeInfo&#39;</span> );
+<a name="l00144"></a>00144     $dba = $self-&gt;_cache()-&gt;{ $genome_info-&gt;dbID() };
+<a name="l00145"></a>00145     <span class="keywordflow">if</span> ( !defined $dba ) {
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147       my $args = $self-&gt;{provider}-&gt;args_for_genome($genome_info);
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149       $args-&gt;{-DBNAME}     = $genome_info-&gt;dbname();
+<a name="l00150"></a>00150       $args-&gt;{-SPECIES}    = $genome_info-&gt;name();
+<a name="l00151"></a>00151       $args-&gt;{-SPECIES_ID} = $genome_info-&gt;species_id();
+<a name="l00152"></a>00152       $args-&gt;{-MULTISPECIES_DB} =
+<a name="l00153"></a>00153         $genome_info-&gt;dbname() =~ m/_collection_/ ? 1 : 0;
+<a name="l00154"></a>00154       $args-&gt;{-GROUP} = <span class="stringliteral">&#39;core&#39;</span>;
+<a name="l00155"></a>00155         $dba = Bio::EnsEMBL::DBSQL::DBAdaptor-&gt;new(%$args);
+<a name="l00156"></a>00156       $self-&gt;_cache()-&gt;{ $genome_info-&gt;dbID() } = $dba;
+<a name="l00157"></a>00157 
+<a name="l00158"></a>00158     }
+<a name="l00159"></a>00159   }
+<a name="l00160"></a>00160   <span class="keywordflow">return</span> $dba;
+<a name="l00161"></a>00161 } ## end sub genome_to_dba
+<a name="l00162"></a>00162 
+<a name="l00163"></a>00163 =head2 genomes_to_dbas
+<a name="l00164"></a>00164     Description : Build a <span class="keyword">set</span> of Bio::EnsEMBL::DBSQL::DBAdaptor instances with the supplied info objects
+<a name="l00165"></a>00165     Argument    : array ref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00166"></a>00166     Exceptions  : None
+<a name="l00167"></a>00167     Return type : array ref of Bio::EnsEMBL::DBSQL::DBAdaptor
+<a name="l00168"></a>00168 =cut
+<a name="l00169"></a>00169 
+<a name="l00170"></a>00170 sub genomes_to_dbas {
+<a name="l00171"></a>00171   my ( $self, $genomes ) = @_;
+<a name="l00172"></a>00172   my $dbas = [];
+<a name="l00173"></a>00173   <span class="keywordflow">if</span> ( defined $genomes ) {
+<a name="l00174"></a>00174     <span class="keywordflow">for</span> my $genome ( @{$genomes} ) {
+<a name="l00175"></a>00175       push @$dbas, $self-&gt;genome_to_dba($genome);
+<a name="l00176"></a>00176     }
+<a name="l00177"></a>00177   }
+<a name="l00178"></a>00178   <span class="keywordflow">return</span> $dbas;
+<a name="l00179"></a>00179 }
 <a name="l00180"></a>00180 
-<a name="l00181"></a>00181     my $args = $self-&gt;_get_args($genome_info);
-<a name="l00182"></a>00182     $args-&gt;{-DBNAME}  = $genome_info-&gt;dbname();
-<a name="l00183"></a>00183     $args-&gt;{-SPECIES} = $div;
-<a name="l00184"></a>00184     $args-&gt;{-GROUP}   = <span class="stringliteral">&#39;compara&#39;</span>;
-<a name="l00185"></a>00185     $dba              = Bio::EnsEMBL::Compara::DBSQL::DBAdaptor-&gt;new(%$args);
-<a name="l00186"></a>00186 
-<a name="l00187"></a>00187     $self-&gt;_cache()-&gt;{compara}-&gt;{ $genome_info-&gt;dbID() } = $dba;
-<a name="l00188"></a>00188 
-<a name="l00189"></a>00189   }
-<a name="l00190"></a>00190   <span class="keywordflow">return</span> $dba;
-<a name="l00191"></a>00191 }
-<a name="l00192"></a>00192 
-<a name="l00193"></a>00193 =head2 get_all_dbnames
-<a name="l00194"></a>00194     Description : Return all database names used by the DBAs retrieved from the registry
-<a name="l00195"></a>00195     Argument    : None
-<a name="l00196"></a>00196     Exceptions  : None
-<a name="l00197"></a>00197     Return type : Arrayref of strings
-<a name="l00198"></a>00198 =cut
-<a name="l00199"></a>00199 
-<a name="l00200"></a>00200 sub get_all_dbnames {
-<a name="l00201"></a>00201   my ($self) = @_;
-<a name="l00202"></a>00202   <span class="keywordflow">return</span> [ uniq( map { $_-&gt;dbname() } @{ $self-&gt;{_adaptor} } ) ];
-<a name="l00203"></a>00203 }
-<a name="l00204"></a>00204 
-<a name="l00205"></a>00205 =head2 get_all
-<a name="l00206"></a>00206     Description : Return all database adaptors that have been retrieved from registry
-<a name="l00207"></a>00207     Argument    : None
-<a name="l00208"></a>00208     Exceptions  : None
-<a name="l00209"></a>00209     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00210"></a>00210 =cut
-<a name="l00211"></a>00211 
-<a name="l00212"></a>00212 sub get_all {
-<a name="l00213"></a>00213   my ($self) = @_;
-<a name="l00214"></a>00214   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas( $self-&gt;{_adaptor}-&gt;fetch_all() );
-<a name="l00215"></a>00215 }
+<a name="l00181"></a>00181 =head2 compara_to_dba
+<a name="l00182"></a>00182     Description : Build a Bio::EnsEMBL::Compara::DBSQL::DBAdaptor instance with the supplied info <span class="keywordtype">object</span>
+<a name="l00183"></a>00183     Argument    : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00184"></a>00184     Exceptions  : None
+<a name="l00185"></a>00185     Return type : Arrayref of strings
+<a name="l00186"></a>00186 =cut
+<a name="l00187"></a>00187 
+<a name="l00188"></a>00188 sub compara_to_dba {
+<a name="l00189"></a>00189   my ( $self, $genome_info ) = @_;
+<a name="l00190"></a>00190   assert_ref( $genome_info, <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeComparaInfo&#39;</span> );
+<a name="l00191"></a>00191   my $dba = $self-&gt;_cache()-&gt;{compara}-&gt;{ $genome_info-&gt;dbID() };
+<a name="l00192"></a>00192   <span class="keywordflow">if</span> ( !defined $dba ) {
+<a name="l00193"></a>00193     my $div = $genome_info-&gt;division();
+<a name="l00194"></a>00194     <span class="keywordflow">if</span> ( !$div eq <span class="stringliteral">&#39;Ensembl&#39;</span> ) {
+<a name="l00195"></a>00195       $div = <span class="stringliteral">&#39;multi&#39;</span>;
+<a name="l00196"></a>00196     }
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198     my $args = $self-&gt;_get_args($genome_info);
+<a name="l00199"></a>00199     $args-&gt;{-DBNAME}  = $genome_info-&gt;dbname();
+<a name="l00200"></a>00200     $args-&gt;{-SPECIES} = $div;
+<a name="l00201"></a>00201     $args-&gt;{-GROUP}   = <span class="stringliteral">&#39;compara&#39;</span>;
+<a name="l00202"></a>00202     $dba              = Bio::EnsEMBL::Compara::DBSQL::DBAdaptor-&gt;new(%$args);
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204     $self-&gt;_cache()-&gt;{compara}-&gt;{ $genome_info-&gt;dbID() } = $dba;
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206   }
+<a name="l00207"></a>00207   <span class="keywordflow">return</span> $dba;
+<a name="l00208"></a>00208 }
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 =head2 get_all_dbnames
+<a name="l00211"></a>00211     Description : Return all database names used by the DBAs retrieved from the registry
+<a name="l00212"></a>00212     Argument    : None
+<a name="l00213"></a>00213     Exceptions  : None
+<a name="l00214"></a>00214     Return type : Arrayref of strings
+<a name="l00215"></a>00215 =cut
 <a name="l00216"></a>00216 
-<a name="l00217"></a>00217 =head2 get_all_by_taxon_branch
-<a name="l00218"></a>00218     Description : Returns all database adaptors that lie beneath the specified taxon node
-<a name="l00219"></a>00219     Argument    : String
-<a name="l00220"></a>00220     Exceptions  : None
-<a name="l00221"></a>00221     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00222"></a>00222 =cut
-<a name="l00223"></a>00223 sub get_all_by_taxon_branch {
-<a name="l00224"></a>00224   my ( $self, $taxid ) = @_;
-<a name="l00225"></a>00225   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas(
-<a name="l00226"></a>00226                       $self-&gt;{_adaptor}-&gt;fetch_all_by_taxonomy_branch($taxid) );
-<a name="l00227"></a>00227 }
+<a name="l00217"></a>00217 sub get_all_dbnames {
+<a name="l00218"></a>00218   my ($self) = @_;
+<a name="l00219"></a>00219   <span class="keywordflow">return</span> [ uniq( map { $_-&gt;dbname() } @{ $self-&gt;adaptor()-&gt;fetch_all() } ) ];
+<a name="l00220"></a>00220 }
+<a name="l00221"></a>00221 
+<a name="l00222"></a>00222 =head2 get_all
+<a name="l00223"></a>00223     Description : Return all database adaptors that have been retrieved from registry
+<a name="l00224"></a>00224     Argument    : None
+<a name="l00225"></a>00225     Exceptions  : None
+<a name="l00226"></a>00226     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00227"></a>00227 =cut
 <a name="l00228"></a>00228 
-<a name="l00229"></a>00229 =head2 get_all_by_taxon_id
-<a name="l00230"></a>00230     Description : Returns all database adaptors that have the supplied taxonomy ID
-<a name="l00231"></a>00231     Argument    : String
-<a name="l00232"></a>00232     Exceptions  : None
-<a name="l00233"></a>00233     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00234"></a>00234 =cut
-<a name="l00235"></a>00235 
-<a name="l00236"></a>00236 sub get_all_by_taxon_id {
-<a name="l00237"></a>00237   my ( $self, $taxid ) = @_;
-<a name="l00238"></a>00238   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas(
-<a name="l00239"></a>00239                           $self-&gt;{_adaptor}-&gt;fetch_all_by_taxonomy_id($taxid) );
-<a name="l00240"></a>00240 }
-<a name="l00241"></a>00241 
-<a name="l00242"></a>00242 =head2 get_by_name_exact
-<a name="l00243"></a>00243     Description : Return database adaptor that has the supplied <span class="keywordtype">string</span> as an alias/name
-<a name="l00244"></a>00244     Argument    : String
-<a name="l00245"></a>00245     Exceptions  : None
-<a name="l00246"></a>00246     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00247"></a>00247 =cut
-<a name="l00248"></a>00248 
-<a name="l00249"></a>00249 sub get_by_name_exact {
-<a name="l00250"></a>00250   my ( $self, $name ) = @_;
-<a name="l00251"></a>00251   <span class="keywordflow">return</span> $self-&gt;genome_to_dba( $self-&gt;{_adaptor}-&gt;fetch_by_any_name($name) );
-<a name="l00252"></a>00252 }
+<a name="l00229"></a>00229 sub get_all {
+<a name="l00230"></a>00230   my ($self) = @_;
+<a name="l00231"></a>00231   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas( $self-&gt;adaptor()-&gt;fetch_all() );
+<a name="l00232"></a>00232 }
+<a name="l00233"></a>00233 
+<a name="l00234"></a>00234 =head2 get_all_by_taxon_branch
+<a name="l00235"></a>00235     Description : Returns all database adaptors that lie beneath the specified taxon node
+<a name="l00236"></a>00236     Argument    : String
+<a name="l00237"></a>00237     Exceptions  : None
+<a name="l00238"></a>00238     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00239"></a>00239 =cut
+<a name="l00240"></a>00240 
+<a name="l00241"></a>00241 sub get_all_by_taxon_branch {
+<a name="l00242"></a>00242   my ( $self, $taxid ) = @_;
+<a name="l00243"></a>00243   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas(
+<a name="l00244"></a>00244                       $self-&gt;adaptor()-&gt;fetch_all_by_taxonomy_branch($taxid) );
+<a name="l00245"></a>00245 }
+<a name="l00246"></a>00246 
+<a name="l00247"></a>00247 =head2 get_all_by_taxon_id
+<a name="l00248"></a>00248     Description : Returns all database adaptors that have the supplied taxonomy ID
+<a name="l00249"></a>00249     Argument    : String
+<a name="l00250"></a>00250     Exceptions  : None
+<a name="l00251"></a>00251     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00252"></a>00252 =cut
 <a name="l00253"></a>00253 
-<a name="l00254"></a>00254 =head2 get_all_by_accession
-<a name="l00255"></a>00255     Description : Returns the database adaptor(s) that contains a seq_region with the supplied INSDC accession (or other seq_region name)
-<a name="l00256"></a>00256     Argument    : Int
-<a name="l00257"></a>00257     Exceptions  : None
-<a name="l00258"></a>00258     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00259"></a>00259 =cut    
-<a name="l00260"></a>00260 
-<a name="l00261"></a>00261 sub get_all_by_accession {
-<a name="l00262"></a>00262   my ( $self, $acc ) = @_;
-<a name="l00263"></a>00263   my $genomes = $self-&gt;{_adaptor}-&gt;fetch_all_by_sequence_accession($acc);
-<a name="l00264"></a>00264   <span class="keywordflow">if</span> ( !defined $genomes || scalar(@$genomes) == 0 ) {
-<a name="l00265"></a>00265     $genomes =
-<a name="l00266"></a>00266       $self-&gt;{_adaptor}-&gt;fetch_all_by_sequence_accession_unversioned($acc);
-<a name="l00267"></a>00267   }
-<a name="l00268"></a>00268   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas($genomes);
-<a name="l00269"></a>00269 }
-<a name="l00270"></a>00270 
-<a name="l00271"></a>00271 =head2 get_by_assembly_accession
-<a name="l00272"></a>00272     Description : Returns the database adaptor that contains the assembly with the supplied INSDC assembly accession
-<a name="l00273"></a>00273     Argument    : Int
-<a name="l00274"></a>00274     Exceptions  : None
-<a name="l00275"></a>00275     Return type : Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00276"></a>00276 =cut
-<a name="l00277"></a>00277 
-<a name="l00278"></a>00278 sub get_by_assembly_accession {
-<a name="l00279"></a>00279   my ( $self, $acc ) = @_;
-<a name="l00280"></a>00280   my $genome = $self-&gt;{_adaptor}-&gt;fetch_by_assembly_id($acc);
-<a name="l00281"></a>00281   <span class="keywordflow">if</span> ( !defined $genome ) {
-<a name="l00282"></a>00282     $genome = $self-&gt;{_adaptor}-&gt;fetch_by_assembly_id_unversioned($acc);
-<a name="l00283"></a>00283   }
-<a name="l00284"></a>00284   <span class="keywordflow">return</span> $self-&gt;genome_to_dba($genome);
-<a name="l00285"></a>00285 }
-<a name="l00286"></a>00286 
-<a name="l00287"></a>00287 =head2 get_all_by_name_pattern
-<a name="l00288"></a>00288     Description : Return all database adaptors that have an alias/name that match the supplied regexp
-<a name="l00289"></a>00289     Argument    : String
-<a name="l00290"></a>00290     Exceptions  : None
-<a name="l00291"></a>00291     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00292"></a>00292 =cut    
-<a name="l00293"></a>00293 
-<a name="l00294"></a>00294 sub get_all_by_name_pattern {
-<a name="l00295"></a>00295   my ( $self, $name ) = @_;
-<a name="l00296"></a>00296   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas(
-<a name="l00297"></a>00297                           $self-&gt;{_adaptor}-&gt;fetch_all_by_name_pattern($name) );
-<a name="l00298"></a>00298 }
-<a name="l00299"></a>00299 
-<a name="l00300"></a>00300 =head2 get_all_by_dbname
-<a name="l00301"></a>00301     Description : Returns all database adaptors that have the supplied dbname
-<a name="l00302"></a>00302     Argument    : String
-<a name="l00303"></a>00303     Exceptions  : None
-<a name="l00304"></a>00304     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
-<a name="l00305"></a>00305 =cut
-<a name="l00306"></a>00306 
-<a name="l00307"></a>00307 sub get_all_by_dbname {
-<a name="l00308"></a>00308   my ( $self, $name ) = @_;
-<a name="l00309"></a>00309   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas($self-&gt;{_adaptor}-&gt;fetch_all_by_dbname($name) );
-<a name="l00310"></a>00310 }
+<a name="l00254"></a>00254 sub get_all_by_taxon_id {
+<a name="l00255"></a>00255   my ( $self, $taxid ) = @_;
+<a name="l00256"></a>00256   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas(
+<a name="l00257"></a>00257                           $self-&gt;adaptor()-&gt;fetch_all_by_taxonomy_id($taxid) );
+<a name="l00258"></a>00258 }
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 =head2 get_by_name_exact
+<a name="l00261"></a>00261     Description : Return database adaptor that has the supplied <span class="keywordtype">string</span> as an alias/name
+<a name="l00262"></a>00262     Argument    : String
+<a name="l00263"></a>00263     Exceptions  : None
+<a name="l00264"></a>00264     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00265"></a>00265 =cut
+<a name="l00266"></a>00266 
+<a name="l00267"></a>00267 sub get_by_name_exact {
+<a name="l00268"></a>00268   my ( $self, $name ) = @_;
+<a name="l00269"></a>00269   <span class="keywordflow">return</span> $self-&gt;genome_to_dba( $self-&gt;adaptor()-&gt;fetch_by_any_name($name) );
+<a name="l00270"></a>00270 }
+<a name="l00271"></a>00271 
+<a name="l00272"></a>00272 =head2 get_all_by_accession
+<a name="l00273"></a>00273     Description : Returns the database adaptor(s) that contains a seq_region with the supplied INSDC accession (or other seq_region name)
+<a name="l00274"></a>00274     Argument    : Int
+<a name="l00275"></a>00275     Exceptions  : None
+<a name="l00276"></a>00276     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00277"></a>00277 =cut    
+<a name="l00278"></a>00278 
+<a name="l00279"></a>00279 sub get_all_by_accession {
+<a name="l00280"></a>00280   my ( $self, $acc ) = @_;
+<a name="l00281"></a>00281   my $genomes = $self-&gt;adaptor()-&gt;fetch_all_by_sequence_accession($acc);
+<a name="l00282"></a>00282   <span class="keywordflow">if</span> ( !defined $genomes || scalar(@$genomes) == 0 ) {
+<a name="l00283"></a>00283     $genomes =
+<a name="l00284"></a>00284       $self-&gt;adaptor()-&gt;fetch_all_by_sequence_accession_unversioned($acc);
+<a name="l00285"></a>00285   }
+<a name="l00286"></a>00286   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas($genomes);
+<a name="l00287"></a>00287 }
+<a name="l00288"></a>00288 
+<a name="l00289"></a>00289 =head2 get_by_assembly_accession
+<a name="l00290"></a>00290     Description : Returns the database adaptor that contains the assembly with the supplied INSDC assembly accession
+<a name="l00291"></a>00291     Argument    : Int
+<a name="l00292"></a>00292     Exceptions  : None
+<a name="l00293"></a>00293     Return type : Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00294"></a>00294 =cut
+<a name="l00295"></a>00295 
+<a name="l00296"></a>00296 sub get_by_assembly_accession {
+<a name="l00297"></a>00297   my ( $self, $acc ) = @_;
+<a name="l00298"></a>00298   my $genome = $self-&gt;adaptor()-&gt;fetch_by_assembly_id($acc);
+<a name="l00299"></a>00299   <span class="keywordflow">if</span> ( !defined $genome ) {
+<a name="l00300"></a>00300     $genome = $self-&gt;adaptor()-&gt;fetch_by_assembly_id_unversioned($acc);
+<a name="l00301"></a>00301   }
+<a name="l00302"></a>00302   <span class="keywordflow">return</span> $self-&gt;genome_to_dba($genome);
+<a name="l00303"></a>00303 }
+<a name="l00304"></a>00304 
+<a name="l00305"></a>00305 =head2 get_all_by_name_pattern
+<a name="l00306"></a>00306     Description : Return all database adaptors that have an alias/name that match the supplied regexp
+<a name="l00307"></a>00307     Argument    : String
+<a name="l00308"></a>00308     Exceptions  : None
+<a name="l00309"></a>00309     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00310"></a>00310 =cut    
 <a name="l00311"></a>00311 
-<a name="l00312"></a>00312 =head2 get_all_taxon_ids
-<a name="l00313"></a>00313     Description : Return list of all taxon IDs registered with the helper
-<a name="l00314"></a>00314     Exceptions  : None
-<a name="l00315"></a>00315     Return type : Arrayref of integers
-<a name="l00316"></a>00316 =cut
+<a name="l00312"></a>00312 sub get_all_by_name_pattern {
+<a name="l00313"></a>00313   my ( $self, $name ) = @_;
+<a name="l00314"></a>00314   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas(
+<a name="l00315"></a>00315                           $self-&gt;adaptor()-&gt;fetch_all_by_name_pattern($name) );
+<a name="l00316"></a>00316 }
 <a name="l00317"></a>00317 
-<a name="l00318"></a>00318 sub get_all_taxon_ids {
-<a name="l00319"></a>00319   my ($self) = @_;
-<a name="l00320"></a>00320   <span class="keywordflow">return</span> [
-<a name="l00321"></a>00321         uniq( map { $_-&gt;taxonomy_id() } @{ $self-&gt;{_adaptor}-&gt;fetch_all() } ) ];
-<a name="l00322"></a>00322 }
-<a name="l00323"></a>00323 
-<a name="l00324"></a>00324 =head2 get_all_names
-<a name="l00325"></a>00325     Description : Return list of all species names registered with the helper
-<a name="l00326"></a>00326     Exceptions  : None
-<a name="l00327"></a>00327     Return type : Arrayref of strings
-<a name="l00328"></a>00328 =cut
+<a name="l00318"></a>00318 =head2 get_all_by_dbname
+<a name="l00319"></a>00319     Description : Returns all database adaptors that have the supplied dbname
+<a name="l00320"></a>00320     Argument    : String
+<a name="l00321"></a>00321     Exceptions  : None
+<a name="l00322"></a>00322     Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
+<a name="l00323"></a>00323 =cut
+<a name="l00324"></a>00324 
+<a name="l00325"></a>00325 sub get_all_by_dbname {
+<a name="l00326"></a>00326   my ( $self, $name ) = @_;
+<a name="l00327"></a>00327   <span class="keywordflow">return</span> $self-&gt;genomes_to_dbas($self-&gt;adaptor()-&gt;fetch_all_by_dbname($name) );
+<a name="l00328"></a>00328 }
 <a name="l00329"></a>00329 
-<a name="l00330"></a>00330 sub get_all_names {
-<a name="l00331"></a>00331   my ($self) = @_;
-<a name="l00332"></a>00332   <span class="keywordflow">return</span> [ map { $_-&gt;name() } @{ $self-&gt;{_adaptor}-&gt;fetch_all() } ];
-<a name="l00333"></a>00333 }
-<a name="l00334"></a>00334 
-<a name="l00335"></a>00335 =head2 get_all_accessions
-<a name="l00336"></a>00336     Description : Return list of all INSDC sequence accessions (or other seq_region names) registered with the helper
-<a name="l00337"></a>00337     Exceptions  : None
-<a name="l00338"></a>00338     Return type : Arrayref of strings
-<a name="l00339"></a>00339 =cut
-<a name="l00340"></a>00340 
-<a name="l00341"></a>00341 sub get_all_accessions {
-<a name="l00342"></a>00342   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Unimplemented method&quot;</span>;
-<a name="l00343"></a>00343 }
-<a name="l00344"></a>00344 
-<a name="l00345"></a>00345 =head2 get_all_versioned_accessions
-<a name="l00346"></a>00346     Description : Return list of all versioned INSDC sequence accessions (or other seq_region names) registered with the helper
-<a name="l00347"></a>00347     Exceptions  : None
-<a name="l00348"></a>00348     Return type : Arrayref of strings
-<a name="l00349"></a>00349 =cut
-<a name="l00350"></a>00350 
-<a name="l00351"></a>00351 sub get_all_versioned_accessions {
-<a name="l00352"></a>00352   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Unimplemented method&quot;</span>;
-<a name="l00353"></a>00353 }
-<a name="l00354"></a>00354 
-<a name="l00355"></a>00355 =head2 get_all_assemblies
-<a name="l00356"></a>00356     Description : Return list of all INSDC assembly accessions registered with the helper
-<a name="l00357"></a>00357     Exceptions  : None
-<a name="l00358"></a>00358     Return type : Arrayref of strings
-<a name="l00359"></a>00359 =cut
-<a name="l00360"></a>00360 
-<a name="l00361"></a>00361 sub get_all_assemblies {
-<a name="l00362"></a>00362   my ($self) = @_;
-<a name="l00363"></a>00363   <span class="keywordflow">return</span> [ map { s/\.[0-9]+$<span class="comment">// } @{ $self-&gt;get_all_versioned_assemblies() } ];</span>
-<a name="l00364"></a>00364 }
-<a name="l00365"></a>00365 
-<a name="l00366"></a>00366 =head2 get_all_versioned_assemblies
-<a name="l00367"></a>00367     Description : Return list of all versioned INSDC assembly accessions registered with the helper
-<a name="l00368"></a>00368     Exceptions  : None
-<a name="l00369"></a>00369     Return type : Arrayref of strings
-<a name="l00370"></a>00370 =cut
-<a name="l00371"></a>00371 
-<a name="l00372"></a>00372 sub get_all_versioned_assemblies {
-<a name="l00373"></a>00373   my ($self) = @_;
-<a name="l00374"></a>00374   <span class="keywordflow">return</span> [
-<a name="l00375"></a>00375      uniq( map { $_-&gt;assembly_id() || <span class="stringliteral">&#39;&#39;</span> } @{ $self-&gt;{_adaptor}-&gt;fetch_all() } )
-<a name="l00376"></a>00376   ];
-<a name="l00377"></a>00377 }
+<a name="l00330"></a>00330 =head2 get_all_taxon_ids
+<a name="l00331"></a>00331     Description : Return list of all taxon IDs registered with the helper
+<a name="l00332"></a>00332     Exceptions  : None
+<a name="l00333"></a>00333     Return type : Arrayref of integers
+<a name="l00334"></a>00334 =cut
+<a name="l00335"></a>00335 
+<a name="l00336"></a>00336 sub get_all_taxon_ids {
+<a name="l00337"></a>00337   my ($self) = @_;
+<a name="l00338"></a>00338   <span class="keywordflow">return</span> [
+<a name="l00339"></a>00339         uniq( map { $_-&gt;taxonomy_id() } @{ $self-&gt;adaptor()-&gt;fetch_all() } ) ];
+<a name="l00340"></a>00340 }
+<a name="l00341"></a>00341 
+<a name="l00342"></a>00342 =head2 get_all_names
+<a name="l00343"></a>00343     Description : Return list of all species names registered with the helper
+<a name="l00344"></a>00344     Exceptions  : None
+<a name="l00345"></a>00345     Return type : Arrayref of strings
+<a name="l00346"></a>00346 =cut
+<a name="l00347"></a>00347 
+<a name="l00348"></a>00348 sub get_all_names {
+<a name="l00349"></a>00349   my ($self) = @_;
+<a name="l00350"></a>00350   <span class="keywordflow">return</span> [ map { $_-&gt;name() } @{ $self-&gt;adaptor()-&gt;fetch_all() } ];
+<a name="l00351"></a>00351 }
+<a name="l00352"></a>00352 
+<a name="l00353"></a>00353 =head2 get_all_accessions
+<a name="l00354"></a>00354     Description : Return list of all INSDC sequence accessions (or other seq_region names) registered with the helper
+<a name="l00355"></a>00355     Exceptions  : None
+<a name="l00356"></a>00356     Return type : Arrayref of strings
+<a name="l00357"></a>00357 =cut
+<a name="l00358"></a>00358 
+<a name="l00359"></a>00359 sub get_all_accessions {
+<a name="l00360"></a>00360   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Unimplemented method&quot;</span>;
+<a name="l00361"></a>00361 }
+<a name="l00362"></a>00362 
+<a name="l00363"></a>00363 =head2 get_all_versioned_accessions
+<a name="l00364"></a>00364     Description : Return list of all versioned INSDC sequence accessions (or other seq_region names) registered with the helper
+<a name="l00365"></a>00365     Exceptions  : None
+<a name="l00366"></a>00366     Return type : Arrayref of strings
+<a name="l00367"></a>00367 =cut
+<a name="l00368"></a>00368 
+<a name="l00369"></a>00369 sub get_all_versioned_accessions {
+<a name="l00370"></a>00370   <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Unimplemented method&quot;</span>;
+<a name="l00371"></a>00371 }
+<a name="l00372"></a>00372 
+<a name="l00373"></a>00373 =head2 get_all_assemblies
+<a name="l00374"></a>00374     Description : Return list of all INSDC assembly accessions registered with the helper
+<a name="l00375"></a>00375     Exceptions  : None
+<a name="l00376"></a>00376     Return type : Arrayref of strings
+<a name="l00377"></a>00377 =cut
 <a name="l00378"></a>00378 
-<a name="l00379"></a>00379 =head1 INTERNAL METHODS
-<a name="l00380"></a>00380 =head2 _cache
-<a name="l00381"></a>00381     Description : Return hash of DBAs
-<a name="l00382"></a>00382     Exceptions  : None
-<a name="l00383"></a>00383     Return type : Hashref of Bio::EnsEMBL::DBSQL::DBAdaptor by name
-<a name="l00384"></a>00384     Caller      : Internal
-<a name="l00385"></a>00385     Status      : Stable
-<a name="l00386"></a>00386 =cut
-<a name="l00387"></a>00387 sub _cache {
-<a name="l00388"></a>00388   my ($self) = @_;
-<a name="l00389"></a>00389   <span class="keywordflow">return</span> $self-&gt;{dba_cache};
-<a name="l00390"></a>00390 }
-<a name="l00391"></a>00391 
-<a name="l00392"></a>00392 =head2 _adaptor
-<a name="l00393"></a>00393     Description : Return GenomeInfoAdaptor
-<a name="l00394"></a>00394     Exceptions  : None
-<a name="l00395"></a>00395     Return type : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
-<a name="l00396"></a>00396     Caller      : Internal
-<a name="l00397"></a>00397     Status      : Stable
-<a name="l00398"></a>00398 =cut
-<a name="l00399"></a>00399 sub _adaptor {
-<a name="l00400"></a>00400   my ($self) = @_;
-<a name="l00401"></a>00401   <span class="keywordflow">if</span>(!defined $self-&gt;{_adaptor}) {
-<a name="l00402"></a>00402 <span class="preprocessor">    # default to previous behaviour</span>
-<a name="l00403"></a>00403 <span class="preprocessor"></span>    $self-&gt;{_adaptor} = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#aa892bb1501e0bd0bbea154ed46dde3bc">build_ensembl_genomes_adaptor</a>();
-<a name="l00404"></a>00404   }
-<a name="l00405"></a>00405   <span class="keywordflow">return</span> $self-&gt;{_adaptor};
-<a name="l00406"></a>00406 }
-<a name="l00407"></a>00407 
-<a name="l00408"></a>00408 =head2 _get_args
-<a name="l00409"></a>00409     Description : Generate arguments <span class="keywordflow">for</span> constructing a DBAdaptor
-<a name="l00410"></a>00410     Arg         : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
-<a name="l00411"></a>00411     Exceptions  : None
-<a name="l00412"></a>00412     Return type : Hashref
-<a name="l00413"></a>00413     Caller      : Internal
-<a name="l00414"></a>00414     Status      : Stable
-<a name="l00415"></a>00415 =cut
-<a name="l00416"></a>00416 sub _get_args {
-<a name="l00417"></a>00417   my ( $self, $genome_info ) = @_;
-<a name="l00418"></a>00418 <span class="preprocessor">  # find arguments applicable to this particular info object</span>
-<a name="l00419"></a>00419 <span class="preprocessor"></span>  my $args = {};
-<a name="l00420"></a>00420   <span class="keywordflow">if</span> ( !defined $self-&gt;{host} ) {
-<a name="l00421"></a>00421 <span class="preprocessor">    # no host specified, so try and use public servers</span>
-<a name="l00422"></a>00422 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ( defined $genome_info-&gt;data_release()-&gt;ensembl_genomes_release() ) {
-<a name="l00423"></a>00423 <span class="preprocessor">      # use EG</span>
-<a name="l00424"></a>00424 <span class="preprocessor"></span>      $args = eg_args();
-<a name="l00425"></a>00425     }
-<a name="l00426"></a>00426     <span class="keywordflow">else</span> {
-<a name="l00427"></a>00427 <span class="preprocessor">      # use Ensembl</span>
-<a name="l00428"></a>00428 <span class="preprocessor"></span>      $args = e_args();
-<a name="l00429"></a>00429     }
-<a name="l00430"></a>00430   }
-<a name="l00431"></a>00431   <span class="keywordflow">else</span> {
-<a name="l00432"></a>00432 <span class="preprocessor">    # use host specified</span>
-<a name="l00433"></a>00433 <span class="preprocessor"></span>    $args = { -USER =&gt; $self-&gt;{user},
-<a name="l00434"></a>00434               -PORT =&gt; $self-&gt;{port},
-<a name="l00435"></a>00435               -PASS =&gt; $self-&gt;{pass},
-<a name="l00436"></a>00436               -HOST =&gt; $self-&gt;{host} };
-<a name="l00437"></a>00437   }
-<a name="l00438"></a>00438   <span class="keywordflow">return</span> $args;
-<a name="l00439"></a>00439 }
-<a name="l00440"></a>00440 
-<a name="l00441"></a>00441 1;
-<a name="l00442"></a>00442 
+<a name="l00379"></a>00379 sub get_all_assemblies {
+<a name="l00380"></a>00380   my ($self) = @_;
+<a name="l00381"></a>00381   <span class="keywordflow">return</span> [ map { s/\.[0-9]+$<span class="comment">// } @{ $self-&gt;get_all_versioned_assemblies() } ];</span>
+<a name="l00382"></a>00382 }
+<a name="l00383"></a>00383 
+<a name="l00384"></a>00384 =head2 get_all_versioned_assemblies
+<a name="l00385"></a>00385     Description : Return list of all versioned INSDC assembly accessions registered with the helper
+<a name="l00386"></a>00386     Exceptions  : None
+<a name="l00387"></a>00387     Return type : Arrayref of strings
+<a name="l00388"></a>00388 =cut
+<a name="l00389"></a>00389 
+<a name="l00390"></a>00390 sub get_all_versioned_assemblies {
+<a name="l00391"></a>00391   my ($self) = @_;
+<a name="l00392"></a>00392   <span class="keywordflow">return</span> [
+<a name="l00393"></a>00393      uniq( map { $_-&gt;assembly_id() || <span class="stringliteral">&#39;&#39;</span> } @{ $self-&gt;adaptor()-&gt;fetch_all() } )
+<a name="l00394"></a>00394   ];
+<a name="l00395"></a>00395 }
+<a name="l00396"></a>00396 
+<a name="l00397"></a>00397 =head1 INTERNAL METHODS
+<a name="l00398"></a>00398 =head2 _cache
+<a name="l00399"></a>00399     Description : Return hash of DBAs
+<a name="l00400"></a>00400     Exceptions  : None
+<a name="l00401"></a>00401     Return type : Hashref of Bio::EnsEMBL::DBSQL::DBAdaptor by name
+<a name="l00402"></a>00402     Caller      : Internal
+<a name="l00403"></a>00403     Status      : Stable
+<a name="l00404"></a>00404 =cut
+<a name="l00405"></a>00405 
+<a name="l00406"></a>00406 sub _cache {
+<a name="l00407"></a>00407   my ($self) = @_;
+<a name="l00408"></a>00408   <span class="keywordflow">return</span> $self-&gt;{dba_cache};
+<a name="l00409"></a>00409 }
+<a name="l00410"></a>00410 
+<a name="l00411"></a>00411 =head2 _adaptor
+<a name="l00412"></a>00412     Description : Return GenomeInfoAdaptor
+<a name="l00413"></a>00413     Exceptions  : None
+<a name="l00414"></a>00414     Return type : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00415"></a>00415     Caller      : Internal
+<a name="l00416"></a>00416     Status      : Stable
+<a name="l00417"></a>00417 =cut
+<a name="l00418"></a>00418 
+<a name="l00419"></a>00419 sub adaptor {
+<a name="l00420"></a>00420   my ($self) = @_;
+<a name="l00421"></a>00421   <span class="keywordflow">if</span> ( !defined $self-&gt;{_adaptor} ) {
+<a name="l00422"></a>00422 <span class="preprocessor">    # default to previous behaviour</span>
+<a name="l00423"></a>00423 <span class="preprocessor"></span>    $self-&gt;{_adaptor} =
+<a name="l00424"></a>00424       <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00425"></a>00425       -&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html#aa892bb1501e0bd0bbea154ed46dde3bc">build_ensembl_genomes_adaptor</a>();
+<a name="l00426"></a>00426   }
+<a name="l00427"></a>00427   <span class="keywordflow">return</span> $self-&gt;{_adaptor};
+<a name="l00428"></a>00428 }
+<a name="l00429"></a>00429 
+<a name="l00430"></a>00430 1;
+<a name="l00431"></a>00431 
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

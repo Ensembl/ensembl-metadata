@@ -151,8 +151,11 @@ Description</h2>
  <pre>
 Adaptor for storing and retrieving GenomeOrganismInfo objects from MySQL ensembl_metadata database
 
-</pre> 
-<p>Definition at line <a class="el" href="GenomeOrganismInfoAdaptor_8pm_source.html#l00022">22</a> of file <a class="el" href="GenomeOrganismInfoAdaptor_8pm_source.html">GenomeOrganismInfoAdaptor.pm</a>.</p>
+</pre> <h2><a class="anchor" id="See-also"></a>
+See-also</h2>
+<p><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a> </p>
+
+<p>Definition at line <a class="el" href="GenomeOrganismInfoAdaptor_8pm_source.html#l00028">28</a> of file <a class="el" href="GenomeOrganismInfoAdaptor_8pm_source.html">GenomeOrganismInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
@@ -430,6 +433,7 @@ Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor&#160;</td><td class="memItemR
       my $row = shift @_;
       my $md = $self-&gt;_get_cached_obj( $type, $row-&gt;{dbID} );
       <span class="keywordflow">if</span> ( !defined $md ) {
+        load $type;
         $md = bless $row, $type;
         $md-&gt;adaptor($self);
         $self-&gt;_store_cached_obj($md);
@@ -1332,9 +1336,11 @@ species_taxonomy_id,is_reference)
   }
   <span class="keywordflow">else</span> {
     <span class="keywordflow">if</span> ( !defined $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html#af3567d0534f5fa97dd9c46e10b8459fc">taxonomy_adaptor</a>} ) {
-<span class="preprocessor">      # try and get from the registry</span>
-<span class="preprocessor"></span>      my $tax_dba =
-        Bio::EnsEMBL::Registry-&gt;get_DBAdaptor( <span class="stringliteral">&quot;multi&quot;</span>, <span class="stringliteral">&quot;taxonomy&quot;</span> );
+      my $tax_dba;
+      eval {
+<span class="preprocessor">        # try and get from the registry</span>
+<span class="preprocessor"></span>        $tax_dba = Bio::EnsEMBL::Registry-&gt;get_DBAdaptor( <span class="stringliteral">&quot;multi&quot;</span>, <span class="stringliteral">&quot;taxonomy&quot;</span> );
+      };
       <span class="keywordflow">if</span> ( !defined $tax_dba ) {
 <span class="preprocessor">        # can&#39;t find, so try and create alongside metadata</span>
 <span class="preprocessor"></span>        my $args = { -USER   =&gt; $self-&gt;db()-&gt;dbc()-&gt;user(),
@@ -1343,8 +1349,7 @@ species_taxonomy_id,is_reference)
                      -HOST   =&gt; $self-&gt;db()-&gt;dbc()-&gt;host(),
                      -DBNAME =&gt; <span class="stringliteral">&#39;ncbi_taxonomy&#39;</span> };
         $tax_dba =
-          Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor-&gt;new(%$args)
-          -&gt;(%$args);
+          Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor-&gt;new(%$args);
       }
       <span class="keywordflow">if</span> ( defined $tax_dba ) {
         $self-&gt;{<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html#af3567d0534f5fa97dd9c46e10b8459fc">taxonomy_adaptor</a>} = $tax_dba-&gt;get_TaxonomyNodeAdaptor();

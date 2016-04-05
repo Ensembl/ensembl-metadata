@@ -145,13 +145,13 @@ function toggleVisibility(linkObj) {
 <a name="l00019"></a>00019 
 <a name="l00020"></a>00020 =pod
 <a name="l00021"></a>00021 
-<a name="l00022"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">00022</a> =head1 NAME
+<a name="l00022"></a>00022 =head1 NAME
 <a name="l00023"></a>00023 
 <a name="l00024"></a>00024 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor</a>
 <a name="l00025"></a>00025 
 <a name="l00026"></a>00026 =head1 SYNOPSIS
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028 <span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
+<a name="l00028"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">00028</a> <span class="preprocessor"># metadata_db is an instance of MetaDataDBAdaptor</span>
 <a name="l00029"></a>00029 <span class="preprocessor"></span>my $adaptor = $metadata_db-&gt;get_GenomeOrganismInfoAdaptor();
 <a name="l00030"></a>00030 my $assembly = $adaptor-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html#a4a56bc866ee58a005aef2074addf99ad">fetch_by_name</a>(<span class="stringliteral">&#39;homo_sapiens&#39;</span>);
 <a name="l00031"></a>00031 
@@ -159,431 +159,438 @@ function toggleVisibility(linkObj) {
 <a name="l00033"></a>00033 
 <a name="l00034"></a>00034 Adaptor <span class="keywordflow">for</span> storing and retrieving <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">GenomeOrganismInfo</a> objects from MySQL ensembl_metadata database
 <a name="l00035"></a>00035 
-<a name="l00036"></a>00036 =head1 Author
+<a name="l00036"></a>00036 =head1 SEE ALSO
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038 Dan Staines
+<a name="l00038"></a>00038 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
 <a name="l00039"></a>00039 
-<a name="l00040"></a>00040 =cut
+<a name="l00040"></a>00040 =head1 Author
 <a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor;
+<a name="l00042"></a>00042 Dan Staines
 <a name="l00043"></a>00043 
-<a name="l00044"></a>00044 use strict;
-<a name="l00045"></a>00045 use warnings;
-<a name="l00046"></a>00046 
-<a name="l00047"></a>00047 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
-<a name="l00048"></a>00048 
-<a name="l00049"></a>00049 use Carp qw(cluck croak);
-<a name="l00050"></a>00050 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
-<a name="l00051"></a>00051 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>;
-<a name="l00052"></a>00052 use List::MoreUtils qw(natatime);
-<a name="l00053"></a>00053 
-<a name="l00054"></a>00054 =head1 METHODS
-<a name="l00055"></a>00055 =cut
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057 =head2 store
-<a name="l00058"></a>00058   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00059"></a>00059   Description: Store the supplied <span class="keywordtype">object</span>
-<a name="l00060"></a>00060   Returntype : none
-<a name="l00061"></a>00061   Exceptions : none
-<a name="l00062"></a>00062   Caller     : general
-<a name="l00063"></a>00063   Status     : Stable
-<a name="l00064"></a>00064 =cut
-<a name="l00065"></a>00065 
-<a name="l00066"></a>00066 sub store {
-<a name="l00067"></a>00067   my ( $self, $organism ) = @_;
-<a name="l00068"></a>00068   <span class="keywordflow">if</span> ( !defined $organism-&gt;dbID() ) {
-<a name="l00069"></a>00069 <span class="preprocessor">    # find out if organism exists first</span>
-<a name="l00070"></a>00070 <span class="preprocessor"></span>    my ($dbID) =
-<a name="l00071"></a>00071       @{
-<a name="l00072"></a>00072       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00073"></a>00073                         -SQL =&gt; <span class="stringliteral">&quot;select organism_id from organism where name=?&quot;</span>,
-<a name="l00074"></a>00074                         -PARAMS =&gt; [ $organism-&gt;name() ] ) };
-<a name="l00075"></a>00075 
-<a name="l00076"></a>00076     <span class="keywordflow">if</span> ( defined $dbID ) {
-<a name="l00077"></a>00077       $organism-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>($dbID);
-<a name="l00078"></a>00078       $organism-&gt;adaptor($self);
-<a name="l00079"></a>00079     }
-<a name="l00080"></a>00080   }
-<a name="l00081"></a>00081   <span class="keywordflow">if</span> ( defined $organism-&gt;dbID() ) {
-<a name="l00082"></a>00082     $self-&gt;update($organism);
-<a name="l00083"></a>00083   }
-<a name="l00084"></a>00084   <span class="keywordflow">else</span> {
-<a name="l00085"></a>00085     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00086"></a>00086       -SQL =&gt;
-<a name="l00087"></a>00087         q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
-<a name="l00088"></a>00088 species_taxonomy_id,is_reference)
-<a name="l00089"></a>00089         values(?,?,?,?,?,?,?)/,
-<a name="l00090"></a>00090       -PARAMS =&gt; [ $organism-&gt;name(),        $organism-&gt;display_name(),
-<a name="l00091"></a>00091                    $organism-&gt;strain(),      $organism-&gt;serotype(),
-<a name="l00092"></a>00092                    $organism-&gt;taxonomy_id(), $organism-&gt;species_taxonomy_id(),
-<a name="l00093"></a>00093                    $organism-&gt;is_reference() ],
-<a name="l00094"></a>00094       -CALLBACK =&gt; sub {
-<a name="l00095"></a>00095         my ( $sth, $dbh, $rv ) = @_;
-<a name="l00096"></a>00096         $organism-&gt;dbID( $dbh-&gt;{mysql_insertid} );
-<a name="l00097"></a>00097       } );
-<a name="l00098"></a>00098     $self-&gt;_store_aliases($organism);
-<a name="l00099"></a>00099     $self-&gt;_store_publications($organism);
-<a name="l00100"></a>00100     $organism-&gt;adaptor($self);
-<a name="l00101"></a>00101     $self-&gt;_store_cached_obj($organism);
-<a name="l00102"></a>00102   }
-<a name="l00103"></a>00103   <span class="keywordflow">return</span>;
-<a name="l00104"></a>00104 } ## end sub store
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 =head2 update
-<a name="l00107"></a>00107   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00108"></a>00108   Description: Update the supplied object (must be previously stored)
-<a name="l00109"></a>00109   Returntype : none
-<a name="l00110"></a>00110   Exceptions : none
-<a name="l00111"></a>00111   Caller     : general
-<a name="l00112"></a>00112   Status     : Stable
-<a name="l00113"></a>00113 =cut
-<a name="l00114"></a>00114 
-<a name="l00115"></a>00115 sub update {
-<a name="l00116"></a>00116   my ( $self, $organism ) = @_;
-<a name="l00117"></a>00117   <span class="keywordflow">if</span> ( !defined $organism-&gt;dbID() ) {
-<a name="l00118"></a>00118     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
-<a name="l00119"></a>00119   }
+<a name="l00044"></a>00044 =cut
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor;
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048 use strict;
+<a name="l00049"></a>00049 use warnings;
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1BaseInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor</a>/;
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 use Carp qw(cluck croak);
+<a name="l00054"></a>00054 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+<a name="l00055"></a>00055 use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
+<a name="l00056"></a>00056 use Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor;
+<a name="l00057"></a>00057 use List::MoreUtils qw(natatime);
+<a name="l00058"></a>00058 use Scalar::Util qw(looks_like_number);
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060 =head1 METHODS
+<a name="l00061"></a>00061 =cut
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 =head2 store
+<a name="l00064"></a>00064   Arg        : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00065"></a>00065   Description: Store the supplied <span class="keywordtype">object</span>
+<a name="l00066"></a>00066   Returntype : none
+<a name="l00067"></a>00067   Exceptions : none
+<a name="l00068"></a>00068   Caller     : general
+<a name="l00069"></a>00069   Status     : Stable
+<a name="l00070"></a>00070 =cut
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 sub store {
+<a name="l00073"></a>00073   my ( $self, $organism ) = @_;
+<a name="l00074"></a>00074   <span class="keywordflow">if</span> ( !defined $organism-&gt;dbID() ) {
+<a name="l00075"></a>00075 <span class="preprocessor">    # find out if organism exists first</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span>    my ($dbID) =
+<a name="l00077"></a>00077       @{
+<a name="l00078"></a>00078       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00079"></a>00079                         -SQL =&gt; <span class="stringliteral">&quot;select organism_id from organism where name=?&quot;</span>,
+<a name="l00080"></a>00080                         -PARAMS =&gt; [ $organism-&gt;name() ] ) };
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082     <span class="keywordflow">if</span> ( defined $dbID ) {
+<a name="l00083"></a>00083       $organism-&gt;dbID($dbID);
+<a name="l00084"></a>00084       $organism-&gt;adaptor($self);
+<a name="l00085"></a>00085     }
+<a name="l00086"></a>00086   }
+<a name="l00087"></a>00087   <span class="keywordflow">if</span> ( defined $organism-&gt;dbID() ) {
+<a name="l00088"></a>00088     $self-&gt;update($organism);
+<a name="l00089"></a>00089   }
+<a name="l00090"></a>00090   <span class="keywordflow">else</span> {
+<a name="l00091"></a>00091     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00092"></a>00092       -SQL =&gt;
+<a name="l00093"></a>00093         q/insert into organism(name,display_name,strain,serotype,taxonomy_id,
+<a name="l00094"></a>00094 species_taxonomy_id,is_reference)
+<a name="l00095"></a>00095         values(?,?,?,?,?,?,?)/,
+<a name="l00096"></a>00096       -PARAMS =&gt; [ $organism-&gt;name(),        $organism-&gt;display_name(),
+<a name="l00097"></a>00097                    $organism-&gt;strain(),      $organism-&gt;serotype(),
+<a name="l00098"></a>00098                    $organism-&gt;taxonomy_id(), $organism-&gt;species_taxonomy_id(),
+<a name="l00099"></a>00099                    $organism-&gt;is_reference() ],
+<a name="l00100"></a>00100       -CALLBACK =&gt; sub {
+<a name="l00101"></a>00101         my ( $sth, $dbh, $rv ) = @_;
+<a name="l00102"></a>00102         $organism-&gt;dbID( $dbh-&gt;{mysql_insertid} );
+<a name="l00103"></a>00103       } );
+<a name="l00104"></a>00104     $self-&gt;_store_aliases($organism);
+<a name="l00105"></a>00105     $self-&gt;_store_publications($organism);
+<a name="l00106"></a>00106     $organism-&gt;adaptor($self);
+<a name="l00107"></a>00107     $self-&gt;_store_cached_obj($organism);
+<a name="l00108"></a>00108   }
+<a name="l00109"></a>00109   <span class="keywordflow">return</span>;
+<a name="l00110"></a>00110 } ## end sub store
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112 =head2 update
+<a name="l00113"></a>00113   Arg        : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00114"></a>00114   Description: Update the supplied object (must be previously stored)
+<a name="l00115"></a>00115   Returntype : none
+<a name="l00116"></a>00116   Exceptions : none
+<a name="l00117"></a>00117   Caller     : general
+<a name="l00118"></a>00118   Status     : Stable
+<a name="l00119"></a>00119 =cut
 <a name="l00120"></a>00120 
-<a name="l00121"></a>00121   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00122"></a>00122     -SQL =&gt;
-<a name="l00123"></a>00123 q/update organism <span class="keyword">set</span> name=?,display_name=?,strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
-<a name="l00124"></a>00124 is_reference=? where organism_id=?/,
-<a name="l00125"></a>00125     -PARAMS =&gt; [ $organism-&gt;name(),         $organism-&gt;display_name(),
-<a name="l00126"></a>00126                  $organism-&gt;strain(),       $organism-&gt;serotype(),
-<a name="l00127"></a>00127                  $organism-&gt;taxonomy_id(),  $organism-&gt;species_taxonomy_id(),
-<a name="l00128"></a>00128                  $organism-&gt;is_reference(), $organism-&gt;dbID() ] );
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130   $self-&gt;_store_aliases($organism);
-<a name="l00131"></a>00131   $self-&gt;_store_publications($organism);
-<a name="l00132"></a>00132   <span class="keywordflow">return</span>;
-<a name="l00133"></a>00133 }
-<a name="l00134"></a>00134 
-<a name="l00135"></a>00135 =head2 fetch_by_taxonomy_id
-<a name="l00136"></a>00136   Arg        : Taxonomy ID
-<a name="l00137"></a>00137   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
-<a name="l00138"></a>00138   Description: Fetch genome info <span class="keywordflow">for</span> specified taxonomy node
-<a name="l00139"></a>00139   Returntype : arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00140"></a>00140   Exceptions : none
-<a name="l00141"></a>00141   Caller     : general
-<a name="l00142"></a>00142   Status     : Stable
-<a name="l00143"></a>00143 =cut
-<a name="l00144"></a>00144 
-<a name="l00145"></a>00145 sub fetch_all_by_taxonomy_id {
-<a name="l00146"></a>00146   my ( $self, $id, $keen ) = @_;
-<a name="l00147"></a>00147   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { <span class="stringliteral">&#39;taxonomy_id&#39;</span>, $id }, $keen );
-<a name="l00148"></a>00148 }
-<a name="l00149"></a>00149 
-<a name="l00150"></a>00150 =head2 fetch_by_taxonomy_ids
-<a name="l00151"></a>00151   Arg        : Arrayref of Taxonomy ID
-<a name="l00152"></a>00152   Description: Fetch genome info <span class="keywordflow">for</span> specified taxonomy nodes (batch)
-<a name="l00153"></a>00153   Returntype : arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00154"></a>00154   Exceptions : none
-<a name="l00155"></a>00155   Caller     : general
-<a name="l00156"></a>00156   Status     : Stable
-<a name="l00157"></a>00157 =cut
-<a name="l00158"></a>00158 
-<a name="l00159"></a>00159 sub fetch_all_by_taxonomy_ids {
-<a name="l00160"></a>00160   my ( $self, $ids ) = @_;
-<a name="l00161"></a>00161 
-<a name="l00162"></a>00162 <span class="preprocessor">  # filter list down</span>
-<a name="l00163"></a>00163 <span class="preprocessor"></span>  my %ids = map { $_ =&gt; 1 } @$ids;
-<a name="l00164"></a>00164   my @tids =
-<a name="l00165"></a>00165     grep { defined $ids{$_} }
-<a name="l00166"></a>00166     @{ $self-&gt;dbc()-&gt;sql_helper()
-<a name="l00167"></a>00167       -&gt;execute_simple( -SQL =&gt; q/select distinct taxonomy_id from organism/ )
-<a name="l00168"></a>00168     };
-<a name="l00169"></a>00169   my @genomes = ();
-<a name="l00170"></a>00170   my $it = natatime 1000, @tids;
-<a name="l00171"></a>00171   <span class="keywordflow">while</span> ( my @vals = $it-&gt;() ) {
-<a name="l00172"></a>00172     my $sql =
-<a name="l00173"></a>00173       _get_base_sql() . <span class="stringliteral">&#39; where taxonomy_id in (&#39;</span> . join( <span class="charliteral">&#39;,&#39;</span>, @vals ) . <span class="charliteral">&#39;)&#39;</span>;
-<a name="l00174"></a>00174     @genomes = ( @genomes, @{ $self-&gt;_fetch_generic( $sql, [] ) } );
-<a name="l00175"></a>00175   }
-<a name="l00176"></a>00176   <span class="keywordflow">return</span> \@genomes;
-<a name="l00177"></a>00177 }
-<a name="l00178"></a>00178 
-<a name="l00179"></a>00179 =head2 fetch_all_by_taxonomy_branch
-<a name="l00180"></a>00180   Arg        : Bio::EnsEMBL::TaxonomyNode
-<a name="l00181"></a>00181   Description: Fetch organism info <span class="keywordflow">for</span> specified taxonomy node and its children
-<a name="l00182"></a>00182   Returntype : arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00183"></a>00183   Exceptions : none
-<a name="l00184"></a>00184   Caller     : general
-<a name="l00185"></a>00185   Status     : Stable
-<a name="l00186"></a>00186 =cut
-<a name="l00187"></a>00187 
-<a name="l00188"></a>00188 sub fetch_all_by_taxonomy_branch {
-<a name="l00189"></a>00189   my ( $self, $root, $keen ) = @_;
-<a name="l00190"></a>00190   <span class="keywordflow">if</span> ( ref($root) ne <span class="stringliteral">&#39;Bio::EnsEMBL::Taxonomy::TaxonomyNode&#39;</span> ) {
-<a name="l00191"></a>00191     <span class="keywordflow">if</span> ( looks_like_number($root) ) {
-<a name="l00192"></a>00192       $root = $self-&gt;taxonomy_adaptor()-&gt;fetch_by_taxon_id($root);
-<a name="l00193"></a>00193     }
-<a name="l00194"></a>00194     <span class="keywordflow">else</span> {
-<a name="l00195"></a>00195       ($root) = @{ $self-&gt;taxonomy_adaptor()-&gt;fetch_all_by_name($root) };
-<a name="l00196"></a>00196     }
-<a name="l00197"></a>00197   }
-<a name="l00198"></a>00198   my @taxids =
-<a name="l00199"></a>00199     ( $root-&gt;taxon_id(), @{ $root-&gt;adaptor()-&gt;fetch_descendant_ids($root) } );
-<a name="l00200"></a>00200   <span class="keywordflow">return</span> $self-&gt;fetch_all_by_taxonomy_ids( \@taxids );
-<a name="l00201"></a>00201 }
-<a name="l00202"></a>00202 
-<a name="l00203"></a>00203 =head2 fetch_by_display_name
-<a name="l00204"></a>00204   Arg        : Name of organism
-<a name="l00205"></a>00205   Description: Fetch info <span class="keywordflow">for</span> specified organism
-<a name="l00206"></a>00206   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00207"></a>00207   Exceptions : none
-<a name="l00208"></a>00208   Caller     : general
-<a name="l00209"></a>00209   Status     : Stable
-<a name="l00210"></a>00210 =cut
-<a name="l00211"></a>00211 
-<a name="l00212"></a>00212 sub fetch_by_display_name {
-<a name="l00213"></a>00213   my ( $self, $display_name, $keen ) = @_;
-<a name="l00214"></a>00214   <span class="keywordflow">return</span> $self-&gt;_first_element(
-<a name="l00215"></a>00215      $self-&gt;_fetch_generic_with_args( { <span class="stringliteral">&#39;display_name&#39;</span>, $display_name }, $keen )
-<a name="l00216"></a>00216   );
-<a name="l00217"></a>00217 }
-<a name="l00218"></a>00218 
-<a name="l00219"></a>00219 =head2 fetch_by_name
-<a name="l00220"></a>00220   Arg        : Display name of organism 
-<a name="l00221"></a>00221   Description: Fetch info <span class="keywordflow">for</span> specified organism
-<a name="l00222"></a>00222   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00223"></a>00223   Exceptions : none
-<a name="l00224"></a>00224   Caller     : general
-<a name="l00225"></a>00225   Status     : Stable
-<a name="l00226"></a>00226 =cut
-<a name="l00227"></a>00227 
-<a name="l00228"></a>00228 sub fetch_by_name {
-<a name="l00229"></a>00229   my ( $self, $name, $keen ) = @_;
-<a name="l00230"></a>00230   <span class="keywordflow">return</span> $self-&gt;_first_element(
-<a name="l00231"></a>00231                   $self-&gt;_fetch_generic_with_args( { <span class="stringliteral">&#39;name&#39;</span>, $name }, $keen ) );
-<a name="l00232"></a>00232 }
+<a name="l00121"></a>00121 sub update {
+<a name="l00122"></a>00122   my ( $self, $organism ) = @_;
+<a name="l00123"></a>00123   <span class="keywordflow">if</span> ( !defined $organism-&gt;dbID() ) {
+<a name="l00124"></a>00124     croak <span class="stringliteral">&quot;Cannot update an object that has not already been stored&quot;</span>;
+<a name="l00125"></a>00125   }
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00128"></a>00128     -SQL =&gt;
+<a name="l00129"></a>00129 q/update organism <span class="keyword">set</span> name=?,display_name=?,strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
+<a name="l00130"></a>00130 is_reference=? where organism_id=?/,
+<a name="l00131"></a>00131     -PARAMS =&gt; [ $organism-&gt;name(),         $organism-&gt;display_name(),
+<a name="l00132"></a>00132                  $organism-&gt;strain(),       $organism-&gt;serotype(),
+<a name="l00133"></a>00133                  $organism-&gt;taxonomy_id(),  $organism-&gt;species_taxonomy_id(),
+<a name="l00134"></a>00134                  $organism-&gt;is_reference(), $organism-&gt;dbID() ] );
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136   $self-&gt;_store_aliases($organism);
+<a name="l00137"></a>00137   $self-&gt;_store_publications($organism);
+<a name="l00138"></a>00138   <span class="keywordflow">return</span>;
+<a name="l00139"></a>00139 }
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141 =head2 fetch_by_taxonomy_id
+<a name="l00142"></a>00142   Arg        : Taxonomy ID
+<a name="l00143"></a>00143   Arg        : (optional) <span class="keywordflow">if</span> 1, expand children of genome info
+<a name="l00144"></a>00144   Description: Fetch genome info <span class="keywordflow">for</span> specified taxonomy node
+<a name="l00145"></a>00145   Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00146"></a>00146   Exceptions : none
+<a name="l00147"></a>00147   Caller     : general
+<a name="l00148"></a>00148   Status     : Stable
+<a name="l00149"></a>00149 =cut
+<a name="l00150"></a>00150 
+<a name="l00151"></a>00151 sub fetch_all_by_taxonomy_id {
+<a name="l00152"></a>00152   my ( $self, $id, $keen ) = @_;
+<a name="l00153"></a>00153   <span class="keywordflow">return</span> $self-&gt;_fetch_generic_with_args( { <span class="stringliteral">&#39;taxonomy_id&#39;</span>, $id }, $keen );
+<a name="l00154"></a>00154 }
+<a name="l00155"></a>00155 
+<a name="l00156"></a>00156 =head2 fetch_by_taxonomy_ids
+<a name="l00157"></a>00157   Arg        : Arrayref of Taxonomy ID
+<a name="l00158"></a>00158   Description: Fetch genome info <span class="keywordflow">for</span> specified taxonomy nodes (batch)
+<a name="l00159"></a>00159   Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00160"></a>00160   Exceptions : none
+<a name="l00161"></a>00161   Caller     : general
+<a name="l00162"></a>00162   Status     : Stable
+<a name="l00163"></a>00163 =cut
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165 sub fetch_all_by_taxonomy_ids {
+<a name="l00166"></a>00166   my ( $self, $ids ) = @_;
+<a name="l00167"></a>00167 
+<a name="l00168"></a>00168 <span class="preprocessor">  # filter list down</span>
+<a name="l00169"></a>00169 <span class="preprocessor"></span>  my %ids = map { $_ =&gt; 1 } @$ids;
+<a name="l00170"></a>00170   my @tids =
+<a name="l00171"></a>00171     grep { defined $ids{$_} }
+<a name="l00172"></a>00172     @{ $self-&gt;dbc()-&gt;sql_helper()
+<a name="l00173"></a>00173       -&gt;execute_simple( -SQL =&gt; q/select distinct taxonomy_id from organism/ )
+<a name="l00174"></a>00174     };
+<a name="l00175"></a>00175   my @genomes = ();
+<a name="l00176"></a>00176   my $it = natatime 1000, @tids;
+<a name="l00177"></a>00177   <span class="keywordflow">while</span> ( my @vals = $it-&gt;() ) {
+<a name="l00178"></a>00178     my $sql =
+<a name="l00179"></a>00179       _get_base_sql() . <span class="stringliteral">&#39; where taxonomy_id in (&#39;</span> . join( <span class="charliteral">&#39;,&#39;</span>, @vals ) . <span class="charliteral">&#39;)&#39;</span>;
+<a name="l00180"></a>00180     @genomes = ( @genomes, @{ $self-&gt;_fetch_generic( $sql, [] ) } );
+<a name="l00181"></a>00181   }
+<a name="l00182"></a>00182   <span class="keywordflow">return</span> \@genomes;
+<a name="l00183"></a>00183 }
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185 =head2 fetch_all_by_taxonomy_branch
+<a name="l00186"></a>00186   Arg        : Bio::EnsEMBL::TaxonomyNode
+<a name="l00187"></a>00187   Description: Fetch organism info <span class="keywordflow">for</span> specified taxonomy node and its children
+<a name="l00188"></a>00188   Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00189"></a>00189   Exceptions : none
+<a name="l00190"></a>00190   Caller     : general
+<a name="l00191"></a>00191   Status     : Stable
+<a name="l00192"></a>00192 =cut
+<a name="l00193"></a>00193 
+<a name="l00194"></a>00194 sub fetch_all_by_taxonomy_branch {
+<a name="l00195"></a>00195   my ( $self, $root, $keen ) = @_;
+<a name="l00196"></a>00196   <span class="keywordflow">if</span> ( ref($root) ne <span class="stringliteral">&#39;Bio::EnsEMBL::Taxonomy::TaxonomyNode&#39;</span> ) {
+<a name="l00197"></a>00197     <span class="keywordflow">if</span> ( looks_like_number($root) ) {
+<a name="l00198"></a>00198       $root = $self-&gt;taxonomy_adaptor()-&gt;fetch_by_taxon_id($root);
+<a name="l00199"></a>00199     }
+<a name="l00200"></a>00200     <span class="keywordflow">else</span> {
+<a name="l00201"></a>00201       ($root) = @{ $self-&gt;taxonomy_adaptor()-&gt;fetch_all_by_name($root) };
+<a name="l00202"></a>00202     }
+<a name="l00203"></a>00203   }
+<a name="l00204"></a>00204   my @taxids =
+<a name="l00205"></a>00205     ( $root-&gt;taxon_id(), @{ $root-&gt;adaptor()-&gt;fetch_descendant_ids($root) } );
+<a name="l00206"></a>00206   <span class="keywordflow">return</span> $self-&gt;fetch_all_by_taxonomy_ids( \@taxids );
+<a name="l00207"></a>00207 }
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209 =head2 fetch_by_display_name
+<a name="l00210"></a>00210   Arg        : Name of organism
+<a name="l00211"></a>00211   Description: Fetch info <span class="keywordflow">for</span> specified organism
+<a name="l00212"></a>00212   Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00213"></a>00213   Exceptions : none
+<a name="l00214"></a>00214   Caller     : general
+<a name="l00215"></a>00215   Status     : Stable
+<a name="l00216"></a>00216 =cut
+<a name="l00217"></a>00217 
+<a name="l00218"></a>00218 sub fetch_by_display_name {
+<a name="l00219"></a>00219   my ( $self, $display_name, $keen ) = @_;
+<a name="l00220"></a>00220   <span class="keywordflow">return</span> $self-&gt;_first_element(
+<a name="l00221"></a>00221      $self-&gt;_fetch_generic_with_args( { <span class="stringliteral">&#39;display_name&#39;</span>, $display_name }, $keen )
+<a name="l00222"></a>00222   );
+<a name="l00223"></a>00223 }
+<a name="l00224"></a>00224 
+<a name="l00225"></a>00225 =head2 fetch_by_name
+<a name="l00226"></a>00226   Arg        : Display name of organism 
+<a name="l00227"></a>00227   Description: Fetch info <span class="keywordflow">for</span> specified organism
+<a name="l00228"></a>00228   Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00229"></a>00229   Exceptions : none
+<a name="l00230"></a>00230   Caller     : general
+<a name="l00231"></a>00231   Status     : Stable
+<a name="l00232"></a>00232 =cut
 <a name="l00233"></a>00233 
-<a name="l00234"></a>00234 =head2 fetch_any_by_name
-<a name="l00235"></a>00235   Arg        : Name of organism (display, species, alias etc)
-<a name="l00236"></a>00236   Description: Fetch info <span class="keywordflow">for</span> specified organism
-<a name="l00237"></a>00237   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00238"></a>00238   Exceptions : none
-<a name="l00239"></a>00239   Caller     : general
-<a name="l00240"></a>00240   Status     : Stable
-<a name="l00241"></a>00241 =cut
-<a name="l00242"></a>00242 
-<a name="l00243"></a>00243 sub fetch_by_any_name {
-<a name="l00244"></a>00244   my ( $self, $name, $keen ) = @_;
-<a name="l00245"></a>00245   my $dba = $self-&gt;fetch_by_name( $name, $keen );
-<a name="l00246"></a>00246   <span class="keywordflow">if</span> ( !defined $dba ) {
-<a name="l00247"></a>00247     $dba = $self-&gt;fetch_by_display_name( $name, $keen );
-<a name="l00248"></a>00248   }
-<a name="l00249"></a>00249   <span class="keywordflow">if</span> ( !defined $dba ) {
-<a name="l00250"></a>00250     $dba = $self-&gt;fetch_by_alias( $name, $keen );
-<a name="l00251"></a>00251   }
-<a name="l00252"></a>00252   <span class="keywordflow">return</span> $dba;
-<a name="l00253"></a>00253 }
-<a name="l00254"></a>00254 
-<a name="l00255"></a>00255 =head2 fetch_all_by_name_pattern
-<a name="l00256"></a>00256   Arg        : Regular expression matching of organism
-<a name="l00257"></a>00257   Description: Fetch info <span class="keywordflow">for</span> specified organism
-<a name="l00258"></a>00258   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00259"></a>00259   Exceptions : none
-<a name="l00260"></a>00260   Caller     : general
-<a name="l00261"></a>00261   Status     : Stable
-<a name="l00262"></a>00262 =cut
-<a name="l00263"></a>00263 
-<a name="l00264"></a>00264 sub fetch_all_by_name_pattern {
-<a name="l00265"></a>00265   my ( $self, $name, $keen ) = @_;
-<a name="l00266"></a>00266   <span class="keywordflow">return</span>
-<a name="l00267"></a>00267     $self-&gt;_fetch_generic(
-<a name="l00268"></a>00268             _get_base_sql() . q/ where display_name REGEXP ? or name REGEXP ? /,
-<a name="l00269"></a>00269             [ $name, $name ], $keen );
-<a name="l00270"></a>00270 }
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272 =head2 fetch_by_alias
-<a name="l00273"></a>00273   Arg        : Alias of organism
-<a name="l00274"></a>00274   Description: Fetch info <span class="keywordflow">for</span> specified organism
-<a name="l00275"></a>00275   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00276"></a>00276   Exceptions : none
-<a name="l00277"></a>00277   Caller     : general
-<a name="l00278"></a>00278   Status     : Stable
-<a name="l00279"></a>00279 =cut
-<a name="l00280"></a>00280 
-<a name="l00281"></a>00281 sub fetch_by_alias {
-<a name="l00282"></a>00282   my ( $self, $name, $keen ) = @_;
-<a name="l00283"></a>00283   <span class="keywordflow">return</span>
-<a name="l00284"></a>00284     $self-&gt;_first_element(
-<a name="l00285"></a>00285                   $self-&gt;_fetch_generic(
-<a name="l00286"></a>00286                     _get_base_sql() .
-<a name="l00287"></a>00287                       q/ join organism_alias <span class="keyword">using</span> (organism_id) where alias=?/,
-<a name="l00288"></a>00288                     [$name],
-<a name="l00289"></a>00289                     $keen ) );
-<a name="l00290"></a>00290 }
-<a name="l00291"></a>00291 
-<a name="l00292"></a>00292 =head1 INTERNAL METHODS
-<a name="l00293"></a>00293 =head2 _fetch_publications
-<a name="l00294"></a>00294   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a> 
-<a name="l00295"></a>00295   Description: Add publications to supplied <span class="keywordtype">object</span>
-<a name="l00296"></a>00296   Returntype : none
-<a name="l00297"></a>00297   Exceptions : none
-<a name="l00298"></a>00298   Caller     : <span class="keyword">internal</span>
-<a name="l00299"></a>00299   Status     : Stable
-<a name="l00300"></a>00300 =cut
-<a name="l00301"></a>00301 
-<a name="l00302"></a>00302 sub _fetch_publications {
-<a name="l00303"></a>00303   my ( $self, $org ) = @_;
-<a name="l00304"></a>00304   croak <span class="stringliteral">&quot;Cannot fetch publications for an object that has not been stored&quot;</span>
-<a name="l00305"></a>00305     <span class="keywordflow">if</span> !defined $org-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>();
-<a name="l00306"></a>00306   my $pubs =
-<a name="l00307"></a>00307     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00308"></a>00308      -SQL =&gt; <span class="stringliteral">&#39;select publication from organism_publication where organism_id=?&#39;</span>,
-<a name="l00309"></a>00309      -PARAMS =&gt; [ $org-&gt;dbID() ] );
-<a name="l00310"></a>00310   $org-&gt;publications($pubs);
-<a name="l00311"></a>00311   <span class="keywordflow">return</span>;
-<a name="l00312"></a>00312 }
-<a name="l00313"></a>00313 
-<a name="l00314"></a>00314 =head2 _fetch_aliases
-<a name="l00315"></a>00315   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a> 
-<a name="l00316"></a>00316   Description: Add aliases to supplied <span class="keywordtype">object</span>
-<a name="l00317"></a>00317   Returntype : none
-<a name="l00318"></a>00318   Exceptions : none
-<a name="l00319"></a>00319   Caller     : <span class="keyword">internal</span>
-<a name="l00320"></a>00320   Status     : Stable
-<a name="l00321"></a>00321 =cut
-<a name="l00322"></a>00322 
-<a name="l00323"></a>00323 sub _fetch_aliases {
-<a name="l00324"></a>00324   my ( $self, $org ) = @_;
-<a name="l00325"></a>00325   croak <span class="stringliteral">&quot;Cannot fetch aliases for a GenomeInfo object that has not been stored&quot;</span>
-<a name="l00326"></a>00326     <span class="keywordflow">if</span> !defined $org-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>();
-<a name="l00327"></a>00327   my $aliases =
-<a name="l00328"></a>00328     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00329"></a>00329                  -SQL =&gt; <span class="stringliteral">&#39;select alias from organism_alias where organism_id=?&#39;</span>,
-<a name="l00330"></a>00330                  -PARAMS =&gt; [ $org-&gt;dbID() ] );
-<a name="l00331"></a>00331   $org-&gt;aliases($aliases);
-<a name="l00332"></a>00332   <span class="keywordflow">return</span>;
-<a name="l00333"></a>00333 }
-<a name="l00334"></a>00334 
-<a name="l00335"></a>00335 =head2 _fetch_children
-<a name="l00336"></a>00336   Arg        : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00337"></a>00337   Description: Fetch all children of specified info <span class="keywordtype">object</span>
-<a name="l00338"></a>00338   Returntype : none
-<a name="l00339"></a>00339   Exceptions : none
-<a name="l00340"></a>00340   Caller     : <span class="keyword">internal</span>
-<a name="l00341"></a>00341   Status     : Stable
-<a name="l00342"></a>00342 =cut
-<a name="l00343"></a>00343 
-<a name="l00344"></a>00344 sub _fetch_children {
-<a name="l00345"></a>00345   my ( $self, $md ) = @_;
-<a name="l00346"></a>00346   $self-&gt;_fetch_aliases($md);
-<a name="l00347"></a>00347   $self-&gt;_fetch_publications($md);
-<a name="l00348"></a>00348   <span class="keywordflow">return</span>;
-<a name="l00349"></a>00349 }
-<a name="l00350"></a>00350 
-<a name="l00351"></a>00351 =head2 _store_aliases
-<a name="l00352"></a>00352   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00353"></a>00353   Description: Stores the aliases <span class="keywordflow">for</span> the supplied <span class="keywordtype">object</span>
-<a name="l00354"></a>00354   Returntype : None
-<a name="l00355"></a>00355   Exceptions : none
-<a name="l00356"></a>00356   Caller     : <span class="keyword">internal</span>
-<a name="l00357"></a>00357   Status     : Stable
-<a name="l00358"></a>00358 =cut
-<a name="l00359"></a>00359 
-<a name="l00360"></a>00360 sub _store_aliases {
-<a name="l00361"></a>00361   my ( $self, $organism ) = @_;
-<a name="l00362"></a>00362 
-<a name="l00363"></a>00363   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00364"></a>00364                       -SQL =&gt; q/<span class="keyword">delete</span> from organism_alias where organism_id=?/,
-<a name="l00365"></a>00365                       -PARAMS =&gt; [ $organism-&gt;dbID() ] );
-<a name="l00366"></a>00366   <span class="keywordflow">if</span> ( defined $organism-&gt;aliases() ) {
-<a name="l00367"></a>00367     <span class="keywordflow">for</span> my $alias ( @{ $organism-&gt;aliases() } ) {
+<a name="l00234"></a>00234 sub fetch_by_name {
+<a name="l00235"></a>00235   my ( $self, $name, $keen ) = @_;
+<a name="l00236"></a>00236   <span class="keywordflow">return</span> $self-&gt;_first_element(
+<a name="l00237"></a>00237                   $self-&gt;_fetch_generic_with_args( { <span class="stringliteral">&#39;name&#39;</span>, $name }, $keen ) );
+<a name="l00238"></a>00238 }
+<a name="l00239"></a>00239 
+<a name="l00240"></a>00240 =head2 fetch_any_by_name
+<a name="l00241"></a>00241   Arg        : Name of organism (display, species, alias etc)
+<a name="l00242"></a>00242   Description: Fetch info <span class="keywordflow">for</span> specified organism
+<a name="l00243"></a>00243   Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00244"></a>00244   Exceptions : none
+<a name="l00245"></a>00245   Caller     : general
+<a name="l00246"></a>00246   Status     : Stable
+<a name="l00247"></a>00247 =cut
+<a name="l00248"></a>00248 
+<a name="l00249"></a>00249 sub fetch_by_any_name {
+<a name="l00250"></a>00250   my ( $self, $name, $keen ) = @_;
+<a name="l00251"></a>00251   my $dba = $self-&gt;fetch_by_name( $name, $keen );
+<a name="l00252"></a>00252   <span class="keywordflow">if</span> ( !defined $dba ) {
+<a name="l00253"></a>00253     $dba = $self-&gt;fetch_by_display_name( $name, $keen );
+<a name="l00254"></a>00254   }
+<a name="l00255"></a>00255   <span class="keywordflow">if</span> ( !defined $dba ) {
+<a name="l00256"></a>00256     $dba = $self-&gt;fetch_by_alias( $name, $keen );
+<a name="l00257"></a>00257   }
+<a name="l00258"></a>00258   <span class="keywordflow">return</span> $dba;
+<a name="l00259"></a>00259 }
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261 =head2 fetch_all_by_name_pattern
+<a name="l00262"></a>00262   Arg        : Regular expression matching of organism
+<a name="l00263"></a>00263   Description: Fetch info <span class="keywordflow">for</span> specified organism
+<a name="l00264"></a>00264   Returntype : Arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00265"></a>00265   Exceptions : none
+<a name="l00266"></a>00266   Caller     : general
+<a name="l00267"></a>00267   Status     : Stable
+<a name="l00268"></a>00268 =cut
+<a name="l00269"></a>00269 
+<a name="l00270"></a>00270 sub fetch_all_by_name_pattern {
+<a name="l00271"></a>00271   my ( $self, $name, $keen ) = @_;
+<a name="l00272"></a>00272   <span class="keywordflow">return</span>
+<a name="l00273"></a>00273     $self-&gt;_fetch_generic(
+<a name="l00274"></a>00274             _get_base_sql() . q/ where display_name REGEXP ? or name REGEXP ? /,
+<a name="l00275"></a>00275             [ $name, $name ], $keen );
+<a name="l00276"></a>00276 }
+<a name="l00277"></a>00277 
+<a name="l00278"></a>00278 =head2 fetch_by_alias
+<a name="l00279"></a>00279   Arg        : Alias of organism
+<a name="l00280"></a>00280   Description: Fetch info <span class="keywordflow">for</span> specified organism
+<a name="l00281"></a>00281   Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00282"></a>00282   Exceptions : none
+<a name="l00283"></a>00283   Caller     : general
+<a name="l00284"></a>00284   Status     : Stable
+<a name="l00285"></a>00285 =cut
+<a name="l00286"></a>00286 
+<a name="l00287"></a>00287 sub fetch_by_alias {
+<a name="l00288"></a>00288   my ( $self, $name, $keen ) = @_;
+<a name="l00289"></a>00289   <span class="keywordflow">return</span>
+<a name="l00290"></a>00290     $self-&gt;_first_element(
+<a name="l00291"></a>00291                   $self-&gt;_fetch_generic(
+<a name="l00292"></a>00292                     _get_base_sql() .
+<a name="l00293"></a>00293                       q/ join organism_alias <span class="keyword">using</span> (organism_id) where alias=?/,
+<a name="l00294"></a>00294                     [$name],
+<a name="l00295"></a>00295                     $keen ) );
+<a name="l00296"></a>00296 }
+<a name="l00297"></a>00297 
+<a name="l00298"></a>00298 =head1 INTERNAL METHODS
+<a name="l00299"></a>00299 =head2 _fetch_publications
+<a name="l00300"></a>00300   Arg        : Bio::EnsEMBL::MetaData::GenomeOrganismInfo 
+<a name="l00301"></a>00301   Description: Add publications to supplied <span class="keywordtype">object</span>
+<a name="l00302"></a>00302   Returntype : none
+<a name="l00303"></a>00303   Exceptions : none
+<a name="l00304"></a>00304   Caller     : <span class="keyword">internal</span>
+<a name="l00305"></a>00305   Status     : Stable
+<a name="l00306"></a>00306 =cut
+<a name="l00307"></a>00307 
+<a name="l00308"></a>00308 sub _fetch_publications {
+<a name="l00309"></a>00309   my ( $self, $org ) = @_;
+<a name="l00310"></a>00310   croak <span class="stringliteral">&quot;Cannot fetch publications for an object that has not been stored&quot;</span>
+<a name="l00311"></a>00311     <span class="keywordflow">if</span> !defined $org-&gt;dbID();
+<a name="l00312"></a>00312   my $pubs =
+<a name="l00313"></a>00313     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00314"></a>00314      -SQL =&gt; <span class="stringliteral">&#39;select publication from organism_publication where organism_id=?&#39;</span>,
+<a name="l00315"></a>00315      -PARAMS =&gt; [ $org-&gt;dbID() ] );
+<a name="l00316"></a>00316   $org-&gt;publications($pubs);
+<a name="l00317"></a>00317   <span class="keywordflow">return</span>;
+<a name="l00318"></a>00318 }
+<a name="l00319"></a>00319 
+<a name="l00320"></a>00320 =head2 _fetch_aliases
+<a name="l00321"></a>00321   Arg        : Bio::EnsEMBL::MetaData::GenomeOrganismInfo 
+<a name="l00322"></a>00322   Description: Add aliases to supplied <span class="keywordtype">object</span>
+<a name="l00323"></a>00323   Returntype : none
+<a name="l00324"></a>00324   Exceptions : none
+<a name="l00325"></a>00325   Caller     : <span class="keyword">internal</span>
+<a name="l00326"></a>00326   Status     : Stable
+<a name="l00327"></a>00327 =cut
+<a name="l00328"></a>00328 
+<a name="l00329"></a>00329 sub _fetch_aliases {
+<a name="l00330"></a>00330   my ( $self, $org ) = @_;
+<a name="l00331"></a>00331   croak <span class="stringliteral">&quot;Cannot fetch aliases for a GenomeInfo object that has not been stored&quot;</span>
+<a name="l00332"></a>00332     <span class="keywordflow">if</span> !defined $org-&gt;dbID();
+<a name="l00333"></a>00333   my $aliases =
+<a name="l00334"></a>00334     $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00335"></a>00335                  -SQL =&gt; <span class="stringliteral">&#39;select alias from organism_alias where organism_id=?&#39;</span>,
+<a name="l00336"></a>00336                  -PARAMS =&gt; [ $org-&gt;dbID() ] );
+<a name="l00337"></a>00337   $org-&gt;aliases($aliases);
+<a name="l00338"></a>00338   <span class="keywordflow">return</span>;
+<a name="l00339"></a>00339 }
+<a name="l00340"></a>00340 
+<a name="l00341"></a>00341 =head2 _fetch_children
+<a name="l00342"></a>00342   Arg        : Arrayref of Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00343"></a>00343   Description: Fetch all children of specified info <span class="keywordtype">object</span>
+<a name="l00344"></a>00344   Returntype : none
+<a name="l00345"></a>00345   Exceptions : none
+<a name="l00346"></a>00346   Caller     : <span class="keyword">internal</span>
+<a name="l00347"></a>00347   Status     : Stable
+<a name="l00348"></a>00348 =cut
+<a name="l00349"></a>00349 
+<a name="l00350"></a>00350 sub _fetch_children {
+<a name="l00351"></a>00351   my ( $self, $md ) = @_;
+<a name="l00352"></a>00352   $self-&gt;_fetch_aliases($md);
+<a name="l00353"></a>00353   $self-&gt;_fetch_publications($md);
+<a name="l00354"></a>00354   <span class="keywordflow">return</span>;
+<a name="l00355"></a>00355 }
+<a name="l00356"></a>00356 
+<a name="l00357"></a>00357 =head2 _store_aliases
+<a name="l00358"></a>00358   Arg        : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00359"></a>00359   Description: Stores the aliases <span class="keywordflow">for</span> the supplied <span class="keywordtype">object</span>
+<a name="l00360"></a>00360   Returntype : None
+<a name="l00361"></a>00361   Exceptions : none
+<a name="l00362"></a>00362   Caller     : <span class="keyword">internal</span>
+<a name="l00363"></a>00363   Status     : Stable
+<a name="l00364"></a>00364 =cut
+<a name="l00365"></a>00365 
+<a name="l00366"></a>00366 sub _store_aliases {
+<a name="l00367"></a>00367   my ( $self, $organism ) = @_;
 <a name="l00368"></a>00368 
-<a name="l00369"></a>00369       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00370"></a>00370         -SQL =&gt; q/insert into organism_alias(organism_id,alias)
-<a name="l00371"></a>00371         values(?,?)/,
-<a name="l00372"></a>00372         -PARAMS =&gt; [ $organism-&gt;dbID(), $alias ] );
-<a name="l00373"></a>00373     }
-<a name="l00374"></a>00374   }
-<a name="l00375"></a>00375   <span class="keywordflow">return</span>;
-<a name="l00376"></a>00376 }
-<a name="l00377"></a>00377 
-<a name="l00378"></a>00378 =head2 _store_publications
-<a name="l00379"></a>00379   Arg        : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html">Bio::EnsEMBL::MetaData::GenomeOrganismInfo</a>
-<a name="l00380"></a>00380   Description: Stores the publications <span class="keywordflow">for</span> the supplied <span class="keywordtype">object</span>
-<a name="l00381"></a>00381   Returntype : None
-<a name="l00382"></a>00382   Exceptions : none
-<a name="l00383"></a>00383   Caller     : <span class="keyword">internal</span>
-<a name="l00384"></a>00384   Status     : Stable
-<a name="l00385"></a>00385 =cut
-<a name="l00386"></a>00386 
-<a name="l00387"></a>00387 sub _store_publications {
-<a name="l00388"></a>00388   my ( $self, $organism ) = @_;
-<a name="l00389"></a>00389 
-<a name="l00390"></a>00390   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00391"></a>00391                 -SQL =&gt; q/<span class="keyword">delete</span> from organism_publication where organism_id=?/,
-<a name="l00392"></a>00392                 -PARAMS =&gt; [ $organism-&gt;dbID() ] );
-<a name="l00393"></a>00393 
-<a name="l00394"></a>00394   <span class="keywordflow">if</span> ( defined $organism-&gt;publications() ) {
-<a name="l00395"></a>00395     <span class="keywordflow">for</span> my $pub ( @{ $organism-&gt;publications() } ) {
-<a name="l00396"></a>00396       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
-<a name="l00397"></a>00397         -SQL =&gt; q/insert into organism_publication(organism_id,publication)
-<a name="l00398"></a>00398         values(?,?)/,
-<a name="l00399"></a>00399         -PARAMS =&gt; [ $organism-&gt;dbID(), $pub ] );
-<a name="l00400"></a>00400     }
-<a name="l00401"></a>00401   }
-<a name="l00402"></a>00402   <span class="keywordflow">return</span>;
-<a name="l00403"></a>00403 }
-<a name="l00404"></a>00404 
-<a name="l00405"></a>00405 =head2 taxonomy_adaptor
-<a name="l00406"></a>00406   Arg        : Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor
-<a name="l00407"></a>00407   Description: Get/<span class="keyword">set</span> the taxonomy adaptor
-<a name="l00408"></a>00408   Returntype : Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor
-<a name="l00409"></a>00409   Exceptions : none
-<a name="l00410"></a>00410   Caller     : <span class="keyword">internal</span>
-<a name="l00411"></a>00411   Status     : Stable
-<a name="l00412"></a>00412 =cut
-<a name="l00413"></a>00413 
-<a name="l00414"></a>00414 sub taxonomy_adaptor {
-<a name="l00415"></a>00415   my ( $self, $adaptor ) = @_;
-<a name="l00416"></a>00416   <span class="keywordflow">if</span> ( defined $adaptor ) {
-<a name="l00417"></a>00417     $self-&gt;{taxonomy_adaptor} = $adaptor;
-<a name="l00418"></a>00418   }
-<a name="l00419"></a>00419   <span class="keywordflow">else</span> {
-<a name="l00420"></a>00420     <span class="keywordflow">if</span> ( !defined $self-&gt;{taxonomy_adaptor} ) {
-<a name="l00421"></a>00421 <span class="preprocessor">      # try and get from the registry</span>
-<a name="l00422"></a>00422 <span class="preprocessor"></span>      my $tax_dba =
-<a name="l00423"></a>00423         Bio::EnsEMBL::Registry-&gt;get_DBAdaptor( <span class="stringliteral">&quot;multi&quot;</span>, <span class="stringliteral">&quot;taxonomy&quot;</span> );
-<a name="l00424"></a>00424       <span class="keywordflow">if</span> ( !defined $tax_dba ) {
-<a name="l00425"></a>00425 <span class="preprocessor">        # can&#39;t find, so try and create alongside metadata</span>
-<a name="l00426"></a>00426 <span class="preprocessor"></span>        my $args = { -USER   =&gt; $self-&gt;db()-&gt;dbc()-&gt;user(),
-<a name="l00427"></a>00427                      -PORT   =&gt; $self-&gt;db()-&gt;dbc()-&gt;port(),
-<a name="l00428"></a>00428                      -PASS   =&gt; $self-&gt;db()-&gt;dbc()-&gt;pass(),
-<a name="l00429"></a>00429                      -HOST   =&gt; $self-&gt;db()-&gt;dbc()-&gt;host(),
-<a name="l00430"></a>00430                      -DBNAME =&gt; <span class="stringliteral">&#39;ncbi_taxonomy&#39;</span> };
-<a name="l00431"></a>00431         $tax_dba =
-<a name="l00432"></a>00432           Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeOrganismInfo.html#a45df4057d6d932199e0b5fcb06a8ceef">new</a>(%$args)
-<a name="l00433"></a>00433           -&gt;(%$args);
-<a name="l00434"></a>00434       }
-<a name="l00435"></a>00435       <span class="keywordflow">if</span> ( defined $tax_dba ) {
-<a name="l00436"></a>00436         $self-&gt;{taxonomy_adaptor} = $tax_dba-&gt;get_TaxonomyNodeAdaptor();
-<a name="l00437"></a>00437       }
-<a name="l00438"></a>00438     }
-<a name="l00439"></a>00439   }
-<a name="l00440"></a>00440   <span class="keywordflow">return</span> $self-&gt;{taxonomy_adaptor};
-<a name="l00441"></a>00441 } ## end sub taxonomy_adaptor
-<a name="l00442"></a>00442 
-<a name="l00443"></a>00443 <span class="preprocessor"># internal implementation</span>
-<a name="l00444"></a>00444 <span class="preprocessor"></span>
-<a name="l00445"></a>00445 my $base_organism_fetch_sql =
-<a name="l00446"></a>00446 q/select organism_id as dbID, name, display_name, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
-<a name="l00447"></a>00447 
-<a name="l00448"></a>00448 sub _get_base_sql {
-<a name="l00449"></a>00449   <span class="keywordflow">return</span> $base_organism_fetch_sql;
-<a name="l00450"></a>00450 }
-<a name="l00451"></a>00451 
-<a name="l00452"></a>00452 sub _get_id_field {
-<a name="l00453"></a>00453   <span class="keywordflow">return</span> <span class="stringliteral">&#39;organism_id&#39;</span>;
-<a name="l00454"></a>00454 }
-<a name="l00455"></a>00455 
-<a name="l00456"></a>00456 sub _get_obj_class {
-<a name="l00457"></a>00457   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeOrganismInfo&#39;</span>;
-<a name="l00458"></a>00458 }
-<a name="l00459"></a>00459 
-<a name="l00460"></a>00460 1;
+<a name="l00369"></a>00369   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00370"></a>00370                       -SQL =&gt; q/<span class="keyword">delete</span> from organism_alias where organism_id=?/,
+<a name="l00371"></a>00371                       -PARAMS =&gt; [ $organism-&gt;dbID() ] );
+<a name="l00372"></a>00372   <span class="keywordflow">if</span> ( defined $organism-&gt;aliases() ) {
+<a name="l00373"></a>00373     <span class="keywordflow">for</span> my $alias ( @{ $organism-&gt;aliases() } ) {
+<a name="l00374"></a>00374 
+<a name="l00375"></a>00375       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00376"></a>00376         -SQL =&gt; q/insert into organism_alias(organism_id,alias)
+<a name="l00377"></a>00377         values(?,?)/,
+<a name="l00378"></a>00378         -PARAMS =&gt; [ $organism-&gt;dbID(), $alias ] );
+<a name="l00379"></a>00379     }
+<a name="l00380"></a>00380   }
+<a name="l00381"></a>00381   <span class="keywordflow">return</span>;
+<a name="l00382"></a>00382 }
+<a name="l00383"></a>00383 
+<a name="l00384"></a>00384 =head2 _store_publications
+<a name="l00385"></a>00385   Arg        : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+<a name="l00386"></a>00386   Description: Stores the publications <span class="keywordflow">for</span> the supplied <span class="keywordtype">object</span>
+<a name="l00387"></a>00387   Returntype : None
+<a name="l00388"></a>00388   Exceptions : none
+<a name="l00389"></a>00389   Caller     : <span class="keyword">internal</span>
+<a name="l00390"></a>00390   Status     : Stable
+<a name="l00391"></a>00391 =cut
+<a name="l00392"></a>00392 
+<a name="l00393"></a>00393 sub _store_publications {
+<a name="l00394"></a>00394   my ( $self, $organism ) = @_;
+<a name="l00395"></a>00395 
+<a name="l00396"></a>00396   $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00397"></a>00397                 -SQL =&gt; q/<span class="keyword">delete</span> from organism_publication where organism_id=?/,
+<a name="l00398"></a>00398                 -PARAMS =&gt; [ $organism-&gt;dbID() ] );
+<a name="l00399"></a>00399 
+<a name="l00400"></a>00400   <span class="keywordflow">if</span> ( defined $organism-&gt;publications() ) {
+<a name="l00401"></a>00401     <span class="keywordflow">for</span> my $pub ( @{ $organism-&gt;publications() } ) {
+<a name="l00402"></a>00402       $self-&gt;dbc()-&gt;sql_helper()-&gt;execute_update(
+<a name="l00403"></a>00403         -SQL =&gt; q/insert into organism_publication(organism_id,publication)
+<a name="l00404"></a>00404         values(?,?)/,
+<a name="l00405"></a>00405         -PARAMS =&gt; [ $organism-&gt;dbID(), $pub ] );
+<a name="l00406"></a>00406     }
+<a name="l00407"></a>00407   }
+<a name="l00408"></a>00408   <span class="keywordflow">return</span>;
+<a name="l00409"></a>00409 }
+<a name="l00410"></a>00410 
+<a name="l00411"></a>00411 =head2 taxonomy_adaptor
+<a name="l00412"></a>00412   Arg        : Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor
+<a name="l00413"></a>00413   Description: Get/<span class="keyword">set</span> the taxonomy adaptor
+<a name="l00414"></a>00414   Returntype : Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyNodeAdaptor
+<a name="l00415"></a>00415   Exceptions : none
+<a name="l00416"></a>00416   Caller     : <span class="keyword">internal</span>
+<a name="l00417"></a>00417   Status     : Stable
+<a name="l00418"></a>00418 =cut
+<a name="l00419"></a>00419 
+<a name="l00420"></a>00420 sub taxonomy_adaptor {
+<a name="l00421"></a>00421   my ( $self, $adaptor ) = @_;
+<a name="l00422"></a>00422   <span class="keywordflow">if</span> ( defined $adaptor ) {
+<a name="l00423"></a>00423     $self-&gt;{taxonomy_adaptor} = $adaptor;
+<a name="l00424"></a>00424   }
+<a name="l00425"></a>00425   <span class="keywordflow">else</span> {
+<a name="l00426"></a>00426     <span class="keywordflow">if</span> ( !defined $self-&gt;{taxonomy_adaptor} ) {
+<a name="l00427"></a>00427       my $tax_dba;
+<a name="l00428"></a>00428       eval {
+<a name="l00429"></a>00429 <span class="preprocessor">        # try and get from the registry</span>
+<a name="l00430"></a>00430 <span class="preprocessor"></span>        $tax_dba = Bio::EnsEMBL::Registry-&gt;get_DBAdaptor( <span class="stringliteral">&quot;multi&quot;</span>, <span class="stringliteral">&quot;taxonomy&quot;</span> );
+<a name="l00431"></a>00431       };
+<a name="l00432"></a>00432       <span class="keywordflow">if</span> ( !defined $tax_dba ) {
+<a name="l00433"></a>00433 <span class="preprocessor">        # can&#39;t find, so try and create alongside metadata</span>
+<a name="l00434"></a>00434 <span class="preprocessor"></span>        my $args = { -USER   =&gt; $self-&gt;db()-&gt;dbc()-&gt;user(),
+<a name="l00435"></a>00435                      -PORT   =&gt; $self-&gt;db()-&gt;dbc()-&gt;port(),
+<a name="l00436"></a>00436                      -PASS   =&gt; $self-&gt;db()-&gt;dbc()-&gt;pass(),
+<a name="l00437"></a>00437                      -HOST   =&gt; $self-&gt;db()-&gt;dbc()-&gt;host(),
+<a name="l00438"></a>00438                      -DBNAME =&gt; <span class="stringliteral">&#39;ncbi_taxonomy&#39;</span> };
+<a name="l00439"></a>00439         $tax_dba =
+<a name="l00440"></a>00440           Bio::EnsEMBL::Taxonomy::DBSQL::TaxonomyDBAdaptor-&gt;new(%$args);
+<a name="l00441"></a>00441       }
+<a name="l00442"></a>00442       <span class="keywordflow">if</span> ( defined $tax_dba ) {
+<a name="l00443"></a>00443         $self-&gt;{taxonomy_adaptor} = $tax_dba-&gt;get_TaxonomyNodeAdaptor();
+<a name="l00444"></a>00444       }
+<a name="l00445"></a>00445     }
+<a name="l00446"></a>00446   }
+<a name="l00447"></a>00447   <span class="keywordflow">return</span> $self-&gt;{taxonomy_adaptor};
+<a name="l00448"></a>00448 } ## end sub taxonomy_adaptor
+<a name="l00449"></a>00449 
+<a name="l00450"></a>00450 <span class="preprocessor"># internal implementation</span>
+<a name="l00451"></a>00451 <span class="preprocessor"></span>
+<a name="l00452"></a>00452 my $base_organism_fetch_sql =
+<a name="l00453"></a>00453 q/select organism_id as dbID, name, display_name, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
+<a name="l00454"></a>00454 
+<a name="l00455"></a>00455 sub _get_base_sql {
+<a name="l00456"></a>00456   <span class="keywordflow">return</span> $base_organism_fetch_sql;
+<a name="l00457"></a>00457 }
+<a name="l00458"></a>00458 
+<a name="l00459"></a>00459 sub _get_id_field {
+<a name="l00460"></a>00460   <span class="keywordflow">return</span> <span class="stringliteral">&#39;organism_id&#39;</span>;
+<a name="l00461"></a>00461 }
+<a name="l00462"></a>00462 
+<a name="l00463"></a>00463 sub _get_obj_class {
+<a name="l00464"></a>00464   <span class="keywordflow">return</span> <span class="stringliteral">&#39;Bio::EnsEMBL::MetaData::GenomeOrganismInfo&#39;</span>;
+<a name="l00465"></a>00465 }
+<a name="l00466"></a>00466 
+<a name="l00467"></a>00467 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

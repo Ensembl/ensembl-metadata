@@ -151,8 +151,11 @@ Description</h2>
  <pre>
 Adaptor for storing and retrieving EventInfo objects from MySQL ensembl_metadata database
 
-</pre> 
-<p>Definition at line <a class="el" href="EventInfoAdaptor_8pm_source.html#l00023">23</a> of file <a class="el" href="EventInfoAdaptor_8pm_source.html">EventInfoAdaptor.pm</a>.</p>
+</pre> <h2><a class="anchor" id="See-also"></a>
+See-also</h2>
+<p><a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1EventInfo.html">Bio::EnsEMBL::MetaData::EventInfo</a> <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DatabaseInfo.html">Bio::EnsEMBL::MetaData::DatabaseInfo</a> <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a> <a class="el" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a> </p>
+
+<p>Definition at line <a class="el" href="EventInfoAdaptor_8pm_source.html#l00030">30</a> of file <a class="el" href="EventInfoAdaptor_8pm_source.html">EventInfoAdaptor.pm</a>.</p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Available Methods</h2></td></tr>
@@ -370,6 +373,7 @@ Available Methods</h2></td></tr>
       my $row = shift @_;
       my $md = $self-&gt;_get_cached_obj( $type, $row-&gt;{dbID} );
       <span class="keywordflow">if</span> ( !defined $md ) {
+        load $type;
         $md = bless $row, $type;
         $md-&gt;adaptor($self);
         $self-&gt;_store_cached_obj($md);

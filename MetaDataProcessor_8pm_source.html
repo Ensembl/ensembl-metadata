@@ -135,489 +135,523 @@ function toggleVisibility(linkObj) {
 <a name="l00009"></a>00009 
 <a name="l00010"></a>00010      http:<span class="comment">//www.apache.org/licenses/LICENSE-2.0</span>
 <a name="l00011"></a>00011 
-<a name="l00012"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">00012</a> Unless required by applicable law or agreed to in writing, software
+<a name="l00012"></a>00012 Unless required by applicable law or agreed to in writing, software
 <a name="l00013"></a>00013 distributed under the License is distributed on an <span class="stringliteral">&quot;AS IS&quot;</span> BASIS,
 <a name="l00014"></a>00014 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 <a name="l00015"></a>00015 See the License <span class="keywordflow">for</span> the specific language governing permissions and
 <a name="l00016"></a>00016 limitations under the License.
 <a name="l00017"></a>00017 
-<a name="l00018"></a>00018 =cut
+<a name="l00018"></a>00018 =head1 NAME
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::MetaDataProcessor;
-<a name="l00021"></a>00021 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>;
-<a name="l00022"></a>00022 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>;
-<a name="l00023"></a>00023 use Bio::EnsEMBL::Registry;
-<a name="l00024"></a>00024 use Bio::EnsEMBL::Utils::Exception qw/<span class="keywordflow">throw</span> warning/;
-<a name="l00025"></a>00025 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00026"></a>00026 use Data::Dumper;
-<a name="l00027"></a>00027 use Log::Log4perl qw(get_logger);
-<a name="l00028"></a>00028 use Carp qw/confess croak/;
-<a name="l00029"></a>00029 use strict;
-<a name="l00030"></a>00030 use warnings;
-<a name="l00031"></a>00031 
-<a name="l00032"></a>00032 sub <span class="keyword">new</span> {
-<a name="l00033"></a>00033   my ( $caller, @args ) = @_;
-<a name="l00034"></a>00034   my $class = ref($caller) || $caller;
-<a name="l00035"></a>00035   my $self = bless( {}, $class );
-<a name="l00036"></a>00036   ( $self-&gt;{contigs},      $self-&gt;{annotation_analyzer},
-<a name="l00037"></a>00037     $self-&gt;{variation},    $self-&gt;{compara},
-<a name="l00038"></a>00038     $self-&gt;{info_adaptor}, $self-&gt;{force_update},
-<a name="l00039"></a>00039     $self-&gt;{release},      $self-&gt;{eg_release} )
-<a name="l00040"></a>00040     = rearrange( [ <span class="stringliteral">&#39;CONTIGS&#39;</span>,      <span class="stringliteral">&#39;ANNOTATION_ANALYZER&#39;</span>,
-<a name="l00041"></a>00041                    <span class="stringliteral">&#39;VARIATION&#39;</span>,    <span class="stringliteral">&#39;COMPARA&#39;</span>,
-<a name="l00042"></a>00042                    <span class="stringliteral">&#39;INFO_ADAPTOR&#39;</span>, <span class="stringliteral">&#39;FORCE_UPDATE&#39;</span> ],
-<a name="l00043"></a>00043                  @args );
-<a name="l00044"></a>00044   $self-&gt;{logger} = get_logger();
-<a name="l00045"></a>00045   <span class="keywordflow">return</span> $self;
-<a name="l00046"></a>00046 }
-<a name="l00047"></a>00047 
-<a name="l00048"></a>00048 sub process_metadata {
-<a name="l00049"></a>00049   my ( $self, $dbas ) = @_;
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 <span class="preprocessor">  # 1. create hash of DBAs</span>
-<a name="l00052"></a>00052 <span class="preprocessor"></span>  my $dba_hash = {};
-<a name="l00053"></a>00053   my $comparas = [];
-<a name="l00054"></a>00054   <span class="keywordflow">for</span> my $dba ( grep { $_-&gt;dbc()-&gt;dbname() !~ /ancestral/ } @{$dbas} ) {
-<a name="l00055"></a>00055     my $type;
-<a name="l00056"></a>00056     my $species = $dba-&gt;species();
-<a name="l00057"></a>00057     <span class="keywordflow">for</span> my $t (qw(core otherfeatures variation funcgen)) {
-<a name="l00058"></a>00058       <span class="keywordflow">if</span> ( $dba-&gt;dbc()-&gt;dbname() =~ m/$t/ ) {
-<a name="l00059"></a>00059         $type = $t;
-<a name="l00060"></a>00060         last;
-<a name="l00061"></a>00061       }
-<a name="l00062"></a>00062     }
-<a name="l00063"></a>00063     <span class="keywordflow">if</span> ( defined $type ) {
-<a name="l00064"></a>00064       $dba_hash-&gt;{$species}{$type} = $dba <span class="keywordflow">if</span> defined $type;
-<a name="l00065"></a>00065     }
-<a name="l00066"></a>00066     elsif ( $dba-&gt;dbc()-&gt;dbname() =~ m/_compara_/ ) {
-<a name="l00067"></a>00067       push @$comparas, $dba;
-<a name="l00068"></a>00068     }
-<a name="l00069"></a>00069   }
-<a name="l00070"></a>00070 
-<a name="l00071"></a>00071 <span class="preprocessor">  # 2. iterate through each genome</span>
-<a name="l00072"></a>00072 <span class="preprocessor"></span>  my $genome_infos = {};
-<a name="l00073"></a>00073   my $n            = 0;
-<a name="l00074"></a>00074   my $total        = scalar( keys %$dba_hash );
-<a name="l00075"></a>00075   <span class="keywordflow">while</span> ( my ( $genome, $dbas ) = each %$dba_hash ) {
-<a name="l00076"></a>00076     $self-&gt;{logger}-&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $genome . <span class="stringliteral">&quot; (&quot;</span> . ++$n . <span class="stringliteral">&quot;/$total)&quot;</span> );
-<a name="l00077"></a>00077     $genome_infos-&gt;{$genome} = $self-&gt;process_genome($dbas);
-<a name="l00078"></a>00078   }
-<a name="l00079"></a>00079 
-<a name="l00080"></a>00080 <span class="preprocessor">  # 3. apply compara</span>
-<a name="l00081"></a>00081 <span class="preprocessor"></span>  <span class="keywordflow">for</span> my $compara (@$comparas) {
-<a name="l00082"></a>00082     $self-&gt;process_compara( $compara, $genome_infos );
-<a name="l00083"></a>00083   }
-<a name="l00084"></a>00084 
-<a name="l00085"></a>00085   <span class="keywordflow">return</span> [ values(%$genome_infos) ];
-<a name="l00086"></a>00086 } ## end sub process_metadata
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 sub process_genome {
-<a name="l00089"></a>00089   my ( $self, $dbas ) = @_;
-<a name="l00090"></a>00090   my $dba = $dbas-&gt;{core};
-<a name="l00091"></a>00091   <span class="keywordflow">if</span> ( !defined $dba ) {
-<a name="l00092"></a>00092     confess <span class="stringliteral">&quot;DBA not defined for processing&quot;</span>;
-<a name="l00093"></a>00093   }
-<a name="l00094"></a>00094   $dba-&gt;dbc()-&gt;reconnect_when_lost(1);
-<a name="l00095"></a>00095 
-<a name="l00096"></a>00096 <span class="preprocessor">  # get metadata container</span>
-<a name="l00097"></a>00097 <span class="preprocessor"></span>  my $meta   = $dba-&gt;get_MetaContainer();
-<a name="l00098"></a>00098   my $dbname = $dba-&gt;dbc()-&gt;dbname();
-<a name="l00099"></a>00099   my $size   = get_dbsize($dba);
-<a name="l00100"></a>00100   my $tableN =
-<a name="l00101"></a>00101     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-<a name="l00102"></a>00102         -SQL =&gt;
-<a name="l00103"></a>00103           <span class="stringliteral">&quot;select count(*) from information_schema.tables where table_schema=?&quot;</span>,
-<a name="l00104"></a>00104         -PARAMS =&gt; [$dbname] );
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106   my $strain      = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;species.strain&#39;</span>);
-<a name="l00107"></a>00107   my $serotype    = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;species.serotype&#39;</span>);
-<a name="l00108"></a>00108   my $name        = $meta-&gt;get_display_name();
-<a name="l00109"></a>00109   my $taxonomy_id = $meta-&gt;get_taxonomy_id();
-<a name="l00110"></a>00110   my $species_taxonomy_id =
-<a name="l00111"></a>00111     $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;species.species_taxonomy_id&#39;</span>) || $taxonomy_id;
-<a name="l00112"></a>00112   my $assembly_accession = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;assembly.accession&#39;</span>);
-<a name="l00113"></a>00113   my $assembly_name      = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;assembly.name&#39;</span>);
-<a name="l00114"></a>00114   my $genebuild          = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;genebuild.start_date&#39;</span>);
-<a name="l00115"></a>00115 
-<a name="l00116"></a>00116 <span class="preprocessor">  # get highest assembly level</span>
-<a name="l00117"></a>00117 <span class="preprocessor"></span>  my ($assembly_level) =
-<a name="l00118"></a>00118     @{
-<a name="l00119"></a>00119     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00120"></a>00120          -SQL =&gt;
-<a name="l00121"></a>00121            <span class="stringliteral">&#39;select name from coord_system where species_id=? order by rank asc&#39;</span>,
-<a name="l00122"></a>00122          -PARAMS =&gt; [ $dba-&gt;species_id() ] ) };
-<a name="l00123"></a>00123   my $division  = <span class="stringliteral">&#39;Ensembl&#39;</span>;
-<a name="l00124"></a>00124   my @divisions = sort @{ $meta-&gt;list_value_by_key(<span class="stringliteral">&#39;species.division&#39;</span>) };
-<a name="l00125"></a>00125   <span class="keywordflow">if</span> ( scalar @divisions &gt; 0 ) {
-<a name="l00126"></a>00126     $division = $divisions[-1];
+<a name="l00020"></a>00020 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">Bio::EnsEMBL::MetaData::MetaDataProcessor</a>
+<a name="l00021"></a>00021 
+<a name="l00022"></a>00022 =head1 SYNOPSIS
+<a name="l00023"></a>00023 
+<a name="l00024"></a>00024 my $processor = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">Bio::EnsEMBL::MetaData::MetaDataProcessor</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html#a32c63ed55ff1ef0c84687294a4380ecd">new</a>();
+<a name="l00025"></a>00025 my $info = $processor-&gt;process_genome($dba);
+<a name="l00026"></a>00026 
+<a name="l00027"></a>00027 =head1 DESCRIPTION
+<a name="l00028"></a>00028 
+<a name="l00029"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">00029</a> Object <span class="keywordflow">for</span> generating <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">GenomeInfo</a> objects from DBAdaptor objects.
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 =head1 SEE ALSO
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>
+<a name="l00034"></a>00034 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeOrganismInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeOrganismInfoAdaptor</a>
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 =head1 AUTHOR
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 Dan Staines
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 =cut
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::MetaDataProcessor;
+<a name="l00043"></a>00043 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>;
+<a name="l00044"></a>00044 use <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>;
+<a name="l00045"></a>00045 use Bio::EnsEMBL::Registry;
+<a name="l00046"></a>00046 use Bio::EnsEMBL::Utils::Exception qw/<span class="keywordflow">throw</span> warning/;
+<a name="l00047"></a>00047 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00048"></a>00048 use Data::Dumper;
+<a name="l00049"></a>00049 use Log::Log4perl qw(get_logger);
+<a name="l00050"></a>00050 use Carp qw/confess croak/;
+<a name="l00051"></a>00051 use strict;
+<a name="l00052"></a>00052 use warnings;
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054 =head1 SUBROUTINES/METHODS
+<a name="l00055"></a>00055 
+<a name="l00056"></a>00056 =head2 <span class="keyword">new</span>
+<a name="l00057"></a>00057   Arg [-CONTIGS] : Integer
+<a name="l00058"></a>00058     Set to retrieve a list of sequences
+<a name="l00059"></a>00059   Arg [-ANNOTATION_ANALYZER] : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1AnnotationAnalyzer.html">Bio::EnsEMBL::MetaData::AnnotationAnalyzer</a>
+<a name="l00060"></a>00060   Arg [-VARIATION] : Integer
+<a name="l00061"></a>00061     Set to process variation
+<a name="l00062"></a>00062   Arg [-COMPARA] : Integer
+<a name="l00063"></a>00063     Set to process compara
+<a name="l00064"></a>00064   Arg [-INFO_ADAPTOR] : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor</a>
+<a name="l00065"></a>00065   Arg [-FORCE_UPDATE] : Integer
+<a name="l00066"></a>00066     Set to force update of existing metadata
+<a name="l00067"></a>00067   Description: Return a <span class="keyword">new</span> instance of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">MetaDataProcessor</a>
+<a name="l00068"></a>00068   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">Bio::EnsEMBL::MetaData::MetaDataProcessor</a>
+<a name="l00069"></a>00069   Exceptions : none
+<a name="l00070"></a>00070   Caller     : general
+<a name="l00071"></a>00071   Status     : Stable
+<a name="l00072"></a>00072 =cut
+<a name="l00073"></a>00073 sub <span class="keyword">new</span> {
+<a name="l00074"></a>00074   my ( $caller, @args ) = @_;
+<a name="l00075"></a>00075   my $class = ref($caller) || $caller;
+<a name="l00076"></a>00076   my $self = bless( {}, $class );
+<a name="l00077"></a>00077   ( $self-&gt;{contigs},      $self-&gt;{annotation_analyzer},
+<a name="l00078"></a>00078     $self-&gt;{variation},    $self-&gt;{compara},
+<a name="l00079"></a>00079     $self-&gt;{info_adaptor}, $self-&gt;{force_update},
+<a name="l00080"></a>00080     $self-&gt;{release},      $self-&gt;{eg_release} )
+<a name="l00081"></a>00081     = rearrange( [ <span class="stringliteral">&#39;CONTIGS&#39;</span>,      <span class="stringliteral">&#39;ANNOTATION_ANALYZER&#39;</span>,
+<a name="l00082"></a>00082                    <span class="stringliteral">&#39;VARIATION&#39;</span>,    <span class="stringliteral">&#39;COMPARA&#39;</span>,
+<a name="l00083"></a>00083                    <span class="stringliteral">&#39;INFO_ADAPTOR&#39;</span>, <span class="stringliteral">&#39;FORCE_UPDATE&#39;</span> ],
+<a name="l00084"></a>00084                  @args );
+<a name="l00085"></a>00085   $self-&gt;{logger} = get_logger();
+<a name="l00086"></a>00086   <span class="keywordflow">return</span> $self;
+<a name="l00087"></a>00087 }
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089 =head2 process_metadata
+<a name="l00090"></a>00090   Arg        : Arrayref of DBAdaptors
+<a name="l00091"></a>00091   Description: Process supplied DBAdaptors
+<a name="l00092"></a>00092   Returntype : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00093"></a>00093   Exceptions : none
+<a name="l00094"></a>00094   Caller     : general
+<a name="l00095"></a>00095   Status     : Stable
+<a name="l00096"></a>00096 =cut
+<a name="l00097"></a>00097 sub process_metadata {
+<a name="l00098"></a>00098   my ( $self, $dbas ) = @_;
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100 <span class="preprocessor">  # 1. create hash of DBAs</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span>  my $dba_hash = {};
+<a name="l00102"></a>00102   my $comparas = [];
+<a name="l00103"></a>00103   <span class="keywordflow">for</span> my $dba ( grep { $_-&gt;dbc()-&gt;dbname() !~ /ancestral/ } @{$dbas} ) {
+<a name="l00104"></a>00104     my $type;
+<a name="l00105"></a>00105     my $species = $dba-&gt;species();
+<a name="l00106"></a>00106     <span class="keywordflow">for</span> my $t (qw(core otherfeatures variation funcgen)) {
+<a name="l00107"></a>00107       <span class="keywordflow">if</span> ( $dba-&gt;dbc()-&gt;dbname() =~ m/$t/ ) {
+<a name="l00108"></a>00108         $type = $t;
+<a name="l00109"></a>00109         last;
+<a name="l00110"></a>00110       }
+<a name="l00111"></a>00111     }
+<a name="l00112"></a>00112     <span class="keywordflow">if</span> ( defined $type ) {
+<a name="l00113"></a>00113       $dba_hash-&gt;{$species}{$type} = $dba <span class="keywordflow">if</span> defined $type;
+<a name="l00114"></a>00114     }
+<a name="l00115"></a>00115     elsif ( $dba-&gt;dbc()-&gt;dbname() =~ m/_compara_/ ) {
+<a name="l00116"></a>00116       push @$comparas, $dba;
+<a name="l00117"></a>00117     }
+<a name="l00118"></a>00118   }
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120 <span class="preprocessor">  # 2. iterate through each genome</span>
+<a name="l00121"></a>00121 <span class="preprocessor"></span>  my $genome_infos = {};
+<a name="l00122"></a>00122   my $n            = 0;
+<a name="l00123"></a>00123   my $total        = scalar( keys %$dba_hash );
+<a name="l00124"></a>00124   <span class="keywordflow">while</span> ( my ( $genome, $dbas ) = each %$dba_hash ) {
+<a name="l00125"></a>00125     $self-&gt;{logger}-&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $genome . <span class="stringliteral">&quot; (&quot;</span> . ++$n . <span class="stringliteral">&quot;/$total)&quot;</span> );
+<a name="l00126"></a>00126     $genome_infos-&gt;{$genome} = $self-&gt;process_genome($dbas);
 <a name="l00127"></a>00127   }
 <a name="l00128"></a>00128 
-<a name="l00129"></a>00129   my $md =
-<a name="l00130"></a>00130     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a8a7161c7738910c10ba3e8cd9d33b7bf">new</a>(
-<a name="l00131"></a>00131                                    -name         =&gt; $dba-&gt;species(),
-<a name="l00132"></a>00132                                    -species_id   =&gt; $dba-&gt;species_id(),
-<a name="l00133"></a>00133                                    -division     =&gt; $division,
-<a name="l00134"></a>00134                                    -dbname       =&gt; $dbname,
-<a name="l00135"></a>00135                                    -data_release =&gt; $self-&gt;{data_release},
-<a name="l00136"></a>00136                                    -strain       =&gt; $strain,
-<a name="l00137"></a>00137                                    -serotype     =&gt; $serotype,
-<a name="l00138"></a>00138                                    -display_name =&gt; $name,
-<a name="l00139"></a>00139                                    -taxonomy_id  =&gt; $taxonomy_id,
-<a name="l00140"></a>00140                                    -species_taxonomy_id =&gt; $species_taxonomy_id,
-<a name="l00141"></a>00141                                    -assembly_accession  =&gt; $assembly_accession,
-<a name="l00142"></a>00142                                    -assembly_name       =&gt; $assembly_name,
-<a name="l00143"></a>00143                                    -genebuild           =&gt; $genebuild,
-<a name="l00144"></a>00144                                    -assembly_level      =&gt; $assembly_level );
-<a name="l00145"></a>00145 
-<a name="l00146"></a>00146 <span class="preprocessor">  # get list of seq names</span>
-<a name="l00147"></a>00147 <span class="preprocessor"></span>  my $seqs_arr = [];
-<a name="l00148"></a>00148 
-<a name="l00149"></a>00149   <span class="keywordflow">if</span> ( defined $self-&gt;{contigs} ) {
-<a name="l00150"></a>00150     my $seqs = {};
-<a name="l00151"></a>00151 
-<a name="l00152"></a>00152 <span class="preprocessor">    # 1. get complete list of seq_regions as a hash vs. ENA synonyms</span>
-<a name="l00153"></a>00153 <span class="preprocessor"></span>    $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
-<a name="l00154"></a>00154       -SQL =&gt; q/select distinct s.name, ss.synonym 
-<a name="l00155"></a>00155       from coord_system c  
-<a name="l00156"></a>00156       join seq_region s using (coord_system_id)  
-<a name="l00157"></a>00157       left join seq_region_synonym ss on 
-<a name="l00158"></a>00158         (ss.seq_region_id=s.seq_region_id and ss.external_db_id in 
-<a name="l00159"></a>00159             (select external_db_id from external_db where db_name=<span class="stringliteral">&#39;INSDC&#39;</span>)) 
-<a name="l00160"></a>00160       where c.species_id=? and attrib like <span class="stringliteral">&#39;%default_version%&#39;</span>/,
-<a name="l00161"></a>00161       -PARAMS   =&gt; [ $dba-&gt;species_id() ],
-<a name="l00162"></a>00162       -CALLBACK =&gt; sub {
-<a name="l00163"></a>00163         my ( $name, $acc ) = @{ shift @_ };
-<a name="l00164"></a>00164         $seqs-&gt;{$name} = $acc;
-<a name="l00165"></a>00165         <span class="keywordflow">return</span>;
-<a name="l00166"></a>00166       } );
-<a name="l00167"></a>00167 
-<a name="l00168"></a>00168 <span class="preprocessor">    # 2. add accessions where the name is flagged as being in ENA</span>
-<a name="l00169"></a>00169 <span class="preprocessor"></span>    $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
-<a name="l00170"></a>00170       -SQL =&gt; q/
-<a name="l00171"></a>00171       select s.name 
-<a name="l00172"></a>00172       from coord_system c  
-<a name="l00173"></a>00173       join seq_region s using (coord_system_id)       
-<a name="l00174"></a>00174       join seq_region_attrib sa <span class="keyword">using</span> (seq_region_id)  
-<a name="l00175"></a>00175       where sa.value=<span class="stringliteral">&#39;ENA&#39;</span> and c.species_id=? and attrib like <span class="stringliteral">&#39;%default_version%&#39;</span>/,
-<a name="l00176"></a>00176       -PARAMS   =&gt; [ $dba-&gt;species_id() ],
-<a name="l00177"></a>00177       -CALLBACK =&gt; sub {
-<a name="l00178"></a>00178         my ($acc) = @{ shift @_ };
-<a name="l00179"></a>00179         $seqs-&gt;{$acc} = $acc;
-<a name="l00180"></a>00180         <span class="keywordflow">return</span>;
-<a name="l00181"></a>00181       } );
-<a name="l00182"></a>00182 
-<a name="l00183"></a>00183     <span class="keywordflow">while</span> ( my ( $key, $acc ) = each %$seqs ) {
-<a name="l00184"></a>00184       push @$seqs_arr, { name =&gt; $key, acc =&gt; $acc };
-<a name="l00185"></a>00185     }
-<a name="l00186"></a>00186   } ## end <span class="keywordflow">if</span> ( defined $self-&gt;{contigs...})
-<a name="l00187"></a>00187 
-<a name="l00188"></a>00188   $md-&gt;assembly()-&gt;sequences($seqs_arr);
-<a name="l00189"></a>00189 
-<a name="l00190"></a>00190 <span class="preprocessor">  # get toplevel base count</span>
-<a name="l00191"></a>00191 <span class="preprocessor"></span>  my $base_counts =
-<a name="l00192"></a>00192     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00193"></a>00193     -SQL =&gt;
-<a name="l00194"></a>00194 q/select value from genome_statistics where statistic=<span class="stringliteral">&#39;ref_length&#39;</span> and species_id=?/,
-<a name="l00195"></a>00195     -PARAMS =&gt; [ $dba-&gt;species_id() ] );
-<a name="l00196"></a>00196 
-<a name="l00197"></a>00197   <span class="keywordflow">if</span> ( scalar @$base_counts == 0 ) {
-<a name="l00198"></a>00198     $base_counts = $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00199"></a>00199       -SQL =&gt; q/select sum(s.length) from seq_region s 
-<a name="l00200"></a>00200 join coord_system c using (coord_system_id) 
-<a name="l00201"></a>00201 join seq_region_attrib sa <span class="keyword">using</span> (seq_region_id) 
-<a name="l00202"></a>00202 join attrib_type a <span class="keyword">using</span> (attrib_type_id) 
-<a name="l00203"></a>00203 where a.code=<span class="stringliteral">&#39;toplevel&#39;</span> and species_id=?/,
-<a name="l00204"></a>00204       -PARAMS =&gt; [ $dba-&gt;species_id() ] );
-<a name="l00205"></a>00205   }
-<a name="l00206"></a>00206 
-<a name="l00207"></a>00207   $md-&gt;assembly()-&gt;base_count( $base_counts-&gt;[0] );
+<a name="l00129"></a>00129 <span class="preprocessor">  # 3. apply compara</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span>  <span class="keywordflow">for</span> my $compara (@$comparas) {
+<a name="l00131"></a>00131     $self-&gt;process_compara( $compara, $genome_infos );
+<a name="l00132"></a>00132   }
+<a name="l00133"></a>00133 
+<a name="l00134"></a>00134   <span class="keywordflow">return</span> [ values(%$genome_infos) ];
+<a name="l00135"></a>00135 } ## end sub process_metadata
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137 =head2 process_genome
+<a name="l00138"></a>00138   Arg        : Hashref of DBAdaptors
+<a name="l00139"></a>00139   Description: Process supplied genome
+<a name="l00140"></a>00140   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00141"></a>00141   Exceptions : none
+<a name="l00142"></a>00142   Caller     : general
+<a name="l00143"></a>00143   Status     : Stable
+<a name="l00144"></a>00144 =cut
+<a name="l00145"></a>00145 sub process_genome {
+<a name="l00146"></a>00146   my ( $self, $dbas ) = @_;
+<a name="l00147"></a>00147   my $dba = $dbas-&gt;{core};
+<a name="l00148"></a>00148   <span class="keywordflow">if</span> ( !defined $dba ) {
+<a name="l00149"></a>00149     confess <span class="stringliteral">&quot;DBA not defined for processing&quot;</span>;
+<a name="l00150"></a>00150   }
+<a name="l00151"></a>00151   $dba-&gt;dbc()-&gt;reconnect_when_lost(1);
+<a name="l00152"></a>00152 
+<a name="l00153"></a>00153 <span class="preprocessor">  # get metadata container</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span>  my $meta   = $dba-&gt;get_MetaContainer();
+<a name="l00155"></a>00155   my $dbname = $dba-&gt;dbc()-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#aa984387c2ded214125ccf83191ae2226">dbname</a>();
+<a name="l00156"></a>00156   my $size   = get_dbsize($dba);
+<a name="l00157"></a>00157   my $tableN =
+<a name="l00158"></a>00158     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
+<a name="l00159"></a>00159         -SQL =&gt;
+<a name="l00160"></a>00160           <span class="stringliteral">&quot;select count(*) from information_schema.tables where table_schema=?&quot;</span>,
+<a name="l00161"></a>00161         -PARAMS =&gt; [$dbname] );
+<a name="l00162"></a>00162 
+<a name="l00163"></a>00163   my $strain      = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;species.strain&#39;</span>);
+<a name="l00164"></a>00164   my $serotype    = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;species.serotype&#39;</span>);
+<a name="l00165"></a>00165   my $name        = $meta-&gt;get_display_name();
+<a name="l00166"></a>00166   my $taxonomy_id = $meta-&gt;get_taxonomy_id();
+<a name="l00167"></a>00167   my $species_taxonomy_id =
+<a name="l00168"></a>00168     $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;species.species_taxonomy_id&#39;</span>) || $taxonomy_id;
+<a name="l00169"></a>00169   my $assembly_accession = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;assembly.accession&#39;</span>);
+<a name="l00170"></a>00170   my $assembly_name      = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;assembly.name&#39;</span>);
+<a name="l00171"></a>00171   my $genebuild          = $meta-&gt;single_value_by_key(<span class="stringliteral">&#39;genebuild.start_date&#39;</span>);
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173 <span class="preprocessor">  # get highest assembly level</span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span>  my ($assembly_level) =
+<a name="l00175"></a>00175     @{
+<a name="l00176"></a>00176     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00177"></a>00177          -SQL =&gt;
+<a name="l00178"></a>00178            <span class="stringliteral">&#39;select name from coord_system where species_id=? order by rank asc&#39;</span>,
+<a name="l00179"></a>00179          -PARAMS =&gt; [ $dba-&gt;species_id() ] ) };
+<a name="l00180"></a>00180   my $division  = <span class="stringliteral">&#39;Ensembl&#39;</span>;
+<a name="l00181"></a>00181   my @divisions = sort @{ $meta-&gt;list_value_by_key(<span class="stringliteral">&#39;species.division&#39;</span>) };
+<a name="l00182"></a>00182   <span class="keywordflow">if</span> ( scalar @divisions &gt; 0 ) {
+<a name="l00183"></a>00183     $division = $divisions[-1];
+<a name="l00184"></a>00184   }
+<a name="l00185"></a>00185 
+<a name="l00186"></a>00186   my $md =
+<a name="l00187"></a>00187     <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html#a8a7161c7738910c10ba3e8cd9d33b7bf">new</a>(
+<a name="l00188"></a>00188                                    -name         =&gt; $dba-&gt;species(),
+<a name="l00189"></a>00189                                    -species_id   =&gt; $dba-&gt;species_id(),
+<a name="l00190"></a>00190                                    -division     =&gt; $division,
+<a name="l00191"></a>00191                                    -dbname       =&gt; $dbname,
+<a name="l00192"></a>00192                                    -data_release =&gt; $self-&gt;{data_release},
+<a name="l00193"></a>00193                                    -strain       =&gt; $strain,
+<a name="l00194"></a>00194                                    -serotype     =&gt; $serotype,
+<a name="l00195"></a>00195                                    -display_name =&gt; $name,
+<a name="l00196"></a>00196                                    -taxonomy_id  =&gt; $taxonomy_id,
+<a name="l00197"></a>00197                                    -species_taxonomy_id =&gt; $species_taxonomy_id,
+<a name="l00198"></a>00198                                    -assembly_accession  =&gt; $assembly_accession,
+<a name="l00199"></a>00199                                    -assembly_name       =&gt; $assembly_name,
+<a name="l00200"></a>00200                                    -genebuild           =&gt; $genebuild,
+<a name="l00201"></a>00201                                    -assembly_level      =&gt; $assembly_level );
+<a name="l00202"></a>00202 
+<a name="l00203"></a>00203 <span class="preprocessor">  # get list of seq names</span>
+<a name="l00204"></a>00204 <span class="preprocessor"></span>  my $seqs_arr = [];
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206   <span class="keywordflow">if</span> ( defined $self-&gt;{contigs} ) {
+<a name="l00207"></a>00207     my $seqs = {};
 <a name="l00208"></a>00208 
-<a name="l00209"></a>00209 <span class="preprocessor">  # get associated PMIDs</span>
-<a name="l00210"></a>00210 <span class="preprocessor"></span>  $md-&gt;organism()-&gt;publications(
-<a name="l00211"></a>00211     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00212"></a>00212       -SQL =&gt; q/select distinct dbprimary_acc from 
-<a name="l00213"></a>00213       xref
-<a name="l00214"></a>00214       join external_db <span class="keyword">using</span> (external_db_id)
-<a name="l00215"></a>00215       join seq_region_attrib sa on (xref.xref_id=sa.value)
-<a name="l00216"></a>00216       join attrib_type using (attrib_type_id)
-<a name="l00217"></a>00217       join seq_region <span class="keyword">using</span> (seq_region_id)
-<a name="l00218"></a>00218       join coord_system <span class="keyword">using</span> (coord_system_id)
-<a name="l00219"></a>00219       where species_id=? and code=<span class="stringliteral">&#39;xref_id&#39;</span> and db_name in (<span class="stringliteral">&#39;PUBMED&#39;</span>)/,
-<a name="l00220"></a>00220       -PARAMS =&gt; [ $dba-&gt;species_id() ] ) );
-<a name="l00221"></a>00221 
-<a name="l00222"></a>00222 <span class="preprocessor">  # add aliases</span>
-<a name="l00223"></a>00223 <span class="preprocessor"></span>  $md-&gt;organism()-&gt;aliases(
-<a name="l00224"></a>00224     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
-<a name="l00225"></a>00225       -SQL =&gt; q/select distinct meta_value from meta
-<a name="l00226"></a>00226       where species_id=? and meta_key=<span class="stringliteral">&#39;species.alias&#39;</span>/,
-<a name="l00227"></a>00227       -PARAMS =&gt; [ $dba-&gt;species_id() ] ) );
-<a name="l00228"></a>00228 
-<a name="l00229"></a>00229   <span class="keywordflow">if</span> ( defined $self-&gt;{annotation_analyzer} ) {
-<a name="l00230"></a>00230 
-<a name="l00231"></a>00231 <span class="preprocessor">    # core annotation</span>
-<a name="l00232"></a>00232 <span class="preprocessor"></span>    $self-&gt;{logger}
-<a name="l00233"></a>00233       -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; core annotation&quot;</span> );
-<a name="l00234"></a>00234     $md-&gt;annotations( $self-&gt;{annotation_analyzer}-&gt;analyze_annotation($dba) );
-<a name="l00235"></a>00235 
-<a name="l00236"></a>00236 <span class="preprocessor">    # features</span>
-<a name="l00237"></a>00237 <span class="preprocessor"></span>    my $core_ali  = $self-&gt;{annotation_analyzer}-&gt;analyze_alignments($dba);
-<a name="l00238"></a>00238     my $other_ali = {};
-<a name="l00239"></a>00239     $md-&gt;features( $self-&gt;{annotation_analyzer}-&gt;analyze_features($dba) );
-<a name="l00240"></a>00240     my $other_features = $dbas-&gt;{otherfeatures};
-<a name="l00241"></a>00241     <span class="keywordflow">if</span> ( defined $other_features ) {
-<a name="l00242"></a>00242       $self-&gt;{logger}
-<a name="l00243"></a>00243         -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; otherfeatures annotation&quot;</span> );
-<a name="l00244"></a>00244       my %features = ( %{ $md-&gt;features() },
-<a name="l00245"></a>00245                        %{$self-&gt;{annotation_analyzer}
-<a name="l00246"></a>00246                            -&gt;analyze_features($other_features) } );
-<a name="l00247"></a>00247       $other_ali =
-<a name="l00248"></a>00248         $self-&gt;{annotation_analyzer}-&gt;analyze_alignments($other_features);
-<a name="l00249"></a>00249       $size += get_dbsize($other_features);
-<a name="l00250"></a>00250       $md-&gt;features( \%features );
-<a name="l00251"></a>00251       $md-&gt;add_database( $other_features-&gt;dbc()-&gt;dbname() );
-<a name="l00252"></a>00252     }
-<a name="l00253"></a>00253     my $variation = $dbas-&gt;{variation};
-<a name="l00254"></a>00254 
-<a name="l00255"></a>00255 <span class="preprocessor">    # variation</span>
-<a name="l00256"></a>00256 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ( defined $variation ) {
-<a name="l00257"></a>00257       $self-&gt;{logger}
-<a name="l00258"></a>00258         -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; variation annotation&quot;</span> );
-<a name="l00259"></a>00259       $md-&gt;variations(
-<a name="l00260"></a>00260                   $self-&gt;{annotation_analyzer}-&gt;analyze_variation($variation) );
-<a name="l00261"></a>00261       $size += get_dbsize($variation);
-<a name="l00262"></a>00262       $md-&gt;add_database( $variation-&gt;dbc()-&gt;dbname() );
-<a name="l00263"></a>00263     }
-<a name="l00264"></a>00264 
-<a name="l00265"></a>00265     my $funcgen = $dbas-&gt;{funcgen};
-<a name="l00266"></a>00266     <span class="keywordflow">if</span> ( defined $funcgen ) {
-<a name="l00267"></a>00267       $self-&gt;{logger}
-<a name="l00268"></a>00268         -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; funcgen annotation&quot;</span> );
-<a name="l00269"></a>00269       $md-&gt;add_database( $funcgen-&gt;dbc()-&gt;dbname() );
-<a name="l00270"></a>00270     }
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272 <span class="preprocessor">    # BAM</span>
-<a name="l00273"></a>00273 <span class="preprocessor"></span>    $self-&gt;{logger}
-<a name="l00274"></a>00274       -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; read aligments&quot;</span> );
-<a name="l00275"></a>00275     my $read_ali =
-<a name="l00276"></a>00276       $self-&gt;{annotation_analyzer}
-<a name="l00277"></a>00277       -&gt;analyze_tracks( $md-&gt;name(), $md-&gt;division() );
-<a name="l00278"></a>00278     my %all_ali = ( %{$core_ali}, %{$other_ali} );
-<a name="l00279"></a>00279 
-<a name="l00280"></a>00280 <span class="preprocessor">    # add bam tracks by count - use source name</span>
-<a name="l00281"></a>00281 <span class="preprocessor"></span>    <span class="keywordflow">for</span> my $bam ( @{ $read_ali-&gt;{bam} } ) {
-<a name="l00282"></a>00282       $all_ali{bam}{ $bam-&gt;{<span class="keywordtype">id</span>} }++;
-<a name="l00283"></a>00283     }
-<a name="l00284"></a>00284     $md-&gt;other_alignments( \%all_ali );
-<a name="l00285"></a>00285     $md-&gt;db_size($size);
-<a name="l00286"></a>00286 
-<a name="l00287"></a>00287   } ## end <span class="keywordflow">if</span> ( defined $self-&gt;{annotation_analyzer...})
-<a name="l00288"></a>00288   $dba-&gt;dbc()-&gt;disconnect_if_idle();
-<a name="l00289"></a>00289   <span class="keywordflow">return</span> $md;
-<a name="l00290"></a>00290 } ## end sub process_genome
-<a name="l00291"></a>00291 
-<a name="l00292"></a>00292 my $DIVISION_NAMES = { <span class="stringliteral">&#39;bacteria&#39;</span>     =&gt; <span class="stringliteral">&#39;EnsemblBacteria&#39;</span>,
-<a name="l00293"></a>00293                        <span class="stringliteral">&#39;plants&#39;</span>       =&gt; <span class="stringliteral">&#39;EnsemblPlants&#39;</span>,
-<a name="l00294"></a>00294                        <span class="stringliteral">&#39;protists&#39;</span>     =&gt; <span class="stringliteral">&#39;EnsemblProtists&#39;</span>,
-<a name="l00295"></a>00295                        <span class="stringliteral">&#39;fungi&#39;</span>        =&gt; <span class="stringliteral">&#39;EnsemblFungi&#39;</span>,
-<a name="l00296"></a>00296                        <span class="stringliteral">&#39;metazoa&#39;</span>      =&gt; <span class="stringliteral">&#39;EnsemblMetazoa&#39;</span>,
-<a name="l00297"></a>00297                        <span class="stringliteral">&#39;pan_homology&#39;</span> =&gt; <span class="stringliteral">&#39;EnsemblPan&#39;</span> };
-<a name="l00298"></a>00298 
-<a name="l00299"></a>00299 sub compara_to_info {
-<a name="l00300"></a>00300   my ( $self, $compara, $genomes ) = @_;
-<a name="l00301"></a>00301   my $compara_info;
-<a name="l00302"></a>00302   <span class="keywordflow">return</span> $compara_info;
-<a name="l00303"></a>00303 }
-<a name="l00304"></a>00304 
-<a name="l00305"></a>00305 sub process_compara {
-<a name="l00306"></a>00306   my ( $self, $compara, $genomes ) = @_;
-<a name="l00307"></a>00307   <span class="keywordflow">if</span> ( !defined $genomes ) {
-<a name="l00308"></a>00308     $genomes = {};
-<a name="l00309"></a>00309   }
-<a name="l00310"></a>00310   my $comparas = [];
-<a name="l00311"></a>00311   eval {
-<a name="l00312"></a>00312     $self-&gt;{logger}
-<a name="l00313"></a>00313       -&gt;info( <span class="stringliteral">&quot;Processing compara database &quot;</span> . $compara-&gt;dbc()-&gt;dbname() );
-<a name="l00314"></a>00314 
-<a name="l00315"></a>00315     ( my $division = $compara-&gt;dbc()-&gt;dbname() ) =~
-<a name="l00316"></a>00316       s/ensembl_compara_([a-z_]+)_[0-9]+_[0-9]+/$1/;
-<a name="l00317"></a>00317 
-<a name="l00318"></a>00318     $division = $DIVISION_NAMES-&gt;{$division} || $division;
-<a name="l00319"></a>00319 
-<a name="l00320"></a>00320     my $adaptor = $compara-&gt;get_MethodLinkSpeciesSetAdaptor();
+<a name="l00209"></a>00209 <span class="preprocessor">    # 1. get complete list of seq_regions as a hash vs. ENA synonyms</span>
+<a name="l00210"></a>00210 <span class="preprocessor"></span>    $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
+<a name="l00211"></a>00211       -SQL =&gt; q/select distinct s.name, ss.synonym 
+<a name="l00212"></a>00212       from coord_system c  
+<a name="l00213"></a>00213       join seq_region s using (coord_system_id)  
+<a name="l00214"></a>00214       left join seq_region_synonym ss on 
+<a name="l00215"></a>00215         (ss.seq_region_id=s.seq_region_id and ss.external_db_id in 
+<a name="l00216"></a>00216             (select external_db_id from external_db where db_name=<span class="stringliteral">&#39;INSDC&#39;</span>)) 
+<a name="l00217"></a>00217       where c.species_id=? and attrib like <span class="stringliteral">&#39;%default_version%&#39;</span>/,
+<a name="l00218"></a>00218       -PARAMS   =&gt; [ $dba-&gt;species_id() ],
+<a name="l00219"></a>00219       -CALLBACK =&gt; sub {
+<a name="l00220"></a>00220         my ( $name, $acc ) = @{ shift @_ };
+<a name="l00221"></a>00221         $seqs-&gt;{$name} = $acc;
+<a name="l00222"></a>00222         <span class="keywordflow">return</span>;
+<a name="l00223"></a>00223       } );
+<a name="l00224"></a>00224 
+<a name="l00225"></a>00225 <span class="preprocessor">    # 2. add accessions where the name is flagged as being in ENA</span>
+<a name="l00226"></a>00226 <span class="preprocessor"></span>    $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_no_return(
+<a name="l00227"></a>00227       -SQL =&gt; q/
+<a name="l00228"></a>00228       select s.name 
+<a name="l00229"></a>00229       from coord_system c  
+<a name="l00230"></a>00230       join seq_region s using (coord_system_id)       
+<a name="l00231"></a>00231       join seq_region_attrib sa <span class="keyword">using</span> (seq_region_id)  
+<a name="l00232"></a>00232       where sa.value=<span class="stringliteral">&#39;ENA&#39;</span> and c.species_id=? and attrib like <span class="stringliteral">&#39;%default_version%&#39;</span>/,
+<a name="l00233"></a>00233       -PARAMS   =&gt; [ $dba-&gt;species_id() ],
+<a name="l00234"></a>00234       -CALLBACK =&gt; sub {
+<a name="l00235"></a>00235         my ($acc) = @{ shift @_ };
+<a name="l00236"></a>00236         $seqs-&gt;{$acc} = $acc;
+<a name="l00237"></a>00237         <span class="keywordflow">return</span>;
+<a name="l00238"></a>00238       } );
+<a name="l00239"></a>00239 
+<a name="l00240"></a>00240     <span class="keywordflow">while</span> ( my ( $key, $acc ) = each %$seqs ) {
+<a name="l00241"></a>00241       push @$seqs_arr, { name =&gt; $key, acc =&gt; $acc };
+<a name="l00242"></a>00242     }
+<a name="l00243"></a>00243   } ## end <span class="keywordflow">if</span> ( defined $self-&gt;{contigs...})
+<a name="l00244"></a>00244 
+<a name="l00245"></a>00245   $md-&gt;assembly()-&gt;sequences($seqs_arr);
+<a name="l00246"></a>00246 
+<a name="l00247"></a>00247 <span class="preprocessor">  # get toplevel base count</span>
+<a name="l00248"></a>00248 <span class="preprocessor"></span>  my $base_counts =
+<a name="l00249"></a>00249     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00250"></a>00250     -SQL =&gt;
+<a name="l00251"></a>00251 q/select value from genome_statistics where statistic=<span class="stringliteral">&#39;ref_length&#39;</span> and species_id=?/,
+<a name="l00252"></a>00252     -PARAMS =&gt; [ $dba-&gt;species_id() ] );
+<a name="l00253"></a>00253 
+<a name="l00254"></a>00254   <span class="keywordflow">if</span> ( scalar @$base_counts == 0 ) {
+<a name="l00255"></a>00255     $base_counts = $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00256"></a>00256       -SQL =&gt; q/select sum(s.length) from seq_region s 
+<a name="l00257"></a>00257 join coord_system c using (coord_system_id) 
+<a name="l00258"></a>00258 join seq_region_attrib sa <span class="keyword">using</span> (seq_region_id) 
+<a name="l00259"></a>00259 join attrib_type a <span class="keyword">using</span> (attrib_type_id) 
+<a name="l00260"></a>00260 where a.code=<span class="stringliteral">&#39;toplevel&#39;</span> and species_id=?/,
+<a name="l00261"></a>00261       -PARAMS =&gt; [ $dba-&gt;species_id() ] );
+<a name="l00262"></a>00262   }
+<a name="l00263"></a>00263 
+<a name="l00264"></a>00264   $md-&gt;assembly()-&gt;base_count( $base_counts-&gt;[0] );
+<a name="l00265"></a>00265 
+<a name="l00266"></a>00266 <span class="preprocessor">  # get associated PMIDs</span>
+<a name="l00267"></a>00267 <span class="preprocessor"></span>  $md-&gt;organism()-&gt;publications(
+<a name="l00268"></a>00268     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00269"></a>00269       -SQL =&gt; q/select distinct dbprimary_acc from 
+<a name="l00270"></a>00270       xref
+<a name="l00271"></a>00271       join external_db <span class="keyword">using</span> (external_db_id)
+<a name="l00272"></a>00272       join seq_region_attrib sa on (xref.xref_id=sa.value)
+<a name="l00273"></a>00273       join attrib_type using (attrib_type_id)
+<a name="l00274"></a>00274       join seq_region <span class="keyword">using</span> (seq_region_id)
+<a name="l00275"></a>00275       join coord_system <span class="keyword">using</span> (coord_system_id)
+<a name="l00276"></a>00276       where species_id=? and code=<span class="stringliteral">&#39;xref_id&#39;</span> and db_name in (<span class="stringliteral">&#39;PUBMED&#39;</span>)/,
+<a name="l00277"></a>00277       -PARAMS =&gt; [ $dba-&gt;species_id() ] ) );
+<a name="l00278"></a>00278 
+<a name="l00279"></a>00279 <span class="preprocessor">  # add aliases</span>
+<a name="l00280"></a>00280 <span class="preprocessor"></span>  $md-&gt;organism()-&gt;aliases(
+<a name="l00281"></a>00281     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_simple(
+<a name="l00282"></a>00282       -SQL =&gt; q/select distinct meta_value from meta
+<a name="l00283"></a>00283       where species_id=? and meta_key=<span class="stringliteral">&#39;species.alias&#39;</span>/,
+<a name="l00284"></a>00284       -PARAMS =&gt; [ $dba-&gt;species_id() ] ) );
+<a name="l00285"></a>00285 
+<a name="l00286"></a>00286   <span class="keywordflow">if</span> ( defined $self-&gt;{annotation_analyzer} ) {
+<a name="l00287"></a>00287 
+<a name="l00288"></a>00288 <span class="preprocessor">    # core annotation</span>
+<a name="l00289"></a>00289 <span class="preprocessor"></span>    $self-&gt;{logger}
+<a name="l00290"></a>00290       -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; core annotation&quot;</span> );
+<a name="l00291"></a>00291     $md-&gt;annotations( $self-&gt;{annotation_analyzer}-&gt;analyze_annotation($dba) );
+<a name="l00292"></a>00292 
+<a name="l00293"></a>00293 <span class="preprocessor">    # features</span>
+<a name="l00294"></a>00294 <span class="preprocessor"></span>    my $core_ali  = $self-&gt;{annotation_analyzer}-&gt;analyze_alignments($dba);
+<a name="l00295"></a>00295     my $other_ali = {};
+<a name="l00296"></a>00296     $md-&gt;features( $self-&gt;{annotation_analyzer}-&gt;analyze_features($dba) );
+<a name="l00297"></a>00297     my $other_features = $dbas-&gt;{otherfeatures};
+<a name="l00298"></a>00298     <span class="keywordflow">if</span> ( defined $other_features ) {
+<a name="l00299"></a>00299       $self-&gt;{logger}
+<a name="l00300"></a>00300         -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; otherfeatures annotation&quot;</span> );
+<a name="l00301"></a>00301       my %features = ( %{ $md-&gt;features() },
+<a name="l00302"></a>00302                        %{$self-&gt;{annotation_analyzer}
+<a name="l00303"></a>00303                            -&gt;analyze_features($other_features) } );
+<a name="l00304"></a>00304       $other_ali =
+<a name="l00305"></a>00305         $self-&gt;{annotation_analyzer}-&gt;analyze_alignments($other_features);
+<a name="l00306"></a>00306       $size += get_dbsize($other_features);
+<a name="l00307"></a>00307       $md-&gt;features( \%features );
+<a name="l00308"></a>00308       $md-&gt;add_database( $other_features-&gt;dbc()-&gt;dbname() );
+<a name="l00309"></a>00309     }
+<a name="l00310"></a>00310     my $variation = $dbas-&gt;{variation};
+<a name="l00311"></a>00311 
+<a name="l00312"></a>00312 <span class="preprocessor">    # variation</span>
+<a name="l00313"></a>00313 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ( defined $variation ) {
+<a name="l00314"></a>00314       $self-&gt;{logger}
+<a name="l00315"></a>00315         -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; variation annotation&quot;</span> );
+<a name="l00316"></a>00316       $md-&gt;variations(
+<a name="l00317"></a>00317                   $self-&gt;{annotation_analyzer}-&gt;analyze_variation($variation) );
+<a name="l00318"></a>00318       $size += get_dbsize($variation);
+<a name="l00319"></a>00319       $md-&gt;add_database( $variation-&gt;dbc()-&gt;dbname() );
+<a name="l00320"></a>00320     }
 <a name="l00321"></a>00321 
-<a name="l00322"></a>00322     <span class="keywordflow">for</span> my $method (
-<a name="l00323"></a>00323       qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
-<a name="l00324"></a>00324       )
-<a name="l00325"></a>00325     {
-<a name="l00326"></a>00326 
-<a name="l00327"></a>00327       $self-&gt;{logger}
-<a name="l00328"></a>00328         -&gt;info( <span class="stringliteral">&quot;Processing method type $method from compara database &quot;</span> .
-<a name="l00329"></a>00329                 $compara-&gt;dbc()-&gt;dbname() );
-<a name="l00330"></a>00330 
-<a name="l00331"></a>00331 <span class="preprocessor">      # group by species_set</span>
-<a name="l00332"></a>00332 <span class="preprocessor"></span>      my $mlss_by_ss = {};
-<a name="l00333"></a>00333       <span class="keywordflow">for</span> my $mlss ( @{ $adaptor-&gt;fetch_all_by_method_link_type($method) } ) {
-<a name="l00334"></a>00334         push @{ $mlss_by_ss-&gt;{ $mlss-&gt;species_set_obj()-&gt;dbID() } }, $mlss;
-<a name="l00335"></a>00335       }
+<a name="l00322"></a>00322     my $funcgen = $dbas-&gt;{funcgen};
+<a name="l00323"></a>00323     <span class="keywordflow">if</span> ( defined $funcgen ) {
+<a name="l00324"></a>00324       $self-&gt;{logger}
+<a name="l00325"></a>00325         -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; funcgen annotation&quot;</span> );
+<a name="l00326"></a>00326       $md-&gt;add_database( $funcgen-&gt;dbc()-&gt;dbname() );
+<a name="l00327"></a>00327     }
+<a name="l00328"></a>00328 
+<a name="l00329"></a>00329 <span class="preprocessor">    # BAM</span>
+<a name="l00330"></a>00330 <span class="preprocessor"></span>    $self-&gt;{logger}
+<a name="l00331"></a>00331       -&gt;info( <span class="stringliteral">&quot;Processing &quot;</span> . $dba-&gt;species() . <span class="stringliteral">&quot; read aligments&quot;</span> );
+<a name="l00332"></a>00332     my $read_ali =
+<a name="l00333"></a>00333       $self-&gt;{annotation_analyzer}
+<a name="l00334"></a>00334       -&gt;analyze_tracks( $md-&gt;name(), $md-&gt;division() );
+<a name="l00335"></a>00335     my %all_ali = ( %{$core_ali}, %{$other_ali} );
 <a name="l00336"></a>00336 
-<a name="l00337"></a>00337       <span class="keywordflow">for</span> my $mlss_list ( values %$mlss_by_ss ) {
-<a name="l00338"></a>00338 
-<a name="l00339"></a>00339         my $dbs = {};
-<a name="l00340"></a>00340         my $ss_name;
-<a name="l00341"></a>00341         <span class="keywordflow">for</span> my $mlss ( @{$mlss_list} ) {
-<a name="l00342"></a>00342 
-<a name="l00343"></a>00343           $ss_name ||= $mlss-&gt;species_set_obj()-&gt;get_tagvalue(<span class="stringliteral">&#39;name&#39;</span>);
-<a name="l00344"></a>00344           <span class="keywordflow">for</span> my $gdb ( @{ $mlss-&gt;species_set_obj()-&gt;genome_dbs() } ) {
-<a name="l00345"></a>00345             $dbs-&gt;{ $gdb-&gt;name() } = $gdb;
-<a name="l00346"></a>00346           }
-<a name="l00347"></a>00347           <span class="keywordflow">if</span> ( !defined $ss_name ) {
-<a name="l00348"></a>00348             $ss_name = $mlss-&gt;name();
-<a name="l00349"></a>00349           }
-<a name="l00350"></a>00350           <span class="keywordflow">if</span> ( defined $ss_name ) {
-<a name="l00351"></a>00351             last;
-<a name="l00352"></a>00352           }
-<a name="l00353"></a>00353         }
-<a name="l00354"></a>00354 
-<a name="l00355"></a>00355         $self-&gt;{logger}-&gt;info(
-<a name="l00356"></a>00356 <span class="stringliteral">&quot;Processing species set $ss_name for method $method from compara database &quot;</span>
-<a name="l00357"></a>00357             . $compara-&gt;dbc()-&gt;dbname() );
-<a name="l00358"></a>00358 
-<a name="l00359"></a>00359         my $compara_info =
-<a name="l00360"></a>00360           <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html#af724cfb183b4763d5f823acf84ae68a0">new</a>(
-<a name="l00361"></a>00361                                            -DBNAME =&gt; $compara-&gt;dbc()-&gt;dbname(),
-<a name="l00362"></a>00362                                            -DIVISION =&gt; $division,
-<a name="l00363"></a>00363                                            -METHOD   =&gt; $method,
-<a name="l00364"></a>00364                                            -SET_NAME =&gt; $ss_name,
-<a name="l00365"></a>00365                                            -GENOMES  =&gt; [] );
-<a name="l00366"></a>00366 
-<a name="l00367"></a>00367         <span class="keywordflow">for</span> my $gdb ( values %{$dbs} ) {
-<a name="l00368"></a>00368 
-<a name="l00369"></a>00369           $self-&gt;{logger}-&gt;info( <span class="stringliteral">&quot;Processing species &quot;</span> . $gdb-&gt;name() .
-<a name="l00370"></a>00370 <span class="stringliteral">&quot; from species set $ss_name for method $method from compara database &quot;</span>
-<a name="l00371"></a>00371             . $compara-&gt;dbc()-&gt;dbname() );
-<a name="l00372"></a>00372 
-<a name="l00373"></a>00373           my $genomeInfo = $genomes-&gt;{ $gdb-&gt;name() };
+<a name="l00337"></a>00337 <span class="preprocessor">    # add bam tracks by count - use source name</span>
+<a name="l00338"></a>00338 <span class="preprocessor"></span>    <span class="keywordflow">for</span> my $bam ( @{ $read_ali-&gt;{bam} } ) {
+<a name="l00339"></a>00339       $all_ali{bam}{ $bam-&gt;{<span class="keywordtype">id</span>} }++;
+<a name="l00340"></a>00340     }
+<a name="l00341"></a>00341     $md-&gt;other_alignments( \%all_ali );
+<a name="l00342"></a>00342     $md-&gt;db_size($size);
+<a name="l00343"></a>00343 
+<a name="l00344"></a>00344   } ## end <span class="keywordflow">if</span> ( defined $self-&gt;{annotation_analyzer...})
+<a name="l00345"></a>00345   $dba-&gt;dbc()-&gt;disconnect_if_idle();
+<a name="l00346"></a>00346   <span class="keywordflow">return</span> $md;
+<a name="l00347"></a>00347 } ## end sub process_genome
+<a name="l00348"></a>00348 
+<a name="l00349"></a>00349 my $DIVISION_NAMES = { <span class="stringliteral">&#39;bacteria&#39;</span>     =&gt; <span class="stringliteral">&#39;EnsemblBacteria&#39;</span>,
+<a name="l00350"></a>00350                        <span class="stringliteral">&#39;plants&#39;</span>       =&gt; <span class="stringliteral">&#39;EnsemblPlants&#39;</span>,
+<a name="l00351"></a>00351                        <span class="stringliteral">&#39;protists&#39;</span>     =&gt; <span class="stringliteral">&#39;EnsemblProtists&#39;</span>,
+<a name="l00352"></a>00352                        <span class="stringliteral">&#39;fungi&#39;</span>        =&gt; <span class="stringliteral">&#39;EnsemblFungi&#39;</span>,
+<a name="l00353"></a>00353                        <span class="stringliteral">&#39;metazoa&#39;</span>      =&gt; <span class="stringliteral">&#39;EnsemblMetazoa&#39;</span>,
+<a name="l00354"></a>00354                        <span class="stringliteral">&#39;pan_homology&#39;</span> =&gt; <span class="stringliteral">&#39;EnsemblPan&#39;</span> };
+<a name="l00355"></a>00355 
+<a name="l00356"></a>00356 =head2 process_compara
+<a name="l00357"></a>00357   Arg        : Bio::EnsEMBL::Compara::DBSQL::DBAdaptor
+<a name="l00358"></a>00358   Arg        : Arrayref of <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00359"></a>00359   Description: Process supplied compara
+<a name="l00360"></a>00360   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00361"></a>00361   Exceptions : none
+<a name="l00362"></a>00362   Caller     : general
+<a name="l00363"></a>00363   Status     : Stable
+<a name="l00364"></a>00364 =cut
+<a name="l00365"></a>00365 sub process_compara {
+<a name="l00366"></a>00366   my ( $self, $compara, $genomes ) = @_;
+<a name="l00367"></a>00367   <span class="keywordflow">if</span> ( !defined $genomes ) {
+<a name="l00368"></a>00368     $genomes = {};
+<a name="l00369"></a>00369   }
+<a name="l00370"></a>00370   my $comparas = [];
+<a name="l00371"></a>00371   eval {
+<a name="l00372"></a>00372     $self-&gt;{logger}
+<a name="l00373"></a>00373       -&gt;info( <span class="stringliteral">&quot;Processing compara database &quot;</span> . $compara-&gt;dbc()-&gt;dbname() );
 <a name="l00374"></a>00374 
-<a name="l00375"></a>00375 <span class="preprocessor">          # have we got one in the database already?</span>
-<a name="l00376"></a>00376 <span class="preprocessor"></span>          <span class="keywordflow">if</span> ( !defined $genomeInfo &amp;&amp; defined $self-&gt;{info_adaptor} ) {
-<a name="l00377"></a>00377             $self-&gt;{logger}-&gt;debug(<span class="stringliteral">&quot;Checking in the database&quot;</span>);
-<a name="l00378"></a>00378             $genomeInfo = $self-&gt;{info_adaptor}-&gt;fetch_by_name( $gdb-&gt;name() );
+<a name="l00375"></a>00375     ( my $division = $compara-&gt;dbc()-&gt;dbname() ) =~
+<a name="l00376"></a>00376       s/ensembl_compara_([a-z_]+)_[0-9]+_[0-9]+/$1/;
+<a name="l00377"></a>00377 
+<a name="l00378"></a>00378     $division = $DIVISION_NAMES-&gt;{$division} || $division;
 <a name="l00379"></a>00379 
-<a name="l00380"></a>00380             <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
-<a name="l00381"></a>00381               my $current_release = $self-&gt;{info_adaptor}-&gt;data_release();
-<a name="l00382"></a>00382               <span class="keywordflow">if</span> ( defined $current_release-&gt;ensembl_genomes_version() ) {
-<a name="l00383"></a>00383 <span class="preprocessor">                # try the ensembl release</span>
-<a name="l00384"></a>00384 <span class="preprocessor"></span>                my $ensembl_release =
-<a name="l00385"></a>00385                   $self-&gt;{info_adaptor}-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
-<a name="l00386"></a>00386                   -&gt;fetch_by_ensembl_release(
-<a name="l00387"></a>00387                                           $current_release-&gt;ensembl_version() );
-<a name="l00388"></a>00388                 $self-&gt;{info_adaptor}-&gt;data_release($ensembl_release);
-<a name="l00389"></a>00389                 $genomeInfo =
-<a name="l00390"></a>00390                   $self-&gt;{info_adaptor}-&gt;fetch_by_name( $gdb-&gt;name() );
-<a name="l00391"></a>00391                 $self-&gt;{info_adaptor}-&gt;data_release($current_release);
-<a name="l00392"></a>00392               }
-<a name="l00393"></a>00393             }
-<a name="l00394"></a>00394 
-<a name="l00395"></a>00395             <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
-<a name="l00396"></a>00396               croak <span class="stringliteral">&quot;Could not find genome info object for &quot;</span> . $gdb-&gt;name();
-<a name="l00397"></a>00397             }
-<a name="l00398"></a>00398             $self-&gt;{logger}-&gt;debug(<span class="stringliteral">&quot;Got one from the database&quot;</span>);
-<a name="l00399"></a>00399             $genomes-&gt;{ $gdb-&gt;name() } = $genomeInfo;
-<a name="l00400"></a>00400           } ## end <span class="keywordflow">if</span> ( !defined $genomeInfo...)
-<a name="l00401"></a>00401 
-<a name="l00402"></a>00402 <span class="preprocessor">          # last attempt, create one</span>
-<a name="l00403"></a>00403 <span class="preprocessor"></span>          <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
-<a name="l00404"></a>00404             $self-&gt;{logger}-&gt;info( <span class="stringliteral">&quot;Creating info object for &quot;</span> . $gdb-&gt;name() );
-<a name="l00405"></a>00405 
-<a name="l00406"></a>00406 <span class="preprocessor">            # get core dba</span>
-<a name="l00407"></a>00407 <span class="preprocessor"></span>            my $dba;
-<a name="l00408"></a>00408             eval {
-<a name="l00409"></a>00409               $dba =
-<a name="l00410"></a>00410                 Bio::EnsEMBL::Registry-&gt;get_DBAdaptor( $gdb-&gt;name(), <span class="stringliteral">&#39;core&#39;</span> );
-<a name="l00411"></a>00411             };
-<a name="l00412"></a>00412             <span class="keywordflow">if</span> ( defined $dba ) {
-<a name="l00413"></a>00413               $genomeInfo = $self-&gt;process_genome( { core =&gt; $dba } );
-<a name="l00414"></a>00414             }
-<a name="l00415"></a>00415             <span class="keywordflow">else</span> {
-<a name="l00416"></a>00416               croak <span class="stringliteral">&quot;Could not find DBAdaptor for &quot;</span> . $gdb-&gt;name();
-<a name="l00417"></a>00417             }
-<a name="l00418"></a>00418             $genomeInfo-&gt;base_count(0);
-<a name="l00419"></a>00419             <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
-<a name="l00420"></a>00420               croak <span class="stringliteral">&quot;Could not create a genome info object for &quot;</span> . $gdb-&gt;name();
-<a name="l00421"></a>00421             }
-<a name="l00422"></a>00422             $genomes-&gt;{ $gdb-&gt;name() } = $genomeInfo;
-<a name="l00423"></a>00423           }
-<a name="l00424"></a>00424           croak <span class="stringliteral">&quot;Could not find genome info for &quot;</span> . $gdb-&gt;name()
-<a name="l00425"></a>00425             unless defined $genomeInfo;
+<a name="l00380"></a>00380     my $adaptor = $compara-&gt;get_MethodLinkSpeciesSetAdaptor();
+<a name="l00381"></a>00381 
+<a name="l00382"></a>00382     <span class="keywordflow">for</span> my $method (
+<a name="l00383"></a>00383       qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
+<a name="l00384"></a>00384       )
+<a name="l00385"></a>00385     {
+<a name="l00386"></a>00386 
+<a name="l00387"></a>00387       $self-&gt;{logger}
+<a name="l00388"></a>00388         -&gt;info( <span class="stringliteral">&quot;Processing method type $method from compara database &quot;</span> .
+<a name="l00389"></a>00389                 $compara-&gt;dbc()-&gt;dbname() );
+<a name="l00390"></a>00390 
+<a name="l00391"></a>00391 <span class="preprocessor">      # group by species_set</span>
+<a name="l00392"></a>00392 <span class="preprocessor"></span>      my $mlss_by_ss = {};
+<a name="l00393"></a>00393       <span class="keywordflow">for</span> my $mlss ( @{ $adaptor-&gt;fetch_all_by_method_link_type($method) } ) {
+<a name="l00394"></a>00394         push @{ $mlss_by_ss-&gt;{ $mlss-&gt;species_set_obj()-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#addea948253febfab2a41e517b3dec92e">dbID</a>() } }, $mlss;
+<a name="l00395"></a>00395       }
+<a name="l00396"></a>00396 
+<a name="l00397"></a>00397       <span class="keywordflow">for</span> my $mlss_list ( values %$mlss_by_ss ) {
+<a name="l00398"></a>00398 
+<a name="l00399"></a>00399         my $dbs = {};
+<a name="l00400"></a>00400         my $ss_name;
+<a name="l00401"></a>00401         <span class="keywordflow">for</span> my $mlss ( @{$mlss_list} ) {
+<a name="l00402"></a>00402 
+<a name="l00403"></a>00403           $ss_name ||= $mlss-&gt;species_set_obj()-&gt;get_tagvalue(<span class="stringliteral">&#39;name&#39;</span>);
+<a name="l00404"></a>00404           <span class="keywordflow">for</span> my $gdb ( @{ $mlss-&gt;species_set_obj()-&gt;genome_dbs() } ) {
+<a name="l00405"></a>00405             $dbs-&gt;{ $gdb-&gt;name() } = $gdb;
+<a name="l00406"></a>00406           }
+<a name="l00407"></a>00407           <span class="keywordflow">if</span> ( !defined $ss_name ) {
+<a name="l00408"></a>00408             $ss_name = $mlss-&gt;name();
+<a name="l00409"></a>00409           }
+<a name="l00410"></a>00410           <span class="keywordflow">if</span> ( defined $ss_name ) {
+<a name="l00411"></a>00411             last;
+<a name="l00412"></a>00412           }
+<a name="l00413"></a>00413         }
+<a name="l00414"></a>00414 
+<a name="l00415"></a>00415         $self-&gt;{logger}-&gt;info(
+<a name="l00416"></a>00416 <span class="stringliteral">&quot;Processing species set $ss_name for method $method from compara database &quot;</span>
+<a name="l00417"></a>00417             . $compara-&gt;dbc()-&gt;dbname() );
+<a name="l00418"></a>00418 
+<a name="l00419"></a>00419         my $compara_info =
+<a name="l00420"></a>00420           <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html#af724cfb183b4763d5f823acf84ae68a0">new</a>(
+<a name="l00421"></a>00421                                            -DBNAME =&gt; $compara-&gt;dbc()-&gt;dbname(),
+<a name="l00422"></a>00422                                            -DIVISION =&gt; $division,
+<a name="l00423"></a>00423                                            -METHOD   =&gt; $method,
+<a name="l00424"></a>00424                                            -SET_NAME =&gt; $ss_name,
+<a name="l00425"></a>00425                                            -GENOMES  =&gt; [] );
 <a name="l00426"></a>00426 
-<a name="l00427"></a>00427           push @{ $compara_info-&gt;genomes() }, $genomeInfo;
+<a name="l00427"></a>00427         <span class="keywordflow">for</span> my $gdb ( values %{$dbs} ) {
 <a name="l00428"></a>00428 
-<a name="l00429"></a>00429           <span class="keywordflow">if</span> ( !defined $genomeInfo-&gt;compara() ) {
-<a name="l00430"></a>00430             $genomeInfo-&gt;compara( [$compara_info] );
-<a name="l00431"></a>00431           }
-<a name="l00432"></a>00432           <span class="keywordflow">else</span> {
-<a name="l00433"></a>00433             push @{ $genomeInfo-&gt;compara() }, $compara_info;
-<a name="l00434"></a>00434           }
-<a name="l00435"></a>00435         } ## end <span class="keywordflow">for</span> my $gdb ( values %{...})
-<a name="l00436"></a>00436         $self-&gt;{logger}
-<a name="l00437"></a>00437           -&gt;info(<span class="stringliteral">&quot;Adding compara info to list of analyses to store&quot;</span>);
-<a name="l00438"></a>00438         push @$comparas, $compara_info <span class="keywordflow">if</span> defined $compara_info;
-<a name="l00439"></a>00439       } ## end <span class="keywordflow">for</span> my $mlss_list ( values...)
-<a name="l00440"></a>00440     } ## end <span class="keywordflow">for</span> my $method ( ...)
-<a name="l00441"></a>00441 
-<a name="l00442"></a>00442     $self-&gt;{logger}-&gt;info(
-<a name="l00443"></a>00443          <span class="stringliteral">&quot;Completed processing compara database &quot;</span> . $compara-&gt;dbc()-&gt;dbname() );
-<a name="l00444"></a>00444   };    ## end eval
-<a name="l00445"></a>00445   <span class="keywordflow">if</span> ($@) {
-<a name="l00446"></a>00446     $self-&gt;{logger}-&gt;warn( <span class="stringliteral">&quot;Could not process compara: &quot;</span> . $@ );
-<a name="l00447"></a>00447   }
-<a name="l00448"></a>00448   <span class="keywordflow">return</span> $comparas;
-<a name="l00449"></a>00449 } ## end sub process_compara
-<a name="l00450"></a>00450 
-<a name="l00451"></a>00451 sub get_dbsize {
-<a name="l00452"></a>00452   my ($dba) = @_;
-<a name="l00453"></a>00453   <span class="keywordflow">return</span>
-<a name="l00454"></a>00454     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
-<a name="l00455"></a>00455     -SQL =&gt;
-<a name="l00456"></a>00456 <span class="stringliteral">&quot;select SUM(data_length + index_length) from information_schema.tables where table_schema=?&quot;</span>,
-<a name="l00457"></a>00457     -PARAMS =&gt; [ $dba-&gt;dbc()-&gt;dbname() ] );
-<a name="l00458"></a>00458 }
-<a name="l00459"></a>00459 
-<a name="l00460"></a>00460 1;
+<a name="l00429"></a>00429           $self-&gt;{logger}-&gt;info( <span class="stringliteral">&quot;Processing species &quot;</span> . $gdb-&gt;name() .
+<a name="l00430"></a>00430 <span class="stringliteral">&quot; from species set $ss_name for method $method from compara database &quot;</span>
+<a name="l00431"></a>00431             . $compara-&gt;dbc()-&gt;dbname() );
+<a name="l00432"></a>00432 
+<a name="l00433"></a>00433           my $genomeInfo = $genomes-&gt;{ $gdb-&gt;name() };
+<a name="l00434"></a>00434 
+<a name="l00435"></a>00435 <span class="preprocessor">          # have we got one in the database already?</span>
+<a name="l00436"></a>00436 <span class="preprocessor"></span>          <span class="keywordflow">if</span> ( !defined $genomeInfo &amp;&amp; defined $self-&gt;{info_adaptor} ) {
+<a name="l00437"></a>00437             $self-&gt;{logger}-&gt;debug(<span class="stringliteral">&quot;Checking in the database&quot;</span>);
+<a name="l00438"></a>00438             $genomeInfo = $self-&gt;{info_adaptor}-&gt;fetch_by_name( $gdb-&gt;name() );
+<a name="l00439"></a>00439 
+<a name="l00440"></a>00440             <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
+<a name="l00441"></a>00441               my $current_release = $self-&gt;{info_adaptor}-&gt;data_release();
+<a name="l00442"></a>00442               <span class="keywordflow">if</span> ( defined $current_release-&gt;ensembl_genomes_version() ) {
+<a name="l00443"></a>00443 <span class="preprocessor">                # try the ensembl release</span>
+<a name="l00444"></a>00444 <span class="preprocessor"></span>                my $ensembl_release =
+<a name="l00445"></a>00445                   $self-&gt;{info_adaptor}-&gt;db()-&gt;get_DataReleaseInfoAdaptor()
+<a name="l00446"></a>00446                   -&gt;fetch_by_ensembl_release(
+<a name="l00447"></a>00447                                           $current_release-&gt;ensembl_version() );
+<a name="l00448"></a>00448                 $self-&gt;{info_adaptor}-&gt;data_release($ensembl_release);
+<a name="l00449"></a>00449                 $genomeInfo =
+<a name="l00450"></a>00450                   $self-&gt;{info_adaptor}-&gt;fetch_by_name( $gdb-&gt;name() );
+<a name="l00451"></a>00451                 $self-&gt;{info_adaptor}-&gt;data_release($current_release);
+<a name="l00452"></a>00452               }
+<a name="l00453"></a>00453             }
+<a name="l00454"></a>00454 
+<a name="l00455"></a>00455             <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
+<a name="l00456"></a>00456               croak <span class="stringliteral">&quot;Could not find genome info object for &quot;</span> . $gdb-&gt;name();
+<a name="l00457"></a>00457             }
+<a name="l00458"></a>00458             $self-&gt;{logger}-&gt;debug(<span class="stringliteral">&quot;Got one from the database&quot;</span>);
+<a name="l00459"></a>00459             $genomes-&gt;{ $gdb-&gt;name() } = $genomeInfo;
+<a name="l00460"></a>00460           } ## end <span class="keywordflow">if</span> ( !defined $genomeInfo...)
 <a name="l00461"></a>00461 
-<a name="l00462"></a>00462 __END__
-<a name="l00463"></a>00463 
-<a name="l00464"></a>00464 =pod
+<a name="l00462"></a>00462 <span class="preprocessor">          # last attempt, create one</span>
+<a name="l00463"></a>00463 <span class="preprocessor"></span>          <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
+<a name="l00464"></a>00464             $self-&gt;{logger}-&gt;info( <span class="stringliteral">&quot;Creating info object for &quot;</span> . $gdb-&gt;name() );
 <a name="l00465"></a>00465 
-<a name="l00466"></a>00466 =head1 NAME
-<a name="l00467"></a>00467 
-<a name="l00468"></a>00468 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1MetaDataProcessor.html">Bio::EnsEMBL::MetaData::MetaDataProcessor</a>
-<a name="l00469"></a>00469 
-<a name="l00470"></a>00470 =head1 SYNOPSIS
-<a name="l00471"></a>00471 
-<a name="l00472"></a>00472 =head1 DESCRIPTION
-<a name="l00473"></a>00473 
-<a name="l00474"></a>00474 =head1 SUBROUTINES/METHODS
-<a name="l00475"></a>00475 
-<a name="l00476"></a>00476 =head2 <span class="keyword">new</span>
-<a name="l00477"></a>00477 
-<a name="l00478"></a>00478 =head2 process_metadata
-<a name="l00479"></a>00479 Description : Return hashed metadata <span class="keywordflow">for</span> the supplied databases
-<a name="l00480"></a>00480 Argument: Arrayref of DBAdaptor objects
-<a name="l00481"></a>00481 
-<a name="l00482"></a>00482 =head1 AUTHOR
-<a name="l00483"></a>00483 
-<a name="l00484"></a>00484 dstaines
-<a name="l00485"></a>00485 
-<a name="l00486"></a>00486 =head1 MAINTAINER
-<a name="l00487"></a>00487 
-<a name="l00488"></a>00488 $Author$
-<a name="l00489"></a>00489 
-<a name="l00490"></a>00490 =head1 VERSION
-<a name="l00491"></a>00491 
-<a name="l00492"></a>00492 $Revision$
-<a name="l00493"></a>00493 
-<a name="l00494"></a>00494 =cut
+<a name="l00466"></a>00466 <span class="preprocessor">            # get core dba</span>
+<a name="l00467"></a>00467 <span class="preprocessor"></span>            my $dba;
+<a name="l00468"></a>00468             eval {
+<a name="l00469"></a>00469               $dba =
+<a name="l00470"></a>00470                 Bio::EnsEMBL::Registry-&gt;get_DBAdaptor( $gdb-&gt;name(), <span class="stringliteral">&#39;core&#39;</span> );
+<a name="l00471"></a>00471             };
+<a name="l00472"></a>00472             <span class="keywordflow">if</span> ( defined $dba ) {
+<a name="l00473"></a>00473               $genomeInfo = $self-&gt;process_genome( { core =&gt; $dba } );
+<a name="l00474"></a>00474             }
+<a name="l00475"></a>00475             <span class="keywordflow">else</span> {
+<a name="l00476"></a>00476               croak <span class="stringliteral">&quot;Could not find DBAdaptor for &quot;</span> . $gdb-&gt;name();
+<a name="l00477"></a>00477             }
+<a name="l00478"></a>00478             $genomeInfo-&gt;base_count(0);
+<a name="l00479"></a>00479             <span class="keywordflow">if</span> ( !defined $genomeInfo ) {
+<a name="l00480"></a>00480               croak <span class="stringliteral">&quot;Could not create a genome info object for &quot;</span> . $gdb-&gt;name();
+<a name="l00481"></a>00481             }
+<a name="l00482"></a>00482             $genomes-&gt;{ $gdb-&gt;name() } = $genomeInfo;
+<a name="l00483"></a>00483           }
+<a name="l00484"></a>00484           croak <span class="stringliteral">&quot;Could not find genome info for &quot;</span> . $gdb-&gt;name()
+<a name="l00485"></a>00485             unless defined $genomeInfo;
+<a name="l00486"></a>00486 
+<a name="l00487"></a>00487           push @{ $compara_info-&gt;genomes() }, $genomeInfo;
+<a name="l00488"></a>00488 
+<a name="l00489"></a>00489           <span class="keywordflow">if</span> ( !defined $genomeInfo-&gt;compara() ) {
+<a name="l00490"></a>00490             $genomeInfo-&gt;compara( [$compara_info] );
+<a name="l00491"></a>00491           }
+<a name="l00492"></a>00492           <span class="keywordflow">else</span> {
+<a name="l00493"></a>00493             push @{ $genomeInfo-&gt;compara() }, $compara_info;
+<a name="l00494"></a>00494           }
+<a name="l00495"></a>00495         } ## end <span class="keywordflow">for</span> my $gdb ( values %{...})
+<a name="l00496"></a>00496         $self-&gt;{logger}
+<a name="l00497"></a>00497           -&gt;info(<span class="stringliteral">&quot;Adding compara info to list of analyses to store&quot;</span>);
+<a name="l00498"></a>00498         push @$comparas, $compara_info <span class="keywordflow">if</span> defined $compara_info;
+<a name="l00499"></a>00499       } ## end <span class="keywordflow">for</span> my $mlss_list ( values...)
+<a name="l00500"></a>00500     } ## end <span class="keywordflow">for</span> my $method ( ...)
+<a name="l00501"></a>00501 
+<a name="l00502"></a>00502     $self-&gt;{logger}-&gt;info(
+<a name="l00503"></a>00503          <span class="stringliteral">&quot;Completed processing compara database &quot;</span> . $compara-&gt;dbc()-&gt;dbname() );
+<a name="l00504"></a>00504   };    ## end eval
+<a name="l00505"></a>00505   <span class="keywordflow">if</span> ($@) {
+<a name="l00506"></a>00506     $self-&gt;{logger}-&gt;warn( <span class="stringliteral">&quot;Could not process compara: &quot;</span> . $@ );
+<a name="l00507"></a>00507   }
+<a name="l00508"></a>00508   <span class="keywordflow">return</span> $comparas;
+<a name="l00509"></a>00509 } ## end sub process_compara
+<a name="l00510"></a>00510 
+<a name="l00511"></a>00511 =head2 get_dbsize
+<a name="l00512"></a>00512   Arg        : DBAdaptor
+<a name="l00513"></a>00513   Description: Calculate size of supplied database
+<a name="l00514"></a>00514   Returntype : Long
+<a name="l00515"></a>00515   Exceptions : none
+<a name="l00516"></a>00516   Caller     : general
+<a name="l00517"></a>00517   Status     : Stable
+<a name="l00518"></a>00518 =cut
+<a name="l00519"></a>00519 sub get_dbsize {
+<a name="l00520"></a>00520   my ($dba) = @_;
+<a name="l00521"></a>00521   <span class="keywordflow">return</span>
+<a name="l00522"></a>00522     $dba-&gt;dbc()-&gt;sql_helper()-&gt;execute_single_result(
+<a name="l00523"></a>00523     -SQL =&gt;
+<a name="l00524"></a>00524 <span class="stringliteral">&quot;select SUM(data_length + index_length) from information_schema.tables where table_schema=?&quot;</span>,
+<a name="l00525"></a>00525     -PARAMS =&gt; [ $dba-&gt;dbc()-&gt;dbname() ] );
+<a name="l00526"></a>00526 }
+<a name="l00527"></a>00527 
+<a name="l00528"></a>00528 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">

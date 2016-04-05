@@ -146,13 +146,13 @@ function toggleVisibility(linkObj) {
 <a name="l00020"></a>00020   Please email comments or questions to the <span class="keyword">public</span> Ensembl
 <a name="l00021"></a>00021   developers list at &lt;dev@ensembl.org&gt;.
 <a name="l00022"></a>00022 
-<a name="l00023"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">00023</a>   Questions may also be sent to the Ensembl help desk at
+<a name="l00023"></a>00023   Questions may also be sent to the Ensembl help desk at
 <a name="l00024"></a>00024   &lt;helpdesk@ensembl.org&gt;.
 <a name="l00025"></a>00025 
 <a name="l00026"></a>00026 =head1 NAME
 <a name="l00027"></a>00027 
 <a name="l00028"></a>00028 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00029"></a>00029 
+<a name="l00029"></a><a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">00029</a> 
 <a name="l00030"></a>00030 =head1 SYNOPSIS
 <a name="l00031"></a>00031 
 <a name="l00032"></a>00032       my $compara_info =
@@ -168,229 +168,235 @@ function toggleVisibility(linkObj) {
 <a name="l00042"></a>00042 
 <a name="l00043"></a>00043 Object encapsulating information about a particular compara analysis and the genomes it involves
 <a name="l00044"></a>00044 
-<a name="l00045"></a>00045 =head1 Author
+<a name="l00045"></a>00045 =head1 SEE ALSO
 <a name="l00046"></a>00046 
-<a name="l00047"></a>00047 Dan Staines
-<a name="l00048"></a>00048 
-<a name="l00049"></a>00049 =cut
+<a name="l00047"></a>00047 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>
+<a name="l00048"></a>00048 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeInfo.html">Bio::EnsEMBL::MetaData::GenomeInfo</a>
+<a name="l00049"></a>00049 <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1DBSQL_1_1GenomeComparaInfoAdaptor.html">Bio::EnsEMBL::MetaData::DBSQL::GenomeComparaInfoAdaptor</a>
 <a name="l00050"></a>00050 
-<a name="l00051"></a>00051 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::GenomeComparaInfo;
-<a name="l00052"></a>00052 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
-<a name="l00053"></a>00053 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
-<a name="l00054"></a>00054 use strict;
-<a name="l00055"></a>00055 use warnings;
+<a name="l00051"></a>00051 =head1 Author
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 Dan Staines
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055 =cut
 <a name="l00056"></a>00056 
-<a name="l00057"></a>00057 =head1 CONSTRUCTOR
-<a name="l00058"></a>00058 =head2 <span class="keyword">new</span>
-<a name="l00059"></a>00059   Arg [-DIVISION]  : 
-<a name="l00060"></a>00060        <span class="keywordtype">string</span> - Compara division e.g. plants, pan_homology
-<a name="l00061"></a>00061   Arg [-METHOD]    : 
-<a name="l00062"></a>00062        <span class="keywordtype">string</span> - compara method e.g. PROTEIN_TREES, LASTZ_NET
-<a name="l00063"></a>00063   Arg [-DBNAME] : 
-<a name="l00064"></a>00064        <span class="keywordtype">string</span> - name of the compara database in which the analysis can be found
-<a name="l00065"></a>00065   Arg [-SET_NAME] : 
-<a name="l00066"></a>00066        <span class="keywordtype">string</span> - optional name <span class="keywordflow">for</span> the analysis
-<a name="l00067"></a>00067   Arg [-GENOMES]  : 
-<a name="l00068"></a>00068        arrayref - list of genomes involved in analysis
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html#af724cfb183b4763d5f823acf84ae68a0">new</a>(...);
-<a name="l00071"></a>00071   Description: Creates a <span class="keyword">new</span> info <span class="keywordtype">object</span>
-<a name="l00072"></a>00072   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
-<a name="l00073"></a>00073   Exceptions : none
-<a name="l00074"></a>00074   Caller     : general
-<a name="l00075"></a>00075   Status     : Stable
-<a name="l00076"></a>00076 
-<a name="l00077"></a>00077 =cut
-<a name="l00078"></a>00078 
-<a name="l00079"></a>00079 sub <span class="keyword">new</span> {
-<a name="l00080"></a>00080     my ( $class, @args ) = @_;
-<a name="l00081"></a>00081     my $self = $class-&gt;SUPER::new(@args);
-<a name="l00082"></a>00082   ( $self-&gt;{division}, $self-&gt;{method}, $self-&gt;{dbname},
-<a name="l00083"></a>00083     $self-&gt;{set_name}, $self-&gt;{genomes}, $self-&gt;{release} )
-<a name="l00084"></a>00084     = rearrange(
-<a name="l00085"></a>00085                  [ <span class="stringliteral">&#39;DIVISION&#39;</span>, <span class="stringliteral">&#39;METHOD&#39;</span>, <span class="stringliteral">&#39;DBNAME&#39;</span>, <span class="stringliteral">&#39;SET_NAME&#39;</span>, <span class="stringliteral">&#39;GENOMES&#39;</span>, <span class="stringliteral">&#39;DATA_RELEASE&#39;</span>
-<a name="l00086"></a>00086                  ],
-<a name="l00087"></a>00087                  @args );
-<a name="l00088"></a>00088   <span class="keywordflow">return</span> $self;
-<a name="l00089"></a>00089 }
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 =head1 ATTRIBUTE METHODS
-<a name="l00092"></a>00092 =head2 dbname
-<a name="l00093"></a>00093   Arg        : (optional) dbname to <span class="keyword">set</span>
-<a name="l00094"></a>00094   Description: Gets/sets name of compara database
-<a name="l00095"></a>00095   Returntype : <span class="keywordtype">string</span>
-<a name="l00096"></a>00096   Exceptions : none
-<a name="l00097"></a>00097   Caller     : general
-<a name="l00098"></a>00098   Status     : Stable
-<a name="l00099"></a>00099 =cut
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101 sub dbname {
-<a name="l00102"></a>00102   my ( $self, $arg ) = @_;
-<a name="l00103"></a>00103   $self-&gt;{dbname} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00104"></a>00104   <span class="keywordflow">return</span> $self-&gt;{dbname};
-<a name="l00105"></a>00105 }
+<a name="l00057"></a>00057 <span class="keyword">package </span>Bio::EnsEMBL::MetaData::GenomeComparaInfo;
+<a name="l00058"></a>00058 use base qw/<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html">Bio::EnsEMBL::MetaData::BaseInfo</a>/;
+<a name="l00059"></a>00059 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+<a name="l00060"></a>00060 use strict;
+<a name="l00061"></a>00061 use warnings;
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 =head1 CONSTRUCTOR
+<a name="l00064"></a>00064 =head2 <span class="keyword">new</span>
+<a name="l00065"></a>00065   Arg [-DIVISION]  : 
+<a name="l00066"></a>00066        <span class="keywordtype">string</span> - Compara division e.g. plants, pan_homology
+<a name="l00067"></a>00067   Arg [-METHOD]    : 
+<a name="l00068"></a>00068        <span class="keywordtype">string</span> - compara method e.g. PROTEIN_TREES, LASTZ_NET
+<a name="l00069"></a>00069   Arg [-DBNAME] : 
+<a name="l00070"></a>00070        <span class="keywordtype">string</span> - name of the compara database in which the analysis can be found
+<a name="l00071"></a>00071   Arg [-SET_NAME] : 
+<a name="l00072"></a>00072        <span class="keywordtype">string</span> - optional name <span class="keywordflow">for</span> the analysis
+<a name="l00073"></a>00073   Arg [-GENOMES]  : 
+<a name="l00074"></a>00074        arrayref - list of genomes involved in analysis
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076   Example    : $info = <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html#af724cfb183b4763d5f823acf84ae68a0">new</a>(...);
+<a name="l00077"></a>00077   Description: Creates a <span class="keyword">new</span> info <span class="keywordtype">object</span>
+<a name="l00078"></a>00078   Returntype : <a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1GenomeComparaInfo.html">Bio::EnsEMBL::MetaData::GenomeComparaInfo</a>
+<a name="l00079"></a>00079   Exceptions : none
+<a name="l00080"></a>00080   Caller     : general
+<a name="l00081"></a>00081   Status     : Stable
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 =cut
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 sub <span class="keyword">new</span> {
+<a name="l00086"></a>00086     my ( $class, @args ) = @_;
+<a name="l00087"></a>00087     my $self = $class-&gt;SUPER::new(@args);
+<a name="l00088"></a>00088   ( $self-&gt;{division}, $self-&gt;{method}, $self-&gt;{dbname},
+<a name="l00089"></a>00089     $self-&gt;{set_name}, $self-&gt;{genomes}, $self-&gt;{release} )
+<a name="l00090"></a>00090     = rearrange(
+<a name="l00091"></a>00091                  [ <span class="stringliteral">&#39;DIVISION&#39;</span>, <span class="stringliteral">&#39;METHOD&#39;</span>, <span class="stringliteral">&#39;DBNAME&#39;</span>, <span class="stringliteral">&#39;SET_NAME&#39;</span>, <span class="stringliteral">&#39;GENOMES&#39;</span>, <span class="stringliteral">&#39;DATA_RELEASE&#39;</span>
+<a name="l00092"></a>00092                  ],
+<a name="l00093"></a>00093                  @args );
+<a name="l00094"></a>00094   <span class="keywordflow">return</span> $self;
+<a name="l00095"></a>00095 }
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097 =head1 ATTRIBUTE METHODS
+<a name="l00098"></a>00098 =head2 dbname
+<a name="l00099"></a>00099   Arg        : (optional) dbname to <span class="keyword">set</span>
+<a name="l00100"></a>00100   Description: Gets/sets name of compara database
+<a name="l00101"></a>00101   Returntype : <span class="keywordtype">string</span>
+<a name="l00102"></a>00102   Exceptions : none
+<a name="l00103"></a>00103   Caller     : general
+<a name="l00104"></a>00104   Status     : Stable
+<a name="l00105"></a>00105 =cut
 <a name="l00106"></a>00106 
-<a name="l00107"></a>00107 =head2 method
-<a name="l00108"></a>00108   Arg        : (optional) method to <span class="keyword">set</span>
-<a name="l00109"></a>00109   Description: Gets/sets name of compara method
-<a name="l00110"></a>00110   Returntype : <span class="keywordtype">string</span>
-<a name="l00111"></a>00111   Exceptions : none
-<a name="l00112"></a>00112   Caller     : general
-<a name="l00113"></a>00113   Status     : Stable
-<a name="l00114"></a>00114 =cut
-<a name="l00115"></a>00115 
-<a name="l00116"></a>00116 sub method {
-<a name="l00117"></a>00117   my ( $self, $arg ) = @_;
-<a name="l00118"></a>00118   $self-&gt;{method} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00119"></a>00119   <span class="keywordflow">return</span> $self-&gt;{method};
-<a name="l00120"></a>00120 }
+<a name="l00107"></a>00107 sub dbname {
+<a name="l00108"></a>00108   my ( $self, $arg ) = @_;
+<a name="l00109"></a>00109   $self-&gt;{dbname} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00110"></a>00110   <span class="keywordflow">return</span> $self-&gt;{dbname};
+<a name="l00111"></a>00111 }
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113 =head2 method
+<a name="l00114"></a>00114   Arg        : (optional) method to <span class="keyword">set</span>
+<a name="l00115"></a>00115   Description: Gets/sets name of compara method
+<a name="l00116"></a>00116   Returntype : <span class="keywordtype">string</span>
+<a name="l00117"></a>00117   Exceptions : none
+<a name="l00118"></a>00118   Caller     : general
+<a name="l00119"></a>00119   Status     : Stable
+<a name="l00120"></a>00120 =cut
 <a name="l00121"></a>00121 
-<a name="l00122"></a>00122 =head2 set_name
-<a name="l00123"></a>00123   Arg        : (optional) species <span class="keyword">set</span> name to <span class="keyword">set</span>
-<a name="l00124"></a>00124   Description: Gets/sets name of species <span class="keyword">set</span> used in compara analysis
-<a name="l00125"></a>00125   Returntype : <span class="keywordtype">string</span>
-<a name="l00126"></a>00126   Exceptions : none
-<a name="l00127"></a>00127   Caller     : general
-<a name="l00128"></a>00128   Status     : Stable
-<a name="l00129"></a>00129 =cut
-<a name="l00130"></a>00130 
-<a name="l00131"></a>00131 sub set_name {
-<a name="l00132"></a>00132   my ( $self, $arg ) = @_;
-<a name="l00133"></a>00133   $self-&gt;{set_name} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00134"></a>00134   <span class="keywordflow">return</span> $self-&gt;{set_name};
-<a name="l00135"></a>00135 }
+<a name="l00122"></a>00122 sub method {
+<a name="l00123"></a>00123   my ( $self, $arg ) = @_;
+<a name="l00124"></a>00124   $self-&gt;{method} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00125"></a>00125   <span class="keywordflow">return</span> $self-&gt;{method};
+<a name="l00126"></a>00126 }
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128 =head2 set_name
+<a name="l00129"></a>00129   Arg        : (optional) species <span class="keyword">set</span> name to <span class="keyword">set</span>
+<a name="l00130"></a>00130   Description: Gets/sets name of species <span class="keyword">set</span> used in compara analysis
+<a name="l00131"></a>00131   Returntype : <span class="keywordtype">string</span>
+<a name="l00132"></a>00132   Exceptions : none
+<a name="l00133"></a>00133   Caller     : general
+<a name="l00134"></a>00134   Status     : Stable
+<a name="l00135"></a>00135 =cut
 <a name="l00136"></a>00136 
-<a name="l00137"></a>00137 =head2 division
-<a name="l00138"></a>00138   Arg        : (optional) division to <span class="keyword">set</span>
-<a name="l00139"></a>00139   Description: Gets/sets Ensembl compara division
-<a name="l00140"></a>00140   Returntype : <span class="keywordtype">string</span>
-<a name="l00141"></a>00141   Exceptions : none
-<a name="l00142"></a>00142   Caller     : general
-<a name="l00143"></a>00143   Status     : Stable
-<a name="l00144"></a>00144 =cut
-<a name="l00145"></a>00145 
-<a name="l00146"></a>00146 sub division {
-<a name="l00147"></a>00147   my ( $self, $arg ) = @_;
-<a name="l00148"></a>00148   $self-&gt;{division} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00149"></a>00149   <span class="keywordflow">return</span> $self-&gt;{division};
-<a name="l00150"></a>00150 }
+<a name="l00137"></a>00137 sub set_name {
+<a name="l00138"></a>00138   my ( $self, $arg ) = @_;
+<a name="l00139"></a>00139   $self-&gt;{set_name} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00140"></a>00140   <span class="keywordflow">return</span> $self-&gt;{set_name};
+<a name="l00141"></a>00141 }
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143 =head2 division
+<a name="l00144"></a>00144   Arg        : (optional) division to <span class="keyword">set</span>
+<a name="l00145"></a>00145   Description: Gets/sets Ensembl compara division
+<a name="l00146"></a>00146   Returntype : <span class="keywordtype">string</span>
+<a name="l00147"></a>00147   Exceptions : none
+<a name="l00148"></a>00148   Caller     : general
+<a name="l00149"></a>00149   Status     : Stable
+<a name="l00150"></a>00150 =cut
 <a name="l00151"></a>00151 
-<a name="l00152"></a>00152 =head2 genomes
-<a name="l00153"></a>00153   Arg        : (optional) genomes to <span class="keyword">set</span>
-<a name="l00154"></a>00154   Description: Gets/sets arrayref of genomes 
-<a name="l00155"></a>00155   Returntype : arrayref
-<a name="l00156"></a>00156   Exceptions : none
-<a name="l00157"></a>00157   Caller     : general
-<a name="l00158"></a>00158   Status     : Stable
-<a name="l00159"></a>00159 =cut
-<a name="l00160"></a>00160 
-<a name="l00161"></a>00161 sub genomes {
-<a name="l00162"></a>00162   my ( $self, $arg ) = @_;
-<a name="l00163"></a>00163   $self-&gt;{genomes} = $arg <span class="keywordflow">if</span> ( defined $arg );
-<a name="l00164"></a>00164   $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a>(<span class="stringliteral">&quot;genomes&quot;</span>,<span class="stringliteral">&quot;_fetch_compara_genomes&quot;</span>);
-<a name="l00165"></a>00165   <span class="keywordflow">return</span> $self-&gt;{genomes};
-<a name="l00166"></a>00166 }
-<a name="l00167"></a>00167 
-<a name="l00168"></a>00168 =head1 UTILITY METHODS
-<a name="l00169"></a>00169 =head2 is_pan_compara
-<a name="l00170"></a>00170   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
-<a name="l00171"></a>00171   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of the pan compara, 0 <span class="keywordflow">if</span> not
-<a name="l00172"></a>00172   Returntype : 1 or 0
-<a name="l00173"></a>00173   Exceptions : none
-<a name="l00174"></a>00174   Caller     : general
-<a name="l00175"></a>00175   Status     : Stable
-<a name="l00176"></a>00176 =cut
-<a name="l00177"></a>00177 
-<a name="l00178"></a>00178 sub is_pan_compara {
-<a name="l00179"></a>00179   my ($self) = @_;
-<a name="l00180"></a>00180   <span class="keywordflow">return</span> $self-&gt;{division} eq <span class="stringliteral">&#39;EnsemblPan&#39;</span> ? 1 : 0;
-<a name="l00181"></a>00181 }
-<a name="l00182"></a>00182 
-<a name="l00183"></a>00183 =head2 is_peptide_compara
-<a name="l00184"></a>00184   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
-<a name="l00185"></a>00185   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of a peptide compara, 0 <span class="keywordflow">if</span> not
-<a name="l00186"></a>00186   Returntype : 1 or 0
-<a name="l00187"></a>00187   Exceptions : none
-<a name="l00188"></a>00188   Caller     : general
-<a name="l00189"></a>00189   Status     : Stable
-<a name="l00190"></a>00190 =cut
-<a name="l00191"></a>00191 
-<a name="l00192"></a>00192 sub is_peptide_compara {
-<a name="l00193"></a>00193   my ($self) = @_;
-<a name="l00194"></a>00194   <span class="keywordflow">return</span> ( $self-&gt;{division} ne <span class="stringliteral">&#39;EnsemblPan&#39;</span> &amp;&amp;
-<a name="l00195"></a>00195            $self-&gt;{method} eq <span class="stringliteral">&#39;PROTEIN_TREES&#39;</span> ) ? 1 : 0;
-<a name="l00196"></a>00196 }
+<a name="l00152"></a>00152 sub division {
+<a name="l00153"></a>00153   my ( $self, $arg ) = @_;
+<a name="l00154"></a>00154   $self-&gt;{division} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00155"></a>00155   <span class="keywordflow">return</span> $self-&gt;{division};
+<a name="l00156"></a>00156 }
+<a name="l00157"></a>00157 
+<a name="l00158"></a>00158 =head2 genomes
+<a name="l00159"></a>00159   Arg        : (optional) genomes to <span class="keyword">set</span>
+<a name="l00160"></a>00160   Description: Gets/sets arrayref of genomes 
+<a name="l00161"></a>00161   Returntype : arrayref
+<a name="l00162"></a>00162   Exceptions : none
+<a name="l00163"></a>00163   Caller     : general
+<a name="l00164"></a>00164   Status     : Stable
+<a name="l00165"></a>00165 =cut
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167 sub genomes {
+<a name="l00168"></a>00168   my ( $self, $arg ) = @_;
+<a name="l00169"></a>00169   $self-&gt;{genomes} = $arg <span class="keywordflow">if</span> ( defined $arg );
+<a name="l00170"></a>00170   $self-&gt;<a class="code" href="classBio_1_1EnsEMBL_1_1MetaData_1_1BaseInfo.html#a1b236763fc118984bee34ca2618e687f">_load_child</a>(<span class="stringliteral">&quot;genomes&quot;</span>,<span class="stringliteral">&quot;_fetch_compara_genomes&quot;</span>);
+<a name="l00171"></a>00171   <span class="keywordflow">return</span> $self-&gt;{genomes};
+<a name="l00172"></a>00172 }
+<a name="l00173"></a>00173 
+<a name="l00174"></a>00174 =head1 UTILITY METHODS
+<a name="l00175"></a>00175 =head2 is_pan_compara
+<a name="l00176"></a>00176   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
+<a name="l00177"></a>00177   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of the pan compara, 0 <span class="keywordflow">if</span> not
+<a name="l00178"></a>00178   Returntype : 1 or 0
+<a name="l00179"></a>00179   Exceptions : none
+<a name="l00180"></a>00180   Caller     : general
+<a name="l00181"></a>00181   Status     : Stable
+<a name="l00182"></a>00182 =cut
+<a name="l00183"></a>00183 
+<a name="l00184"></a>00184 sub is_pan_compara {
+<a name="l00185"></a>00185   my ($self) = @_;
+<a name="l00186"></a>00186   <span class="keywordflow">return</span> $self-&gt;{division} eq <span class="stringliteral">&#39;EnsemblPan&#39;</span> ? 1 : 0;
+<a name="l00187"></a>00187 }
+<a name="l00188"></a>00188 
+<a name="l00189"></a>00189 =head2 is_peptide_compara
+<a name="l00190"></a>00190   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
+<a name="l00191"></a>00191   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of a peptide compara, 0 <span class="keywordflow">if</span> not
+<a name="l00192"></a>00192   Returntype : 1 or 0
+<a name="l00193"></a>00193   Exceptions : none
+<a name="l00194"></a>00194   Caller     : general
+<a name="l00195"></a>00195   Status     : Stable
+<a name="l00196"></a>00196 =cut
 <a name="l00197"></a>00197 
-<a name="l00198"></a>00198 =head2 is_dna_compara
-<a name="l00199"></a>00199   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
-<a name="l00200"></a>00200   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of a DNA compara, 0 <span class="keywordflow">if</span> not
-<a name="l00201"></a>00201   Returntype : 1 or 0
-<a name="l00202"></a>00202   Exceptions : none
-<a name="l00203"></a>00203   Caller     : general
-<a name="l00204"></a>00204   Status     : Stable
-<a name="l00205"></a>00205 =cut
-<a name="l00206"></a>00206 
-<a name="l00207"></a>00207 sub is_dna_compara {
-<a name="l00208"></a>00208   my ($self) = @_;
-<a name="l00209"></a>00209   <span class="keywordflow">return</span> ( $self-&gt;{method} eq <span class="stringliteral">&#39;TRANSLATED_BLAT_NET&#39;</span> ||
-<a name="l00210"></a>00210            $self-&gt;{method} eq <span class="stringliteral">&#39;LASTZ_NET&#39;</span>   ||
-<a name="l00211"></a>00211            $self-&gt;{method} eq <span class="stringliteral">&#39;TBLAT&#39;</span>       ||
-<a name="l00212"></a>00212            $self-&gt;{method} eq <span class="stringliteral">&#39;ATAC&#39;</span>        ||
-<a name="l00213"></a>00213            $self-&gt;{method} eq <span class="stringliteral">&#39;BLASTZ_NET&#39;</span> ) ? 1 : 0;
-<a name="l00214"></a>00214 }
-<a name="l00215"></a>00215 
-<a name="l00216"></a>00216 =head2 is_synteny
-<a name="l00217"></a>00217   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
-<a name="l00218"></a>00218   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of a synteny compara, 0 <span class="keywordflow">if</span> not
-<a name="l00219"></a>00219   Returntype : 1 or 0
-<a name="l00220"></a>00220   Exceptions : none
-<a name="l00221"></a>00221   Caller     : general
-<a name="l00222"></a>00222   Status     : Stable
-<a name="l00223"></a>00223 =cut
-<a name="l00224"></a>00224 
-<a name="l00225"></a>00225 sub is_synteny {
-<a name="l00226"></a>00226   my ($self) = @_;
-<a name="l00227"></a>00227   <span class="keywordflow">return</span> ( $self-&gt;{method} eq <span class="stringliteral">&#39;SYNTENY&#39;</span> ) ? 1 : 0;
-<a name="l00228"></a>00228 }
-<a name="l00229"></a>00229 
-<a name="l00230"></a>00230 =head2 to_hash
-<a name="l00231"></a>00231   Description: Render compara as plain hash suitable <span class="keywordflow">for</span> export as JSON/XML
-<a name="l00232"></a>00232   Returntype : Hashref
-<a name="l00233"></a>00233   Exceptions : none
-<a name="l00234"></a>00234   Caller     : general
-<a name="l00235"></a>00235   Status     : Stable
-<a name="l00236"></a>00236 =cut
-<a name="l00237"></a>00237 
-<a name="l00238"></a>00238 sub to_hash {
-<a name="l00239"></a>00239   my ($in) = @_;
-<a name="l00240"></a>00240   my $out = { method             =&gt; $in-&gt;{method},
-<a name="l00241"></a>00241               division           =&gt; $in-&gt;{division},
-<a name="l00242"></a>00242               dbname             =&gt; $in-&gt;{dbname},
-<a name="l00243"></a>00243               set_name           =&gt; $in-&gt;{set_name},
-<a name="l00244"></a>00244               is_pan_compara     =&gt; $in-&gt;is_pan_compara(),
-<a name="l00245"></a>00245               is_peptide_compara =&gt; $in-&gt;is_peptide_compara(),
-<a name="l00246"></a>00246               is_dna_compara     =&gt; $in-&gt;is_dna_compara(), };
-<a name="l00247"></a>00247   $out-&gt;{genomes} = [];
-<a name="l00248"></a>00248   <span class="keywordflow">for</span> my $genome ( @{ $in-&gt;genomes() } ) {
-<a name="l00249"></a>00249     push @{ $out-&gt;{genomes} }, $genome-&gt;species();
-<a name="l00250"></a>00250   }
-<a name="l00251"></a>00251   <span class="keywordflow">return</span> $out;
-<a name="l00252"></a>00252 }
-<a name="l00253"></a>00253 
-<a name="l00254"></a>00254 =head2 to_string
-<a name="l00255"></a>00255   Description: Render as plain <span class="keywordtype">string</span>
-<a name="l00256"></a>00256   Returntype : <span class="keywordtype">string</span>
-<a name="l00257"></a>00257   Exceptions : none
-<a name="l00258"></a>00258   Caller     : general
-<a name="l00259"></a>00259   Status     : Stable
-<a name="l00260"></a>00260 =cut
-<a name="l00261"></a>00261 sub to_string {
-<a name="l00262"></a>00262   my ($self) = @_;
-<a name="l00263"></a>00263   <span class="keywordflow">return</span>
-<a name="l00264"></a>00264     join( <span class="charliteral">&#39;/&#39;</span>, $self-&gt;division(), $self-&gt;method(), ($self-&gt;set_name()||<span class="charliteral">&#39;-&#39;</span>) );
-<a name="l00265"></a>00265 }
-<a name="l00266"></a>00266 
-<a name="l00267"></a>00267 1;
+<a name="l00198"></a>00198 sub is_peptide_compara {
+<a name="l00199"></a>00199   my ($self) = @_;
+<a name="l00200"></a>00200   <span class="keywordflow">return</span> ( $self-&gt;{division} ne <span class="stringliteral">&#39;EnsemblPan&#39;</span> &amp;&amp;
+<a name="l00201"></a>00201            $self-&gt;{method} eq <span class="stringliteral">&#39;PROTEIN_TREES&#39;</span> ) ? 1 : 0;
+<a name="l00202"></a>00202 }
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204 =head2 is_dna_compara
+<a name="l00205"></a>00205   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
+<a name="l00206"></a>00206   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of a DNA compara, 0 <span class="keywordflow">if</span> not
+<a name="l00207"></a>00207   Returntype : 1 or 0
+<a name="l00208"></a>00208   Exceptions : none
+<a name="l00209"></a>00209   Caller     : general
+<a name="l00210"></a>00210   Status     : Stable
+<a name="l00211"></a>00211 =cut
+<a name="l00212"></a>00212 
+<a name="l00213"></a>00213 sub is_dna_compara {
+<a name="l00214"></a>00214   my ($self) = @_;
+<a name="l00215"></a>00215   <span class="keywordflow">return</span> ( $self-&gt;{method} eq <span class="stringliteral">&#39;TRANSLATED_BLAT_NET&#39;</span> ||
+<a name="l00216"></a>00216            $self-&gt;{method} eq <span class="stringliteral">&#39;LASTZ_NET&#39;</span>   ||
+<a name="l00217"></a>00217            $self-&gt;{method} eq <span class="stringliteral">&#39;TBLAT&#39;</span>       ||
+<a name="l00218"></a>00218            $self-&gt;{method} eq <span class="stringliteral">&#39;ATAC&#39;</span>        ||
+<a name="l00219"></a>00219            $self-&gt;{method} eq <span class="stringliteral">&#39;BLASTZ_NET&#39;</span> ) ? 1 : 0;
+<a name="l00220"></a>00220 }
+<a name="l00221"></a>00221 
+<a name="l00222"></a>00222 =head2 is_synteny
+<a name="l00223"></a>00223   Arg        : (optional) 1/0 to <span class="keyword">set</span> 
+<a name="l00224"></a>00224   Description: Boolean-style method, returns 1 <span class="keywordflow">if</span> analysis is part of a synteny compara, 0 <span class="keywordflow">if</span> not
+<a name="l00225"></a>00225   Returntype : 1 or 0
+<a name="l00226"></a>00226   Exceptions : none
+<a name="l00227"></a>00227   Caller     : general
+<a name="l00228"></a>00228   Status     : Stable
+<a name="l00229"></a>00229 =cut
+<a name="l00230"></a>00230 
+<a name="l00231"></a>00231 sub is_synteny {
+<a name="l00232"></a>00232   my ($self) = @_;
+<a name="l00233"></a>00233   <span class="keywordflow">return</span> ( $self-&gt;{method} eq <span class="stringliteral">&#39;SYNTENY&#39;</span> ) ? 1 : 0;
+<a name="l00234"></a>00234 }
+<a name="l00235"></a>00235 
+<a name="l00236"></a>00236 =head2 to_hash
+<a name="l00237"></a>00237   Description: Render compara as plain hash suitable <span class="keywordflow">for</span> export as JSON/XML
+<a name="l00238"></a>00238   Returntype : Hashref
+<a name="l00239"></a>00239   Exceptions : none
+<a name="l00240"></a>00240   Caller     : general
+<a name="l00241"></a>00241   Status     : Stable
+<a name="l00242"></a>00242 =cut
+<a name="l00243"></a>00243 
+<a name="l00244"></a>00244 sub to_hash {
+<a name="l00245"></a>00245   my ($in) = @_;
+<a name="l00246"></a>00246   my $out = { method             =&gt; $in-&gt;{method},
+<a name="l00247"></a>00247               division           =&gt; $in-&gt;{division},
+<a name="l00248"></a>00248               dbname             =&gt; $in-&gt;{dbname},
+<a name="l00249"></a>00249               set_name           =&gt; $in-&gt;{set_name},
+<a name="l00250"></a>00250               is_pan_compara     =&gt; $in-&gt;is_pan_compara(),
+<a name="l00251"></a>00251               is_peptide_compara =&gt; $in-&gt;is_peptide_compara(),
+<a name="l00252"></a>00252               is_dna_compara     =&gt; $in-&gt;is_dna_compara(), };
+<a name="l00253"></a>00253   $out-&gt;{genomes} = [];
+<a name="l00254"></a>00254   <span class="keywordflow">for</span> my $genome ( @{ $in-&gt;genomes() } ) {
+<a name="l00255"></a>00255     push @{ $out-&gt;{genomes} }, $genome-&gt;species();
+<a name="l00256"></a>00256   }
+<a name="l00257"></a>00257   <span class="keywordflow">return</span> $out;
+<a name="l00258"></a>00258 }
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 =head2 to_string
+<a name="l00261"></a>00261   Description: Render as plain <span class="keywordtype">string</span>
+<a name="l00262"></a>00262   Returntype : <span class="keywordtype">string</span>
+<a name="l00263"></a>00263   Exceptions : none
+<a name="l00264"></a>00264   Caller     : general
+<a name="l00265"></a>00265   Status     : Stable
+<a name="l00266"></a>00266 =cut
+<a name="l00267"></a>00267 sub to_string {
+<a name="l00268"></a>00268   my ($self) = @_;
+<a name="l00269"></a>00269   <span class="keywordflow">return</span>
+<a name="l00270"></a>00270     join( <span class="charliteral">&#39;/&#39;</span>, $self-&gt;division(), $self-&gt;method(), ($self-&gt;set_name()||<span class="charliteral">&#39;-&#39;</span>) );
+<a name="l00271"></a>00271 }
+<a name="l00272"></a>00272 
+<a name="l00273"></a>00273 1;
 </pre></div></div>
 </div>
   <div id="nav-path" class="navpath">
