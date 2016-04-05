@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+
 =head1 LICENSE
 
 Copyright [2009-2014] EMBL-European Bioinformatics Institute
@@ -67,21 +68,20 @@ use Carp;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
 use Module::Load;
-use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
-use Bio::EnsEMBL::DBSQL::DBConnection;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 use Data::Dumper;
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}];
-push(@{$optsd}, "dumper:s@");
-push(@{$optsd}, "division:s@");
-push(@{$optsd}, "verbose");
+my $optsd = [ @{ $cli_helper->get_dba_opts() } ];
+push( @{$optsd}, "dumper:s@" );
+push( @{$optsd}, "division:s@" );
+push( @{$optsd}, "verbose" );
 
-my $opts = $cli_helper->process_args($optsd, \&pod2usage);
+my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 
-if (defined $opts->{verbose}) {
+if ( defined $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
 }
 else {
@@ -89,58 +89,66 @@ else {
 }
 my $logger = get_logger();
 
-my ($dba) = @{$cli_helper->get_dbas_for_opts($opts, 1)};
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
-												   -DBC => $dba->dbc());
+my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
+print Dumper($args);
+my $gdba =
+  Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args)
+  ->get_GenomeInfoAdaptor();
+
+$gdba->set_ensembl_genomes_release();
 
 # get all metadata
 my $dump_all = 0;
-if (!defined $opts->{division} || scalar(@{$opts->{division}}) == 0) {
+if ( !defined $opts->{division} ||
+     scalar( @{ $opts->{division} } ) == 0 )
+{
   $opts->{division} = $gdba->list_divisions();
   $dump_all = 1;
 }
 
 my @metadata = ();
-for my $division (@{$opts->{division}}) {
+for my $division ( @{ $opts->{division} } ) {
   $logger->info("Fetching metadata for $division");
   @metadata =
-	(@{$gdba->fetch_all_by_division($division)}, @metadata);
+    ( @{ $gdba->fetch_all_by_division($division) }, @metadata );
 }
-$logger->info("Retrieved metadata for ".scalar(@metadata)." genomes");
-@metadata = 
-  sort {
-	$b->division() cmp $a->division() or
-	  $b->name() cmp $a->name()
-  } @metadata;
+$logger->info(
+           "Retrieved metadata for " . scalar(@metadata) . " genomes" );
+@metadata = sort {
+  $b->division() cmp $a->division() or
+    $b->name() cmp $a->name()
+} @metadata;
 
 # create dumper
 $opts->{dumper} ||=
-  ['Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper'];
+  [' Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper '];
 
-my @dumpers = map { load $_; $_->new() } @{$opts->{dumper}};
+my @dumpers = map { load $_; $_->new() } @{ $opts->{dumper} };
 
 # start dumpers
 $logger->info("Starting dumpers");
 for my $dumper (@dumpers) {
-    print ref $dumper;
-  $dumper->start($opts->{division}, $dumper->{file}, $dump_all);
+  print ref $dumper;
+  $dumper->start( $opts->{division}, $dumper->{file}, $dump_all );
 }
 # process metadata
 $logger->info("Writing metadata");
-while (my $md = pop(@metadata)) {
+while ( my $md = pop(@metadata) ) {
   for my $dumper (@dumpers) {
-	$logger->debug(
-		  "Dumping metadata " . $md->name() . " using " . ref($dumper));
-	if ($dump_all==1) {
-	$logger->debug(
-		  "Dumping metadata " . $md->name() . " to 'all' file using " . ref($dumper));
+    $logger->debug(
+         "Dumping metadata " . $md->name() . " using " . ref($dumper) );
+    if ( $dump_all == 1 ) {
+      $logger->debug(
+        "Dumping metadata " . $md->name() . " to ' all
+  ' file using " . ref($dumper) );
 
-	  $dumper->write_metadata($md, $dumper->{all});
-	}
-	$logger->debug(
-		  "Dumping metadata " . $md->name() . " to divisional file using " . ref($dumper));
+      $dumper->write_metadata( $md, $dumper->{all} );
+    }
+    $logger->debug(
+      "Dumping metadata " . $md->name() . " to divisional file using " .
+        ref($dumper) );
 
-	$dumper->write_metadata($md, $md->{division});
+    $dumper->write_metadata( $md, $md->{division} );
   }
   # unload to reduce memory consumption
   $md->_unload();
