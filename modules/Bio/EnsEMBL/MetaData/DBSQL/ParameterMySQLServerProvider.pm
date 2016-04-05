@@ -50,7 +50,9 @@ package Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider;
 use strict;
 use warnings;
 
-use base 'Bio::EnsEMBL::Utils::PublicMySQLServer';
+use base 'Bio::EnsEMBL::MetaData::DBSQL::MySQLServerProvider';
+
+use Bio::EnsEMBL::Utils::Argument qw/rearrange/;
 
 =head1 CONSTRUCTOR
 =head2 new 
