@@ -44,10 +44,11 @@ package Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor;
 use strict;
 use warnings;
 use Carp qw(cluck croak);
+use Module::Load;
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use List::MoreUtils qw/natatime/;
-
+  
 use base qw/Bio::EnsEMBL::DBSQL::BaseAdaptor/;
 
 =head1 METHODS
@@ -230,6 +231,7 @@ sub _fetch_generic {
       my $row = shift @_;
       my $md = $self->_get_cached_obj( $type, $row->{dbID} );
       if ( !defined $md ) {
+        load $type;
         $md = bless $row, $type;
         $md->adaptor($self);
         $self->_store_cached_obj($md);
