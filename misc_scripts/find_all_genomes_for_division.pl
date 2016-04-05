@@ -51,6 +51,11 @@ use Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor;
 # create an adaptor to work with genomes
 my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 
+# print out divisions
+for my $division (@{$gdba->list_divisions()}) {
+  print "$division\n";
+}
+
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
 	print $genome->name()."\n";

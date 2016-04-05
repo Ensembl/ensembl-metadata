@@ -887,6 +887,20 @@ sub fetch_all_with_other_alignments {
                                           $keen );
 }
 
+=head2 list_divisions
+  Description: Fetch all divisions for which we have genomes
+  Returntype : arrayref of String
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub list_divisions {
+  my ( $self, $keen ) = @_;
+  return $self->{dbc}->sql_helper()->execute_simple(-SQL=>q/select distinct(name) from division join genome using (division_id) where data_release_id=?/,
+  -PARAMS=>[ $self->data_release()->dbID()]);
+}
+
 =head1 INTERNAL METHODS
 =head2 _fetch_assembly
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
