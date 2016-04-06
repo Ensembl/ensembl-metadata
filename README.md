@@ -26,7 +26,7 @@ my $eg_gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_ge
 
 # finding from the registry
 Bio::EnsEMBL::Registry->load_all("configuration_file");
-Bio::EnsEMBL::Registry->get_DBAdaptor("multi", "metadata");
+my $gdba = Bio::EnsEMBL::Registry->get_DBAdaptor("multi", "metadata")->get_GenomeInfoAdaptor();
 
 # building your own
 my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
@@ -39,6 +39,7 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
 
 Information about genomes is encapsulated in GenomeInfo objects, which can be found in a number of ways from the adaptor:
 ```
+
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
 	print $genome->name()."\n";
