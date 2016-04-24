@@ -352,6 +352,7 @@ CREATE TABLE `organism` (
   `species_taxonomy_id` int(10) unsigned NOT NULL,
   `name` varchar(128) NOT NULL,
   `display_name` varchar(128) NOT NULL,
+  `scientific_name` varchar(128) NOT NULL,
   `strain` varchar(128) DEFAULT NULL,
   `serotype` varchar(128) DEFAULT NULL,
   `description` text,

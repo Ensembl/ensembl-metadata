@@ -86,6 +86,8 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 =head2 new
   Arg [-DISPLAY_NAME]  : 
        string - human readable version of the name of the genome
+  Arg [-SCIENTIFIC_NAME]  : 
+       string - scientific name of the genome
   Arg [-NAME]    : 
        string - computable version of the name of the genome (lower case, no spaces)
   Arg [-DBNAME] : 
@@ -125,26 +127,26 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  my ( $name,          $display_name, $dbname,
-       $species_id,    $taxonomy_id,  $species_taxonomy_id,
-       $assembly_name, $assembly_id,  $assembly_level,
-       $strain,        $serotype,     $is_reference,
-       $organism );
-  ( $name,              $display_name,     $dbname,
-    $species_id,        $taxonomy_id,      $species_taxonomy_id,
-    $assembly_name,     $assembly_id,      $assembly_level,
-    $self->{genebuild}, $self->{division}, $strain,
-    $serotype,          $is_reference,     $self->{assembly},
-    $organism,          $self->{data_release} )
-    = rearrange( [ 'NAME',           'DISPLAY_NAME',
-                   'DBNAME',         'SPECIES_ID',
-                   'TAXONOMY_ID',    'SPECIES_TAXONOMY_ID',
-                   'ASSEMBLY_NAME',  'ASSEMBLY_ID',
-                   'ASSEMBLY_LEVEL', 'GENEBUILD',
-                   'DIVISION',       'STRAIN',
-                   'SEROTYPE',       'IS_REFERENCE',
-                   'ASSEMBLY',       'ORGANISM',
-                   'DATA_RELEASE' ],
+  my ( $name,                $display_name,  $scientific_name,
+       $dbname,              $species_id,    $taxonomy_id,
+       $species_taxonomy_id, $assembly_name, $assembly_id,
+       $assembly_level,      $strain,        $serotype,
+       $is_reference,        $organism );
+  ( $name,                $display_name,      $scientific_name,
+    $dbname,              $species_id,        $taxonomy_id,
+    $species_taxonomy_id, $assembly_name,     $assembly_id,
+    $assembly_level,      $self->{genebuild}, $self->{division},
+    $strain,              $serotype,          $is_reference,
+    $self->{assembly},    $organism,          $self->{data_release} )
+    = rearrange( [ 'NAME',                'DISPLAY_NAME',
+                   'SCIENTIFIC_NAME',     'DBNAME',
+                   'SPECIES_ID',          'TAXONOMY_ID',
+                   'SPECIES_TAXONOMY_ID', 'ASSEMBLY_NAME',
+                   'ASSEMBLY_ID',         'ASSEMBLY_LEVEL',
+                   'GENEBUILD',           'DIVISION',
+                   'STRAIN',              'SEROTYPE',
+                   'IS_REFERENCE',        'ASSEMBLY',
+                   'ORGANISM',            'DATA_RELEASE' ],
                  @args );
 
   if ( defined $dbname ) {
@@ -152,19 +154,19 @@ sub new {
   }
 
   if ( !defined $self->assembly() ) {
-    my $ass =
-      Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
-                                   -ASSEMBLY_NAME       => $assembly_name,
-                                   -ASSEMBLY_ID         => $assembly_id,
-                                   -ASSEMBLY_LEVEL      => $assembly_level,
-                                   -DISPLAY_NAME        => $display_name,
-                                   -NAME                => $name,
-                                   -STRAIN              => $strain,
-                                   -SEROTYPE            => $serotype,
-                                   -TAXONOMY_ID         => $taxonomy_id,
-                                   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-                                   -IS_REFERENCE        => $is_reference,
-                                   -ORGANISM            => $organism );
+    my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
+                       -ASSEMBLY_NAME       => $assembly_name,
+                       -ASSEMBLY_ID         => $assembly_id,
+                       -ASSEMBLY_LEVEL      => $assembly_level,
+                       -DISPLAY_NAME        => $display_name,
+                       -SCIENTIFIC_NAME     => $scientific_name,
+                       -NAME                => $name,
+                       -STRAIN              => $strain,
+                       -SEROTYPE            => $serotype,
+                       -TAXONOMY_ID         => $taxonomy_id,
+                       -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+                       -IS_REFERENCE        => $is_reference,
+                       -ORGANISM            => $organism );
     $ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->assembly($ass);
   }
@@ -182,7 +184,7 @@ sub new {
 =cut
 
 sub dbname {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->_get_core()->dbname();
 }
 
@@ -195,7 +197,7 @@ sub dbname {
 =cut
 
 sub species_id {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->_get_core()->species_id();
 }
 
@@ -209,8 +211,8 @@ sub species_id {
 =cut
 
 sub databases {
-  my ($self, $databases) = @_;
-  if(defined $databases) {
+  my ( $self, $databases ) = @_;
+  if ( defined $databases ) {
     $self->{databases} = $databases;
   }
   $self->_load_child( 'databases', '_fetch_databases' );
@@ -260,6 +262,19 @@ sub display_name {
   return $self->organism()->display_name($name);
 }
 
+=head2 scientific_name
+  Description: Gets readable name
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub scientific_name {
+  my ( $self, $name ) = @_;
+  return $self->organism()->scientific_name($name);
+}
+
 =head2 strain
   Description: Gets/sets strain of genome
   Returntype : string
@@ -269,7 +284,7 @@ sub display_name {
 =cut
 
 sub strain {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->strain();
 }
 
@@ -282,7 +297,7 @@ sub strain {
 =cut
 
 sub serotype {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->serotype();
 }
 
@@ -295,7 +310,7 @@ sub serotype {
 =cut
 
 sub name {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->name();
 }
 
@@ -308,7 +323,7 @@ sub name {
 =cut
 
 sub taxonomy_id {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->taxonomy_id();
 }
 
@@ -321,7 +336,7 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->species_taxonomy_id();
 }
 
@@ -350,7 +365,7 @@ sub assembly {
 =cut
 
 sub assembly_name {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->assembly()->assembly_name();
 }
 
@@ -363,7 +378,7 @@ sub assembly_name {
 =cut
 
 sub assembly_accession {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->assembly()->assembly_accession();
 }
 
@@ -376,7 +391,7 @@ sub assembly_accession {
 =cut
 
 sub assembly_level {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->assembly()->assembly_level();
 }
 
@@ -448,7 +463,7 @@ sub db_size {
 =cut
 
 sub base_count {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->assembly()->base_count();
 }
 
@@ -461,7 +476,7 @@ sub base_count {
 =cut
 
 sub aliases {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->aliases();
 }
 
@@ -496,7 +511,7 @@ sub compara {
 =cut
 
 sub sequences {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->assembly()->sequences();
 }
 
@@ -509,7 +524,7 @@ sub sequences {
 =cut
 
 sub publications {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->publications();
 }
 
@@ -797,11 +812,13 @@ sub get_uniprot_coverage {
 
 sub add_database {
   my ( $self, $dbname, $species_id ) = @_;
-  $self->{species_id}||=1;
-  push @{$self->{databases}}, Bio::EnsEMBL::MetaData::DatabaseInfo->new(-SUBJECT=>$self, -DBNAME=>$dbname, -SPECIES_ID=>$species_id);
+  $self->{species_id} ||= 1;
+  push @{ $self->{databases} },
+    Bio::EnsEMBL::MetaData::DatabaseInfo->new( -SUBJECT    => $self,
+                                               -DBNAME     => $dbname,
+                                               -SPECIES_ID => $species_id );
   return;
 }
-
 
 =head2 to_string
   Description: Render genome as string for display
@@ -812,8 +829,11 @@ sub add_database {
 =cut
 
 sub to_string {
-   my ($self) = @_;
-   return join(':',($self->dbID()||'-'),$self->name(),$self->dbname(),$self->species_id());
+  my ($self) = @_;
+  return
+    join( ':',
+          ( $self->dbID() || '-' ), $self->name(),
+          $self->dbname(), $self->species_id() );
 }
 
 =head2 to_hash
@@ -878,14 +898,14 @@ sub to_hash {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub _get_core {
   my ($self) = @_;
-  if(!defined $self->{core}) {
-    ($self->{core}) = grep {$_->type() eq 'core'}  @{$self->databases()}; 
+  if ( !defined $self->{core} ) {
+    ( $self->{core} ) = grep { $_->type() eq 'core' } @{ $self->databases() };
   }
   return $self->{core};
 }
-
 
 =head2 count_hash_values
   Description: Sums values found in hash
@@ -895,6 +915,7 @@ sub _get_core {
   Caller     : internal
   Status     : Stable
 =cut
+
 sub count_hash_values {
   my ( $self, $hash ) = @_;
   my $tot = 0;

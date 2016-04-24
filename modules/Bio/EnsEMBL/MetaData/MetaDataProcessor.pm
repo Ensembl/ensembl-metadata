@@ -70,6 +70,7 @@ use warnings;
   Caller     : general
   Status     : Stable
 =cut
+
 sub new {
   my ( $caller, @args ) = @_;
   my $class = ref($caller) || $caller;
@@ -94,6 +95,7 @@ sub new {
   Caller     : general
   Status     : Stable
 =cut
+
 sub process_metadata {
   my ( $self, $dbas ) = @_;
 
@@ -142,6 +144,7 @@ sub process_metadata {
   Caller     : general
   Status     : Stable
 =cut
+
 sub process_genome {
   my ( $self, $dbas ) = @_;
   my $dba = $dbas->{core};
@@ -160,10 +163,11 @@ sub process_genome {
           "select count(*) from information_schema.tables where table_schema=?",
         -PARAMS => [$dbname] );
 
-  my $strain      = $meta->single_value_by_key('species.strain');
-  my $serotype    = $meta->single_value_by_key('species.serotype');
-  my $name        = $meta->get_display_name();
-  my $taxonomy_id = $meta->get_taxonomy_id();
+  my $scientific_name = $meta->single_value_by_key('species.scientific_name');
+  my $strain          = $meta->single_value_by_key('species.strain');
+  my $serotype        = $meta->single_value_by_key('species.serotype');
+  my $name            = $meta->get_display_name();
+  my $taxonomy_id     = $meta->get_taxonomy_id();
   my $species_taxonomy_id =
     $meta->single_value_by_key('species.species_taxonomy_id') || $taxonomy_id;
   my $assembly_accession = $meta->single_value_by_key('assembly.accession');
@@ -183,22 +187,22 @@ sub process_genome {
     $division = $divisions[-1];
   }
 
-  my $md =
-    Bio::EnsEMBL::MetaData::GenomeInfo->new(
-                                   -name         => $dba->species(),
-                                   -species_id   => $dba->species_id(),
-                                   -division     => $division,
-                                   -dbname       => $dbname,
-                                   -data_release => $self->{data_release},
-                                   -strain       => $strain,
-                                   -serotype     => $serotype,
-                                   -display_name => $name,
-                                   -taxonomy_id  => $taxonomy_id,
-                                   -species_taxonomy_id => $species_taxonomy_id,
-                                   -assembly_accession  => $assembly_accession,
-                                   -assembly_name       => $assembly_name,
-                                   -genebuild           => $genebuild,
-                                   -assembly_level      => $assembly_level );
+  my $md = Bio::EnsEMBL::MetaData::GenomeInfo->new(
+                      -name                => $dba->species(),
+                      -species_id          => $dba->species_id(),
+                      -division            => $division,
+                      -dbname              => $dbname,
+                      -data_release        => $self->{data_release},
+                      -strain              => $strain,
+                      -serotype            => $serotype,
+                      -display_name        => $name,
+                      -display_name        => $scientific_name,
+                      -taxonomy_id         => $taxonomy_id,
+                      -species_taxonomy_id => $species_taxonomy_id,
+                      -assembly_accession  => $assembly_accession,
+                      -assembly_name       => $assembly_name,
+                      -genebuild           => $genebuild,
+                      -assembly_level      => $assembly_level );
 
   # get list of seq names
   my $seqs_arr = [];
@@ -362,6 +366,7 @@ my $DIVISION_NAMES = { 'bacteria'     => 'EnsemblBacteria',
   Caller     : general
   Status     : Stable
 =cut
+
 sub process_compara {
   my ( $self, $compara, $genomes ) = @_;
   if ( !defined $genomes ) {
@@ -516,6 +521,7 @@ sub process_compara {
   Caller     : general
   Status     : Stable
 =cut
+
 sub get_dbsize {
   my ($dba) = @_;
   return

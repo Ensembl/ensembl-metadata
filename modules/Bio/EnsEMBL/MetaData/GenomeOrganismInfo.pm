@@ -31,6 +31,7 @@ Bio::EnsEMBL::MetaData::GenomeOrganismInfo
 
 	  my $info =
 		Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+		-SCIENTIFIC_NAME=>$scientific_name,
 		-DISPLAY_NAME=>$display_name, -NAME=>$name, -STRAIN=>$strain, -SEROTYPE=>$serotype, -IS_REFERENCE=>$is_reference
       );
 
@@ -57,10 +58,12 @@ use warnings;
 
 =head1 CONSTRUCTOR
 =head2 new
-  Arg [-NAME]  : 
-       string - human readable version of the name of the organism
-  Arg [-SPECIES]    : 
+  Arg [-DISPLAY_NAME]  : 
+       string - human readable version of the name of the organism (may be a common name e.g. Human)
+  Arg [-NAME]    : 
        string - computable version of the name of the organism (lower case, no spaces)
+  Arg [-SCIENTIFIC_NAME]    : 
+       string - Linnaen name e.g. Homo sapiens
    Arg [-TAXONOMY_ID] :
         string - NCBI taxonomy identifier
   Arg [-SPECIES_TAXONOMY_ID] :
@@ -84,16 +87,17 @@ use warnings;
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  ( $self->{display_name}, $self->{name},
+  ( $self->{display_name}, $self->{name}, $self->{scientific_name},
     $self->{strain},       $self->{serotype},
     $self->{is_reference}, $self->{taxonomy_id},
     $self->{species_taxonomy_id} )
-    = rearrange( [ 'DISPLAY_NAME', 'NAME',
+    = rearrange( [ 'DISPLAY_NAME', 'NAME', 'SCIENTIFIC_NAME',
                    'STRAIN',       'SEROTYPE',
                    'IS_REFERENCE', 'TAXONOMY_ID',
                    'SPECIES_TAXONOMY_ID' ],
                  @args );
   $self->{is_reference} ||= 0;
+  $self->{scientific_name} ||= $self->{display_name};
   return $self;
 }
 
@@ -128,6 +132,22 @@ sub display_name {
   $self->{display_name} = $display_name if ( defined $display_name );
   return $self->{display_name};
 }
+
+=head2 scientific_name
+  Arg        : (optional) scientific_name to set
+  Description: Gets/sets scientific_name 
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub scientific_name {
+  my ( $self, $scientific_name ) = @_;
+  $self->{scientific_name} = $scientific_name if ( defined $scientific_name );
+  return $self->{scientific_name};
+}
+
 
 =head2 strain
   Arg        : (optional) strain to set

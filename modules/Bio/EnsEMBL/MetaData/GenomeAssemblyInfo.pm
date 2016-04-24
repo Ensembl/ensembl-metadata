@@ -99,35 +99,35 @@ sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
 
-  my ( $name, $display_name, $taxonomy_id, $species_taxonomy_id, $strain,
-       $serotype, $is_reference );
+  my ( $name, $display_name, $scientific_name, $taxonomy_id,
+       $species_taxonomy_id, $strain, $serotype, $is_reference );
 
   ( $self->{assembly_name},  $self->{assembly_accession},
     $self->{assembly_level}, $self->{base_count},
     $self->{organism},       $name,
-    $display_name,           $taxonomy_id,
-    $species_taxonomy_id,    $strain,
-    $serotype,               $is_reference,
-    $self->{organism} )
-    = rearrange( [ 'ASSEMBLY_NAME',       'ASSEMBLY_ACCESSION',
-                   'ASSEMBLY_LEVEL',      'BASE_COUNT',
-                   'ORGANISM',            'NAME',
-                   'DISPLAY_NAME',        'TAXONOMY_ID',
-                   'SPECIES_TAXONOMY_ID', 'STRAIN',
-                   'SEROTYPE',            'IS_REFERENCE',
-                   'ORGANISM' ],
+    $scientific_name,        $display_name,
+    $taxonomy_id,            $species_taxonomy_id,
+    $strain,                 $serotype,
+    $is_reference,           $self->{organism} )
+    = rearrange( [ 'ASSEMBLY_NAME',   'ASSEMBLY_ACCESSION',
+                   'ASSEMBLY_LEVEL',  'BASE_COUNT',
+                   'ORGANISM',        'NAME',
+                   'SCIENTIFIC_NAME', 'DISPLAY_NAME',
+                   'TAXONOMY_ID',     'SPECIES_TAXONOMY_ID',
+                   'STRAIN',          'SEROTYPE',
+                   'IS_REFERENCE',    'ORGANISM' ],
                  @args );
 
   if ( !defined $self->{organism} ) {
-    my $organism =
-      Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
-                                   -NAME                => $name,
-                                   -DISPLAY_NAME        => $display_name,
-                                   -TAXONOMY_ID         => $taxonomy_id,
-                                   -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-                                   -STRAIN              => $strain,
-                                   -SEROTYPE            => $serotype,
-                                   -IS_REFERENCE        => $is_reference );
+    my $organism = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+                       -NAME                => $name,
+                       -DISPLAY_NAME        => $display_name,
+                       -SCIENTIFIC_NAME     => $scientific_name,
+                       -TAXONOMY_ID         => $taxonomy_id,
+                       -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+                       -STRAIN              => $strain,
+                       -SEROTYPE            => $serotype,
+                       -IS_REFERENCE        => $is_reference );
     $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->organism($organism);
   }
@@ -242,8 +242,21 @@ sub organism {
 =cut
 
 sub display_name {
-  my ( $self) = @_;
+  my ($self) = @_;
   return $self->organism()->display_name();
+}
+
+=head2 scientific_name
+  Description: Gets scientific_name
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub scientific_name {
+  my ($self) = @_;
+  return $self->organism()->scientific_name();
 }
 
 =head2 strain
@@ -255,7 +268,7 @@ sub display_name {
 =cut
 
 sub strain {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->strain();
 }
 
@@ -268,7 +281,7 @@ sub strain {
 =cut
 
 sub serotype {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->serotype();
 }
 
@@ -281,7 +294,7 @@ sub serotype {
 =cut
 
 sub name {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->name();
 }
 
@@ -294,7 +307,7 @@ sub name {
 =cut
 
 sub taxonomy_id {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->taxonomy_id();
 }
 
@@ -307,7 +320,7 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->species_taxonomy_id();
 }
 
@@ -320,7 +333,7 @@ sub species_taxonomy_id {
 =cut
 
 sub is_reference {
-  my ( $self ) = @_;
+  my ($self) = @_;
   return $self->organism()->is_reference();
 }
 

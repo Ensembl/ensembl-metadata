@@ -22,6 +22,7 @@ use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 
 my %args = ( '-NAME'                => "test",
              '-DISPLAY_NAME'        => "Testus testa",
+             '-SCIENTIFIC_NAME'        => "Testus testa",
              '-TAXONOMY_ID'         => 999,
              '-SPECIES_TAXONOMY_ID' => 99,
              '-STRAIN'              => 'stress',
@@ -32,6 +33,7 @@ my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
 ok( defined $org, "Organism object exists" );
 ok( $org->name()                eq $args{-NAME} );
 ok( $org->display_name()        eq $args{-DISPLAY_NAME} );
+ok( $org->scientific_name()        eq $args{-SCIENTIFIC_NAME} );
 ok( $org->taxonomy_id()         eq $args{-TAXONOMY_ID} );
 ok( $org->species_taxonomy_id() eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org->strain()              eq $args{-STRAIN} );
@@ -157,6 +159,12 @@ ok( $org4->dbID() eq $org->dbID() );
 {
   diag("testing alias retrieval");
   my $org = $odba->fetch_by_alias("one");
+  ok( defined $org );
+  is( $org->name(), "test" )
+}
+{
+  diag("testing scientific retrieval");
+  my $org = $odba->fetch_by_scientific_name("Testus testa");
   ok( defined $org );
   is( $org->name(), "test" )
 }
