@@ -142,7 +142,7 @@ sub new {
                    'SCIENTIFIC_NAME',     'DBNAME',
                    'SPECIES_ID',          'TAXONOMY_ID',
                    'SPECIES_TAXONOMY_ID', 'ASSEMBLY_NAME',
-                   'ASSEMBLY_ID',         'ASSEMBLY_LEVEL',
+                   'ASSEMBLY_ACCESSION',  'ASSEMBLY_LEVEL',
                    'GENEBUILD',           'DIVISION',
                    'STRAIN',              'SEROTYPE',
                    'IS_REFERENCE',        'ASSEMBLY',
@@ -156,7 +156,7 @@ sub new {
   if ( !defined $self->assembly() ) {
     my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
                        -ASSEMBLY_NAME       => $assembly_name,
-                       -ASSEMBLY_ID         => $assembly_id,
+                       -ASSEMBLY_ACCESSION  => $assembly_id,
                        -ASSEMBLY_LEVEL      => $assembly_level,
                        -DISPLAY_NAME        => $display_name,
                        -SCIENTIFIC_NAME     => $scientific_name,

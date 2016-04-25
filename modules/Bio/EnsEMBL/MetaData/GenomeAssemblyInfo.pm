@@ -64,7 +64,7 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 =head2 new
   Arg [-ASSEMBLY_NAME] :
         string - name of the assembly
-  Arg [-ASSEMBLY_ID] :
+  Arg [-ASSEMBLY_ACCESSION] :
         string - INSDC assembly accession
   Arg [-ASSEMBLY_LEVEL] :
         string - highest assembly level (chromosome, supercontig etc.)
