@@ -33,8 +33,7 @@ $org->aliases( ["alias"] );
 my %aargs = ( '-ASSEMBLY_NAME'      => "v2.0",
               '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
               '-ASSEMBLY_LEVEL'     => 'chromosome',
-              '-BASE_COUNT'         => 99,
-              '-ORGANISM'           => $org );
+              '-BASE_COUNT'         => 99 );
 
 my $assembly = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%aargs);
 $assembly->sequences( [ { name => "a", acc => "xyz.1" } ] );
@@ -50,7 +49,8 @@ my %args = ( '-DBNAME'       => "test_species_core_27_80_1",
              '-DIVISION'     => 'EnsemblSomewhere',
              '-IS_REFERENCE' => 1,
              '-ASSEMBLY'     => $assembly,
-             '-DATA_RELEASE' => $release );
+             '-DATA_RELEASE' => $release,
+              '-ORGANISM'           => $org );
 my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 ok( defined $genome, "Genome object exists" );
 
