@@ -53,9 +53,6 @@ ok( defined $aa &&
 $aa->store($assembly);
 ok( defined $assembly->dbID() );
 ok( $aa->db()->dbc()->sql_helper()
-	->execute_single_result( -SQL => "select count(*) from organism" ) eq
-	'1' );
-ok( $aa->db()->dbc()->sql_helper()
 	->execute_single_result( -SQL => "select count(*) from assembly" ) eq
 	'1' );
 ok( $aa->db()->dbc()->sql_helper()->execute_single_result(
