@@ -58,10 +58,10 @@ use constant PUBLIC_EG_HOST => 'mysql-eg-publicsql.ebi.ac.uk';
 use constant PUBLIC_EG_USER => 'anonymous';
 use constant PUBLIC_EG_PASS => '';
 use constant PUBLIC_EG_PORT => 4157;
-use constant PUBLIC_E_HOST => 'ensembldb.ensembl.org';
+use constant PUBLIC_E_HOST => 'mysql-ensembl-mirror.ebi.ac.uk';
 use constant PUBLIC_E_USER => 'anonymous';
 use constant PUBLIC_E_PASS => '';
-use constant PUBLIC_E_PORT => 5306;
+use constant PUBLIC_E_PORT => 4240;
 
 
 sub eg_host {

@@ -21,20 +21,11 @@ use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
 
 use Data::Dumper;
 
-my %oargs = ( '-NAME'                => "test",
-			  '-DISPLAY_NAME'             => "Testus testa",
-			  '-TAXONOMY_ID'         => 999,
-			  '-SPECIES_TAXONOMY_ID' => 99,
-			  '-STRAIN'              => 'stress',
-			  '-SEROTYPE'            => 'icky',
-			  '-IS_REFERENCE'        => 1 );
-my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
 
 my %args = ( '-ASSEMBLY_NAME'      => "v2.0",
 			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
 			 '-ASSEMBLY_LEVEL'     => 'chromosome',
-			 '-BASE_COUNT'         => 99,
-			 '-ORGANISM'           => $org );
+			 '-BASE_COUNT'         => 99 );
 
 diag "Testing creation";
 my $assembly = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%args);
@@ -46,7 +37,6 @@ ok( $assembly->assembly_name()            eq $args{-ASSEMBLY_NAME} );
 ok( $assembly->assembly_accession()       eq $args{-ASSEMBLY_ACCESSION} );
 ok( $assembly->assembly_level()           eq $args{-ASSEMBLY_LEVEL} );
 ok( $assembly->base_count()               eq $args{-BASE_COUNT} );
-ok( $assembly->organism()->name()         eq $args{-ORGANISM}->name() );
 ok( scalar( @{ $assembly->sequences() } ) eq 2 );
 
 diag "Testing storage";
@@ -90,7 +80,6 @@ ok( $ass2->assembly_name()            eq $args{-ASSEMBLY_NAME} );
 ok( $ass2->assembly_accession()       eq $args{-ASSEMBLY_ACCESSION} );
 ok( $ass2->assembly_level()           eq $args{-ASSEMBLY_LEVEL} );
 ok( $ass2->base_count()               eq $args{-BASE_COUNT} );
-ok( $ass2->organism()->name()         eq $args{-ORGANISM}->name() );
 $aa->_clear_cache();
 
 diag "Testing retrieval without cache";
@@ -101,7 +90,6 @@ ok( $ass3->assembly_name()            eq $args{-ASSEMBLY_NAME} );
 ok( $ass3->assembly_accession()       eq $args{-ASSEMBLY_ACCESSION} );
 ok( $ass3->assembly_level()           eq $args{-ASSEMBLY_LEVEL} );
 ok( $ass3->base_count()               eq $args{-BASE_COUNT} );
-ok( $ass3->organism()->name()         eq $args{-ORGANISM}->name() );
 
 diag "Testing fetch methods";
 {
@@ -133,12 +121,6 @@ diag "Testing fetch methods";
   diag "Testing fetch by fetch_all_by_assembly_set_chain";
   my $asses = $aa->fetch_all_by_assembly_set_chain("GCA_181818181");
   ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0")
-}
-{
-  diag "Testing fetch_all_by_organism";
-  my $org    = $gdba->get_GenomeOrganismInfoAdaptor()->fetch_by_name("test");
-  my $asses = $aa->fetch_all_by_organism($org);
-  ok(defined $asses && $asses->[0]->assembly_name() eq "v2.0")  
 }
 
 done_testing;

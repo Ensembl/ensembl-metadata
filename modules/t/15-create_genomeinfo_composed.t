@@ -42,8 +42,7 @@ ok( $org->is_reference() eq $org_args{-IS_REFERENCE}, "is_ref correct" );
 
 my %ass_args = ( '-ASSEMBLY_NAME'      => "v2.0",
                  '-ASSEMBLY_ACCESSION' => 'GCA_181818181',
-                 '-ASSEMBLY_LEVEL'     => 'chromosome',
-                 '-ORGANISM'           => $org );
+                 '-ASSEMBLY_LEVEL'     => 'chromosome');
 my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%ass_args);
 
 ok( defined $ass, "Assembly object exists" );
@@ -51,20 +50,13 @@ ok( $ass->assembly_name() eq $ass_args{-ASSEMBLY_NAME}, "ass name correct" );
 ok( $ass->assembly_accession() eq $ass_args{-ASSEMBLY_ACCESSION},
     "ass ID correct" );
 ok( $ass->assembly_level() eq $ass_args{-ASSEMBLY_LEVEL}, "ass level correct" );
-ok( $ass->name()           eq $org_args{-NAME},           "name correct" );
-ok( $ass->display_name()     eq $org_args{-DISPLAY_NAME}, "species ID correct" );
-ok( $ass->taxonomy_id() eq $org_args{-TAXONOMY_ID},  "taxid correct" );
-ok( $ass->species_taxonomy_id() eq $org_args{-SPECIES_TAXONOMY_ID},
-    "species taxid correct" );
-ok( $ass->strain()       eq $org_args{-STRAIN},       "strain correct" );
-ok( $ass->serotype()     eq $org_args{-SEROTYPE},     "serotype correct" );
-ok( $ass->is_reference() eq $org_args{-IS_REFERENCE}, "is_ref correct" );
 
 my %g_args = ( '-DBNAME'     => "test_species_core_27_80_1",
                '-SPECIES_ID' => 1,
                '-GENEBUILD'  => 'awesomeBuild1',
                '-DIVISION'   => 'EnsemblSomewhere',
-               '-ASSEMBLY'   => $ass );
+               '-ASSEMBLY'   => $ass,
+               '-ORGANISM'   => $org);
 my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(%g_args);
 
 ok( defined $genome, "Genome object exists" );

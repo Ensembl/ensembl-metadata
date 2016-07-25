@@ -131,13 +131,13 @@ sub new {
        $dbname,              $species_id,    $taxonomy_id,
        $species_taxonomy_id, $assembly_name, $assembly_id,
        $assembly_level,      $strain,        $serotype,
-       $is_reference,        $organism );
+       $is_reference);
   ( $name,                $display_name,      $scientific_name,
     $dbname,              $species_id,        $taxonomy_id,
     $species_taxonomy_id, $assembly_name,     $assembly_id,
     $assembly_level,      $self->{genebuild}, $self->{division},
     $strain,              $serotype,          $is_reference,
-    $self->{assembly},    $organism,          $self->{data_release} )
+    $self->{assembly},    $self->{organism},          $self->{data_release} )
     = rearrange( [ 'NAME',                'DISPLAY_NAME',
                    'SCIENTIFIC_NAME',     'DBNAME',
                    'SPECIES_ID',          'TAXONOMY_ID',
@@ -157,18 +157,23 @@ sub new {
     my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
                        -ASSEMBLY_NAME       => $assembly_name,
                        -ASSEMBLY_ACCESSION  => $assembly_id,
-                       -ASSEMBLY_LEVEL      => $assembly_level,
-                       -DISPLAY_NAME        => $display_name,
-                       -SCIENTIFIC_NAME     => $scientific_name,
-                       -NAME                => $name,
-                       -STRAIN              => $strain,
-                       -SEROTYPE            => $serotype,
-                       -TAXONOMY_ID         => $taxonomy_id,
-                       -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-                       -IS_REFERENCE        => $is_reference,
-                       -ORGANISM            => $organism );
+                       -ASSEMBLY_LEVEL      => $assembly_level );
     $ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->assembly($ass);
+  }
+  
+    if ( !defined $self->{organism} ) {
+    my $organism = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+                       -NAME                => $name,
+                       -DISPLAY_NAME        => $display_name,
+                       -SCIENTIFIC_NAME     => $scientific_name,
+                       -TAXONOMY_ID         => $taxonomy_id,
+                       -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+                       -STRAIN              => $strain,
+                       -SEROTYPE            => $serotype,
+                       -IS_REFERENCE        => $is_reference );
+    $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
+    $self->organism($organism);
   }
   return $self;
 } ## end sub new
@@ -246,7 +251,9 @@ sub data_release {
 
 sub organism {
   my ( $self, $organism ) = @_;
-  return $self->assembly()->organism($organism);
+  $self->{organism} = $organism if ( defined $organism );
+  $self->_load_child( 'organism', '_fetch_organism' );
+  return $self->{organism};
 }
 
 =head2 display_name

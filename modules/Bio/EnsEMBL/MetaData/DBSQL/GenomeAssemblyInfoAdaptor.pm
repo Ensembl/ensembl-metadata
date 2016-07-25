@@ -53,6 +53,7 @@ use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 
 use Carp qw(cluck croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
+use Bio::EnsEMBL::Utils::Exception qw( throw );
 use Scalar::Util qw(looks_like_number);
 use Bio::EnsEMBL::DBSQL::DBConnection;
 use Bio::EnsEMBL::MetaData::GenomeAssemblyInfo;
@@ -72,22 +73,28 @@ use List::MoreUtils qw(natatime);
 
 sub store {
   my ( $self, $assembly ) = @_;
-  if ( !defined $assembly->organism() ) {
-    throw("Assembly must be associated with an organism");
-  }
-  if ( !defined $assembly->organism()->dbID() ) {
-    $self->db()->get_GenomeOrganismInfoAdaptor()
-      ->store( $assembly->organism() );
-  }
   if ( !defined $assembly->dbID() ) {
-    # find out if organism exists first
-    my ($dbID) =
+    # find out if assembly exists first
+    my $dbID;
+    if(defined $assembly->assembly_accession()) {
+      # try to use the unique assembly accession
+            ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
-"select assembly_id from assembly where organism_id=? and assembly_name=?",
-        -PARAMS => [ $assembly->organism()->dbID(), $assembly->assembly_name() ]
+"select assembly_id from assembly where assembly_accession=?",
+        -PARAMS => [ $assembly->assembly_accession() ]
+      ) };   
+    } else {
+      # otherwise, we have to assume the name is unique :-(
+      ($dbID) =
+      @{
+      $self->dbc()->sql_helper()->execute_simple(
+        -SQL =>
+"select assembly_id from assembly where assembly_name=?",
+        -PARAMS => [ $assembly->assembly_name() ]
       ) };
+    }
     if ( defined $dbID ) {
       $assembly->dbID($dbID);
       $assembly->adaptor($self);
@@ -99,13 +106,12 @@ sub store {
   else {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
-q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_count,organism_id)
-		values(?,?,?,?,?)/,
+q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_count)
+		values(?,?,?,?)/,
       -PARAMS => [ $assembly->assembly_accession(),
                    $assembly->assembly_name(),
                    $assembly->assembly_level(),
-                   $assembly->base_count(),
-                   $assembly->organism()->dbID() ],
+                   $assembly->base_count() ],
       -CALLBACK => sub {
         my ( $sth, $dbh, $rv ) = @_;
         $assembly->dbID( $dbh->{mysql_insertid} );
@@ -134,10 +140,10 @@ sub update {
 
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update assembly set assembly_accession=?,assembly_name=?,assembly_level=?,base_count=?,organism_id=? where assembly_id=?/,
+q/update assembly set assembly_accession=?,assembly_name=?,assembly_level=?,base_count=? where assembly_id=?/,
     -PARAMS => [ $assembly->assembly_accession(), $assembly->assembly_name(),
                  $assembly->assembly_level(),     $assembly->base_count(),
-                 $assembly->organism()->dbID(),   $assembly->dbID() ] );
+                 $assembly->dbID() ] );
 
   return;
 }
@@ -239,27 +245,6 @@ sub fetch_all_by_assembly_set_chain {
                       $self->_get_base_sql . ' where assembly_accession like ?',
                       [ $id . '.%' ], $keen );
 }
-
-=head2 fetch_all_by_organism
-  Arg	       : GenomeOrganismInfo object
-  Arg        : (optional) if 1, expand children of genome info
-  Description: Fetch genome info for specified organism
-  Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
-  Exceptions : none
-  Caller     : general
-  Status     : Stable
-=cut
-
-sub fetch_all_by_organism {
-  my ( $self, $organism_id, $keen ) = @_;
-  if ( ref($organism_id) eq 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' ) {
-    $organism_id = $organism_id->dbID();
-  }
-  return
-    $self->_fetch_generic( $self->_get_base_sql() . ' where organism_id = ?',
-                           [$organism_id], $keen );
-}
-
 =head1 INTERNAL METHODS
 =head2 _store_sequences
   Arg	     : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
@@ -317,15 +302,6 @@ sub _fetch_sequences {
   return;
 }
 
-sub _fetch_organism {
-  my ( $self, $md ) = @_;
-  if ( defined $md->{organism_id} ) {
-    $md->organism( $self->db()->get_GenomeOrganismInfoAdaptor()
-                   ->fetch_by_dbID( $md->{organism_id} ) );
-  }
-  return;
-}
-
 =head2 _fetch_children
   Arg	     : Arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Fetch all children of specified genome info object
@@ -338,15 +314,14 @@ sub _fetch_organism {
 sub _fetch_children {
   my ( $self, $md ) = @_;
   $self->_fetch_sequences($md);
-  $self->_fetch_organism($md);
   return;
 }
 
-my $base_organism_fetch_sql =
-q/select assembly_id as dbID, organism_id, assembly_accession, assembly_name, assembly_level, base_count from assembly/;
+my $base_assembly_fetch_sql =
+q/select assembly_id as dbID, assembly_accession, assembly_name, assembly_level, base_count from assembly/;
 
 sub _get_base_sql {
-  return $base_organism_fetch_sql;
+  return $base_assembly_fetch_sql;
 }
 
 sub _get_id_field {

@@ -131,6 +131,7 @@ sub new {
 =head2 genome_to_dba
 	Description : Build a Bio::EnsEMBL::DBSQL::DBAdaptor instance with the supplied info object
 	Argument    : Bio::EnsEMBL::MetaData::GenomeInfo
+	Argument    : (optional) Group to use
 	Exceptions  : None
 	Return type : Bio::EnsEMBL::DBSQL::DBAdaptor
 =cut
@@ -151,9 +152,7 @@ sub genome_to_dba {
       $args->{-MULTISPECIES_DB} =
         $genome_info->dbname() =~ m/_collection_/ ? 1 : 0;
       $args->{-GROUP} = 'core';
-
-      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%$args);
-
+        $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(%$args);
       $self->_cache()->{ $genome_info->dbID() } = $dba;
 
     }

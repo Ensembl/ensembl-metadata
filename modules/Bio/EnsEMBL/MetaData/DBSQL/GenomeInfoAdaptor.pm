@@ -269,6 +269,9 @@ sub store {
   if ( !defined $genome->data_release()->dbID() ) {
     $self->db()->get_DataReleaseInfoAdaptor()->store( $genome->data_release() );
   }
+  if ( !defined $genome->organism() ) {
+    throw("Genome must be associated with an organism");
+  }
   if ( !defined $genome->assembly() ) {
     throw("Genome must be associated with an assembly");
   }
@@ -294,6 +297,7 @@ sub store {
   if ( defined $genome->dbID() ) {
     return $self->update($genome);
   }
+  $self->db()->get_GenomeOrganismInfoAdaptor()->store( $genome->organism() );
   $self->db()->get_GenomeAssemblyInfoAdaptor()->store( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/insert into genome(division_id,
@@ -309,7 +313,7 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
                  $genome->has_synteny(),
                  $genome->has_other_alignments(),
                  $genome->assembly()->dbID(),
-                 $genome->assembly()->organism()->dbID(),
+                 $genome->organism()->dbID(),
                  $genome->data_release()->dbID() ],
     -CALLBACK => sub {
       my ( $sth, $dbh, $rv ) = @_;
@@ -340,6 +344,7 @@ sub update {
   if ( !defined $genome->dbID() ) {
     croak "Cannot update an object that has not already been stored";
   }
+  $self->db()->get_GenomeOrganismInfoAdaptor()->update( $genome->organism() );
   $self->db()->get_GenomeAssemblyInfoAdaptor()->update( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/update genome set division_id=?,
@@ -355,7 +360,7 @@ has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organ
                  $genome->has_synteny(),
                  $genome->has_other_alignments(),
                  $genome->assembly()->dbID(),
-                 $genome->assembly()->organism()->dbID(),
+                 $genome->organism()->dbID(),
                  $genome->data_release()->dbID(),
                  $genome->dbID() ] );
   $genome->adaptor($self);
@@ -920,6 +925,25 @@ sub _fetch_assembly {
   return;
 }
 
+=head2 _fetch_organism
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
+  Description: Add organism to supplied object
+  Returntype : none
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _fetch_organism {
+  my ( $self, $genome ) = @_;
+  print "Hi $genome->{organism_id}\n";
+  if ( defined $genome->{organism_id} ) {
+    $genome->organism( $self->db()->get_GenomeOrganismInfoAdaptor()
+                       ->fetch_by_dbID( $genome->{organism_id} ) );
+  }
+  return;
+}
+
 =head2 _fetch_data_release
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo 
   Description: Add data release to supplied object
@@ -1107,7 +1131,9 @@ sub _fetch_comparas {
 
 sub _fetch_children {
   my ( $self, $genome ) = @_;
+  print "HHHHHAAA\n";
   $self->_fetch_databases($genome);
+  $self->_fetch_organism($genome);
   $self->_fetch_assembly($genome);
   $self->_fetch_data_release($genome);
   $self->_fetch_variations($genome);
@@ -1274,7 +1300,7 @@ my $base_genome_fetch_sql =
   q/select genome_id as dbID, division.name as division, genebuild, 
 has_pan_compara, has_variations, has_peptide_compara, 
 has_genome_alignments, has_synteny, has_other_alignments, 
-assembly_id, data_release_id
+assembly_id, data_release_id, organism_id
 from genome join division using (division_id)/;
 
 sub _get_base_sql {

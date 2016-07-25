@@ -70,22 +70,6 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
         string - highest assembly level (chromosome, supercontig etc.)
   Arg [-BASE_COUNT] :
         long - total number of bases in toplevel
-  Arg [-ORGANISM] :
-        Bio::EnsEMBL::MetaData::GenomeOrganismInfo - organism to which this assembly belongs
-  Arg [-NAME]  : 
-       string - human readable version of the name of the organism
-  Arg [-SPECIES]    : 
-       string - computable version of the name of the organism (lower case, no spaces)
-   Arg [-TAXONOMY_ID] :
-        string - NCBI taxonomy identifier
-  Arg [-SPECIES_TAXONOMY_ID] :
-        string - NCBI taxonomy identifier of species to which this organism belongs
-  Arg [-STRAIN]:
-        string - name of strain to which organism belongs
-  Arg [-SEROTYPE]:
-        string - name of serotype to which organism belongs
-  Arg [-IS_REFERENCE]:
-        bool - 1 if this organism is the reference for its species
   Example    : $info = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(...);
   Description: Creates a new info object
   Returntype : Bio::EnsEMBL::MetaData::GenomeAssemblyInfo
@@ -99,38 +83,11 @@ sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
 
-  my ( $name, $display_name, $scientific_name, $taxonomy_id,
-       $species_taxonomy_id, $strain, $serotype, $is_reference );
-
   ( $self->{assembly_name},  $self->{assembly_accession},
-    $self->{assembly_level}, $self->{base_count},
-    $self->{organism},       $name,
-    $scientific_name,        $display_name,
-    $taxonomy_id,            $species_taxonomy_id,
-    $strain,                 $serotype,
-    $is_reference,           $self->{organism} )
+    $self->{assembly_level}, $self->{base_count} )
     = rearrange( [ 'ASSEMBLY_NAME',   'ASSEMBLY_ACCESSION',
-                   'ASSEMBLY_LEVEL',  'BASE_COUNT',
-                   'ORGANISM',        'NAME',
-                   'SCIENTIFIC_NAME', 'DISPLAY_NAME',
-                   'TAXONOMY_ID',     'SPECIES_TAXONOMY_ID',
-                   'STRAIN',          'SEROTYPE',
-                   'IS_REFERENCE',    'ORGANISM' ],
+                   'ASSEMBLY_LEVEL',  'BASE_COUNT' ],
                  @args );
-
-  if ( !defined $self->{organism} ) {
-    my $organism = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
-                       -NAME                => $name,
-                       -DISPLAY_NAME        => $display_name,
-                       -SCIENTIFIC_NAME     => $scientific_name,
-                       -TAXONOMY_ID         => $taxonomy_id,
-                       -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-                       -STRAIN              => $strain,
-                       -SEROTYPE            => $serotype,
-                       -IS_REFERENCE        => $is_reference );
-    $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
-    $self->organism($organism);
-  }
 
   return $self;
 } ## end sub new

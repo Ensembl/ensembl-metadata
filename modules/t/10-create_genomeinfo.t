@@ -32,8 +32,7 @@ $org->aliases( ["alias"] );
 my %aargs = ( '-ASSEMBLY_NAME'      => "v2.0",
               '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
               '-ASSEMBLY_LEVEL'     => 'chromosome',
-              '-BASE_COUNT'         => 99,
-              '-ORGANISM'           => $org );
+              '-BASE_COUNT'         => 99 );
 
 my $assembly = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(%aargs);
 $assembly->sequences( [ { name => "a", acc => "xyz.1" } ] );
@@ -49,6 +48,7 @@ my %args = ( '-DBNAME'       => "test_species_core_27_80_1",
              '-DIVISION'     => 'EnsemblSomewhere',
              '-IS_REFERENCE' => 1,
              '-ASSEMBLY'     => $assembly,
+             '-ORGANISM'     => $org,
              '-DATA_RELEASE' => $release );
 my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 ok( defined $genome, "Genome object exists" );
@@ -114,14 +114,12 @@ ok( $genome2->serotype() eq $oargs{-SEROTYPE}, "serotype correct" );
 
 $gdba->_clear_cache();
 my $genome3 = $gdba->fetch_by_dbID( $genome->dbID() );
-print Dumper($genome3);
 ok( defined $genome3, "Genome object exists" );
 ok( $genome->dbID()          eq $genome3->dbID(),     "DBID" );
 ok( $genome3->dbname()       eq $args{-DBNAME},       "dbname correct" );
 ok( $genome3->species_id()   eq $args{-SPECIES_ID},   "species_id correct" );
 ok( $genome3->division()     eq $args{-DIVISION},     "division correct" );
 ok( $genome3->genebuild()    eq $args{-GENEBUILD},    "genebuild correct" );
-ok( $genome3->is_reference() eq $args{-IS_REFERENCE}, "is_reference correct" );
 ok( $genome3->assembly_name() eq $aargs{-ASSEMBLY_NAME}, "ass name correct" );
 ok( $genome3->assembly_accession() eq $aargs{-ASSEMBLY_ACCESSION},
     "ass ID correct" );
@@ -134,6 +132,7 @@ ok( $genome3->species_taxonomy_id() eq $oargs{-SPECIES_TAXONOMY_ID},
     "species taxid correct" );
 ok( $genome3->strain()   eq $oargs{-STRAIN},   "strain correct" );
 ok( $genome3->serotype() eq $oargs{-SEROTYPE}, "serotype correct" );
+ok( $genome3->is_reference() eq $args{-IS_REFERENCE}, "is_reference correct" );
 
 my $genome4 = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 $gdba->store($genome4);

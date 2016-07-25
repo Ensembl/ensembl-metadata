@@ -39,7 +39,6 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
 
 Information about genomes is encapsulated in GenomeInfo objects, which can be found in a number of ways from the adaptor:
 ```
-
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
 	print $genome->name()."\n";
@@ -104,10 +103,10 @@ Note that a DBAdaptor can also be created directly from a GenomeInfo object via 
 The `ensembl-metadata` API follows the same conventions as the core Ensembl APIs, with data objects stored and retrieved in the database via adaptors. For each of the following objects, there is a corresponding adaptor e.g. GenomeInfo is handled by GenomeInfoAdaptor. The adaptor is responsible for storing/updating objects, and for fetching them from the database.
 
 ### GenomeInfo
-The central object in the implementation is GenomeInfo, which represents a specific version of a _genome_ from a specific release. Besides attributes such as annotation, genebuild etc., it also encapsulates an AssemblyInfo object.
+The central object in the implementation is GenomeInfo, which represents a specific version of a _genome_ from a specific release. Besides attributes such as annotation, genebuild etc., it also encapsulates an AssemblyInfo object and an OrganismInfo object.
 
 ### AssemblyInfo
-This represents a particular assembly of a genome, and is independent of data releases. It encapsulates an OrganismInfo object. It also provides access to a list of top-level sequence.
+This represents a particular assembly of a genome, and is independent of data releases. It also provides access to a list of top-level sequence. Note that Assembly is independent of Organism. This is because the taxonomy of an organism can change extensively following the release of an assembly. Currently GenomeInfo represents the intersection of assembly and organism.
 
 ### OrganismInfo
 This represents a particular organism (regardless of taxonomic rank), and is independent of a data release. 

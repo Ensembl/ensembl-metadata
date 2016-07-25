@@ -24,15 +24,12 @@ DROP TABLE IF EXISTS `assembly`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assembly` (
   `assembly_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `organism_id` int(10) unsigned NOT NULL,
   `assembly_accession` varchar(16) DEFAULT NULL,
   `assembly_name` varchar(200) NOT NULL,
   `assembly_level` varchar(50) NOT NULL,
   `base_count` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`assembly_id`),
-  UNIQUE KEY `assembly_organism_idx` (`organism_id`,`assembly_name`),
-  UNIQUE KEY `assembly_accession_idx` (`assembly_accession`),
-  CONSTRAINT `assembly_ibfk_1` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
+  UNIQUE KEY `assembly_accession_idx` (`assembly_accession`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
