@@ -231,7 +231,7 @@ CREATE TABLE `genome_annotation` (
   `genome_annotation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `genome_id` int(10) unsigned NOT NULL,
   `type` varchar(32) NOT NULL,
-  `count` int(10) unsigned NOT NULL,
+  `value` varchar(128) NOT NULL,
   PRIMARY KEY (`genome_annotation_id`),
   UNIQUE KEY `id_type` (`genome_id`,`type`),
   CONSTRAINT `genome_annotation_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`)

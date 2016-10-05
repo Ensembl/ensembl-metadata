@@ -1053,7 +1053,7 @@ sub _fetch_annotations {
     if !defined $genome->dbID();
   my $annotations = {};
   $self->dbc()->sql_helper()->execute_no_return(
-    -SQL      => 'select type,count from genome_annotation where genome_id=?',
+    -SQL      => 'select type,value from genome_annotation where genome_id=?',
     -CALLBACK => sub {
       my @row = @{ shift @_ };
       $annotations->{ $row[0] } = $row[1];
@@ -1203,11 +1203,11 @@ sub _store_annotations {
                      -SQL => q/delete from genome_annotation where genome_id=?/,
                      -PARAMS => [ $genome->dbID() ] );
 
-  while ( my ( $type, $count ) = each %{ $genome->annotations() } ) {
+  while ( my ( $type, $value ) = each %{ $genome->annotations() } ) {
     $self->dbc()->sql_helper()->execute_update(
-      -SQL => q/insert into genome_annotation(genome_id,type,count)
+      -SQL => q/insert into genome_annotation(genome_id,type,value)
 		values(?,?,?)/,
-      -PARAMS => [ $genome->dbID(), $type, $count ] );
+      -PARAMS => [ $genome->dbID(), $type, $value ] );
   }
   return;
 }

@@ -579,7 +579,7 @@ sub features {
 =head2 annotations
   Arg        : (optional) annotations to set
   Description: Gets/sets summary information about gene annotation as hashref, with
-  			   annotation type as key and count as value
+  			   annotation type as key value
   Returntype : hashref
   Exceptions : none
   Caller     : general
