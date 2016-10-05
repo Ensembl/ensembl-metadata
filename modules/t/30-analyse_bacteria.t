@@ -40,5 +40,7 @@ my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(
 
 my $details = $processor->process_metadata([$core]);
 ok( defined $details, "Metadata exists" );
+is( $details->[0]->annotations()->{genebuild_method}, "Generated from ENA annotation" ,"Checking method");
+is( $details->[0]->annotations()->{provider_name}, "European Nucleotide Archive" ,"Checking provider");
 done_testing;
 $multi->cleanup();

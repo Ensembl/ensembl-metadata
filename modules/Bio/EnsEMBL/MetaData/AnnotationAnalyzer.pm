@@ -97,7 +97,7 @@ sub new {
 sub analyze_annotation {
   my ( $self, $dba ) = @_;
   $self->{logger}->debug( "Analysing annotation for " . $dba->species() );
-  return {
+  my $ann = {
       nProteinCoding => $self->count_by_biotype( $dba, 'protein_coding' ),
       nProteinCodingGO => $self->count_by_xref( $dba, 'GO', 'protein_coding' ),
       nProteinCodingUniProtKB =>
@@ -113,6 +113,15 @@ sub analyze_annotation {
       nUniProtKBTrEMBL    => $self->count_xrefs( $dba, 'Uniprot/SPTREMBL' ),
       nInterPro           => $self->count_interpro($dba),
       nInterProDomains => $self->count_interpro_domains($dba) };
+  # add metadata
+  my $meta = $dba->get_MetaContainer();
+  for my $key (qw/genebuild.method provider.name/) {
+    for my $value (@{$meta->list_value_by_key($key)}) {
+      (my $k = $key) =~ s/\./_/g;
+      $ann->{$k} = $value if defined $value;
+    }
+  }
+  return $ann;
 }
 
 =head2 analyze_features
