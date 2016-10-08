@@ -109,7 +109,7 @@ use warnings;
 
 use base qw/Bio::EnsEMBL::MetaData::DBSQL::BaseInfoAdaptor/;
 
-use Carp qw(cluck croak);
+use Carp qw(croak);
 use Bio::EnsEMBL::Utils::Argument qw( rearrange );
 use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Data::Dumper;
@@ -344,8 +344,8 @@ sub update {
   if ( !defined $genome->dbID() ) {
     croak "Cannot update an object that has not already been stored";
   }
-  $self->db()->get_GenomeOrganismInfoAdaptor()->update( $genome->organism() );
-  $self->db()->get_GenomeAssemblyInfoAdaptor()->update( $genome->assembly() );
+  $self->db()->get_GenomeOrganismInfoAdaptor()->store( $genome->organism() );
+  $self->db()->get_GenomeAssemblyInfoAdaptor()->store( $genome->assembly() );
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/update genome set division_id=?,
 genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
