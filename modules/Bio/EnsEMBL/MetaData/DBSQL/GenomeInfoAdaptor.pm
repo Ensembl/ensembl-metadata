@@ -724,8 +724,12 @@ sub fetch_all_by_assembly_set_chain {
 
 sub fetch_all_by_division {
   my ( $self, $division, $keen ) = @_;
-  return $self->_fetch_generic_with_args( { 'division', $division },
-                                          $keen );
+  my $sql =
+    $self->_get_base_sql() .
+    ' where division.name=? or division.short_name=?';
+  return
+    $self->_fetch_generic( $sql, [ $division, $division ],
+                           $self->_get_obj_class(), $keen );
 }
 
 =head2 fetch_by_display_name
@@ -1007,8 +1011,8 @@ sub _fetch_data_release {
 
 sub _fetch_variations {
   my ( $self, $genome ) = @_;
-  croak
-"Cannot fetch variations for a GenomeInfo object that has not been stored"
+  croak " Cannot fetch variations
+    for a GenomeInfo object that has not been stored "
     if !defined $genome->dbID();
   my $variations = {};
   $self->dbc()->sql_helper()->execute_no_return(
@@ -1036,8 +1040,8 @@ sub _fetch_variations {
 
 sub _fetch_databases {
   my ( $self, $genome ) = @_;
-  croak
-"Cannot fetch databases for a GenomeInfo object that has not been stored"
+  croak " Cannot fetch databases
+    for a GenomeInfo object that has not been stored "
     if !defined $genome->dbID();
   $genome->{databases} =
     $self->db()->get_DatabaseInfoAdaptor()->fetch_databases($genome);
@@ -1055,8 +1059,8 @@ sub _fetch_databases {
 
 sub _fetch_other_alignments {
   my ( $self, $genome ) = @_;
-  croak
-"Cannot fetch alignments for a GenomeInfo object that has not been stored"
+  croak " Cannot fetch alignments
+    for a GenomeInfo object that has not been stored "
     if !defined $genome->dbID();
   my $alignments = {};
   $self->dbc()->sql_helper()->execute_no_return(
@@ -1084,8 +1088,8 @@ sub _fetch_other_alignments {
 
 sub _fetch_annotations {
   my ( $self, $genome ) = @_;
-  croak
-"Cannot fetch annotations for a GenomeInfo object that has not been stored"
+  croak " Cannot fetch annotations
+    for a GenomeInfo object that has not been stored "
     if !defined $genome->dbID();
   my $annotations = {};
   $self->dbc()->sql_helper()->execute_no_return(
@@ -1112,8 +1116,8 @@ sub _fetch_annotations {
 
 sub _fetch_features {
   my ( $self, $genome ) = @_;
-  croak
-"Cannot fetch features  for a GenomeInfo object that has not been stored"
+  croak " Cannot fetch features
+    for a GenomeInfo object that has not been stored "
     if !defined $genome->dbID();
   my $features = {};
   $self->dbc()->sql_helper()->execute_no_return(
@@ -1170,7 +1174,7 @@ sub _fetch_comparas {
 
 sub _fetch_children {
   my ( $self, $genome ) = @_;
-  print "HHHHHAAA\n";
+  print " HHHHHAAA \n ";
   $self->_fetch_databases($genome);
   $self->_fetch_organism($genome);
   $self->_fetch_assembly($genome);
