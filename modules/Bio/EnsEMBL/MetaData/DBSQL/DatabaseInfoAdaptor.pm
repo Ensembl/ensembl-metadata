@@ -60,6 +60,39 @@ use Bio::EnsEMBL::MetaData::DatabaseInfo;
 use List::MoreUtils qw(natatime);
 
 =head1 METHODS
+=head2 clear_genome_databases
+  Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Clear databases for the supplied genome
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_genome_databases {
+  my ( $self, $genome ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from genome_database where genome_id=?/,
+  -PARAMS=>[$genome->dbID()]);
+  return;
+}
+
+=head2 clear_release_databases
+  Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Description: Clear databases for the supplied release
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_release_databases {
+  my ( $self, $release ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from data_release_database  where data_release_id=?/,
+  -PARAMS=>[$release->dbID()]);
+  return;
+}
+
+
 =head2 store
   Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
   Description: Store the supplied object

@@ -1181,6 +1181,9 @@ sub _store_features {
 
 sub _store_databases {
   my ( $self, $genome ) = @_;
+  # clear out any old databases that may have been stored
+  $self->db()->get_DatabaseInfoAdaptor()->clear_genome_databases($genome);
+  # write current databases
   for my $database ( @{ $genome->databases() } ) {
     $self->db()->get_DatabaseInfoAdaptor()->store($database);
   }

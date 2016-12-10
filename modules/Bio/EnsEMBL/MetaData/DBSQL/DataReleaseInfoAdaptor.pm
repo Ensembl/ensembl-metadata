@@ -287,10 +287,7 @@ sub _fetch_databases {
 
 sub _store_databases {
   my ( $self, $release ) = @_;
-  $self->dbc()->sql_helper()->execute_update(
-           -SQL => q/delete from data_release_database where data_release_id=?/,
-           -PARAMS => [ $release->dbID() ] );
-
+  $self->db()->get_DatabaseInfoAdaptor()->clear_release_databases($release);
   for my $database ( @{ $release->databases() } ) {
     print "Storing database ".$database->dbname()."\n";
         $self->db()->get_DatabaseInfoAdaptor()->store($database);
