@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [2009-2016] EMBL-European Bioinformatics Institute
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ use POSIX qw(strftime);
 sub resource_classes {
   my ($self) = @_;
   return {
-     'default' => { 'LSF' => '-q production-rh6' },
+     'default' => { 'LSF' => '-q production-rh7' },
      'himem' =>
-       { 'LSF' => '-q production-rh6 -M  16000 -R "rusage[mem=16000]"' }
+       { 'LSF' => '-q production-rh7 -M  16000 -R "rusage[mem=16000]"' }
   };
 }
 
