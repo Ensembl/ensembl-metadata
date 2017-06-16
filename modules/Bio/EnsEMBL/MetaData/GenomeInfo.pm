@@ -127,22 +127,25 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  my ( $name,                $display_name,  $scientific_name,
+  my ( $name,                $display_name,  $scientific_name, $url_name,
        $dbname,              $species_id,    $taxonomy_id,
        $species_taxonomy_id, $assembly_name, $assembly_id,
+       $assembly_default,    $assembly_ucsc,
        $assembly_level,      $strain,        $serotype,
        $is_reference);
-  ( $name,                $display_name,      $scientific_name,
+  ( $name,                $display_name,      $scientific_name, $url_name,
     $dbname,              $species_id,        $taxonomy_id,
     $species_taxonomy_id, $assembly_name,     $assembly_id,
+    $assembly_default,    $assembly_ucsc,
     $assembly_level,      $self->{genebuild}, $self->{division},
     $strain,              $serotype,          $is_reference,
     $self->{assembly},    $self->{organism},          $self->{data_release} )
     = rearrange( [ 'NAME',                'DISPLAY_NAME',
-                   'SCIENTIFIC_NAME',     'DBNAME',
+                   'SCIENTIFIC_NAME',     'URL_NAME', 'DBNAME',
                    'SPECIES_ID',          'TAXONOMY_ID',
                    'SPECIES_TAXONOMY_ID', 'ASSEMBLY_NAME',
                    'ASSEMBLY_ACCESSION',  'ASSEMBLY_LEVEL',
+                   'ASSEMBLY_DEFAULT',    'ASSEMBLY_UCSC',
                    'GENEBUILD',           'DIVISION',
                    'STRAIN',              'SEROTYPE',
                    'IS_REFERENCE',        'ASSEMBLY',
@@ -157,6 +160,8 @@ sub new {
     my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
                        -ASSEMBLY_NAME       => $assembly_name,
                        -ASSEMBLY_ACCESSION  => $assembly_id,
+                       -ASSEMBLY_DEFAULT    => $assembly_default,
+                       -ASSEMBLY_UCSC       => $assembly_ucsc,
                        -ASSEMBLY_LEVEL      => $assembly_level );
     $ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->assembly($ass);
@@ -167,6 +172,7 @@ sub new {
                        -NAME                => $name,
                        -DISPLAY_NAME        => $display_name,
                        -SCIENTIFIC_NAME     => $scientific_name,
+                       -URL_NAME            => $url_name,
                        -TAXONOMY_ID         => $taxonomy_id,
                        -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
                        -STRAIN              => $strain,
@@ -387,6 +393,32 @@ sub assembly_name {
 sub assembly_accession {
   my ($self) = @_;
   return $self->assembly()->assembly_accession();
+}
+
+=head2 assembly_default
+  Description: Gets default name of assembly
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub assembly_default {
+  my ($self) = @_;
+  return $self->assembly()->assembly_default();
+}
+
+=head2 assembly_ucsc
+  Description: Gets UCSC alias for assembly
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub assembly_ucsc {
+  my ($self) = @_;
+  return $self->assembly()->assembly_ucsc();
 }
 
 =head2 assembly_level

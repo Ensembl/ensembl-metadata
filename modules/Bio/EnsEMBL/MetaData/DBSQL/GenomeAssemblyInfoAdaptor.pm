@@ -106,10 +106,12 @@ sub store {
   else {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
-q/insert into assembly(assembly_accession,assembly_name,assembly_level,base_count)
-		values(?,?,?,?)/,
+q/insert into assembly(assembly_accession,assembly_name,assembly_default,assembly_ucsc,assembly_level,base_count)
+		values(?,?,?,?,?,?)/,
       -PARAMS => [ $assembly->assembly_accession(),
                    $assembly->assembly_name(),
+                   $assembly->assembly_default(),
+                   $assembly->assembly_ucsc(),
                    $assembly->assembly_level(),
                    $assembly->base_count() ],
       -CALLBACK => sub {
@@ -140,8 +142,9 @@ sub update {
 
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update assembly set assembly_accession=?,assembly_name=?,assembly_level=?,base_count=? where assembly_id=?/,
+q/update assembly set assembly_accession=?,assembly_name=?,assembly_default=?,assembly_ucsc=?,assembly_level=?,base_count=? where assembly_id=?/,
     -PARAMS => [ $assembly->assembly_accession(), $assembly->assembly_name(),
+                 $assembly->assembly_default(),   $assembly->assembly_ucsc(),
                  $assembly->assembly_level(),     $assembly->base_count(),
                  $assembly->dbID() ] );
 
@@ -318,7 +321,7 @@ sub _fetch_children {
 }
 
 my $base_assembly_fetch_sql =
-q/select assembly_id as dbID, assembly_accession, assembly_name, assembly_level, base_count from assembly/;
+q/select assembly_id as dbID, assembly_accession, assembly_name, assembly_default, assembly_ucsc, assembly_level, base_count from assembly/;
 
 sub _get_base_sql {
   return $base_assembly_fetch_sql;

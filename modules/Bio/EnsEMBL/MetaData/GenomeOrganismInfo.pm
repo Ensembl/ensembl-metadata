@@ -64,6 +64,8 @@ use warnings;
        string - computable version of the name of the organism (lower case, no spaces)
   Arg [-SCIENTIFIC_NAME]    : 
        string - Linnaen name e.g. Homo sapiens
+  Arg [-URL_NAME]    : 
+       string - Name to use when composing a URL
    Arg [-TAXONOMY_ID] :
         string - NCBI taxonomy identifier
   Arg [-SPECIES_TAXONOMY_ID] :
@@ -87,11 +89,11 @@ use warnings;
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  ( $self->{display_name}, $self->{name}, $self->{scientific_name},
+  ( $self->{display_name}, $self->{name}, $self->{scientific_name}, $self->{url_name},
     $self->{strain},       $self->{serotype},
     $self->{is_reference}, $self->{taxonomy_id},
     $self->{species_taxonomy_id} )
-    = rearrange( [ 'DISPLAY_NAME', 'NAME', 'SCIENTIFIC_NAME',
+    = rearrange( [ 'DISPLAY_NAME', 'NAME', 'SCIENTIFIC_NAME', 'URL_NAME',
                    'STRAIN',       'SEROTYPE',
                    'IS_REFERENCE', 'TAXONOMY_ID',
                    'SPECIES_TAXONOMY_ID' ],
@@ -131,6 +133,21 @@ sub display_name {
   my ( $self, $display_name ) = @_;
   $self->{display_name} = $display_name if ( defined $display_name );
   return $self->{display_name};
+}
+
+=head2 url_name
+  Arg        : (optional) url_name to set
+  Description: Gets/sets url_name (for use in building URLs) 
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub url_name {
+  my ( $self, $url_name ) = @_;
+  $self->{url_name} = $url_name if ( defined $url_name );
+  return $self->{url_name};
 }
 
 =head2 scientific_name

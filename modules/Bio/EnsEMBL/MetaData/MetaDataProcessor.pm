@@ -164,15 +164,27 @@ sub process_genome {
         -PARAMS => [$dbname] );
 
   my $scientific_name = $meta->single_value_by_key('species.scientific_name');
+  my $url_name        = $meta->single_value_by_key('species.url_name');
+  my $display_name    = $meta->single_value_by_key('species.display_name');
   my $strain          = $meta->single_value_by_key('species.strain');
   my $serotype        = $meta->single_value_by_key('species.serotype');
   my $name            = $meta->get_display_name();
   my $taxonomy_id     = $meta->get_taxonomy_id();
   my $species_taxonomy_id =
-    $meta->single_value_by_key('species.species_taxonomy_id') || $taxonomy_id;
-  my $assembly_accession = $meta->single_value_by_key('assembly.accession');
+    $meta->list_value_by_key('species.species_taxonomy_id') || $taxonomy_id;
+  my ($assembly_accession)= @{$meta->list_value_by_key('assembly.accession')};
   my $assembly_name      = $meta->single_value_by_key('assembly.name');
-  my $genebuild          = $meta->single_value_by_key('genebuild.start_date');
+  my $assembly_default   = $meta->single_value_by_key('assembly.default');
+  my ($assembly_ucsc)    = @{$meta->list_value_by_key('assembly.ucsc_alias')};
+  my ($genebuild)        = @{$meta->list_value_by_key('genebuild.start_date')};
+  my ($genebuild_version)= @{$meta->list_value_by_key('genebuild.version')};
+  my ($genebuild_upd)    = @{$meta->list_value_by_key('genebuild.last_geneset_update')};
+  
+  my $gb_string = $genebuild_version;
+  if(!defined $gb_string) {
+  	$gb_string = $genebuild;
+  	$gb_string .= "/".$genebuild_upd if defined $genebuild_upd;
+  }
 
   # get highest assembly level
   my ($assembly_level) =
@@ -196,12 +208,14 @@ sub process_genome {
                       -strain              => $strain,
                       -serotype            => $serotype,
                       -display_name        => $name,
-                      -display_name        => $scientific_name,
+                      -url_name            => $url_name,
                       -taxonomy_id         => $taxonomy_id,
                       -species_taxonomy_id => $species_taxonomy_id,
                       -assembly_accession  => $assembly_accession,
                       -assembly_name       => $assembly_name,
-                      -genebuild           => $genebuild,
+                      -assembly_default    => $assembly_default,
+                      -assembly_ucsc       => $assembly_ucsc,
+                      -genebuild           => $gb_string,
                       -assembly_level      => $assembly_level );
 
   # get list of seq names

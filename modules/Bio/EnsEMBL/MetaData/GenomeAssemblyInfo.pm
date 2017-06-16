@@ -83,9 +83,11 @@ sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
 
-  ( $self->{assembly_name},  $self->{assembly_accession},
-    $self->{assembly_level}, $self->{base_count} )
+  ( $self->{assembly_name},    $self->{assembly_accession},
+    $self->{assembly_default}, $self->{assembly_ucsc},
+    $self->{assembly_level},   $self->{base_count} )
     = rearrange( [ 'ASSEMBLY_NAME',   'ASSEMBLY_ACCESSION',
+    	           'ASSEMBLY_DEFAULT', 'ASSEMBLY_UCSC',
                    'ASSEMBLY_LEVEL',  'BASE_COUNT' ],
                  @args );
 
@@ -106,6 +108,36 @@ sub assembly_name {
   my ( $self, $assembly_name ) = @_;
   $self->{assembly_name} = $assembly_name if ( defined $assembly_name );
   return $self->{assembly_name};
+}
+
+=head2 assembly_default
+  Arg        : (optional) assembly_default to set
+  Description: Gets/sets default (compute safe) of assembly
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub assembly_default {
+  my ( $self, $assembly_default ) = @_;
+  $self->{assembly_default} = $assembly_default if ( defined $assembly_default );
+  return $self->{assembly_default};
+}
+
+=head2 assembly_ucsc
+  Arg        : (optional) assembly_ucsc to set
+  Description: Gets/sets UCSC name of assembly
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub assembly_ucsc {
+  my ( $self, $assembly_ucsc ) = @_;
+  $self->{assembly_ucsc} = $assembly_ucsc if ( defined $assembly_ucsc );
+  return $self->{assembly_ucsc};
 }
 
 =head2 assembly_accession
