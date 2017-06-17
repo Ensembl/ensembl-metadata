@@ -49,9 +49,9 @@ use POSIX qw(strftime);
 sub resource_classes {
   my ($self) = @_;
   return {
-     'default' => { 'LSF' => '-q production-rh6' },
+     'default' => { 'LSF' => '-q production-rh7' },
      'himem' =>
-       { 'LSF' => '-q production-rh6 -M  16000 -R "rusage[mem=16000]"' }
+       { 'LSF' => '-q production-rh7 -M  16000 -R "rusage[mem=16000]"' }
   };
 }
 
@@ -116,7 +116,7 @@ sub pipeline_analyses {
           -meadow_type   => 'LOCAL', }, {
           -logic_name => 'ProcessGenome',
           -module => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessGenome',
-          -hive_capacity => 50,
+          -hive_capacity => 25,
           -wait_for      => ['GenomeFactory'],
           -parameters    => {
                            info_user    => $self->o('info_user'),
@@ -132,7 +132,7 @@ sub pipeline_analyses {
                            variation    => $self->o('variation') } }, {
           -logic_name => 'ProcessCompara',
           -module => 'Bio::EnsEMBL::MetaData::Pipeline::ProcessCompara',
-          -hive_capacity => 50,
+          -hive_capacity => 25,
           -wait_for      => ['ProcessGenome'],
           -rc_name       => 'himem',
           -parameters    => {
