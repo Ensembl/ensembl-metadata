@@ -21,6 +21,7 @@ use Bio::EnsEMBL::MetaData::GenomeInfo;
 
 my %oargs = ( '-NAME'                => "test",
               '-DISPLAY_NAME'        => "Testus testa",
+              '-URL_NAME'            => "Testus_testa",
               '-TAXONOMY_ID'         => 999,
               '-SPECIES_TAXONOMY_ID' => 99,
               '-STRAIN'              => 'stress',
@@ -30,6 +31,7 @@ my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
 $org->aliases( ["alias"] );
 
 my %aargs = ( '-ASSEMBLY_NAME'      => "v2.0",
+              '-ASSEMBLY_DEFAULT'   => "v2_0",
               '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
               '-ASSEMBLY_LEVEL'     => 'chromosome',
               '-BASE_COUNT'         => 99);

@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2017] EMBL-European Bioinformatics Institute
+Copyright [1999-2017 EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -90,11 +90,11 @@ sub store {
   else {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
-        q/insert into organism(name,display_name,scientific_name,strain,serotype,taxonomy_id,
+        q/insert into organism(name,display_name,scientific_name,url_name,strain,serotype,taxonomy_id,
 species_taxonomy_id,is_reference)
-		values(?,?,?,?,?,?,?,?)/,
+		values(?,?,?,?,?,?,?,?,?)/,
       -PARAMS => [ $organism->name(),        $organism->display_name(),
-                   $organism->scientific_name(),
+                   $organism->scientific_name(), $organism->url_name(),
                    $organism->strain(),      $organism->serotype(),
                    $organism->taxonomy_id(), $organism->species_taxonomy_id(),
                    $organism->is_reference() ],
@@ -127,15 +127,15 @@ sub update {
 
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update organism set name=?,display_name=?,scientific_name=?,
+q/update organism set name=?,display_name=?,scientific_name=?, url_name=?,
 strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
 is_reference=? where organism_id=?/,
     -PARAMS => [ $organism->name(),         $organism->display_name(),
-                 $organism->scientific_name(),
+                 $organism->scientific_name(), $organism->url_name(),
                  $organism->strain(),       $organism->serotype(),
                  $organism->taxonomy_id(),  $organism->species_taxonomy_id(),
                  $organism->is_reference(), $organism->dbID() ] );
-
+ 
   $self->_store_aliases($organism);
   $self->_store_publications($organism);
   return;
@@ -241,6 +241,21 @@ sub fetch_by_scientific_name {
   );
 }
 
+=head2 fetch_by_url_name
+  Arg	     : Name of organism
+  Description: Fetch info for specified organism
+  Returntype : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_by_url_name {
+  my ( $self, $url_name, $keen ) = @_;
+  return $self->_first_element(
+     $self->_fetch_generic_with_args( { 'url_name', $url_name }, $keen )
+  );
+}
 
 =head2 fetch_by_name
   Arg	     : Display name of organism 
@@ -274,6 +289,9 @@ sub fetch_by_any_name {
   }
   if ( !defined $dba ) {
     $dba = $self->fetch_by_scientific_name( $name, $keen );
+  }
+  if ( !defined $dba ) {
+    $dba = $self->fetch_by_url_name( $name, $keen );
   }
   if ( !defined $dba ) {
     $dba = $self->fetch_by_alias( $name, $keen );
@@ -473,7 +491,7 @@ sub taxonomy_adaptor {
 # internal implementation
 
 my $base_organism_fetch_sql =
-q/select organism_id as dbID, name, display_name, scientific_name, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
+q/select organism_id as dbID, name, display_name, scientific_name, url_name, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
 
 sub _get_base_sql {
   return $base_organism_fetch_sql;

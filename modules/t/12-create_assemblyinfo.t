@@ -23,6 +23,8 @@ use Data::Dumper;
 
 
 my %args = ( '-ASSEMBLY_NAME'      => "v2.0",
+             '-ASSEMBLY_DEFAULT'   => "v2_0",
+             '-ASSEMBLY_USCS'      => "wotevs",
 			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
 			 '-ASSEMBLY_LEVEL'     => 'chromosome',
 			 '-BASE_COUNT'         => 99 );
@@ -34,6 +36,8 @@ $assembly->sequences(
 
 ok( defined $assembly, "Assembly object exists" );
 ok( $assembly->assembly_name()            eq $args{-ASSEMBLY_NAME} );
+ok( $assembly->assembly_default()         eq $args{-ASSEMBLY_DEFAULT} );
+ok( $assembly->assembly_ucsc()            eq $args{-ASSEMBLY_UCSC} );
 ok( $assembly->assembly_accession()       eq $args{-ASSEMBLY_ACCESSION} );
 ok( $assembly->assembly_level()           eq $args{-ASSEMBLY_LEVEL} );
 ok( $assembly->base_count()               eq $args{-BASE_COUNT} );
