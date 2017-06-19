@@ -114,6 +114,8 @@ sub run {
                -FORCE_UPDATE => $upd,
                -VARIATION    => $self->param('variation') || 1 };
 
+  $self->hive_dbc()->disconnect_if_idle();
+
   my $processor =
     Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
 
@@ -129,6 +131,9 @@ sub run {
     $log->info( "Storing " . $md->name() );
     $gdba->store($md);
   }
+
+  $dba->dbc()->disconnect_if_idle();
+  $gdba->dbc()->disconnect_if_idle();
 
   $log->info("Completed processing $species");
   return;
