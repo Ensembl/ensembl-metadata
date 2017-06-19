@@ -275,6 +275,19 @@ sub display_name {
   return $self->organism()->display_name($name);
 }
 
+=head2 url_name
+  Description: Gets name for use in URL
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub url_name {
+  my ( $self, $name ) = @_;
+  return $self->organism()->url_name($name);
+}
+
 =head2 scientific_name
   Description: Gets readable name
   Returntype : string
