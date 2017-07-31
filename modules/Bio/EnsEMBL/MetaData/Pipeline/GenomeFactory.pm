@@ -42,7 +42,7 @@ use strict;
 
 package Bio::EnsEMBL::MetaData::Pipeline::GenomeFactory;
 
-use base qw/Bio::EnsEMBL::Production::Pipeline::BaseSpeciesFactory/;
+use base qw/Bio::EnsEMBL::Production::Pipeline::Common::SpeciesFactory/;
 
 use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
