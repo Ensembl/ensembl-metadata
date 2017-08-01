@@ -22,6 +22,8 @@ use Bio::EnsEMBL::MetaData::EventInfo;
 
 my %oargs = ( '-NAME'                => "test",
               '-DISPLAY_NAME'        => "Testus testa",
+              '-SCIENTIFIC_NAME'     => "Testus testa",
+              '-URL_NAME'            => "Testus_testa",
               '-TAXONOMY_ID'         => 999,
               '-SPECIES_TAXONOMY_ID' => 99,
               '-STRAIN'              => 'stress',
