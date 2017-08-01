@@ -397,7 +397,8 @@ sub update_booleans {
     -SQL =>
 q/update genome g join genome_compara_analysis gc using (genome_id) 
 	  join compara_analysis c using (compara_analysis_id) 
-	  set g.has_peptide_compara=1 where c.division<>'EnsemblPan' and
+          join division d on (c.division_id=d.division_id)
+	  set g.has_peptide_compara=1 where d.name<>'EnsemblPan' and
 	  c.method='PROTEIN_TREES'/
   );
 
@@ -406,7 +407,8 @@ q/update genome g join genome_compara_analysis gc using (genome_id)
     -SQL =>
 q/update genome g join genome_compara_analysis gc using (genome_id) 
 	  join compara_analysis c using (compara_analysis_id) 
-	  set g.has_pan_compara=1 where c.division='EnsemblPan' and
+          join division d on (c.division_id=d.division_id)
+	  set g.has_pan_compara=1 where d.name='EnsemblPan' and
 	  c.method='PROTEIN_TREES'/
   );
 
