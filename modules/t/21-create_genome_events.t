@@ -31,6 +31,7 @@ my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
 $org->aliases( ["alias"] );
 
 my %aargs = ( '-ASSEMBLY_NAME'      => "v2.0",
+              '-ASSEMBLY_DEFAULT'   => "v2.0",    
               '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
               '-ASSEMBLY_LEVEL'     => 'chromosome',
               '-BASE_COUNT'         => 99 );
