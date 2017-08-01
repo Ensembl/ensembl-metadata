@@ -164,14 +164,15 @@ sub process_genome {
         -PARAMS => [$dbname] );
 
   my $scientific_name = $meta->single_value_by_key('species.scientific_name');
-  my $url_name        = $meta->single_value_by_key('species.url_name');
+  my $url_name        = $meta->single_value_by_key('species.url');
   my $display_name    = $meta->single_value_by_key('species.display_name');
   my $strain          = $meta->single_value_by_key('species.strain');
   my $serotype        = $meta->single_value_by_key('species.serotype');
   my $name            = $meta->get_display_name();
   my $taxonomy_id     = $meta->get_taxonomy_id();
-  my $species_taxonomy_id =
-    $meta->list_value_by_key('species.species_taxonomy_id') || $taxonomy_id;
+  my ($species_taxonomy_id) =
+    @{$meta->list_value_by_key('species.species_taxonomy_id')};
+  $species_taxonomy_id ||= $taxonomy_id;
   my ($assembly_accession)= @{$meta->list_value_by_key('assembly.accession')};
   my $assembly_name      = $meta->single_value_by_key('assembly.name');
   my $assembly_default   = $meta->single_value_by_key('assembly.default');
@@ -207,7 +208,8 @@ sub process_genome {
                       -data_release        => $self->{data_release},
                       -strain              => $strain,
                       -serotype            => $serotype,
-                      -display_name        => $name,
+                      -display_name        => $display_name,
+                      -scientific_name     => $scientific_name,
                       -url_name            => $url_name,
                       -taxonomy_id         => $taxonomy_id,
                       -species_taxonomy_id => $species_taxonomy_id,
