@@ -127,13 +127,16 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 sub new {
   my ( $class, @args ) = @_;
   my $self = $class->SUPER::new(@args);
-  my ( $name,                $display_name,  $scientific_name, $url_name,
-       $dbname,              $species_id,    $taxonomy_id,
-       $species_taxonomy_id, $assembly_name, $assembly_id,
+  my ( $name,                $display_name,  
+       $scientific_name, $url_name, $dbname,              
+       $species_id,    $taxonomy_id,
+       $species_taxonomy_id, $assembly_name, 
+       $assembly_id,
        $assembly_default,    $assembly_ucsc,
        $assembly_level,      $strain,        $serotype,
        $is_reference);
-  ( $name,                $display_name,      $scientific_name, $url_name,
+  ( $name,                $display_name,      
+    $scientific_name, $url_name,
     $dbname,              $species_id,        $taxonomy_id,
     $species_taxonomy_id, $assembly_name,     $assembly_id,
     $assembly_default,    $assembly_ucsc,
