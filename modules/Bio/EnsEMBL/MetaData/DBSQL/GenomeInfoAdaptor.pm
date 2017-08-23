@@ -726,12 +726,18 @@ sub fetch_all_by_assembly_set_chain {
 
 sub fetch_all_by_division {
   my ( $self, $division, $keen ) = @_;
-  my $sql =
-    $self->_get_base_sql() .
-    ' where division.name=? or division.short_name=?';
-  return
-    $self->_fetch_generic( $sql, [ $division, $division ],
-                           $self->_get_obj_class(), $keen );
+  my ($sql, $params) =
+    $self->_args_to_sql($self->_get_base_sql(),{});
+  if($sql !~ m/where/) {
+    $sql .=
+      ' where division.name=? or division.short_name=?';
+  } else {
+    $sql .=
+      ' and (division.name=? or division.short_name=?)';
+  }
+ return
+   $self->_fetch_generic( $sql, [@{$params}, $division, $division ],
+                          $self->_get_obj_class(), $keen );
 }
 
 =head2 fetch_by_display_name
