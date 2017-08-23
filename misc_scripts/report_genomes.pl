@@ -74,8 +74,9 @@ my $report = {
 	      ensembl_version=> $gdba->data_release()->ensembl_version()
 };
 
-
+$logger->info("Getting genomes from current release");
 my $genomes = get_genomes($gdba, $opts->{division});
+$logger->info("Found ".scalar(keys %$genomes)." genomes from current release");
 # decrement releases
 if ( defined $opts->{eg} || defined $opts->{division} ) {
   my $prev_eg = $gdba->data_release()->ensembl_genomes_version()-1;
@@ -86,7 +87,9 @@ if ( defined $opts->{eg} || defined $opts->{division} ) {
   $logger->info("Switching release to Ensembl $prev_ens");
   $gdba->set_ensembl_release($prev_ens);
 }
+$logger->info("Getting genomes from previous release");
 my $prev_genomes = get_genomes($gdba, $opts->{division});
+$logger->info("Found ".scalar(keys %$prev_genomes)." genomes from previous release");
 
 # new genomes
 my $new_genomes = [];
@@ -102,6 +105,7 @@ my $renamed_genomes = [];
 my $removed_genomes = [];
 my $dbs = {};
 my $species = {};
+$logger->info("Comparing releases");
 while (my ($set_chain, $genome) = each %{$genomes}) {  
   $species->{$genome->{species_taxonomy_id}}++;
   $dbs->{$genome->{database}}++;
@@ -192,7 +196,7 @@ my $summary_file = "summary.txt";
 $logger->info("Writing summary to $summary_file");
 my $news;
 my $division = $opts->{division};
-$division =~ s/Ensembl/Ensembl /;
+$division =~ s/^Ensembl/Ensembl /;
 my $division2 = lc($division);
 $division2 =~ s/Ensembl //;
 my $url = "ftp://ftp.ensemblgenomes.org/pub/current/$division2/";
@@ -204,7 +208,7 @@ if($opts->{division} eq 'EnsemblBacteria') {
   $report->{bacteria} = $gdba->dbc()->sql_helper()->execute_single_result(-SQL=>$taxon_sql, -PARAMS=>['Bacteria',$gdba->data_release()->dbID()]);
   $report->{archaea} = $gdba->dbc()->sql_helper()->execute_single_result(-SQL=>$taxon_sql, -PARAMS=>['Archaea',$gdba->data_release()->dbID()]);
   $news = <<"END_B";
-Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{bacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 
 Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from the INSDC archives.
 END_B
