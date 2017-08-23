@@ -69,6 +69,12 @@ if ( defined $opts->{eg} || defined $opts->{division} ) {
   $gdba->set_ensembl_genomes_release();
 }
 
+my $report = {
+	      eg_version=> $gdba->data_release()->ensembl_genomes_version(),
+	      ensembl_version=> $gdba->data_release()->ensembl_version()
+};
+
+
 my $genomes = get_genomes($gdba, $opts->{division});
 # decrement releases
 if ( defined $opts->{eg} || defined $opts->{division} ) {
@@ -94,27 +100,41 @@ my $new_annotations = [];
 my $renamed_genomes = [];
 # removed genomes
 my $removed_genomes = [];
-while (my ($set_chain, $genome) = each %{$genomes->{genomes}}) {
-    my $prev_genome = $prev_genomes->{genomes}->{$set_chain};
-    if (!defined $prev_genome) {
-	push @$new_genomes, $genome;
-    } else {
-      if ($genome->{name} ne $prev_genome->{name}) {
-	push @$renamed_genomes, {new => $genome, old => $prev_genome};
-      }
-      if ($genome->{assembly} ne $prev_genome->{assembly}) {
-	push @$new_assemblies, {new => $genome, old => $prev_genome};
-      } elsif ($genome->{genebuild} ne $prev_genome->{genebuild}) {
-	push @$new_annotations, {new => $genome, old => $prev_genome};
-      }
+my $dbs = {};
+my $species = {};
+while (my ($set_chain, $genome) = each %{$genomes}) {  
+  $species->{$genome->{species_taxonomy_id}}++;
+  $dbs->{$genome->{database}}++;
+  $report->{protein_coding} += $genome->{protein_coding};
+  $report->{genomes}++;
+  my $prev_genome = $prev_genomes->{$set_chain};
+  if (!defined $prev_genome) {
+    push @$new_genomes, $genome;
+  } else {
+    if ($genome->{name} ne $prev_genome->{name}) {
+      push @$renamed_genomes, {new => $genome, old => $prev_genome};
     }
+    if ($genome->{assembly} ne $prev_genome->{assembly}) {
+      push @$new_assemblies, {new => $genome, old => $prev_genome};
+    } elsif ($genome->{genebuild} ne $prev_genome->{genebuild}) {
+      push @$new_annotations, {new => $genome, old => $prev_genome};
+    }
+  }
 }
-
+ 
 while (my ($set_chain, $genome) = each %{$prev_genomes->{genomes}}) {
     if (!defined $genomes->{genomes}->{$set_chain}) {
 	push @$removed_genomes, $genome;
     }
-}
+  } 
+$report->{databases} = scalar keys %$dbs;
+$report->{species} = scalar keys %$species;
+$report->{new_genomes}     = scalar @$new_genomes;
+$report->{new_assemblies}  = scalar @$new_assemblies;
+$report->{new_annotations} = scalar @$new_annotations;
+$report->{renamed_genomes} = scalar @$renamed_genomes;
+$report->{removed_genomes} = scalar @$removed_genomes; 
+
 
 # print to file
 # new genomes
@@ -167,13 +187,7 @@ write_to_file(
         return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
     });
 
-my $report = $genomes->{report};
-$report->{new_genomes}     = scalar @$new_genomes;
-$report->{new_assemblies}  = scalar @$new_assemblies;
-$report->{new_annotations} = scalar @$new_annotations;
-$report->{renamed_genomes} = scalar @$renamed_genomes;
-$report->{removed_genomes} = scalar @$removed_genomes;
-exit;
+
 my $summary_file = "summary.txt";
 $logger->info("Writing summary to $summary_file");
 my $news;
@@ -184,8 +198,13 @@ $division2 =~ s/Ensembl //;
 my $url = "ftp://ftp.ensemblgenomes.org/pub/current/$division2/";
 
 if($opts->{division} eq 'EnsemblBacteria') {
-    $news = <<"END_B";
-Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes loaded from $report->{seq_regions} INSDC entries. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+
+  # get counts of bacteria and archaea
+  my $taxon_sql = q/select count(*) from ncbi_taxonomy.ncbi_taxa_name n join ncbi_taxonomy.ncbi_taxa_node p on (n.taxon_id=p.taxon_id) join ncbi_taxonomy.ncbi_taxa_node c on (c.left_index between p.left_index and p.right_index) join organism o on (o.taxonomy_id=c.taxon_id) join genome using (organism_id) where n.name=? and n.name_class='scientific name' and data_release_id=?/;
+  $report->{bacteria} = $gdba->dbc()->sql_helper()->execute_single_result(-SQL=>$taxon_sql, -PARAMS=>['Bacteria',$gdba->data_release()->dbID()]);
+  $report->{archaea} = $gdba->dbc()->sql_helper()->execute_single_result(-SQL=>$taxon_sql, -PARAMS=>['Archaea',$gdba->data_release()->dbID()]);
+  $news = <<"END_B";
+Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 
 Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from the INSDC archives.
 END_B
@@ -193,7 +212,7 @@ END_B
 } else {
 
     $news = <<"END";
-Release $report->{eg_version} of $division has been loaded into $report->{databases} Ensembl v$report->{ens_version} databases.  The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $report->{eg_version} of $division has been loaded into $report->{databases} Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 END
 
 }
@@ -216,12 +235,13 @@ sub write_to_file {
 sub get_genomes {
   my ($gdba, $division) = @_;
   my $genome_details = {};
-  my $genomes;
+  my $genomes = {};
   if(defined $division) { 
     $genomes = $gdba->fetch_all_by_division($division);
   } else {
     $genomes = $gdba->fetch_all();
   }
+  my $dbs = {};
   for my $genome (@{$genomes}) {
     # name
     my $gd = {
@@ -230,8 +250,9 @@ sub get_genomes {
 	      genebuild=>$genome->genebuild(),
 	      database=>$genome->dbname(),
 	      species_id=>$genome->species_id(),
+	      species_taxonomy_id=>($genome->organism()->species_taxonomy_id() || $genome->organism()->taxonomy_id()),
+	      protein_coding=>$genome->annotations()->{nProteinCoding}
 	     };
-
     my $key;
     if($genome->dbname() =~ m/collection_core/) {
       ($key) = split(/\./, $genome->assembly_accession());
@@ -240,73 +261,5 @@ sub get_genomes {
     }
     $genome_details->{$key} = $gd;    
   }
-  return {	  
-	  genomes=>$genome_details
-	 };
+  return $genome_details;
 }
-
-sub genome_details {
-    my ($dbc,$division)   = @_;
-    my $genomes = {};
-    my $report  = {
-          'renamed_genomes' => 0,
-          'new_annotations' => 0,
-          'new_genomes' => 0,
-          'removed_genomes' => 0,
-          'new_assemblies' => 0 
-    };
-    $logger->info("Processing ".$dbc->dbname());
-    my $dbs = {};
-    $dbc->sql_helper()->execute_no_return(
-        -SQL => qq/
-	 select dbname,
-   species_id,
-   ifnull(assembly_id,assembly_name),
-   species,
-   name,
-   genebuild,
-  genome_annotation.count
-from genome join genome_annotation using (genome_id) 
-where genome_annotation.type='nProteinCoding' and division=?/,
-      -CALLBACK => sub {
-          my ($database, $species_id, $assembly, $name, $full_name, $genebuild,$cnt) = @{$_[0]};
-          $report->{protein_coding} += $cnt;
-          $report->{genomes}++;
-          $genebuild =~ s/-EnsemblBacteria/-ENA/;
-          my ($set_chain, $version) = split ('\\.', $assembly);
-          $genomes->{$set_chain} = {
-              set_chain         => $set_chain,
-              version           => $version,
-              assembly          => $assembly,
-              name              => $name,
-              full_name         => $full_name,
-              genebuild         => $genebuild,
-              database          => $database,
-              species_id        => $species_id};
-          if (!defined $report->{eg_version}) {
-              $database =~ m/.*_core_([0-9]+)_([0-9]+)_[0-9]+/;
-              $report->{eg_version}  = $1;
-              $report->{ens_version} = $2;
-          }
-          $dbs->{$database}+=1;
-          return;            
-      },
-      -PARAMS => [$division]);
-
-    if($division eq 'EnsemblBacteria') {
-    for my $db_name (keys %$dbs) {
-        $logger->info("Processing ".$db_name);
-        # count eubacteria species.classification Bacteria
-        $report->{eubacteria} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.meta where meta_key='species.classification' and meta_value='Bacteria'");
-        # count archaea species.classification Archaea
-        $report->{archaea} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.meta where meta_key='species.classification' and meta_value='Archaea'");
-        # count seq_regions for ENA
-        $report->{seq_regions} += $dbc->sql_helper()->execute_single_result("select count(*) from $db_name.seq_region join $db_name.seq_region_attrib using (seq_region_id) where value='ENA'");
-    }
-    }
-    
-    $report->{species} =  $dbc->sql_helper()->execute_single_result(-SQL=>'select count(distinct(species_taxonomy_id)) from genome where division=?', -PARAMS=>[$division]);
-    
-  $report->{databases} = scalar(keys %$dbs);
-  return {genomes => $genomes, report => $report};
-} ## end sub genome_details
