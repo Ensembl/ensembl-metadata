@@ -398,6 +398,10 @@ sub process_compara {
 
     $division = $DIVISION_NAMES->{$division} || $division;
 
+    if($division =~ m/ensembl_compara_[0-9]+/) {
+      $division = 'Ensembl';
+    }
+
     my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
     for my $method (
