@@ -73,11 +73,11 @@ sub _write_metadata_to_file {
   my ($self, $md, $fh) = @_; 
   print $fh join(
 				"\t",
-				($md->name(),
-				 $md->species(),
+				($md->display_name(),
+				 $md->name(),
 				 $md->division(),
 				 $md->taxonomy_id(),
-				 $md->assembly_id()   || '',
+				 $md->assembly_accession()   || '',
 				 $md->assembly_name() || '',
 				 $md->genebuild()     || '',
 				 $md->annotations()->{nProteinCoding},

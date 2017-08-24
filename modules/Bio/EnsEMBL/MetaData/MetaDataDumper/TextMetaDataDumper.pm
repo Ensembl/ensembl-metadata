@@ -75,12 +75,12 @@ sub start {
 sub _write_metadata_to_file {
   my ($self, $md, $fh) = @_;
   print $fh join("\t",
-				 ($md->name(),
-				  $md->species(),
+				 ($md->display_name(),
+				  $md->name(),
 				  $md->division(),
 				  $md->taxonomy_id(),
 				  $md->assembly_name() || '',
-				  $md->assembly_id()   || '',
+				  $md->assembly_accession()   || '',
 				  $md->genebuild()     || '',
 				  $self->yesno($md->has_variations()),
 				  $self->yesno($md->has_pan_compara()),
