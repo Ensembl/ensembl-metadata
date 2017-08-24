@@ -90,6 +90,8 @@ else {
 }
 my $logger = get_logger();
 
+$opts->{dbname} ||= 'ensembl_metadata';
+
 my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 print Dumper($args);
 my $gdba =
