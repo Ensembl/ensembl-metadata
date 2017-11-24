@@ -29,12 +29,13 @@ Bio::EnsEMBL::Registry->load_all("configuration_file");
 my $gdba = Bio::EnsEMBL::Registry->get_DBAdaptor("multi", "metadata")->get_GenomeInfoAdaptor();
 
 # building your own
-my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
--USER=>'anonymous',
--HOST=>'ensembldb.ensembl.org',
--PORT=>'5306',
--DBNAME=>'ensembl_metadata'
+my $dba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
+	-USER=>'anonymous',
+	-HOST=>'ensembldb.ensembl.org',
+	-PORT=>'5306',
+	-DBNAME=>'ensembl_metadata'
 );
+my $gdba = $dba->get_GenomeInfoAdaptor();
 ```
 
 Information about genomes is encapsulated in GenomeInfo objects, which can be found in a number of ways from the adaptor:
