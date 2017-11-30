@@ -61,16 +61,13 @@ sub run {
   $log->info("Connecting to info database");
   my $dba =
     Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
-                                                     -USER =>,
-                                                     $self->param('info_user'),
-                                                     -PASS =>,
-                                                     $self->param('info_pass'),
-                                                     -HOST =>,
-                                                     $self->param('info_host'),
-                                                     -PORT =>,
-                                                     $self->param('info_port'),
-                                                     -DBNAME =>,
-                                                     $self->param('info_dbname')
+                                                     -USER => $self->param('info_user'),
+                                                     -PASS => $self->param('info_pass'),
+                                                     -HOST => $self->param('info_host'),
+                                                     -PORT => $self->param('info_port'),
+                                                     -DBNAME => $self->param('info_dbname'),
+						     -GROUP => 'metadata',
+						     -SPECIES=> 'multi'
     );
 
   my $rdba         = $dba->get_DataReleaseInfoAdaptor();
