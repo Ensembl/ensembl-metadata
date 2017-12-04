@@ -114,7 +114,8 @@ sub run {
                -FORCE_UPDATE => $upd,
                -VARIATION    => $self->param('variation') || 1 };
 
-  $self->hive_dbc()->disconnect_if_idle();
+  $log->debug("Disconnecting from hive");
+  $self->hive_dbc()->disconnect_if_idle(1);
 
   my $processor =
     Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
