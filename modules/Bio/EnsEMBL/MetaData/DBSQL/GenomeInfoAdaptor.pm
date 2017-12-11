@@ -1182,7 +1182,6 @@ sub _fetch_comparas {
 
 sub _fetch_children {
   my ( $self, $genome ) = @_;
-  print " HHHHHAAA \n ";
   $self->_fetch_databases($genome);
   $self->_fetch_organism($genome);
   $self->_fetch_assembly($genome);
