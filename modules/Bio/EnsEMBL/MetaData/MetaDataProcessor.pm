@@ -105,7 +105,7 @@ sub process_metadata {
   for my $dba ( grep { $_->dbc()->dbname() !~ /ancestral/ } @{$dbas} ) {
     my $type;
     my $species = $dba->species();
-    for my $t (qw(core otherfeatures variation funcgen)) {
+    for my $t (qw(core otherfeatures rnaseq cdna variation funcgen)) {
       if ( $dba->dbc()->dbname() =~ m/$t/ ) {
         $type = $t;
         last;

@@ -71,7 +71,7 @@ sub run {
   return if $species eq 'Ancestral sequences';
 
   $log->info("Finding DBAdaptors for $species");
-  for my $type (qw/core variation otherfeatures funcgen/) {
+  for my $type (qw/core variation otherfeatures rnaseq cdna funcgen/) {
     $dbas->{$type} = $self->get_DBAdaptor($type);
   }
   $log->info("Connecting to info database");
