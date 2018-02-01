@@ -107,7 +107,7 @@ CREATE TABLE `data_release` (
   `ensembl_version` int(10) unsigned NOT NULL,
   `ensembl_genomes_version` int(10) unsigned DEFAULT NULL,
   `release_date` date NOT NULL,
-  `is_current` tinyint(4) DEFAULT NULL,
+  `is_current` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`data_release_id`),
   UNIQUE KEY `ensembl_version` (`ensembl_version`,`ensembl_genomes_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

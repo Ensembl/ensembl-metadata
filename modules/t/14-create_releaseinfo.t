@@ -22,12 +22,14 @@ use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 my $release =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION         => 99,
                                                 -ENSEMBL_GENOMES_VERSION => 66,
-                                                -RELEASE_DATE => '2015-09-29' );
+                                                -RELEASE_DATE => '2015-09-29',
+                                                -IS_CURRENT => 1);
 
 ok( defined $release, "Release object exists" );
 ok( $release->ensembl_version()         eq 99,           "e! Version correct" );
 ok( $release->ensembl_genomes_version() eq 66,           "EG Version correct" );
 ok( $release->release_date()            eq '2015-09-29', "Date correct" );
+ok( $release->is_current()              eq 1, "Current flag correct" );
 
 my $release2 =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION => 99,
@@ -37,6 +39,7 @@ ok( defined $release2,                             "Release object exists" );
 ok( defined $release2->ensembl_version(),          "Default version exists" );
 ok( !defined $release2->ensembl_genomes_version(), "No EG version" );
 ok( defined $release2->release_date(),             "Date exists" );
+ok( defined $release2->is_current(),              "Current flag exist" );
 
 my $release3 =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION => 98,

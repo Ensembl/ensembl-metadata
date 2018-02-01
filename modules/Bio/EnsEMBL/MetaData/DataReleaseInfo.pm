@@ -33,7 +33,8 @@ Bio::EnsEMBL::MetaData::DataReleaseInfo
 		Bio::EnsEMBL::MetaData::GenomeDataReleaseInfo->new(
 								   -ENSEMBL_VERSION=>83,
 								   -EG_VERSION=>30,
-								   -DATE=>'2015-12-07');
+								   -DATE=>'2015-12-07',
+                   -IS_CURRENT=>1);
 
 =head1 DESCRIPTION
 
@@ -68,6 +69,8 @@ use Bio::EnsEMBL::ApiVersion;
        int - optional Ensembl Genomes version
   Arg [-RELEASE_DATE] : 
        string - date of the release as YYYY-MM-DD
+  Arg [-IS_CURRENT] :
+       int - optional current release
 
   Example    : $info = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(...);
   Description: Creates a new release info object
@@ -80,8 +83,8 @@ use Bio::EnsEMBL::ApiVersion;
 sub new {
 	my ( $class, @args ) = @_;
 	my $self = $class->SUPER::new(@args);
-	( $self->{ensembl_version}, $self->{ensembl_genomes_version}, $self->{release_date} ) =
-	  rearrange( [ 'ENSEMBL_VERSION', 'ENSEMBL_GENOMES_VERSION', 'RELEASE_DATE' ], @args );
+	( $self->{ensembl_version}, $self->{ensembl_genomes_version}, $self->{release_date} ,$self->{is_current} ) =
+	  rearrange( [ 'ENSEMBL_VERSION', 'ENSEMBL_GENOMES_VERSION', 'RELEASE_DATE', 'IS_CURRENT' ], @args );
 	$self->{ensembl_version} ||= software_version();
 	$self->{release_date} ||= strftime '%Y-%m-%d', localtime;
 	return $self;
@@ -192,7 +195,8 @@ sub to_hash {
 	my ($in) = @_;
 	return { ensembl_version => $in->ensembl_version(),
 			 ensembl_genomes_version      => $in->ensembl_genomes_version(),
-			 release_date            => $in->release_date(), };
+			 release_date            => $in->release_date(),
+       is_current              => $in->is_current() };
 }
 
 =head2 to_hash

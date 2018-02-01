@@ -101,12 +101,24 @@ sub store {
     $self->update($data_release);
   }
   else {
+    #Remove current release before the add the new release
+    if ($data_release->is_current()){
+      my $current_release;
+      if ( defined $data_release->ensembl_genomes_version() ) {
+        $current_release = $self->fetch_current_ensembl_genomes_release();
+      }
+      else {
+        $current_release = $self->fetch_current_ensembl_release();
+      }
+      $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
+    }
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
 q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,is_current) values (?,?,?,?)/,
       -PARAMS => [ $data_release->ensembl_version(),
                    $data_release->ensembl_genomes_version(),
-                   $data_release->release_date() ],
+                   $data_release->release_date(),
+                   $data_release->is_current() ],
       -CALLBACK => sub {
         my ( $sth, $dbh, $rv ) = @_;
         $data_release->dbID( $dbh->{mysql_insertid} );
@@ -130,13 +142,24 @@ sub update {
   if ( !defined $data_release->dbID() ) {
     croak "Cannot update an object that has not already been stored";
   }
-
+  #Remove current release before the add the new release
+  if ($data_release->is_current()){
+    my $current_release;
+    if ( defined $data_release->ensembl_genomes_version() ) {
+      $current_release = $self->fetch_current_ensembl_genomes_release();
+    }
+    else {
+      $current_release = $self->fetch_current_ensembl_release();
+    }
+    $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
+  }
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
-q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=? where data_release_id=?/,
+q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=?, is_current=? where data_release_id=?/,
     -PARAMS => [ $data_release->ensembl_version(),
                  $data_release->ensembl_genomes_version(),
                  $data_release->release_date(),
+                 $data_release->is_current(),
                  $data_release->dbID() ] );
 
   $self->_store_databases($data_release);
@@ -189,7 +212,7 @@ sub fetch_current_ensembl_release {
     $self->_first_element(
     $self->_fetch_generic(
       _get_base_sql() .
-' where ensembl_genomes_version is null order by release_date desc limit 1' ) );
+' where ensembl_genomes_version is null and is_current=1 order by release_date desc limit 1' ) );
 }
 =head2 fetch_current_ensembl_genomes_release
   Description: Retrieve details for the current Ensembl Genomes release
@@ -204,7 +227,7 @@ sub fetch_current_ensembl_genomes_release {
     $self->_first_element(
     $self->_fetch_generic(
       _get_base_sql() .
-' where ensembl_genomes_version is not null order by release_date desc limit 1'
+' where ensembl_genomes_version is not null ans is_current=1 order by release_date desc limit 1'
     ) );
 }
 =head2 

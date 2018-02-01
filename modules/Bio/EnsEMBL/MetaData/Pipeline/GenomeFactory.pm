@@ -74,6 +74,7 @@ sub run {
   my $release      = $self->param('release');
   my $eg_release   = $self->param('eg_release');
   my $release_date = $self->param('release_date');
+  my $current_release   => $self->param('current_release');
   $log->info( "Storing release e$release" . ( ( defined $eg_release ) ?
                   "/EG$eg_release" : "" ) .
                 " $release_date" );
@@ -82,7 +83,8 @@ sub run {
     Bio::EnsEMBL::MetaData::DataReleaseInfo->new(
                                         -ENSEMBL_VERSION         => $release,
                                         -ENSEMBL_GENOMES_VERSION => $eg_release,
-                                        -RELEASE_DATE => $release_date )
+                                        -RELEASE_DATE => $release_date,
+                                        -IS_CURRENT => $current_release  )
   );
 
   $log->info("Completed release creation");

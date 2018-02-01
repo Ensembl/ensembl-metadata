@@ -92,6 +92,23 @@ sub clear_release_databases {
   return;
 }
 
+=head2 clear_current_release
+  Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Description: Clear current release flag for the supplied release
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_current_release {
+  my ( $self, $release ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/update data_release set is_current=? where data_release_id=?/,
+  -PARAMS=>[0,$release->dbID()]);
+  return;
+}
+
+
 
 =head2 store
   Arg        : Bio::EnsEMBL::MetaData::DatabaseInfo
