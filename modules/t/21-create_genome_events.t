@@ -43,7 +43,8 @@ $assembly->sequences( [ { name => "a", acc => "xyz.1" } ] );
 
 my %rargs = ( -ENSEMBL_VERSION         => 99,
               -ENSEMBL_GENOMES_VERSION => 66,
-              -RELEASE_DATE            => '2015-09-29' );
+              -RELEASE_DATE            => '2015-09-29',
+              -IS_CURRENT              => 1 );
 my $release = Bio::EnsEMBL::MetaData::DataReleaseInfo->new(%rargs);
 
 my %args = ( '-DBNAME'       => "test_species_core_27_80_1",

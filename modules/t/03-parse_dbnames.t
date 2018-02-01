@@ -67,6 +67,16 @@ use Bio::EnsEMBL::MetaData::DatabaseInfo;
 }
 {
   my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
+                                        "homo_sapiens_rnaseq_84_38");
+  is( 'rnaseq', $type, "Parsing rnaseq" );
+}
+{
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
+                                        "homo_sapiens_cdna_84_38");
+  is( 'cdna', $type, "Parsing cdna" );
+}
+{
+  my $type = Bio::EnsEMBL::MetaData::DatabaseInfo::_parse_type(
                                         "fungi_mart_27");
   is( 'mart', $type, "Parsing mart" );
 }

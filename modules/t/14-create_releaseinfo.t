@@ -33,8 +33,8 @@ ok( $release->is_current()              eq 1, "Current flag correct" );
 
 my $release2 =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION => 99,
-                                                -RELEASE_DATE    => '2015-09-29'
-  );
+                                                -RELEASE_DATE    => '2015-09-29',
+                                                -IS_CURRENT => 1);
 ok( defined $release2,                             "Release object exists" );
 ok( defined $release2->ensembl_version(),          "Default version exists" );
 ok( !defined $release2->ensembl_genomes_version(), "No EG version" );
@@ -43,12 +43,13 @@ ok( defined $release2->is_current(),              "Current flag exist" );
 
 my $release3 =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION => 98,
-                                                -RELEASE_DATE    => '2014-09-29'
-  );
+                                                -RELEASE_DATE    => '2014-09-29',
+                                                -IS_CURRENT => 0);
 my $release4 =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION         => 98,
                                                 -ENSEMBL_GENOMES_VERSION => 65,
-                                                -RELEASE_DATE => '2014-09-29' );
+                                                -RELEASE_DATE => '2014-09-29',
+                                                -IS_CURRENT => 0);
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
 eval {

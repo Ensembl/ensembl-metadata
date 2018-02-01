@@ -25,7 +25,8 @@ eval { $multi->load_database('empty_metadata'); };
 my $release =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION         => 99,
                                                 -ENSEMBL_GENOMES_VERSION => 66,
-                                                -RELEASE_DATE => '2015-09-29' );
+                                                -RELEASE_DATE => '2015-09-29',
+                                                -IS_CURRENT =>1 );
 
 ok( defined $release, "Release object exists" );
 
