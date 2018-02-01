@@ -227,7 +227,7 @@ sub fetch_current_ensembl_genomes_release {
     $self->_first_element(
     $self->_fetch_generic(
       _get_base_sql() .
-' where ensembl_genomes_version is not null ans is_current=1 order by release_date desc limit 1'
+' where ensembl_genomes_version is not null and is_current=1 order by release_date desc limit 1'
     ) );
 }
 =head2 
