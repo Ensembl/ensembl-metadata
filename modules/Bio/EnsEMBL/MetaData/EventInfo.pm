@@ -33,7 +33,7 @@ Bio::EnsEMBL::MetaData::EventInfo
 								   -ENSEMBL_VERSION=>83,
 								   -EG_VERSION=>30,
 								   -DATE=>'2015-12-07',
-                   -IS_CUREENT => 1);
+                   -IS_CURRENT => 1);
 
 =head1 DESCRIPTION
 
