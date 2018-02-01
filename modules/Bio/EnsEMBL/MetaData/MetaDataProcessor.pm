@@ -327,6 +327,40 @@ where a.code='toplevel' and species_id=?/,
       $md->features( \%features );
       $md->add_database( $other_features->dbc()->dbname() );
     }
+
+    # rnaseq
+    my $rnaseq_ali = {};
+    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
+    my $rnaseq = $dbas->{rnaseq};
+    if ( defined $rnaseq ) {
+      $self->{logger}
+        ->info( "Processing " . $dba->species() . " rnaseq annotation" );
+      my %features = ( %{ $md->features() },
+                       %{$self->{annotation_analyzer}
+                           ->analyze_features($rnaseq) } );
+      $rnaseq_ali =
+        $self->{annotation_analyzer}->analyze_alignments($rnaseq);
+      $size += get_dbsize($rnaseq);
+      $md->features( \%features );
+      $md->add_database( $rnaseq->dbc()->dbname() );
+    }
+
+    # cdna
+    my $cdna_ali = {};
+    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
+    my $cdna = $dbas->{cdna};
+    if ( defined $cdna ) {
+      $self->{logger}
+        ->info( "Processing " . $dba->species() . " cdna annotation" );
+      my %features = ( %{ $md->features() },
+                       %{$self->{annotation_analyzer}
+                           ->analyze_features($cdna) } );
+      $cdna_ali =
+        $self->{annotation_analyzer}->analyze_alignments($cdna);
+      $size += get_dbsize($cdna);
+      $md->features( \%features );
+      $md->add_database( $cdna->dbc()->dbname() );
+    }
     my $variation = $dbas->{variation};
 
     # variation
@@ -352,7 +386,7 @@ where a.code='toplevel' and species_id=?/,
     my $read_ali =
       $self->{annotation_analyzer}
       ->analyze_tracks( $md->name(), $md->division() );
-    my %all_ali = ( %{$core_ali}, %{$other_ali} );
+    my %all_ali = ( %{$core_ali}, %{$other_ali}, %{$rnaseq_ali}, %{$cdna_ali} );
 
     # add bam tracks by count - use source name
     for my $bam ( @{ $read_ali->{bam} } ) {

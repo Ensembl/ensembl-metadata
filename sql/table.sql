@@ -271,7 +271,7 @@ CREATE TABLE `genome_database` (
   `genome_id` int(10) unsigned NOT NULL,
   `dbname` varchar(64) NOT NULL,
   `species_id` int(10) unsigned NOT NULL,
-  `type` enum('core','funcgen','variation','otherfeatures') DEFAULT NULL,
+  `type` enum('core','funcgen','variation','otherfeatures','rnaseq','cdna') DEFAULT NULL,
   PRIMARY KEY (`genome_database_id`),
   UNIQUE KEY `id_dbname` (`genome_id`,`dbname`),
   UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
