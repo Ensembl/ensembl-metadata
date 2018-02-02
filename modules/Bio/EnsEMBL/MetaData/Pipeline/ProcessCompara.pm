@@ -110,7 +110,7 @@ sub run {
   my $opts = { -INFO_ADAPTOR => $gdba,
                -ANNOTATION_ANALYZER =>
                  Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
-               -COMPARA      => 0,
+               -COMPARA      => 1,
                -CONTIGS      => 0,
                -FORCE_UPDATE => $upd,
                -VARIATION    => 0 };
