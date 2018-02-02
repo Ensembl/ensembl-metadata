@@ -450,7 +450,7 @@ sub process_compara {
       # group by species_set
       my $mlss_by_ss = {};
       for my $mlss ( @{ $adaptor->fetch_all_by_method_link_type($method) } ) {
-        push @{ $mlss_by_ss->{ $mlss->species_set_obj()->dbID() } }, $mlss;
+        push @{ $mlss_by_ss->{ $mlss->species_set()->dbID() } }, $mlss;
       }
 
       for my $mlss_list ( values %$mlss_by_ss ) {
@@ -459,8 +459,8 @@ sub process_compara {
         my $ss_name;
         for my $mlss ( @{$mlss_list} ) {
 
-          $ss_name ||= $mlss->species_set_obj()->get_tagvalue('name');
-          for my $gdb ( @{ $mlss->species_set_obj()->genome_dbs() } ) {
+          $ss_name ||= $mlss->species_set()->get_tagvalue('name');
+          for my $gdb ( @{ $mlss->species_set()->genome_dbs() } ) {
             $dbs->{ $gdb->name() } = $gdb;
           }
           if ( !defined $ss_name ) {
