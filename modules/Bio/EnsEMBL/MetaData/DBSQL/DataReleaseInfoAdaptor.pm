@@ -110,7 +110,9 @@ sub store {
       else {
         $current_release = $self->fetch_current_ensembl_release();
       }
-      $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
+      if (defined $current_release){
+        $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
+      }
     }
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
