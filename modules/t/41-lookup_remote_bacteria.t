@@ -60,7 +60,7 @@ my $lookup =
 my $infos = $lookup->get_all();
 
 is(scalar(@$infos), 1, "One DBA found");
-is($infos->[0]->species(), 'campylobacter_jejuni1', "Correct species found");
+is($infos->[0]->species(), 'campylobacter_jejuni', "Correct species found");
 
 done_testing;
 $multi->cleanup();
