@@ -76,6 +76,23 @@ sub clear_genome_databases {
   return;
 }
 
+=head1 METHODS
+=head2 clear_genome_database
+  Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Clear a genome associated database for the supplied genome and database type
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_genome_database {
+  my ( $self, $genome, $database ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from genome_database where genome_id=? and type=?/,
+  -PARAMS=>[$genome->dbID(),$database->type()]);
+  return;
+}
+
 =head2 clear_release_databases
   Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo
   Description: Clear databases for the supplied release
