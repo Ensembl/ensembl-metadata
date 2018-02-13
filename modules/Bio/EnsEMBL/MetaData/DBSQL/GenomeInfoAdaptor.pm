@@ -265,6 +265,7 @@ sub data_release {
 
 sub store {
   my ( $self, $genome ) = @_;
+    $DB::single = 1;
   if ( !defined $genome->data_release() ) {
     $genome->data_release( $self->data_release() );
   }
@@ -301,6 +302,15 @@ sub store {
   if ( defined $genome->dbID() ) {
     return $self->update($genome);
   }
+  else {
+    # Check if we already have this genome for this given release
+    # This will usually happen when the assembly change.
+    # Remove this genome from database to avoid duplication
+    my $release_genome = $self->fetch_by_name($genome->{organism}->{name});
+    if (defined $release_genome){
+      $self->clear_genome($release_genome);
+    }
+  }
   $self->db()->get_GenomeOrganismInfoAdaptor()
     ->store( $genome->organism() );
   $self->db()->get_GenomeAssemblyInfoAdaptor()
@@ -331,7 +341,7 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
   $self->_store_features($genome);
   $self->_store_variations($genome);
   $self->_store_alignments($genome);
-  $self->_store_compara($genome);
+  #$self->_store_compara($genome);
   $self->_store_cached_obj($genome);
   return;
 } ## end sub store
@@ -347,13 +357,16 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
 
 sub update {
   my ( $self, $genome ) = @_;
+  $DB::single = 1;
   if ( !defined $genome->dbID() ) {
     croak "Cannot update an object that has not already been stored";
   }
-  $self->db()->get_GenomeOrganismInfoAdaptor()
-    ->store( $genome->organism() );
-  $self->db()->get_GenomeAssemblyInfoAdaptor()
-    ->store( $genome->assembly() );
+  if ($genome->{databases}->[0]->type() eq 'core'){
+    $self->db()->get_GenomeOrganismInfoAdaptor()
+      ->store( $genome->organism() );
+    $self->db()->get_GenomeAssemblyInfoAdaptor()
+      ->store( $genome->assembly() );
+  }
   $self->dbc()->sql_helper()->execute_update(
     -SQL => q/update genome set division_id=?,
 genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
@@ -373,11 +386,17 @@ has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organ
                  $genome->dbID() ] );
   $genome->adaptor($self);
   $self->_store_databases($genome);
-  $self->_store_annotations($genome);
-  $self->_store_features($genome);
-  $self->_store_variations($genome);
-  $self->_store_alignments($genome);
-  $self->_store_compara($genome);
+  if ($genome->{databases}->[0]->type() eq 'core'){
+    $self->_store_annotations($genome);
+    $self->_store_features($genome);
+  }
+  if ($genome->{databases}->[0]->type() eq 'variation') {
+    $self->_store_variations($genome);
+  }
+  if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){
+    $self->_store_alignments($genome);
+  }
+  #$self->_store_compara($genome);
   return;
 } ## end sub update
 
@@ -1204,18 +1223,13 @@ sub _fetch_children {
 
 sub _store_features {
   my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-                -SQL => q/delete from genome_feature where genome_id=?/,
-                -PARAMS => [ $genome->dbID() ] );
-
   while ( my ( $type, $f ) = each %{ $genome->features() } ) {
     while ( my ( $analysis, $count ) = each %$f ) {
       $self->dbc()->sql_helper()->execute_update(
         -SQL =>
-          q/insert into genome_feature(genome_id,type,analysis,count)
-		values(?,?,?,?)/,
-        -PARAMS => [ $genome->dbID(), $type, $analysis, $count ] );
+          q/insert into genome_feature(genome_id,type,analysis,count,genome_database_id)
+		values(?,?,?,?,?)/,
+        -PARAMS => [ $genome->dbID(), $type, $analysis, $count, $genome->{databases}->[0]->dbID ] );
     }
   }
   return;
@@ -1232,11 +1246,11 @@ sub _store_features {
 
 sub _store_databases {
   my ( $self, $genome ) = @_;
-  # clear out any old databases that may have been stored
-  $self->db()->get_DatabaseInfoAdaptor()->clear_genome_databases($genome);
   # write current databases
-  for my $database ( @{ $genome->databases() } ) {
-    $self->db()->get_DatabaseInfoAdaptor()->store($database);
+  for my $database ( @{ $genome->databases() } ) {      
+     # Clear out the old database
+     $self->db()->get_DatabaseInfoAdaptor()->clear_genome_database($genome,$database);
+     $self->db()->get_DatabaseInfoAdaptor()->store($database);
   }
   return;
 }
@@ -1252,16 +1266,11 @@ sub _store_databases {
 
 sub _store_annotations {
   my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-             -SQL => q/delete from genome_annotation where genome_id=?/,
-             -PARAMS => [ $genome->dbID() ] );
-
   while ( my ( $type, $value ) = each %{ $genome->annotations() } ) {
     $self->dbc()->sql_helper()->execute_update(
-      -SQL => q/insert into genome_annotation(genome_id,type,value)
-		values(?,?,?)/,
-      -PARAMS => [ $genome->dbID(), $type, $value ] );
+      -SQL => q/insert into genome_annotation(genome_id,type,value,genome_database_id)
+		values(?,?,?,?)/,
+      -PARAMS => [ $genome->dbID(), $type, $value, $genome->{databases}->[0]->dbID ] );
   }
   return;
 }
@@ -1277,11 +1286,6 @@ sub _store_annotations {
 
 sub _store_variations {
   my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-              -SQL => q/delete from genome_variation where genome_id=?/,
-              -PARAMS => [ $genome->dbID() ] );
-
   while ( my ( $type, $f ) = each %{ $genome->variations() } ) {
     while ( my ( $key, $count ) = each %$f ) {
       $self->dbc()->sql_helper()->execute_update(
@@ -1305,18 +1309,13 @@ sub _store_variations {
 
 sub _store_alignments {
   my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-              -SQL => q/delete from genome_alignment where genome_id=?/,
-              -PARAMS => [ $genome->dbID() ] );
-
   while ( my ( $type, $f ) = each %{ $genome->other_alignments() } ) {
     while ( my ( $key, $count ) = each %$f ) {
       $self->dbc()->sql_helper()->execute_update(
         -SQL =>
-          q/insert into genome_alignment(genome_id,type,name,count)
-		values(?,?,?,?)/,
-        -PARAMS => [ $genome->dbID(), $type, $key, $count ] );
+          q/insert into genome_alignment(genome_id,type,name,count,genome_database_id)
+		values(?,?,?,?,?)/,
+        -PARAMS => [ $genome->dbID(), $type, $key, $count, $genome->{databases}->[0]->dbID ] );
     }
   }
   return;
@@ -1333,10 +1332,6 @@ sub _store_alignments {
 
 sub _store_compara {
   my ( $self, $genome ) = @_;
-
-  $self->dbc()->sql_helper()->execute_update(
-       -SQL => q/delete from genome_compara_analysis where genome_id=?/,
-       -PARAMS => [ $genome->dbID() ] );
   if ( defined $genome->compara() ) {
     for my $compara ( @{ $genome->compara() } ) {
       if ( !defined $compara->dbID() ) {
@@ -1350,6 +1345,24 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
   }
   return;
 
+}
+
+
+=head1 METHODS
+=head2 clear_genome
+  Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Clear genome from the genome table and children tables
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_genome {
+  my ( $self, $genome ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from genome where genome_id=?/,
+  -PARAMS=>[$genome->dbID()]);
+  return;
 }
 
 my $base_genome_fetch_sql =

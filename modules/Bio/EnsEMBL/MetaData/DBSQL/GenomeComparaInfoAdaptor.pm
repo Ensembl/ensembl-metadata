@@ -313,9 +313,6 @@ q/insert into compara_analysis(method,division_id,set_name,dbname,data_release_i
 
 sub _store_compara_genomes {
   my ( $self, $compara ) = @_;
-  $self->dbc()->sql_helper()->execute_update(
-     -SQL => q/delete from genome_compara_analysis where compara_analysis_id=?/,
-     -PARAMS => [ $compara->dbID() ] );
   if ( defined $compara->genomes() ) {
     for my $genome ( @{ $compara->genomes() } ) {
       if ( !defined $genome->dbID() ) {
