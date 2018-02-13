@@ -22,7 +22,7 @@ Bio::EnsEMBL::MetaData::MetaDataProcessor
 =head1 SYNOPSIS
 
 my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new();
-my $info = $processor->process_genome($dba);
+my $info = $processor->process_core($core_dba);
 
 =head1 DESCRIPTION
 
@@ -123,12 +123,22 @@ sub process_metadata {
   my $genome_infos = {};
   my $n            = 0;
   my $total        = scalar( keys %$dba_hash );
+
   while ( my ( $genome, $dbas ) = each %$dba_hash ) {
     $self->{logger}->info( "Processing " . $genome . " (" . ++$n . "/$total)" );
-    $genome_infos->{$genome} = $self->process_genome($dbas);
+    # 3. Process core database first
+    if (exists $dbas->{'core'}){
+      $genome_infos->{$genome} = $self->process_core($dbas->{'core'});
+      delete $dbas->{'core'};
+    }
+    # 4. Process core like, variation and regulation databases
+    while (my ($db_type, $dba) = each %$dbas){
+      my $process_db_type_method = "process_".$db_type;
+      $genome_infos->{$genome} = $self->$process_db_type_method($dba);
+    }
   }
 
-  # 3. apply compara
+  # 5. apply compara
   for my $compara (@$comparas) {
     $self->process_compara( $compara, $genome_infos );
   }
@@ -136,18 +146,17 @@ sub process_metadata {
   return [ values(%$genome_infos) ];
 } ## end sub process_metadata
 
-=head2 process_genome
-  Arg        : Hashref of DBAdaptors
-  Description: Process supplied genome
+=head2 process_core
+  Arg        : DBAdaptor
+  Description: Process supplied genome core database
   Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub process_genome {
-  my ( $self, $dbas ) = @_;
-  my $dba = $dbas->{core};
+sub process_core {
+  my ( $self, $dba ) = @_;
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
@@ -199,7 +208,6 @@ sub process_genome {
   if ( scalar @divisions > 0 ) {
     $division = $divisions[-1];
   }
-
   my $md = Bio::EnsEMBL::MetaData::GenomeInfo->new(
                       -name                => $dba->species(),
                       -species_id          => $dba->species_id(),
@@ -282,7 +290,7 @@ where a.code='toplevel' and species_id=?/,
   }
 
   $md->assembly()->base_count( $base_counts->[0] );
-
+$DB::single = 1;
   # get associated PMIDs
   $md->organism()->publications(
     $dba->dbc()->sql_helper()->execute_simple(
@@ -310,83 +318,16 @@ where a.code='toplevel' and species_id=?/,
       ->info( "Processing " . $dba->species() . " core annotation" );
     $md->annotations( $self->{annotation_analyzer}->analyze_annotation($dba) );
 
-    # features
-    my $core_ali  = $self->{annotation_analyzer}->analyze_alignments($dba);
-    my $other_ali = {};
-    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
-    my $other_features = $dbas->{otherfeatures};
-    if ( defined $other_features ) {
-      $self->{logger}
-        ->info( "Processing " . $dba->species() . " otherfeatures annotation" );
-      my %features = ( %{ $md->features() },
-                       %{$self->{annotation_analyzer}
-                           ->analyze_features($other_features) } );
-      $other_ali =
-        $self->{annotation_analyzer}->analyze_alignments($other_features);
-      $size += get_dbsize($other_features);
-      $md->features( \%features );
-      $md->add_database( $other_features->dbc()->dbname() );
-    }
-
-    # rnaseq
-    my $rnaseq_ali = {};
-    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
-    my $rnaseq = $dbas->{rnaseq};
-    if ( defined $rnaseq ) {
-      $self->{logger}
-        ->info( "Processing " . $dba->species() . " rnaseq annotation" );
-      my %features = ( %{ $md->features() },
-                       %{$self->{annotation_analyzer}
-                           ->analyze_features($rnaseq) } );
-      $rnaseq_ali =
-        $self->{annotation_analyzer}->analyze_alignments($rnaseq);
-      $size += get_dbsize($rnaseq);
-      $md->features( \%features );
-      $md->add_database( $rnaseq->dbc()->dbname() );
-    }
-
-    # cdna
-    my $cdna_ali = {};
-    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
-    my $cdna = $dbas->{cdna};
-    if ( defined $cdna ) {
-      $self->{logger}
-        ->info( "Processing " . $dba->species() . " cdna annotation" );
-      my %features = ( %{ $md->features() },
-                       %{$self->{annotation_analyzer}
-                           ->analyze_features($cdna) } );
-      $cdna_ali =
-        $self->{annotation_analyzer}->analyze_alignments($cdna);
-      $size += get_dbsize($cdna);
-      $md->features( \%features );
-      $md->add_database( $cdna->dbc()->dbname() );
-    }
-    my $variation = $dbas->{variation};
-
-    # variation
-    if ( defined $variation ) {
-      $self->{logger}
-        ->info( "Processing " . $dba->species() . " variation annotation" );
-      $md->variations(
-                  $self->{annotation_analyzer}->analyze_variation($variation) );
-      $size += get_dbsize($variation);
-      $md->add_database( $variation->dbc()->dbname() );
-    }
-
-    my $funcgen = $dbas->{funcgen};
-    if ( defined $funcgen ) {
-      $self->{logger}
-        ->info( "Processing " . $dba->species() . " funcgen annotation" );
-      $md->add_database( $funcgen->dbc()->dbname() );
-    }
-
     # BAM
+    my $core_ali  = $self->{annotation_analyzer}->analyze_alignments($dba);
+    $md->features( $self->{annotation_analyzer}->analyze_features($dba) );
+
     $self->{logger}
       ->info( "Processing " . $dba->species() . " read aligments" );
     my $read_ali =
       $self->{annotation_analyzer}
       ->analyze_tracks( $md->name(), $md->division() );
-    my %all_ali = ( %{$core_ali}, %{$other_ali}, %{$rnaseq_ali}, %{$cdna_ali} );
+    my %all_ali = ( %{$core_ali} );
 
     # add bam tracks by count - use source name
     for my $bam ( @{ $read_ali->{bam} } ) {
@@ -398,7 +339,175 @@ where a.code='toplevel' and species_id=?/,
   } ## end if ( defined $self->{annotation_analyzer...})
   $dba->dbc()->disconnect_if_idle();
   return $md;
-} ## end sub process_genome
+} ## end sub process_core
+
+=head2 process_otherfeatures
+  Arg        : DBAdaptor
+  Description: Process supplied genome otherfeatures database
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub process_otherfeatures {
+  my ($self, $dba) = @_;
+  if ( !defined $dba ) {
+    confess "DBA not defined for processing";
+  }
+  $dba->dbc()->reconnect_when_lost(1);
+  my $size   = get_dbsize($dba);
+  # features
+  my $other_ali = {};
+  my $gdba = $self->{info_adaptor};
+  my $md=$gdba->fetch_by_name($dba->species());
+  $self->{logger}
+    ->info( "Processing " . $dba->species() . " otherfeatures annotation" );
+  my %features = ( %{ $md->features() },
+                    %{$self->{annotation_analyzer}
+                        ->analyze_features($dba) } );
+  $other_ali =
+    $self->{annotation_analyzer}->analyze_alignments($dba);
+  $md->features( \%features );
+  $md->add_database( $dba->dbc()->dbname() );
+  if ( defined $self->{annotation_analyzer} ) {
+    my %all_ali = ( %{$other_ali});
+    $md->other_alignments( \%all_ali );
+    $md->db_size($size);
+
+  } ## end if ( defined $self->{annotation_analyzer...})
+  $dba->dbc()->disconnect_if_idle();
+  return $md;
+}
+
+=head2 process_rnaseq
+  Arg        : DBAdaptor
+  Description: Process supplied genome rnaseq database
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub process_rnaseq {
+  my ($self, $dba) = @_;
+  if ( !defined $dba ) {
+    confess "DBA not defined for processing";
+  }
+  $dba->dbc()->reconnect_when_lost(1);
+  my $size   = get_dbsize($dba);
+  # features
+  my $rnaseq_ali = {};
+  my $gdba = $self->{info_adaptor};
+  my $md=$gdba->fetch_by_name($dba->species());
+  $self->{logger}
+    ->info( "Processing " . $dba->species() . " rnaseq annotation" );
+  my %features = ( %{ $md->features() },
+                    %{$self->{annotation_analyzer}
+                        ->analyze_features($dba) } );
+  $rnaseq_ali =
+    $self->{annotation_analyzer}->analyze_alignments($dba);
+  $md->features( \%features );
+  $md->add_database( $dba->dbc()->dbname() );
+  if ( defined $self->{annotation_analyzer} ) {
+    my %all_ali = ( %{$rnaseq_ali});
+    $md->other_alignments( \%all_ali );
+    $md->db_size($size);
+
+  } ## end if ( defined $self->{annotation_analyzer...})
+  $dba->dbc()->disconnect_if_idle();
+  return $md;
+}
+
+=head2 process_cdna
+  Arg        : DBAdaptor
+  Description: Process supplied genome cdna database
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub process_cdna {
+  my ($self, $dba) = @_;
+  if ( !defined $dba ) {
+    confess "DBA not defined for processing";
+  }
+  $dba->dbc()->reconnect_when_lost(1);
+  my $size   = get_dbsize($dba);
+  # features
+  my $cdna_ali = {};
+  my $gdba = $self->{info_adaptor};
+  my $md=$gdba->fetch_by_name($dba->species());
+  $self->{logger}
+    ->info( "Processing " . $dba->species() . " cdna annotation" );
+  my %features = ( %{ $md->features() },
+                    %{$self->{annotation_analyzer}
+                        ->analyze_features($dba) } );
+  $cdna_ali = $self->{annotation_analyzer}->analyze_alignments($dba);
+  $md->features( \%features );
+  $md->add_database( $dba->dbc()->dbname() );
+  if ( defined $self->{annotation_analyzer} ) {
+    my %all_ali = ( %{$cdna_ali});
+    $md->other_alignments( \%all_ali );
+    $md->db_size($size);
+  } ## end if ( defined $self->{annotation_analyzer...})
+  $dba->dbc()->disconnect_if_idle();
+  return $md;
+}
+
+=head2 process_variation
+  Arg        : DBAdaptor
+  Description: Process supplied genome variation database
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub process_variation {
+  my ($self,$dba) = @_;
+  if ( !defined $dba ) {
+    confess "DBA not defined for processing";
+  }
+  $dba->dbc()->reconnect_when_lost(1);
+  my $size   = get_dbsize($dba);
+  my $gdba = $self->{info_adaptor};
+  my $md=$gdba->fetch_by_name($dba->species());
+  $self->{logger}
+    ->info( "Processing " . $dba->species() . " variation annotation" );
+  $md->variations(
+              $self->{annotation_analyzer}->analyze_variation($dba) );
+  $md->add_database( $dba->dbc()->dbname() );
+  $md->db_size($size);
+  $dba->dbc()->disconnect_if_idle();
+  return $md;
+}
+
+=head2 process_funcgen
+  Arg        : DBAdaptor
+  Description: Process supplied genome regulation database
+  Returntype : Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub process_funcgen {
+  my ($self,$dba) = @_;
+  if ( !defined $dba ) {
+    confess "DBA not defined for processing";
+  }
+  $dba->dbc()->reconnect_when_lost(1);
+  my $size   = get_dbsize($dba);
+  my $gdba = $self->{info_adaptor};
+  my $md=$gdba->fetch_by_name($dba->species());
+  $self->{logger}->info( "Processing " . $dba->species() . " regulation annotation" );
+  $md->add_database( $dba->dbc()->dbname() );
+  $md->db_size($size);
+  $dba->dbc()->disconnect_if_idle();
+  return $md;
+}
 
 my $DIVISION_NAMES = { 'bacteria'     => 'EnsemblBacteria',
                        'plants'       => 'EnsemblPlants',
@@ -529,7 +638,7 @@ sub process_compara {
                 Bio::EnsEMBL::Registry->get_DBAdaptor( $gdb->name(), 'core' );
             };
             if ( defined $dba ) {
-              $genomeInfo = $self->process_genome( { core => $dba } );
+              $genomeInfo = $self->process_core( { core => $dba } );
             }
             else {
               croak "Could not find DBAdaptor for " . $gdb->name();

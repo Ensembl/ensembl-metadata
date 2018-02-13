@@ -70,10 +70,6 @@ sub run {
 
   return if $species eq 'Ancestral sequences';
 
-  $log->info("Finding DBAdaptors for $species");
-  for my $type (qw/core variation otherfeatures rnaseq cdna funcgen/) {
-    $dbas->{$type} = $self->get_DBAdaptor($type);
-  }
   $log->info("Connecting to info database");
   my $dba =
     Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
@@ -120,9 +116,16 @@ sub run {
   my $processor =
     Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
 
-  $log->info("Processing $species");
-
-  my $md = $processor->process_genome($dbas);
+  $log->info("Processing $species core database");
+  my $core_dba = $self->get_DBAdaptor('core');
+  my $md = $processor->process_core($core_dba);
+  
+  for my $type (qw/variation otherfeatures rnaseq cdna funcgen/) {
+    $log->info("Processing $species $type database");
+    my $dba=$self->get_DBAdaptor($type);
+    my $process_db_type_method = "process_".$type;
+    $processor->$process_db_type_method($dba);
+  }
 
   if ( defined $md->dbID() && $upd == 1 ) {
     $log->info( "Updating " . $md->name() );
