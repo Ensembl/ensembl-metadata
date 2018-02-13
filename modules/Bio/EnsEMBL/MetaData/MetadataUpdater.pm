@@ -75,11 +75,14 @@ sub process_database {
   }
   $gdba->data_release($release);
   # Check if we are working with Compara or species database
-  if ($db_type eq "compara") {
+  if ($db_type eq "core"){
+    process_core($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
+  }
+  elsif ($db_type eq "compara") {
     process_compara($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
-  else{
-    process_species_database($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
+  else {
+    process_other_database($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
   #Updating booleans
   $log->info("Updating booleans");
@@ -122,7 +125,7 @@ sub process_compara {
                  Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
                -COMPARA      => 1,
                -CONTIGS      => 0,
-               -FORCE_UPDATE => 1,
+               -FORCE_UPDATE => 0,
                -VARIATION    => 0 };
   my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
   my $compara_infos = $processor->process_compara( $compara_dba, {});
@@ -145,10 +148,9 @@ sub process_compara {
 }
 
 #Subroutine to add or force update a species database
-sub process_species_database {
+sub process_core {
   my ($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba) = @_;
   my $database = get_db_connection_params( $database_uri);
-  my $dbas={};
 
   $log->info("Connecting to database $database->{dbname}");
   my $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
@@ -159,30 +161,56 @@ sub process_species_database {
     -pass => $database->{pass},
     -species => $species,
     -group => $db_type);
-  
-  $dbas->{$db_type} = $dba;
 
   my $opts = { -INFO_ADAPTOR => $gdba,
                -ANNOTATION_ANALYZER =>
                  Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
                -COMPARA      => 0,
                -CONTIGS      => 1,
-               -FORCE_UPDATE => 1,
-               -VARIATION => $db_type =~ "variation" ? 1 : 0 };
+               -FORCE_UPDATE => 0,
+               -VARIATION => 0};
 
   my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
-  my $md = $processor->process_genome($dbas);
+  my $md = $processor->process_core($dba);
 
-  if ( defined $md->dbID()) {
-    $log->info( "Updating " . $md->name() );
-    $gdba->update($md);
-  }
-  elsif ( !defined $md->dbID() ) {
-    $log->info( "Storing " . $md->name() );
-    $gdba->store($md);
-  }
+  $log->info( "Storing " . $md->name() );
+  $gdba->store($md);
   $dba->dbc()->disconnect_if_idle();
-  $log->info("Completed processing compara $database->{dbname} for $species");
+  $log->info("Completed processing Core $database->{dbname} for $species");
+  return ;
+}
+
+#Subroutine to add or force update a species database
+sub process_other_database {
+  my ($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba) = @_;
+  my $database = get_db_connection_params( $database_uri);
+
+  $log->info("Connecting to database $database->{dbname}");
+  my $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+    -user   => $database->{user},
+    -dbname => $database->{dbname},
+    -host   => $database->{host},
+    -port   => $database->{port},
+    -pass => $database->{pass},
+    -species => $species,
+    -group => $db_type);
+
+  my $opts = { -INFO_ADAPTOR => $gdba,
+               -ANNOTATION_ANALYZER =>
+                 Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
+               -COMPARA      => 0,
+               -CONTIGS      => 1,
+               -FORCE_UPDATE => 0,
+               -VARIATION => $db_type =~ "variation" ? 1 : 0 };
+  my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
+  my $process_db_type_method = "process_".$db_type;
+    $DB::single = 1;
+  my $md = $processor->$process_db_type_method($dba);
+
+  $log->info( "Updating " . $md->name() );
+  $gdba->update($md);
+  $dba->dbc()->disconnect_if_idle();
+  $log->info("Completed processing $db_type $database->{dbname} for $species");
   return ;
 }
 
