@@ -215,7 +215,7 @@ sub species_id {
   return $self->_get_core()->species_id();
 }
 
-=head2 data_release
+=head2 databases
   Arg        : (optional) Arrayref of DatabaseInfo objects to set
   Description: Gets/sets databases associated with the genome
   Returntype : Arrayref of Bio::EnsEMBL::MetaData::DatabaseInfo
