@@ -341,7 +341,13 @@ my $xref_level_sql = q/select distinct object_xref.ensembl_object_type
 from object_xref
 join xref on (object_xref.xref_id=xref.xref_id)
 join .external_db on (xref.external_db_id=external_db.external_db_id)
-where external_db.db_name=?/;
+where external_db.db_name=? limit 1/;
+
+my $xref_level_check_sql = q/select count(object_xref.ensembl_object_type)
+from object_xref
+join xref on (object_xref.xref_id=xref.xref_id)
+join .external_db on (xref.external_db_id=external_db.external_db_id)
+where external_db.db_name=? limit 1/;
 
 my $biotype_clause = q/ and g.biotype=?/;
 
@@ -349,30 +355,34 @@ sub count_by_xref {
   my ( $self, $dba, $db_names, $biotype ) = @_;
   my $tot  = 0;
   foreach my $db_name (@$db_names){
-    my $xref_level = $dba->dbc()->sql_helper()
-      ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name] );
-    $self->{logger}->debug( "Counting genes by " .
-                        $db_name . " xref on ".$xref_level." for " . $dba->species() );
-    my $sql;
-    if ($xref_level eq "Gene")
-    {
-      $sql=$xref_gene_sql;
+    my $xref_level_check = $dba->dbc()->sql_helper()
+      ->execute_single_result( -SQL => $xref_level_check_sql, -PARAMS => [$db_name] );
+    if ($xref_level_check > 0){
+      my $xref_level = $dba->dbc()->sql_helper()
+        ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name] );
+      $self->{logger}->debug( "Counting genes by " .
+                          $db_name . " xref on ".$xref_level." for " . $dba->species() );
+      my $sql;
+      if ($xref_level eq "Gene")
+      {
+        $sql=$xref_gene_sql;
+      }
+      elsif ($xref_level eq "Transcript"){
+        $sql=$xref_transcript_sql;
+      }
+      elsif ($xref_level eq "Translation"){
+        $sql=$xref_translation_sql;
+      }
+      my $params = [ $dba->species_id(), $db_name ];
+      if ( defined $biotype ) {
+        $sql .= $biotype_clause;
+        push @$params, $biotype;
+      }
+      $self->{logger}
+        ->debug( "Executing $sql with params: [" . join( ",", @$params ) );
+      $tot += $dba->dbc()->sql_helper()
+        ->execute_single_result( -SQL => $sql, -PARAMS => $params );
     }
-    elsif ($xref_level eq "Transcript"){
-      $sql=$xref_transcript_sql;
-    }
-    elsif ($xref_level eq "Translation"){
-      $sql=$xref_translation_sql;
-    }
-    my $params = [ $dba->species_id(), $db_name ];
-    if ( defined $biotype ) {
-      $sql .= $biotype_clause;
-      push @$params, $biotype;
-    }
-    $self->{logger}
-      ->debug( "Executing $sql with params: [" . join( ",", @$params ) );
-    $tot += $dba->dbc()->sql_helper()
-      ->execute_single_result( -SQL => $sql, -PARAMS => $params );
   }
   return $tot;
 }
@@ -422,29 +432,33 @@ sub count_xrefs {
   my ($self,$dba,$db_names) = @_;
   my $tot  = 0;
   for my $db_name (@$db_names) {
-    my $xref_level = $dba->dbc()->sql_helper()
-      ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name] );
-    if ($xref_level eq "Gene")
-    {
-      $tot +=
-      $dba->dbc()->sql_helper()->execute_single_result(
-                                     -SQL    => $gene_xref_count_sql,
-                                     -PARAMS => [ $dba->species_id(), $db_name ]
-      );
-    }
-    elsif ($xref_level eq "Transcript"){
-      $tot +=
-      $dba->dbc()->sql_helper()->execute_single_result(
-                                     -SQL    => $transcript_xref_count_sql,
-                                     -PARAMS => [ $dba->species_id(), $db_name ]
-      );
-    }
-    elsif ($xref_level eq "Translation"){
-      $tot +=
-      $dba->dbc()->sql_helper()->execute_single_result(
-                                     -SQL    => $translation_xref_count_sql,
-                                     -PARAMS => [ $dba->species_id(), $db_name ]
-      );
+    my $xref_level_check = $dba->dbc()->sql_helper()
+      ->execute_single_result( -SQL => $xref_level_check_sql, -PARAMS => [$db_name] );
+    if ($xref_level_check > 0){
+      my $xref_level = $dba->dbc()->sql_helper()
+        ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name] );
+      if ($xref_level eq "Gene")
+      {
+        $tot +=
+        $dba->dbc()->sql_helper()->execute_single_result(
+                                      -SQL    => $gene_xref_count_sql,
+                                      -PARAMS => [ $dba->species_id(), $db_name ]
+        );
+      }
+      elsif ($xref_level eq "Transcript"){
+        $tot +=
+        $dba->dbc()->sql_helper()->execute_single_result(
+                                      -SQL    => $transcript_xref_count_sql,
+                                      -PARAMS => [ $dba->species_id(), $db_name ]
+        );
+      }
+      elsif ($xref_level eq "Translation"){
+        $tot +=
+        $dba->dbc()->sql_helper()->execute_single_result(
+                                      -SQL    => $translation_xref_count_sql,
+                                      -PARAMS => [ $dba->species_id(), $db_name ]
+        );
+      }
     }
   }
   return $tot;
