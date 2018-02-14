@@ -70,7 +70,8 @@ sub pipeline_analyses {
             -logic_name => 'metadata_updater',
             -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
             -input_ids => [],
-            -max_retry_count => 0,
+            -max_retry_count => 1,
+            -hive_capacity => 25,
             -parameters => {
              },
             -rc_name => 'default',
