@@ -79,9 +79,11 @@ sub process_database {
     process_core($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
   elsif ($db_type eq "compara") {
+    check_if_coredb_exist($gdba,$species,$metadatadba);
     process_compara($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
   else {
+    check_if_coredb_exist($gdba,$species,$metadatadba);
     process_other_database($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
   #Updating booleans
@@ -182,7 +184,7 @@ sub process_core {
 
 #Subroutine to add or force update a species database
 sub process_other_database {
-  my ($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba) = @_;
+  my ($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba,) = @_;
   my $database = get_db_connection_params( $database_uri);
 
   $log->info("Connecting to database $database->{dbname}");
@@ -204,7 +206,6 @@ sub process_other_database {
                -VARIATION => $db_type =~ "variation" ? 1 : 0 };
   my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
   my $process_db_type_method = "process_".$db_type;
-    $DB::single = 1;
   my $md = $processor->$process_db_type_method($dba);
 
   $log->info( "Updating " . $md->name() );
@@ -226,6 +227,33 @@ sub store_new_release {
                                         -RELEASE_DATE => $release_date,
                                         -IS_CURRENT => $is_current ) );
   $log->info("Created release entries");
+  return;
+}
+
+sub check_if_coredb_exist {
+  my ($gdba,$species,$metadatadba) = @_;
+  my $dbia = $metadatadba->get_DatabaseInfoAdaptor();
+  my $md=$gdba->fetch_by_name($species);
+  my @databases;
+  eval{
+    @databases = $dbia->fetch_databases($md)->[0];
+  }
+  or do{
+    die "$species core database need to be loaded first for this release";
+  };
+  my $coredbfound=0;
+  foreach my $db (@databases){
+    if ($db->{type} eq "core")
+    {
+      $coredbfound=1;
+    }
+  }
+  if ($coredbfound){
+    1;
+  }
+  else{
+    die "$species core database need to be loaded first for this release";
+  }
   return;
 }
 1;
