@@ -28,7 +28,8 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');  # All Hive datab
 
 sub resource_classes {
     my ($self) = @_;
-    return { 'default' => { 'LSF' => '-q production-rh7' }};
+    return { 'default' => { 'LSF' => '-q production-rh7'},
+         'himem' => { 'LSF' => '-q production-rh7 -M  16000 -R "rusage[mem=16000]"' } };
 }
 
 sub default_options {
@@ -67,11 +68,43 @@ sub pipeline_analyses {
     my ($self) = @_;
     return [
         {   
-            -logic_name => 'metadata_updater',
-            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
+            -logic_name => 'metadata_updater_processdb',
+            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHiveProcessDb',
             -input_ids => [],
             -max_retry_count => 1,
+            -parameters => {
+             },
+            -flow_into =>
+            { 2 => ['metadata_updater_core'],
+            3 => ['metadata_updater_other'],
+            4 => ['metadata_updater_compara'] },
+            -meadow_type => 'LOCAL',
+        },
+        {
+            -logic_name => 'metadata_updater_core',
+            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
+            -max_retry_count => 1,
             -hive_capacity => 25,
+            -parameters => {
+             },
+            -rc_name => 'himem',
+        },
+        {
+            -logic_name => 'metadata_updater_other',
+            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
+            -max_retry_count => 1,
+            -hive_capacity => 15,
+            -wait_for      => [ 'metadata_updater_core' ],
+            -parameters => {
+             },
+            -rc_name => 'default',
+        },
+        {
+            -logic_name => 'metadata_updater_compara',
+            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
+            -max_retry_count => 1,
+            -hive_capacity => 1,
+            -wait_for      => [ 'metadata_updater_core', 'metadata_updater_other' ],
             -parameters => {
              },
             -rc_name => 'default',

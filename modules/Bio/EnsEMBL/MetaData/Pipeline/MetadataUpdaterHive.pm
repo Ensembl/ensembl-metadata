@@ -34,7 +34,7 @@ use Bio::EnsEMBL::MetaData::MetadataUpdater
   qw/process_database/;
 
 sub run{
-my $self = shift @_;
+my ($self) = @_;
 my $metadata_uri = $self->param_required('metadata_uri');
 my $database_uri = $self->param_required('database_uri');
 my $species = $self->param('species');
