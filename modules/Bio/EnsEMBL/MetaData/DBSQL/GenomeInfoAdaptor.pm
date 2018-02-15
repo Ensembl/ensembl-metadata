@@ -1290,9 +1290,9 @@ sub _store_variations {
     while ( my ( $key, $count ) = each %$f ) {
       $self->dbc()->sql_helper()->execute_update(
         -SQL =>
-          q/insert into genome_variation(genome_id,type,name,count)
-		values(?,?,?,?)/,
-        -PARAMS => [ $genome->dbID(), $type, $key, $count ] );
+          q/insert into genome_variation(genome_id,type,name,count,genome_database_id)
+		values(?,?,?,?,?)/,
+        -PARAMS => [ $genome->dbID(), $type, $key, $count, $genome->{databases}->[0]->dbID ] );
     }
   }
   return;

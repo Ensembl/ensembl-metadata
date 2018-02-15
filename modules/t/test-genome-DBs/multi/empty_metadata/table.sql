@@ -259,7 +259,7 @@ CREATE TABLE `genome_compara_analysis` (
   UNIQUE KEY `genome_compara_analysis_key` (`genome_id`,`compara_analysis_id`),
   KEY `compara_analysis_idx` (`compara_analysis_id`),
   CONSTRAINT `genome_compara_analysis_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`) ON DELETE CASCADE,
-  CONSTRAINT `genome_compara_analysis_ibfk_2` FOREIGN KEY (`compara_analysis_id`) REFERENCES `compara_analysis` (`compara_analysis_id`) ON DELETE CASCADE
+  CONSTRAINT `genome_compara_analysis_ibfk_2` FOREIGN KEY (`compara_analysis_id`) REFERENCES `compara_analysis` (`compara_analysis_id`)  ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -337,9 +337,11 @@ CREATE TABLE `genome_variation` (
   `type` varchar(32) NOT NULL,
   `name` varchar(128) NOT NULL,
   `count` int(10) unsigned NOT NULL,
+  `genome_database_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`genome_variation_id`),
-  UNIQUE KEY `id_type_key` (`genome_id`,`type`,`name`),
-  CONSTRAINT `genome_variation_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`) ON DELETE CASCADE
+  UNIQUE KEY `id_type_key` (`genome_id`,`type`,`name`,`genome_database_id`),
+  CONSTRAINT `genome_variation_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`) ON DELETE CASCADE,
+  CONSTRAINT genome_variation_ibfk_2 FOREIGN KEY (genome_database_id) REFERENCES genome_database (genome_database_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
