@@ -79,7 +79,6 @@ sub process_database {
     process_core($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
   elsif ($db_type eq "compara") {
-    check_if_coredb_exist($gdba,$species,$metadatadba);
     process_compara($database_uri,$db_type,$species,$metadatadba,$gdba,$rdba);
   }
   else {
