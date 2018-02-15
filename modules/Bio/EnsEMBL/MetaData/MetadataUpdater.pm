@@ -236,7 +236,7 @@ sub check_if_coredb_exist {
   my $md=$gdba->fetch_by_name($species);
   my @databases;
   eval{
-    @databases = $dbia->fetch_databases($md)->[0];
+    @databases = @{$dbia->fetch_databases($md)};
   }
   or do{
     die "$species core database need to be loaded first for this release";
