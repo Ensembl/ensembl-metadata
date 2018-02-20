@@ -46,7 +46,7 @@ sub process_database {
                                              -PORT =>,
                                              $metadata->{port},
                                              -DBNAME =>,
-                                             $metadata->{dbname});
+                                             $metadata->{dbname},);
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
   # Check if release already exist or create it
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
@@ -133,14 +133,8 @@ sub process_compara {
 
   for my $compara_info (@$compara_infos) {
     my $nom = $compara_info->method() . "/" . $compara_info->set_name();
-    if ( defined $compara_info->dbID() ) {
-      $log->info( "Updating compara info for " . $nom );
-      $cdba->update($compara_info);
-    }
-    else {
-      $log->info( "Storing compara info for " . $nom );
-      $cdba->store($compara_info);
-    }
+    $log->info( "Storing/Updating compara info for " . $nom );
+    $cdba->store($compara_info);
   }
   $cdba->dbc()->disconnect_if_idle();
   $compara_dba->dbc()->disconnect_if_idle();

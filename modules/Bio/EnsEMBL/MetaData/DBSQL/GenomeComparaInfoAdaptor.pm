@@ -234,35 +234,6 @@ sub fetch_by_dbname_method_set {
 =head1 METHODS
 =cut
 
-=head2 update
-  Arg	     : Bio::EnsEMBL::MetaData::GenomeComparaInfo
-  Description: Updates the supplied object and all associated  genomes
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub update {
-  my ( $self, $compara ) = @_;
-  if ( !defined $compara->dbID() ) {
-    croak "Cannot update compara object with no dbID";
-  }
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/update compara_analysis 
-	  set method=?,division_id=?,set_name=?,dbname=?, data_release_id=?
-	  where compara_analysis_id=?/,
-    -PARAMS => [ $compara->method(),
-                 $self->_get_division_id( $compara->division() ),
-                 $compara->set_name(),
-                 $compara->dbname(),
-                 $self->data_release()->dbID(),
-                 $compara->dbID() ] );
-  $self->_store_compara_genomes($compara);
-  $self->_store_cached_obj($compara);
-  return;
-}
-
 =head2 store
   Arg	     : Bio::EnsEMBL::MetaData::GenomeComparaInfo
   Description: Stores the supplied object and all associated  genomes (if not already stored)
@@ -291,7 +262,9 @@ q/select compara_analysis_id from compara_analysis where division_id=? and metho
     }
   }
   if ( defined $compara->dbID() ) {
-    return $self->update($compara);
+    $self->dbc()->sql_helper()->execute_update(
+     -SQL => q/delete from compara_analysis where compara_analysis_id=?/,
+     -PARAMS => [ $compara->dbID() ] );
   }
   $self->dbc()->sql_helper()->execute_update(
     -SQL =>
