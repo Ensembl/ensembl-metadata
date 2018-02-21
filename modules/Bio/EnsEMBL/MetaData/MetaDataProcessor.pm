@@ -290,7 +290,6 @@ where a.code='toplevel' and species_id=?/,
   }
 
   $md->assembly()->base_count( $base_counts->[0] );
-$DB::single = 1;
   # get associated PMIDs
   $md->organism()->publications(
     $dba->dbc()->sql_helper()->execute_simple(
