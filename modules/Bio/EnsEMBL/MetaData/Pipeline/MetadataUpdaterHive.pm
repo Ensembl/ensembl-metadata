@@ -37,8 +37,6 @@ sub run{
 my ($self) = @_;
 my $metadata_uri = $self->param_required('metadata_uri');
 my $database_uri = $self->param_required('database_uri');
-my $species = $self->param('species');
-my $db_type = $self->param('db_type');
 my $release_date = $self->param('release_date');
 my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
@@ -47,7 +45,7 @@ my $hive_dbc = $self->dbc;
 
 $hive_dbc->disconnect_if_idle() if defined $hive_dbc;
 
-process_database($metadata_uri,$database_uri,$species,$db_type,$release_date,$e_release,$eg_release,$current_release);
+process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release);
 
 return;
 }

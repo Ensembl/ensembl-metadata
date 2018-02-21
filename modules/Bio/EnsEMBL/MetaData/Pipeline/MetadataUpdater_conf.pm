@@ -41,8 +41,6 @@ sub default_options {
     pipeline_name => 'metadata_updater',
     metadata_uri => '',
     database_uri => '',
-    species       => '',
-    db_type => '',
     release_date=> '',
     e_release => '',
     eg_release=> '',
@@ -84,7 +82,7 @@ sub pipeline_analyses {
             -logic_name => 'metadata_updater_core',
             -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
             -max_retry_count => 1,
-            -hive_capacity => 25,
+            -analysis_capacity => 30,
             -parameters => {
              },
             -rc_name => 'himem',
@@ -93,7 +91,7 @@ sub pipeline_analyses {
             -logic_name => 'metadata_updater_other',
             -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
             -max_retry_count => 1,
-            -hive_capacity => 15,
+            -analysis_capacity => 30,
             -wait_for      => [ 'metadata_updater_core' ],
             -parameters => {
              },
@@ -103,7 +101,7 @@ sub pipeline_analyses {
             -logic_name => 'metadata_updater_compara',
             -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
             -max_retry_count => 1,
-            -hive_capacity => 1,
+            -analysis_capacity => 10,
             -wait_for      => [ 'metadata_updater_core', 'metadata_updater_other' ],
             -parameters => {
              },

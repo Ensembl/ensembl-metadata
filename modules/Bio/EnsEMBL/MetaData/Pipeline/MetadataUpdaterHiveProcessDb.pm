@@ -35,33 +35,26 @@ sub run {
 my ($self) = @_;
 my $metadata_uri = $self->param_required('metadata_uri');
 my $database_uri = $self->param_required('database_uri');
-my $species = $self->param('species');
-my $db_type = $self->param('db_type');
 my $release_date = $self->param('release_date');
 my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
-$DB::single = 1;
 
-
-if ($db_type eq "core"){
+my $database = get_db_connection_params( $database_uri);
+if ($database->{dbname} =~ m/_core_/){
   $self->dataflow_output_id({
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
-             'species' => $species,
-             'db_type' => $db_type,
              'release_date' => $release_date,
              'e_release' => $e_release,
              'eg_release' => $eg_release,
              'current_release' => $current_release
 			      }, 2);
 }
-elsif ($db_type eq "compara"){
+elsif ($database->{dbname} =~ m/_compara_/){
   $self->dataflow_output_id({
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
-             'species' => $species,
-             'db_type' => $db_type,
              'release_date' => $release_date,
              'e_release' => $e_release,
              'eg_release' => $eg_release,
@@ -72,8 +65,6 @@ else {
   $self->dataflow_output_id({
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
-             'species' => $species,
-             'db_type' => $db_type,
              'release_date' => $release_date,
              'e_release' => $e_release,
              'eg_release' => $eg_release,
@@ -81,6 +72,14 @@ else {
 			      }, 3);
 }
 return;
+}
+
+#Subroutine to parse Server URI and return connection details
+sub get_db_connection_params {
+  my ($uri) = @_;
+  return '' unless defined $uri;
+  my $db = Bio::EnsEMBL::Hive::Utils::URL::parse($uri);
+  return $db;
 }
 
 1;

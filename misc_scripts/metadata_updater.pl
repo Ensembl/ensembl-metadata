@@ -23,7 +23,7 @@ use Bio::EnsEMBL::MetaData::MetadataUpdater
 use Log::Log4perl qw/:easy/;
 
 my $opts = {};
-GetOptions( $opts, 'metadata_uri=s','database_uri=s','species=s','db_type=s','release_date=s','e_release=s','eg_release=s','current_release=s','verbose' );
+GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','current_release=s','verbose' );
 
 if ( $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
@@ -33,15 +33,9 @@ else {
 }
 
 my $logger = get_logger;
-if(!defined $opts->{species} and $opts->{db_type} eq "compara"){
-  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/ensembl_compara_92> -db_type compara -species multi -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 [-verbose]";
-}
-elsif (!defined $opts->{species} and $opts->{db_type} ne "compara") {
-  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -db_type core -species homo_sapiens -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 [-verbose]";
-}
 if ( !defined $opts->{metadata_uri} || !defined $opts->{database_uri} || !defined $opts->{e_release}) {
-  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -db_type core -species homo_sapiens -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 [-verbose]";
+  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 [-verbose]";
 }
 
 #Process the given database
-process_database($opts->{metadata_uri}, $opts->{database_uri},$opts->{species},$opts->{db_type},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},  $opts->{verbose});
+process_database($opts->{metadata_uri}, $opts->{database_uri},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},  $opts->{verbose});
