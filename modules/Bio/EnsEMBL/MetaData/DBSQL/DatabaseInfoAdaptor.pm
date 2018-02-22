@@ -88,8 +88,8 @@ sub clear_genome_databases {
 
 sub clear_genome_database {
   my ( $self, $genome, $database ) = @_;
-  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from genome_database where genome_id=? and type=?/,
-  -PARAMS=>[$genome->dbID(),$database->type()]);
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from genome_database where genome_id=? and type=? and species_id=?/,
+  -PARAMS=>[$genome->dbID(),$database->type(),$genome->species_id()]);
   return;
 }
 
