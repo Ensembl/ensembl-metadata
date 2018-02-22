@@ -39,16 +39,16 @@ sub process_database {
   # Check if release already exist or create it
   $gdba = update_release($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba);
   # Get database db_type and species
-  my ($species,$db_type,$database)=get_species_and_dbtype($database_uri);
+  my ($species,$db_type,$database,$species_ids)=get_species_and_dbtype($database_uri);
   if ($db_type eq "core"){
-    process_core($species,$metadatadba,$gdba,$db_type,$database);
+    process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
   }
   elsif ($db_type eq "compara") {
-    process_compara($species,$metadatadba,$gdba,$db_type,$database);
+    process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
   }
   else {
     check_if_coredb_exist($gdba,$species,$metadatadba);
-    process_other_database($species,$metadatadba,$gdba,$db_type,$database);
+    process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
   }
   #Updating booleans
   $log->info("Updating booleans");
@@ -116,6 +116,7 @@ sub get_species_and_dbtype {
   my $db_type;
   my $species;
   my $dba;
+  my $species_ids;
   $log->info("Connecting to database $database->{dbname}");
   #dealing with Compara
   if ($database->{dbname} =~ m/_compara_/){
@@ -134,6 +135,10 @@ sub get_species_and_dbtype {
     );
     $species = $dba->all_species();
     $db_type=$dba->group();
+    foreach my $species_name (@{$species}){
+      my $species_id=$dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select species_id from meta where meta_key=? and meta_value=?/, -PARAMS => ['species.production_name',$species_name]);
+      $species_ids->{$species_name}=$species_id->[0];
+    }
     $dba->dbc()->disconnect_if_idle();
   }
   #Dealing with anything else
@@ -149,11 +154,11 @@ sub get_species_and_dbtype {
     $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
     $dba->dbc()->disconnect_if_idle();
   }
-  return ($species,$db_type,$database); 
+  return ($species,$db_type,$database,$species_ids);
 }
 
 sub create_database_dba {
-  my ($database,$species,$db_type)=@_;
+  my ($database,$species,$db_type,$species_ids)=@_;
   my $dba;
   $log->info("Connecting to database ".$database->{dbname}." with species $species");
   #dealing with Compara
@@ -170,6 +175,7 @@ sub create_database_dba {
   }
   #dealing with collections
   elsif ($database->{dbname} =~ m/_collection_/){
+     my $species_id = $species_ids->{$species};
      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
       -user   => $database->{user},
       -dbname => $database->{dbname},
@@ -178,7 +184,8 @@ sub create_database_dba {
       -pass => $database->{pass},
       -multispecies_db => 1,
       -species => $species,
-      -group => $db_type
+      -group => $db_type,
+      -species_id => $species_id
     );
   }
   #Dealing with anything else
@@ -205,8 +212,8 @@ sub get_db_connection_params {
 
 #Subroutine to process compara database and add or force update
 sub process_compara {
-  my ($species,$metadatadba,$gdba,$db_type,$database) = @_;
-  my $dba=create_database_dba($database,$species,$db_type);
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids) = @_;
+  my $dba=create_database_dba($database,$species,$db_type,$species_ids);
   my $cdba = $metadatadba->get_GenomeComparaInfoAdaptor();
   my $opts = { -INFO_ADAPTOR => $gdba,
                -ANNOTATION_ANALYZER =>
@@ -231,9 +238,9 @@ sub process_compara {
 
 #Subroutine to add or force update a species database
 sub process_core {
-  my ($species,$metadatadba,$gdba,$db_type,$database) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids) = @_;
   foreach my $species_name (@{$species}){
-    my $dba=create_database_dba($database,$species_name,$db_type);
+    my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
@@ -256,9 +263,9 @@ sub process_core {
 
 #Subroutine to add or force update a species database
 sub process_other_database {
-  my ($species,$metadatadba,$gdba,$db_type,$database) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids) = @_;
   foreach my $species_name (@{$species}){
-    my $dba=create_database_dba($database,$species_name,$db_type);
+    my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
                   Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
