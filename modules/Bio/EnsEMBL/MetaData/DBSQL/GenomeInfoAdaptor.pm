@@ -366,13 +366,12 @@ sub update {
       ->store( $genome->organism() );
     $self->db()->get_GenomeAssemblyInfoAdaptor()
       ->store( $genome->assembly() );
-  }
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/update genome set division_id=?,
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL => q/update genome set division_id=?,
 genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
 has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
     ,
-    -PARAMS => [ $self->_get_division_id( $genome->division() ),
+      -PARAMS => [ $self->_get_division_id( $genome->division() ),
                  $genome->genebuild(),
                  $genome->has_pan_compara(),
                  $genome->has_variations(),
@@ -384,6 +383,7 @@ has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organ
                  $genome->organism()->dbID(),
                  $genome->data_release()->dbID(),
                  $genome->dbID() ] );
+  }
   $genome->adaptor($self);
   $self->_store_databases($genome);
   if ($genome->{databases}->[0]->type() eq 'core'){
@@ -1249,8 +1249,9 @@ sub _store_databases {
   # write current databases
   for my $database ( @{ $genome->databases() } ) {      
      # Clear out the old database
-     $self->db()->get_DatabaseInfoAdaptor()->clear_genome_database($genome,$database);
-     $self->db()->get_DatabaseInfoAdaptor()->store($database);
+     my $dbia = $self->db()->get_DatabaseInfoAdaptor();
+     $dbia->clear_genome_database($genome,$database);
+     $dbia->store($database);
   }
   return;
 }
