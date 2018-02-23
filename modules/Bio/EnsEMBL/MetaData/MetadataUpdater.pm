@@ -27,6 +27,8 @@ my $log = get_logger();
 use Bio::EnsEMBL::Hive::Utils::URL;
 use Bio::EnsEMBL::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
+use Bio::EnsEMBL::Funcgen::DBSQL::DBAdaptor;
+use Bio::EnsEMBL::Variation::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
@@ -38,7 +40,7 @@ sub process_database {
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
   # Check if release already exist or create it
   $gdba = update_release($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba);
-  # Get database db_type and species
+  # Get database db_type and species  
   my ($species,$db_type,$database,$species_ids)=get_species_and_dbtype($database_uri);
   if ($db_type eq "core"){
     process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
@@ -141,16 +143,61 @@ sub get_species_and_dbtype {
     }
     $dba->dbc()->disconnect_if_idle();
   }
-  #Dealing with anything else
-  else{
+  #dealing with Variation
+  elsif ($database->{dbname} =~ m/_variation_/){
+    $db_type="variation";
+    $dba = Bio::EnsEMBL::Variation::DBSQL::DBAdaptor->new(
+    -user   => $database->{user},
+    -dbname => $database->{dbname},
+    -host   => $database->{host},
+    -port   => $database->{port},
+    -pass => $database->{pass}
+    );
+    $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+    $dba->dbc()->disconnect_if_idle();
+  }
+  #dealing with Regulation
+  elsif ($database->{dbname} =~ m/_funcgen_/){
+    $db_type="funcgen";
+    $dba = Bio::EnsEMBL::Funcgen::DBSQL::DBAdaptor->new(
+    -user   => $database->{user},
+    -dbname => $database->{dbname},
+    -host   => $database->{host},
+    -port   => $database->{port},
+    -pass => $database->{pass}
+    );
+    $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+    $dba->dbc()->disconnect_if_idle();
+  }
+  else {
+    #dealing with Core
+    if ($database->{dbname} =~ m/_core_/){
+      $db_type="core";
+    }
+      #dealing with otherfeatures
+    elsif ($database->{dbname} =~ m/_otherfeatures_/){
+      $db_type="otherfeatures";
+    }
+      #dealing with rnaseq
+    elsif ($database->{dbname} =~ m/_rnaseq_/){
+      $db_type="rnaseq";
+    }
+      #dealing with cdna
+    elsif ($database->{dbname} =~ m/_cdna_/){
+      $db_type="cdna";
+    }
+    #Dealing with anything else
+    else{
+      die "Can't find data_type for database $database->{dbname}";
+    }
     $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
       -user   => $database->{user},
       -dbname => $database->{dbname},
       -host   => $database->{host},
       -port   => $database->{port},
-      -pass => $database->{pass}
+      -pass => $database->{pass},
+      -group => $db_type
     );
-    $db_type=$dba->group();
     $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
     $dba->dbc()->disconnect_if_idle();
   }
@@ -186,6 +233,27 @@ sub create_database_dba {
       -species => $species,
       -group => $db_type,
       -species_id => $species_id
+    );
+  }
+  elsif ($database->{dbname} =~ m/_variation_/){
+    $dba = Bio::EnsEMBL::Variation::DBSQL::DBAdaptor->new(
+    -user   => $database->{user},
+    -dbname => $database->{dbname},
+    -host   => $database->{host},
+    -port   => $database->{port},
+    -pass => $database->{pass},
+    -species => $species
+    );
+  }
+  #dealing with Regulation
+  elsif ($database->{dbname} =~ m/_funcgen_/){
+    $dba = Bio::EnsEMBL::Funcgen::DBSQL::DBAdaptor->new(
+    -user   => $database->{user},
+    -dbname => $database->{dbname},
+    -host   => $database->{host},
+    -port   => $database->{port},
+    -pass => $database->{pass},
+    -species => $species
     );
   }
   #Dealing with anything else
