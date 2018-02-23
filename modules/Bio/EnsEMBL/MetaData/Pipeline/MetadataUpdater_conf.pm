@@ -29,7 +29,7 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');  # All Hive datab
 sub resource_classes {
     my ($self) = @_;
     return { 'default' => { 'LSF' => '-q production-rh7'},
-         'himem' => { 'LSF' => '-q production-rh7 -M  16000 -R "rusage[mem=16000]"' } };
+         'himem' => { 'LSF' => '-q production-rh7 -M  20000 -R "rusage[mem=20000]"' } };
 }
 
 sub default_options {
@@ -53,6 +53,8 @@ sub pipeline_create_commands {
     @{$self->SUPER::pipeline_create_commands},  # inheriting database and hive tables' creation
 
             # additional tables needed for long multiplication pipeline's operation:
+    $self->db_cmd('CREATE TABLE result (job_id int(10), output TEXT, PRIMARY KEY (job_id))'),
+    $self->db_cmd('CREATE TABLE job_progress (job_progress_id int(11) NOT NULL AUTO_INCREMENT, job_id int(11) NOT NULL , message TEXT,  PRIMARY KEY (job_progress_id))'),
     $self->db_cmd('ALTER TABLE job DROP KEY input_id_stacks_analysis'),
     $self->db_cmd('ALTER TABLE job MODIFY input_id TEXT')
     ];
@@ -86,6 +88,9 @@ sub pipeline_analyses {
             -parameters => {
              },
             -rc_name => 'himem',
+            -flow_into     => {
+                   2 => [ '?table_name=result']
+            },
         },
         {
             -logic_name => 'metadata_updater_other',
@@ -95,7 +100,10 @@ sub pipeline_analyses {
             -wait_for      => [ 'metadata_updater_core' ],
             -parameters => {
              },
-            -rc_name => 'default',
+            -rc_name => 'himem',
+            -flow_into     => {
+                   2 => [ '?table_name=result']
+            },
         },
         {
             -logic_name => 'metadata_updater_compara',
@@ -106,6 +114,9 @@ sub pipeline_analyses {
             -parameters => {
              },
             -rc_name => 'default',
+            -flow_into     => {
+                   2 => [ '?table_name=result']
+            },
         }
         ];
 }

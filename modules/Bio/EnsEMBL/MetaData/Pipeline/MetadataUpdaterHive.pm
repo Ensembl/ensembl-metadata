@@ -32,6 +32,9 @@ use strict;
 use warnings;
 use Bio::EnsEMBL::MetaData::MetadataUpdater
   qw/process_database/;
+use Log::Log4perl qw/:easy/;
+use JSON;
+use Time::Duration;
 
 sub run{
 my ($self) = @_;
@@ -42,10 +45,47 @@ my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
 my $hive_dbc = $self->dbc;
+my $start_time = time();
+
+my $config = q{
+	log4perl.category = INFO, DB
+    log4perl.appender.DB                 = Log::Log4perl::Appender::DBI
+    log4perl.appender.DB.datasource=DBI:mysql:database=}.$hive_dbc->dbname().q{;host=}.$hive_dbc->host().q{;port=}.$hive_dbc->port().q{
+    log4perl.appender.DB.username        = }.$hive_dbc->user().q{
+    log4perl.appender.DB.password        = }.$hive_dbc->password().q{
+    log4perl.appender.DB.sql             = \
+        insert into job_progress                   \
+        (job_id, message) values (?,?)
+
+    log4perl.appender.DB.params.1        = }.$self->input_job->dbID().q{
+    log4perl.appender.DB.usePreparedStmt = 1
+
+    log4perl.appender.DB.layout          = Log::Log4perl::Layout::NoopLayout
+    log4perl.appender.DB.warp_message    = 0
+ };
+
+Log::Log4perl::init( \$config);
+
+my $logger = get_logger();
+if(!Log::Log4perl->initialized()) {
+  Log::Log4perl->easy_init($INFO);
+}
 
 $hive_dbc->disconnect_if_idle() if defined $hive_dbc;
 
 process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release);
+
+my $runtime =  duration(time() - $start_time);
+
+my $output = {
+		  metadata_uri=>$metadata_uri,
+		  database_uri=>$database_uri,
+		  runtime => $runtime
+		 };
+$self->dataflow_output_id({
+			       job_id=>$self->input_job()->dbID(),
+			       output=>encode_json($output)
+			      }, 2);
 
 return;
 }
