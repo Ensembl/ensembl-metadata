@@ -76,6 +76,23 @@ sub clear_genome_databases {
   return;
 }
 
+=head1 METHODS
+=head2 clear_genome_database
+  Arg        : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Clear a genome associated database for the supplied genome and database type
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_genome_database {
+  my ( $self, $genome, $database ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/delete from genome_database where genome_id=? and type=? and species_id=?/,
+  -PARAMS=>[$genome->dbID(),$database->type(),$genome->species_id()]);
+  return;
+}
+
 =head2 clear_release_databases
   Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo
   Description: Clear databases for the supplied release
@@ -91,6 +108,23 @@ sub clear_release_databases {
   -PARAMS=>[$release->dbID()]);
   return;
 }
+
+=head2 clear_current_release
+  Arg        : Bio::EnsEMBL::MetaData::DataReleaseInfo
+  Description: Clear current release flag for the supplied release
+  Returntype : none
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub clear_current_release {
+  my ( $self, $release ) = @_;
+  $self->dbc()->sql_helper()->execute_update(-SQL=>q/update data_release set is_current=? where data_release_id=?/,
+  -PARAMS=>[0,$release->dbID()]);
+  return;
+}
+
 
 
 =head2 store

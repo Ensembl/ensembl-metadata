@@ -78,6 +78,7 @@ sub default_options {
     variation     => 1,
     release       => software_version(),
     eg_release    => undef,
+    current_release    => 1,
     release_date  => strftime( "%F", localtime ) };
 }
 
@@ -108,6 +109,7 @@ sub pipeline_analyses {
                            division        => $self->o('division'),
                            run_all         => $self->o('run_all'),
                            meta_filters    => $self->o('meta_filters'),
+                           current_release => $self->o('current_release'),
                            chromosome_flow => 0,
                            variation_flow  => 0 },
           -flow_into =>
