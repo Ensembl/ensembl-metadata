@@ -88,7 +88,8 @@ sub update_release {
   if ( defined $eg_release ) {
     $release = $rdba->fetch_by_ensembl_genomes_release($eg_release);
     if (!defined $release){
-      store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release)
+      store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release);
+      $release = $rdba->fetch_by_ensembl_genomes_release($eg_release);
     }
     else {
       $log->info("release e$e_release" . ( ( defined $eg_release ) ?
@@ -99,7 +100,8 @@ sub update_release {
   else {
     $release = $rdba->fetch_by_ensembl_release($e_release);
     if (!defined $release){
-      store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release)
+      store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release);
+      $release = $rdba->fetch_by_ensembl_release($e_release);
     }
     else{
       $log->info("release e$e_release" . ( ( defined $eg_release ) ?
