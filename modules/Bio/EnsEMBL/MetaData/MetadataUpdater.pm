@@ -38,10 +38,16 @@ sub process_database {
   #Connect to metadata database
   my $metadatadba = create_metadata_dba($metadata_uri);
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
-  # Check if release already exist or create it
-  $gdba = update_release($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba);
   # Get database db_type and species  
   my ($species,$db_type,$database,$species_ids)=get_species_and_dbtype($database_uri);
+  if (defined $e_release) {
+    # Check if release already exist or create it
+    $gdba = update_release($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba);
+  }
+  #get current release
+  else {
+    $gdba = get_release($metadatadba,$gdba,$database);
+  }
   if ($db_type eq "core"){
     process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
   }
@@ -114,6 +120,39 @@ sub update_release {
   return $gdba;
 }
 
+sub get_release {
+  my ($metadatadba,$gdba,$database) = @_;
+  my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
+  my $release;
+  if ($database->{dbname} =~ m/_(\d+)_\d+_\d+$/){
+    $release = $rdba->fetch_by_ensembl_genomes_release($1);
+    if (defined $release){
+      $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
+                    "/EG".$release->{ensembl_genomes_version}."" : "" ) .
+                  " ".$release->{release_date});
+    }
+    else{
+      die "Can't find release $release for EG in metadata database";
+    }
+  }
+  elsif($database->{dbname} =~ m/_(\d+)_\d+$/){
+    $release = $rdba->fetch_by_ensembl_release($1);
+    if (defined $release){
+      $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
+                "/EG".$release->{ensembl_genomes_version}."" : "" ) .
+              " ".$release->{release_date});
+    }
+    else{
+      die "Can't find release $release for EG in metadata database";
+    }
+  }
+  else{
+    die "Can't find release for database $database->{dbname}";
+  }
+  $gdba->data_release($release);
+  $rdba->dbc()->disconnect_if_idle();
+  return $gdba;
+}
 sub get_species_and_dbtype {
   my ($database_uri)=@_;
   my $database = get_db_connection_params( $database_uri);
