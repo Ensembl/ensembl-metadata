@@ -39,25 +39,35 @@ my $release_date = $self->param('release_date');
 my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
+my $email = $self->param_required('email');
 
 my $output_hash;
-if (defined $eg_release){
+if (!defined $e_release){
   $output_hash={
+			       'metadata_uri' => $metadata_uri,
+             'database_uri' => $database_uri,
+             'email' => $email
+			      };
+}
+elsif (!defined $eg_release){
+  $output_hash={
+			       'metadata_uri' => $metadata_uri,
+             'database_uri' => $database_uri,
+             'release_date' => $release_date,
+             'e_release' => $e_release,
+             'current_release' => $current_release,
+             'email' => $email
+			      };
+}
+else {
+    $output_hash={
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
              'release_date' => $release_date,
              'e_release' => $e_release,
              'eg_release' => $eg_release,
-             'current_release' => $current_release
-			      };
-}
-else {
-  $output_hash={
-			       'metadata_uri' => $metadata_uri,
-             'database_uri' => $database_uri,
-             'release_date' => $release_date,
-             'e_release' => $e_release,
-             'current_release' => $current_release
+             'current_release' => $current_release,
+             'email' => $email
 			      };
 }
 

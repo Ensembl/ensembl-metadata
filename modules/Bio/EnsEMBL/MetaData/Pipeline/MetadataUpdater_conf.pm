@@ -44,7 +44,8 @@ sub default_options {
     release_date=> '',
     e_release => '',
     eg_release=> '',
-    current_release=>''};
+    current_release=>'',
+    email => ''};
 }
 
 sub pipeline_create_commands {

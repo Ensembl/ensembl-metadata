@@ -41,6 +41,7 @@ my ($self) = @_;
 my $metadata_uri = $self->param_required('metadata_uri');
 my $database_uri = $self->param_required('database_uri');
 my $release_date = $self->param('release_date');
+my $email = $self->param_required('email');
 my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
@@ -80,6 +81,7 @@ my $runtime =  duration(time() - $start_time);
 my $output = {
 		  metadata_uri=>$metadata_uri,
 		  database_uri=>$database_uri,
+      email => $email,
 		  runtime => $runtime
 		 };
 $self->dataflow_output_id({
