@@ -40,36 +40,36 @@ my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
 
-my $database = get_db_connection_params( $database_uri);
-if ($database->{dbname} =~ m/_core_/){
-  $self->dataflow_output_id({
+my $output_hash;
+if (defined $eg_release){
+  $output_hash={
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
              'release_date' => $release_date,
              'e_release' => $e_release,
              'eg_release' => $eg_release,
              'current_release' => $current_release
-			      }, 2);
-}
-elsif ($database->{dbname} =~ m/_compara_/){
-  $self->dataflow_output_id({
-			       'metadata_uri' => $metadata_uri,
-             'database_uri' => $database_uri,
-             'release_date' => $release_date,
-             'e_release' => $e_release,
-             'eg_release' => $eg_release,
-             'current_release' => $current_release
-			      }, 4);
+			      };
 }
 else {
-  $self->dataflow_output_id({
+  $output_hash={
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
              'release_date' => $release_date,
              'e_release' => $e_release,
-             'eg_release' => $eg_release,
              'current_release' => $current_release
-			      }, 3);
+			      };
+}
+
+my $database = get_db_connection_params( $database_uri);
+if ($database->{dbname} =~ m/_core_/){
+  $self->dataflow_output_id($output_hash, 2);
+}
+elsif ($database->{dbname} =~ m/_compara_/){
+  $self->dataflow_output_id($output_hash, 4);
+}
+else {
+  $self->dataflow_output_id($output_hash, 3);
 }
 return;
 }
