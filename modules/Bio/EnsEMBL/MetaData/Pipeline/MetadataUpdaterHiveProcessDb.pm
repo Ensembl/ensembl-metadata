@@ -40,13 +40,15 @@ my $e_release = $self->param('e_release');
 my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
 my $email = $self->param_required('email');
+my $timestamp = $self->param('timestamp');
 
 my $output_hash;
 if (!defined $e_release){
   $output_hash={
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
-             'email' => $email
+             'email' => $email,
+             'timestamp' => $timestamp
 			      };
 }
 elsif (!defined $eg_release){
@@ -56,7 +58,8 @@ elsif (!defined $eg_release){
              'release_date' => $release_date,
              'e_release' => $e_release,
              'current_release' => $current_release,
-             'email' => $email
+             'email' => $email,
+             'timestamp' => $timestamp
 			      };
 }
 else {
@@ -67,7 +70,8 @@ else {
              'e_release' => $e_release,
              'eg_release' => $eg_release,
              'current_release' => $current_release,
-             'email' => $email
+             'email' => $email,
+             'timestamp' => $timestamp
 			      };
 }
 
