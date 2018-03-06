@@ -46,7 +46,9 @@ sub default_options {
     eg_release=> '',
     current_release=>'',
     email => '',
-    timestamp =>''};
+    timestamp =>'',
+    update_type => '',
+    comment => ''};
 }
 
 sub pipeline_create_commands {

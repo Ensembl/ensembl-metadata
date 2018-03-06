@@ -41,6 +41,8 @@ my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
 my $email = $self->param_required('email');
 my $timestamp = $self->param('timestamp');
+my $update_type = $self->param('update_type');
+my $comment = $self->param('comment');
 
 my $output_hash;
 if (!defined $e_release){
@@ -48,6 +50,8 @@ if (!defined $e_release){
 			       'metadata_uri' => $metadata_uri,
              'database_uri' => $database_uri,
              'email' => $email,
+             'update_type' => $update_type,
+             'comment' => $comment,
              'timestamp' => $timestamp
 			      };
 }
@@ -59,6 +63,8 @@ elsif (!defined $eg_release){
              'e_release' => $e_release,
              'current_release' => $current_release,
              'email' => $email,
+             'update_type' => $update_type,
+             'comment' => $comment,
              'timestamp' => $timestamp
 			      };
 }
@@ -70,6 +76,8 @@ else {
              'e_release' => $e_release,
              'eg_release' => $eg_release,
              'current_release' => $current_release,
+             'update_type' => $update_type,
+             'comment' => $comment,
              'email' => $email,
              'timestamp' => $timestamp
 			      };
