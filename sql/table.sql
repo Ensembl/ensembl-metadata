@@ -91,7 +91,7 @@ CREATE TABLE `compara_analysis_event` (
   `details` text,
   PRIMARY KEY (`compara_analysis_event_id`),
   KEY `compara_analysis_event_ibfk_1` (`compara_analysis_id`),
-  CONSTRAINT `compara_analysis_event_ibfk_1` FOREIGN KEY (`compara_analysis_id`) REFERENCES `compara_analysis` (`compara_analysis_id`)
+  CONSTRAINT `compara_analysis_event_ibfk_1` FOREIGN KEY (`compara_analysis_id`) REFERENCES `compara_analysis` (`compara_analysis_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -150,7 +150,7 @@ CREATE TABLE `data_release_database_event` (
   `details` text,
   PRIMARY KEY (`data_release_database_event_id`),
   KEY `data_release_database_event_ibfk_1` (`data_release_database_id`),
-  CONSTRAINT `data_release_database_event_ibfk_1` FOREIGN KEY (`data_release_database_id`) REFERENCES `data_release_database` (`data_release_database_id`)
+  CONSTRAINT `data_release_database_event_ibfk_1` FOREIGN KEY (`data_release_database_id`) REFERENCES `data_release_database` (`data_release_database_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

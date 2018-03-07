@@ -12,7 +12,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-# patch_15022018_e.sql
+# patch_15022018_h.sql
 #
 # Title: Adding genome_database_id column, update index and add delete cascade for genome_database_id in genome_variation
 #
