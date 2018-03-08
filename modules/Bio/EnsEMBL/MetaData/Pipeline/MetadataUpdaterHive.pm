@@ -47,6 +47,9 @@ my $eg_release = $self->param('eg_release');
 my $current_release = $self->param('current_release');
 my $hive_dbc = $self->dbc;
 my $start_time = time();
+my $update_type = $self->param_required('update_type');
+my $comment = $self->param_required('comment');
+my $source = $self->param_required('source');
 
 my $config = q{
 	log4perl.category = INFO, DB
@@ -74,7 +77,7 @@ if(!Log::Log4perl->initialized()) {
 
 $hive_dbc->disconnect_if_idle() if defined $hive_dbc;
 
-process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release);
+process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$update_type,$source);
 
 my $runtime =  duration(time() - $start_time);
 

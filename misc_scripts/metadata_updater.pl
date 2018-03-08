@@ -23,7 +23,7 @@ use Bio::EnsEMBL::MetaData::MetadataUpdater
 use Log::Log4perl qw/:easy/;
 
 my $opts = {};
-GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','current_release=s','verbose' );
+GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','current_release=s','email=s','comment=s','update_type=s','source=s','verbose' );
 
 if ( $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
@@ -34,8 +34,8 @@ else {
 
 my $logger = get_logger;
 if ( !defined $opts->{metadata_uri} || !defined $opts->{database_uri}) {
-  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 [-verbose]";
+  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 -email john.doe@ebi.ac.uk -comment 'loading database for 91' -update_type 'Other' -source 'Handover' [-verbose]";
 }
 
 #Process the given database
-process_database($opts->{metadata_uri}, $opts->{database_uri},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},  $opts->{verbose});
+process_database($opts->{metadata_uri}, $opts->{database_uri},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},$opts->{email},$opts->{comment},$opts->{update_type},$opts->{source},$opts->{verbose});
