@@ -32,9 +32,11 @@ use Bio::EnsEMBL::Variation::DBSQL::DBAdaptor;
 use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
+use Bio::EnsEMBL::MetaData::EventInfo;
+use JSON;
 
 sub process_database {
-  my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release)  = @_;
+  my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$update_type,$source)  = @_;
   #Connect to metadata database
   my $metadatadba = create_metadata_dba($metadata_uri);
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
@@ -49,14 +51,14 @@ sub process_database {
     $gdba = get_release($metadatadba,$gdba,$database);
   }
   if ($db_type eq "core"){
-    process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
+    process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
   }
   elsif ($db_type eq "compara") {
-    process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
+    process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
   }
   else {
     check_if_coredb_exist($gdba,$species,$metadatadba);
-    process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids);
+    process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
   }
   #Updating booleans
   $log->info("Updating booleans");
@@ -124,7 +126,7 @@ sub get_release {
   my ($metadatadba,$gdba,$database) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
-  if ($database->{dbname} =~ m/_(\d+)_\d+_\d+$/){
+  if (($database->{dbname} =~ m/_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/(?:compara|mart|ontology)_?\w+?_(\d+)_\d+$/) ){
     $release = $rdba->fetch_by_ensembl_genomes_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -135,7 +137,7 @@ sub get_release {
       die "Can't find release $release for EG in metadata database";
     }
   }
-  elsif($database->{dbname} =~ m/_(\d+)_\d+$/){
+  elsif(($database->{dbname} =~ m/_(\d+)_\d+$/) or ($database->{dbname} =~ m/(?:compara|mart|ontology)_(\d+)$/)){
     $release = $rdba->fetch_by_ensembl_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -143,7 +145,18 @@ sub get_release {
               " ".$release->{release_date});
     }
     else{
-      die "Can't find release $release for EG in metadata database";
+      die "Can't find release $release for Ensembl in metadata database";
+    }
+  }
+  elsif($database->{dbname} =~ m/_(\d+)$/){
+    $release = $rdba->fetch_by_ensembl_release($1);
+    if (defined $release){
+      $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
+                "/EG".$release->{ensembl_genomes_version}."" : "" ) .
+              " ".$release->{release_date});
+    }
+    else{
+      die "Can't find release $release for Ensembl in metadata database";
     }
   }
   else{
@@ -321,7 +334,7 @@ sub get_db_connection_params {
 
 #Subroutine to process compara database and add or force update
 sub process_compara {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
   my $dba=create_database_dba($database,$species,$db_type,$species_ids);
   my $cdba = $metadatadba->get_GenomeComparaInfoAdaptor();
   my $opts = { -INFO_ADAPTOR => $gdba,
@@ -333,11 +346,16 @@ sub process_compara {
                -VARIATION    => 0 };
   my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
   my $compara_infos = $processor->process_compara( $dba, {});
-
+  my $ea = $metadatadba->get_EventInfoAdaptor();
   for my $compara_info (@$compara_infos) {
     my $nom = $compara_info->method() . "/" . $compara_info->set_name();
     $log->info( "Storing/Updating compara info for " . $nom );
     $cdba->store($compara_info);
+    $log->info( "Storing compara event for " . $nom );
+    $ea->store( Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $compara_info,
+                                                    -TYPE    => $update_type,
+                                                    -SOURCE  => $source,
+                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) ) );
   }
   $cdba->dbc()->disconnect_if_idle();
   $dba->dbc()->disconnect_if_idle();
@@ -347,7 +365,7 @@ sub process_compara {
 
 #Subroutine to add or force update a species database
 sub process_core {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
   foreach my $species_name (@{$species}){
     my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
@@ -361,10 +379,14 @@ sub process_core {
 
     my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
     my $md = $processor->process_core($dba);
-
     $log->info( "Storing " . $md->name() );
     $gdba->store($md);
-    $log->info("Completed processing Core ".$dba->dbc()->dbname()." for $species_name");
+    my $ea = $metadatadba->get_EventInfoAdaptor();
+    $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
+    $ea->store( Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
+                                                    -TYPE    => $update_type,
+                                                    -SOURCE  => $source,
+                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) ) );
     $dba->dbc()->disconnect_if_idle();
   }
   return ;
@@ -372,7 +394,7 @@ sub process_core {
 
 #Subroutine to add or force update a species database
 sub process_other_database {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
   foreach my $species_name (@{$species}){
     my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
     my $opts = { -INFO_ADAPTOR => $gdba,
@@ -387,7 +409,12 @@ sub process_other_database {
     my $md = $processor->$process_db_type_method($dba);
     $log->info( "Updating " . $md->name() );
     $gdba->update($md);
-    $log->info("Completed processing $db_type ".$dba->dbc()->dbname()." for $species_name");
+    my $ea = $metadatadba->get_EventInfoAdaptor();
+    $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
+    $ea->store( Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
+                                                    -TYPE    => $update_type,
+                                                    -SOURCE  => $source,
+                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) ) );
     $dba->dbc()->disconnect_if_idle();
   }
   return ;
