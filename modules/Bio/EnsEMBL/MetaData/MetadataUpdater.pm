@@ -44,17 +44,21 @@ sub process_database {
   my ($species,$db_type,$database,$species_ids)=get_species_and_dbtype($database_uri);
   if (defined $e_release) {
     # Check if release already exist or create it
-    $gdba = update_release($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba);
+    $gdba = update_release_and_process_release_db($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$update_type,$comment,$source,$db_type,$database);
   }
-  #get current release
+  #get current release and process release db
   else {
-    $gdba = get_release($metadatadba,$gdba,$database);
+    $gdba = get_release_and_process_release_db($metadatadba,$gdba,$database,$email,$update_type,$comment,$source,$db_type);
   }
   if ($db_type eq "core"){
     process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
   }
   elsif ($db_type eq "compara") {
     process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
+  }
+  #Already processed mart, ontology, in get_release...
+  elsif ($db_type eq "other"){
+    1;
   }
   else {
     check_if_coredb_exist($gdba,$species,$metadatadba);
@@ -89,8 +93,8 @@ sub create_metadata_dba {
   return $metadatadba;
 }
 
-sub update_release {
-  my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba) = @_;
+sub update_release_and_process_release_db {
+  my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$update_type,$comment,$source,$db_type,$database) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   if ( defined $eg_release ) {
@@ -117,16 +121,20 @@ sub update_release {
                 " $release_date already exist, reusing it");
     }
   }
+  if ($db_type eq "other"){
+    process_release_database($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source);
+  }
   $gdba->data_release($release);
   $rdba->dbc()->disconnect_if_idle();
   return $gdba;
 }
 
-sub get_release {
-  my ($metadatadba,$gdba,$database) = @_;
+sub get_release_and_process_release_db {
+  my ($metadatadba,$gdba,$database,$email,$update_type,$comment,$source,$db_type) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
-  if (($database->{dbname} =~ m/_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/(?:compara|mart|ontology)_?\w+?_(\d+)_\d+$/) ){
+  # Parse EG databases including core, core like, variation, funcgen and compara
+  if (($database->{dbname} =~ m/_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/\w+_?\w+?_(\d+)_\d+$/) ){
     $release = $rdba->fetch_by_ensembl_genomes_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -137,7 +145,8 @@ sub get_release {
       die "Can't find release $release for EG in metadata database";
     }
   }
-  elsif(($database->{dbname} =~ m/_(\d+)_\d+$/) or ($database->{dbname} =~ m/(?:compara|mart|ontology)_(\d+)$/)){
+  # Parse Ensembl release
+  elsif(($database->{dbname} =~ m/_(\d+)_\d+$/) or ($database->{dbname} =~ m/\w+_(\d+)$/)){
     $release = $rdba->fetch_by_ensembl_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -145,7 +154,16 @@ sub get_release {
               " ".$release->{release_date});
     }
     else{
-      die "Can't find release $release for Ensembl in metadata database";
+      $release = $rdba->fetch_by_ensembl_genomes_release($1);
+      # Check EG mart as they match the same regex
+      if (defined $release){
+        $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
+                      "/EG".$release->{ensembl_genomes_version}."" : "" ) .
+                    " ".$release->{release_date});
+      }
+      else{
+        die "Can't find release $release for Ensembl or EG in metadata database";
+      }
     }
   }
   elsif($database->{dbname} =~ m/_(\d+)$/){
@@ -161,6 +179,9 @@ sub get_release {
   }
   else{
     die "Can't find release for database $database->{dbname}";
+  }
+  if ($db_type eq "other"){
+    process_release_database($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source);
   }
   $gdba->data_release($release);
   $rdba->dbc()->disconnect_if_idle();
@@ -222,6 +243,10 @@ sub get_species_and_dbtype {
     );
     $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
     $dba->dbc()->disconnect_if_idle();
+  }
+  # Dealing with other databases like mart, ontology,...
+  elsif ($database->{dbname} =~ m/_\w+_\d+$/){
+      $db_type="other";
   }
   else {
     #dealing with Core
@@ -360,6 +385,44 @@ sub process_compara {
   $cdba->dbc()->disconnect_if_idle();
   $dba->dbc()->disconnect_if_idle();
   $log->info("Completed processing compara ".$dba->dbc()->dbname());
+  return;
+}
+
+#Subroutine to process release databases like mart or ontology
+sub process_release_database {
+  my ($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source) = @_;
+  my $division;
+  if (defined $release->{ensembl_genomes_version}){
+    if ($database->{dbname} =~ m/^(\w+)_\w+_\d+$/){
+      $division = "Ensembl".ucfirst($1);
+    }
+    else{
+      die "Can't find division for database ".$database->{dbname};
+    }
+  }
+  else{
+    $division = "Ensembl";
+  }
+  $log->info( "Adding database " . $database->{dbname} . " to release" );
+  $release->add_database($database->{dbname},$division);
+  $log->info( "Updating release");
+  $gdba->update($release);
+  my $release_database;
+  foreach my $db (@{$release->databases()}){
+    if ($db->{dbname} eq $database->{dbname}){
+      $release_database = $db;
+    }
+  }
+  if (!defined $release_database){
+    die "Can't find release database ".$database->{dbname}." in metadata database";
+  }
+  my $ea = $metadatadba->get_EventInfoAdaptor();
+  $log->info( "Storing release event for " . $database->{dbname} );
+  $ea->store( Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $release_database,
+                                                  -TYPE    => $update_type,
+                                                  -SOURCE  => $source,
+                                                  -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) ) );
+  $log->info("Completed processing ".$database->{dbname});
   return;
 }
 
