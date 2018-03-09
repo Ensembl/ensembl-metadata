@@ -244,42 +244,70 @@ sub get_species_and_dbtype {
     $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
     $dba->dbc()->disconnect_if_idle();
   }
-  # Dealing with other databases like mart, ontology,...
-  elsif ($database->{dbname} =~ m/_\w+_\d+$/){
-      $db_type="other";
-  }
-  else {
-    #dealing with Core
-    if ($database->{dbname} =~ m/_core_/){
+  #dealing with Core
+  elsif ($database->{dbname} =~ m/_core_/){
       $db_type="core";
+      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+        -user   => $database->{user},
+        -dbname => $database->{dbname},
+        -host   => $database->{host},
+        -port   => $database->{port},
+        -pass => $database->{pass},
+        -group => $db_type
+      );
+      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+      $dba->dbc()->disconnect_if_idle();
     }
-      #dealing with otherfeatures
+    #dealing with otherfeatures
     elsif ($database->{dbname} =~ m/_otherfeatures_/){
       $db_type="otherfeatures";
+      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+        -user   => $database->{user},
+        -dbname => $database->{dbname},
+        -host   => $database->{host},
+        -port   => $database->{port},
+        -pass => $database->{pass},
+        -group => $db_type
+      );
+      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+      $dba->dbc()->disconnect_if_idle();
     }
       #dealing with rnaseq
     elsif ($database->{dbname} =~ m/_rnaseq_/){
       $db_type="rnaseq";
+      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+        -user   => $database->{user},
+        -dbname => $database->{dbname},
+        -host   => $database->{host},
+        -port   => $database->{port},
+        -pass => $database->{pass},
+        -group => $db_type
+      );
+      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+      $dba->dbc()->disconnect_if_idle();
     }
       #dealing with cdna
     elsif ($database->{dbname} =~ m/_cdna_/){
       $db_type="cdna";
+      $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+        -user   => $database->{user},
+        -dbname => $database->{dbname},
+        -host   => $database->{host},
+        -port   => $database->{port},
+        -pass => $database->{pass},
+        -group => $db_type
+      );
+      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+      $dba->dbc()->disconnect_if_idle();
+    }
+    # Dealing with other databases like mart, ontology,...
+    elsif ($database->{dbname} =~ m/_\w+_\d+$/){
+      $db_type="other";
     }
     #Dealing with anything else
     else{
       die "Can't find data_type for database $database->{dbname}";
     }
-    $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
-      -user   => $database->{user},
-      -dbname => $database->{dbname},
-      -host   => $database->{host},
-      -port   => $database->{port},
-      -pass => $database->{pass},
-      -group => $db_type
-    );
-    $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-    $dba->dbc()->disconnect_if_idle();
-  }
   return ($species,$db_type,$database,$species_ids);
 }
 
