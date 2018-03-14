@@ -134,7 +134,7 @@ sub get_release_and_process_release_db {
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   # Parse EG databases including core, core like, variation, funcgen and compara
-  if (($database->{dbname} =~ m/_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/\w+_?\w+?_(\d+)_\d+$/) ){
+  if (($database->{dbname} =~ m/_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/\w+_?\w*_(\d+)_\d+$/) ){
     $release = $rdba->fetch_by_ensembl_genomes_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -301,7 +301,7 @@ sub get_species_and_dbtype {
       $dba->dbc()->disconnect_if_idle();
     }
     # Dealing with other databases like mart, ontology,...
-    elsif ($database->{dbname} =~ m/_\w+_\d+$/){
+    elsif ($database->{dbname} =~ m/^\w+_?\d*_\d+$/){
       $db_type="other";
     }
     #Dealing with anything else
@@ -421,15 +421,25 @@ sub process_release_database {
   my ($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source) = @_;
   my $division;
   if (defined $release->{ensembl_genomes_version}){
-    if ($database->{dbname} =~ m/^(\w+)_\w+_\d+$/){
+    if ($database->{dbname} =~ m/^([a-z]+)_/){
       $division = "Ensembl".ucfirst($1);
+      #databases like ensemblgenomes_stable_ids_38_91 and ensemblgenomes_info_38 are from the Pan division
+      if ($division eq "EnsemblEnsemblgenomes"){
+        $division="EnsemblPan";
+      }
     }
     else{
       die "Can't find division for database ".$database->{dbname};
     }
   }
   else{
-    $division = "Ensembl";
+    #ontology db and ontology mart database are from the Pan division
+    if ($database->{dbname} =~ m/ontology/){
+      $division="EnsemblPan";
+    }
+    else{
+      $division = "Ensembl";
+    }
   }
   $log->info( "Adding database " . $database->{dbname} . " to release" );
   $release->add_database($database->{dbname},$division);
