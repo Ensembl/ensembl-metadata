@@ -221,6 +221,9 @@ sub _parse_type {
   if ( $dbname =~ m/mart/ ) {
     return 'mart';
   }
+  elsif ( $dbname =~ m/ontology/ ) {
+    return 'ontology';
+  }
   else {
     $dbname =~ m/^.+_([a-z]+)_[0-9]+(?:_[a-z0-9]+)?_[0-9a-z]+/;
 

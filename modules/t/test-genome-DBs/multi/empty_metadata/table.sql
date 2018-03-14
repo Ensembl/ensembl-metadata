@@ -124,7 +124,7 @@ CREATE TABLE `data_release_database` (
   `data_release_database_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `data_release_id` int(10) unsigned NOT NULL,
   `dbname` varchar(64) NOT NULL,
-  `type` enum('mart','other') DEFAULT 'other',
+  `type` enum('mart','ontology','ids','other') DEFAULT 'other',
   `division_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`data_release_database_id`),
   UNIQUE KEY `id_dbname` (`data_release_id`,`dbname`),
