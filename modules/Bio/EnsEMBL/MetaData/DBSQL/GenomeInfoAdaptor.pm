@@ -265,7 +265,6 @@ sub data_release {
 
 sub store {
   my ( $self, $genome ) = @_;
-    $DB::single = 1;
   if ( !defined $genome->data_release() ) {
     $genome->data_release( $self->data_release() );
   }
@@ -357,7 +356,6 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
 
 sub update {
   my ( $self, $genome ) = @_;
-  $DB::single = 1;
   if ( !defined $genome->dbID() ) {
     croak "Cannot update an object that has not already been stored";
   }
