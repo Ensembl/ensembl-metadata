@@ -34,7 +34,7 @@ else {
 
 my $logger = get_logger;
 if ( !defined $opts->{metadata_uri} || !defined $opts->{database_uri}) {
-  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 -email john.doe@ebi.ac.uk -comment 'loading database for 91' -update_type 'Other' -source 'Handover' [-verbose]";
+  croak "Usage: metadata_updater.pl -metadata_uri <mysql://user:password\@host:port/metadata_db_name> -database_uri <mysql://user:password\@host:port/homo_sapiens_core_92_38> -e_release 92 [-eg_release 39] -release_date 2018-04-04 -current_release 1 -email john.doe\@ebi.ac.uk -comment 'loading database for 91' -update_type 'Other' -source 'Handover' [-verbose]";
 }
 
 #Process the given database
