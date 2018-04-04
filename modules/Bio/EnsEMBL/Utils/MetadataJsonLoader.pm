@@ -105,15 +105,22 @@ sub populate_assembly_tables{
     $log->info("Assembly for ".$species->{species}." already exist, reusing it");
     return $assembly;
   }
-  else{
-    $log->info("Populating assembly table for ".$species->{species});
-      $metadatadba->dbc()->sql_helper()->execute_update(-SQL =>qq/INSERT INTO assembly (assembly_accession,assembly_name,assembly_default,assembly_ucsc,assembly_level,base_count) VALUES(?,?,?,?,?,?)/, -PARAMS => [$species->{assembly_id},$species->{assembly_name},$species->{assembly_name},undef,$species->{assembly_level},$species->{base_count}]);
-      my $assembly=$metadatadba->dbc()->sql_helper()->execute( -SQL =>qq/select * from assembly where assembly_name=?/,-USE_HASHREFS => 1, -PARAMS => [$species->{assembly_name}]);
-    $log->info("Populating assembly sequence for ".$species->{species});
-    foreach my $sequence (@{$species->{sequences}}){
-        $metadatadba->dbc()->sql_helper()->execute_update(-SQL =>qq/INSERT INTO assembly_sequence (assembly_id,name,acc) VALUES(?,?,?)/, -PARAMS => [$assembly->[0]->{assembly_id},$sequence->{'name'},$sequence->{'acc'}]);
-    }
-    return $assembly;
+  else {
+      $assembly = $metadatadba->dbc()->sql_helper()->execute( -SQL =>qq/select * from assembly where assembly_accession=?/,-USE_HASHREFS => 1, -PARAMS => [$species->{assembly_id}]);
+      if (@$assembly){
+        $log->info("Assembly for ".$species->{species}." already exist, reusing it");
+        return $assembly;
+      }
+      else{
+        $log->info("Populating assembly table for ".$species->{species});
+          $metadatadba->dbc()->sql_helper()->execute_update(-SQL =>qq/INSERT INTO assembly (assembly_accession,assembly_name,assembly_default,assembly_ucsc,assembly_level,base_count) VALUES(?,?,?,?,?,?)/, -PARAMS => [$species->{assembly_id},$species->{assembly_name},$species->{assembly_name},undef,$species->{assembly_level},$species->{base_count}]);
+          $assembly=$metadatadba->dbc()->sql_helper()->execute( -SQL =>qq/select * from assembly where assembly_name=?/,-USE_HASHREFS => 1, -PARAMS => [$species->{assembly_name}]);
+        $log->info("Populating assembly sequence for ".$species->{species});
+        foreach my $sequence (@{$species->{sequences}}){
+            $metadatadba->dbc()->sql_helper()->execute_update(-SQL =>qq/INSERT INTO assembly_sequence (assembly_id,name,acc) VALUES(?,?,?)/, -PARAMS => [$assembly->[0]->{assembly_id},$sequence->{'name'},$sequence->{'acc'}]);
+        }
+        return $assembly;
+      }
   }
   return;
 }
