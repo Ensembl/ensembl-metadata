@@ -62,10 +62,6 @@ sub load_json {
     my $assembly = populate_assembly_tables($metadatadba,$species);
     populate_genome_tables($metadatadba,$species,$organism,$release_id,$assembly,$division,$email,$comment,$update_type,$source);
   }
-  #Updating booleans
-  $log->info("Updating booleans");
-  $gdba->update_booleans();
-  $log->info("Completed updating booleans");
   # Disconnecting from server
   $gdba->dbc()->disconnect_if_idle();
   $metadatadba->dbc()->disconnect_if_idle();

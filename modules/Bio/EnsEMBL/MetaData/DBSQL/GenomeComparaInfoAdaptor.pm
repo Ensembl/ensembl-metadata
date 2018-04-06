@@ -296,6 +296,46 @@ sub _store_compara_genomes {
           q/insert into genome_compara_analysis(genome_id,compara_analysis_id)
 		values(?,?)/,
         -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
+      #Update has_peptide_compara genome boolean
+     $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+      q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+            join division d on (c.division_id=d.division_id)
+      set g.has_peptide_compara=1 where d.name<>'EnsemblPan' and
+      c.method='PROTEIN_TREES' and g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]
+     );
+
+     #Update has_pan_compara genome boolean
+     $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+     q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+            join division d on (c.division_id=d.division_id)
+      set g.has_pan_compara=1 where d.name='EnsemblPan' and
+      c.method='PROTEIN_TREES' and g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]
+     );
+
+     #Update has_genome_alignments genome boolean
+     $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+     q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+      set g.has_genome_alignments=1 where c.method in
+      ('TRANSLATED_BLAT_NET','LASTZ_NET','TBLAT','ATAC','BLASTZ_NET') and g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]
+     );
+
+     #Update has_synteny genome boolean
+     $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+     q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+      set g.has_synteny=1 where c.method='SYNTENY' and g.genome_id = ?/,
+      -PARAMS   => [  $genome->dbID() ]
+     );
     }
   }
   return;

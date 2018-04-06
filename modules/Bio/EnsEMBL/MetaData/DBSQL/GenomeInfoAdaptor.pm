@@ -340,7 +340,7 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
   $self->_store_features($genome);
   $self->_store_variations($genome);
   $self->_store_alignments($genome);
-  #$self->_store_compara($genome);
+  $self->_store_compara($genome);
   $self->_store_cached_obj($genome);
   return;
 } ## end sub store
@@ -394,72 +394,11 @@ has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organ
   if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){
     $self->_store_alignments($genome);
   }
-  #$self->_store_compara($genome);
+  if ($genome->{databases}->[0]->type() eq 'core') {
+    $self->_store_compara($genome);
+  }
   return;
 } ## end sub update
-
-=head2 update_booleans
-  Description: Updates boolean genome attributes for all genomes
-  Returntype : None
-  Exceptions : none
-  Caller     : internal
-  Status     : Stable
-=cut
-
-sub update_booleans {
-  my ($self) = @_;
-
-  #has_peptide_compara
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/update genome g join genome_compara_analysis gc using (genome_id) 
-	  join compara_analysis c using (compara_analysis_id) 
-          join division d on (c.division_id=d.division_id)
-	  set g.has_peptide_compara=1 where d.name<>'EnsemblPan' and
-	  c.method='PROTEIN_TREES'/
-  );
-
-  #has_pan_compara
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/update genome g join genome_compara_analysis gc using (genome_id) 
-	  join compara_analysis c using (compara_analysis_id) 
-          join division d on (c.division_id=d.division_id)
-	  set g.has_pan_compara=1 where d.name='EnsemblPan' and
-	  c.method='PROTEIN_TREES'/
-  );
-
-  #has_genome_alignments
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/update genome g join genome_compara_analysis gc using (genome_id) 
-	  join compara_analysis c using (compara_analysis_id) 
-	  set g.has_genome_alignments=1 where c.method in 
-	  ('TRANSLATED_BLAT_NET','LASTZ_NET','TBLAT','ATAC','BLASTZ_NET')/
-  );
-
-  #has_synteny
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/update genome g join genome_compara_analysis gc using (genome_id) 
-	  join compara_analysis c using (compara_analysis_id) 
-	  set g.has_synteny=1 where c.method='SYNTENY'/
-  );
-
-  #has_other_alignments
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/update genome g join genome_alignment a using (genome_id) 
-	  set g.has_other_alignments=1/
-  );
-
-  #has_variations
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/update genome g join genome_variation a using (genome_id)
-	  set g.has_variations=1/
-  );
-
-  return;
-} ## end sub update_booleans
 
 =head2 fetch_databases 
   Arg        : release (optional)
@@ -1293,6 +1232,12 @@ sub _store_variations {
 		values(?,?,?,?,?)/,
         -PARAMS => [ $genome->dbID(), $type, $key, $count, $genome->{databases}->[0]->dbID ] );
     }
+    #Updating has_variation genome boolean
+    $self->dbc()->sql_helper()->execute_update(
+    -SQL => q/update genome g join genome_variation a using (genome_id)
+	  set g.has_variations=1 where g.genome_id = ?/,
+    -PARAMS   => [ $genome->dbID() ]
+  );
   }
   return;
 }
@@ -1316,6 +1261,12 @@ sub _store_alignments {
 		values(?,?,?,?,?)/,
         -PARAMS => [ $genome->dbID(), $type, $key, $count, $genome->{databases}->[0]->dbID ] );
     }
+    #Update has_other_alignments genome boolean
+    $self->dbc()->sql_helper()->execute_update(
+    -SQL => q/update genome g join genome_alignment a using (genome_id) 
+	  set g.has_other_alignments=1 where g.genome_id = ?/,
+    -PARAMS   => [ $genome->dbID() ]
+  );
   }
   return;
 }
@@ -1341,6 +1292,46 @@ sub _store_compara {
 q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)/,
         -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
     }
+    #Update has_peptide_compara genome boolean
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+      q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+            join division d on (c.division_id=d.division_id)
+      set g.has_peptide_compara=1 where d.name<>'EnsemblPan' and
+      c.method='PROTEIN_TREES' and g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]
+    );
+
+    #Update has_pan_compara genome boolean
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+     q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+            join division d on (c.division_id=d.division_id)
+      set g.has_pan_compara=1 where d.name='EnsemblPan' and
+      c.method='PROTEIN_TREES' and g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]
+    );
+
+    #Update has_genome_alignments genome boolean
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+     q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+      set g.has_genome_alignments=1 where c.method in
+      ('TRANSLATED_BLAT_NET','LASTZ_NET','TBLAT','ATAC','BLASTZ_NET') and g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]
+    );
+
+    #Update has_synteny genome boolean
+    $self->dbc()->sql_helper()->execute_update(
+      -SQL =>
+     q/update genome g join genome_compara_analysis gc using (genome_id)
+      join compara_analysis c using (compara_analysis_id)
+      set g.has_synteny=1 where c.method='SYNTENY' and g.genome_id = ?/,
+      -PARAMS   => [  $genome->dbID() ]
+    );
   }
   return;
 

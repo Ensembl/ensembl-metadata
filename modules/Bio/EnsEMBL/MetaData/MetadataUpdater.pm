@@ -64,10 +64,6 @@ sub process_database {
     check_if_coredb_exist($gdba,$species,$metadatadba);
     process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
   }
-  #Updating booleans
-  $log->info("Updating booleans");
-  $gdba->update_booleans();
-  $log->info("Completed updating booleans");
   # Disconnecting from server
   $gdba->dbc()->disconnect_if_idle();
   $metadatadba->dbc()->disconnect_if_idle();
