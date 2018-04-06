@@ -337,16 +337,10 @@ join xref x using (xref_id)
 join external_db d using (external_db_id)
 where species_id=? and d.db_name=?/;
 
-my $xref_level_sql = q/select distinct object_xref.ensembl_object_type
+my $xref_level_sql = q/select object_xref.ensembl_object_type
 from object_xref
-join xref on (object_xref.xref_id=xref.xref_id)
-join .external_db on (xref.external_db_id=external_db.external_db_id)
-where external_db.db_name=? limit 1/;
-
-my $xref_level_check_sql = q/select count(object_xref.ensembl_object_type)
-from object_xref
-join xref on (object_xref.xref_id=xref.xref_id)
-join .external_db on (xref.external_db_id=external_db.external_db_id)
+join xref USING (xref_id)
+join external_db USING (external_db_id)
 where external_db.db_name=? limit 1/;
 
 my $biotype_clause = q/ and g.biotype=?/;
@@ -355,13 +349,11 @@ sub count_by_xref {
   my ( $self, $dba, $db_names, $biotype ) = @_;
   my $tot  = 0;
   foreach my $db_name (@$db_names){
-    my $xref_level_check = $dba->dbc()->sql_helper()
-      ->execute_single_result( -SQL => $xref_level_check_sql, -PARAMS => [$db_name] );
-    if ($xref_level_check > 0){
-      my $xref_level = $dba->dbc()->sql_helper()
-        ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name] );
-      $self->{logger}->debug( "Counting genes by " .
-                          $db_name . " xref on ".$xref_level." for " . $dba->species() );
+    my $xref_level = $dba->dbc()->sql_helper()
+      ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name], -NO_ERROR => 1 );
+    if ($xref_level){
+      $self->{logger}->debug( "Xref " .
+                          $db_name . " is on ".$xref_level." for " . $dba->species() );
       my $sql;
       if ($xref_level eq "Gene")
       {
@@ -432,11 +424,9 @@ sub count_xrefs {
   my ($self,$dba,$db_names) = @_;
   my $tot  = 0;
   for my $db_name (@$db_names) {
-    my $xref_level_check = $dba->dbc()->sql_helper()
-      ->execute_single_result( -SQL => $xref_level_check_sql, -PARAMS => [$db_name] );
-    if ($xref_level_check > 0){
-      my $xref_level = $dba->dbc()->sql_helper()
-        ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name] );
+    my $xref_level = $dba->dbc()->sql_helper()
+      ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name], -NO_ERROR => 1 );
+    if ($xref_level){
       if ($xref_level eq "Gene")
       {
         $tot +=
@@ -459,7 +449,7 @@ sub count_xrefs {
                                       -PARAMS => [ $dba->species_id(), $db_name ]
         );
       }
-    }
+   }
   }
   return $tot;
 }
