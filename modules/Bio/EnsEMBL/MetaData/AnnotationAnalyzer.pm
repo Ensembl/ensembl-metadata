@@ -102,15 +102,15 @@ sub analyze_annotation {
       nProteinCodingGO => $self->count_by_xref( $dba, ['GO'], 'protein_coding' ),
       nProteinCodingUniProtKB =>
         $self->count_by_xref( $dba, [ 'Uniprot/SWISSPROT', 'Uniprot/SPTREMBL' ],
-                              'protein_coding' ),
+                              'protein_coding', 'Translation' ),
       nProteinCodingUniProtKBSwissProt =>
-        $self->count_by_xref( $dba, ['Uniprot/SWISSPROT'], 'protein_coding' ),
+        $self->count_by_xref( $dba, ['Uniprot/SWISSPROT'], 'protein_coding', 'Translation' ),
       nProteinCodingUniProtKBTrEMBL =>
-        $self->count_by_xref( $dba, ['Uniprot/SPTREMBL'], 'protein_coding' ),
+        $self->count_by_xref( $dba, ['Uniprot/SPTREMBL'], 'protein_coding', 'Translation' ),
       nProteinCodingInterPro => $self->count_by_interpro($dba),
       nGO => $self->count_by_xref( $dba, ['GO']),
-      nUniProtKBSwissProt => $self->count_xrefs( $dba, ['Uniprot/SWISSPROT'] ),
-      nUniProtKBTrEMBL    => $self->count_xrefs( $dba, ['Uniprot/SPTREMBL'] ),
+      nUniProtKBSwissProt => $self->count_xrefs( $dba, ['Uniprot/SWISSPROT'], 'Translation' ),
+      nUniProtKBTrEMBL    => $self->count_xrefs( $dba, ['Uniprot/SPTREMBL'], 'Translation' ),
       nInterPro           => $self->count_interpro($dba),
       nInterProDomains => $self->count_interpro_domains($dba) };
   # add metadata
@@ -346,11 +346,13 @@ where external_db.db_name=? limit 1/;
 my $biotype_clause = q/ and g.biotype=?/;
 
 sub count_by_xref {
-  my ( $self, $dba, $db_names, $biotype ) = @_;
+  my ( $self, $dba, $db_names, $biotype, $xref_level ) = @_;
   my $tot  = 0;
   foreach my $db_name (@$db_names){
-    my $xref_level = $dba->dbc()->sql_helper()
+    if (!defined $xref_level){
+      $xref_level = $dba->dbc()->sql_helper()
       ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name], -NO_ERROR => 1 );
+    }
     if ($xref_level){
       $self->{logger}->debug( "Xref " .
                           $db_name . " is on ".$xref_level." for " . $dba->species() );
@@ -421,11 +423,13 @@ join external_db d using (external_db_id)
 where species_id=? and d.db_name=?/;
 
 sub count_xrefs {
-  my ($self,$dba,$db_names) = @_;
+  my ($self,$dba,$db_names,$xref_level) = @_;
   my $tot  = 0;
   for my $db_name (@$db_names) {
-    my $xref_level = $dba->dbc()->sql_helper()
+    if (!defined $xref_level){
+      $xref_level = $dba->dbc()->sql_helper()
       ->execute_single_result( -SQL => $xref_level_sql, -PARAMS => [$db_name], -NO_ERROR => 1 );
+    }
     if ($xref_level){
       if ($xref_level eq "Gene")
       {
