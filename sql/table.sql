@@ -51,7 +51,7 @@ CREATE TABLE `assembly_sequence` (
   UNIQUE KEY `name_acc` (`assembly_id`,`name`,`acc`),
   KEY `acc` (`acc`),
   KEY `name` (`name`),
-  CONSTRAINT `assembly_sequence_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`)
+  CONSTRAINT `assembly_sequence_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -383,7 +383,7 @@ CREATE TABLE `organism_alias` (
   `alias` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY (`organism_alias_id`),
   UNIQUE KEY `id_alias` (`organism_id`,`alias`),
-  CONSTRAINT `organism_alias_ibfk_1` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
+  CONSTRAINT `organism_alias_ibfk_1` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -400,7 +400,7 @@ CREATE TABLE `organism_publication` (
   `publication` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`organism_publication_id`),
   UNIQUE KEY `id_publication` (`organism_id`,`publication`),
-  CONSTRAINT `organism_publication_ibfk_1` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`)
+  CONSTRAINT `organism_publication_ibfk_1` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
