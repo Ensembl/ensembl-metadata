@@ -245,42 +245,46 @@ sub fetch_by_dbname_method_set {
 
 sub store {
   my ( $self, $compara ) = @_;
-  # check if it already exists
-  if ( !defined $compara->dbID() ) {
-    # find out if compara exists first
-    my ($dbID) =
-      @{
-      $self->dbc()->sql_helper()->execute_simple(
-        -SQL =>
-q/select compara_analysis_id from compara_analysis where division_id=? and method=? and set_name=? and dbname=?/,
-        -PARAMS => [ $self->_get_division_id( $compara->division() ),
-                     $compara->method(), $compara->set_name(),
-                     $compara->dbname() ] ) };
-    if ( defined $dbID ) {
-      $compara->dbID($dbID);
-      $compara->adaptor($self);
-    }
-  }
-  if ( defined $compara->dbID() ) {
-    $self->dbc()->sql_helper()->execute_update(
-     -SQL => q/delete from compara_analysis where compara_analysis_id=?/,
-     -PARAMS => [ $compara->dbID() ] );
-  }
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/insert into compara_analysis(method,division_id,set_name,dbname,data_release_id)
-		values(?,?,?,?,?)/,
-    -PARAMS => [ $compara->method(),
-                 $self->_get_division_id( $compara->division() ),
-                 $compara->set_name(),
-                 $compara->dbname(),
-                 $self->data_release()->dbID() ],
+  $self->dbc()->sql_helper()->transaction(
     -CALLBACK => sub {
-      my ( $sth, $dbh, $rv ) = @_;
-      $compara->dbID( $dbh->{mysql_insertid} );
-    } );
-  $self->_store_compara_genomes($compara);
-  $self->_store_cached_obj($compara);
+      # check if it already exists
+      if ( !defined $compara->dbID() ) {
+        # find out if compara exists first
+        my ($dbID) =
+          @{
+          $self->dbc()->sql_helper()->execute_simple(
+            -SQL =>
+    q/select compara_analysis_id from compara_analysis where division_id=? and method=? and set_name=? and dbname=?/,
+            -PARAMS => [ $self->_get_division_id( $compara->division() ),
+                        $compara->method(), $compara->set_name(),
+                        $compara->dbname() ] ) };
+        if ( defined $dbID ) {
+          $compara->dbID($dbID);
+          $compara->adaptor($self);
+        }
+      }
+      if ( defined $compara->dbID() ) {
+        $self->dbc()->sql_helper()->execute_update(
+        -SQL => q/delete from compara_analysis where compara_analysis_id=?/,
+        -PARAMS => [ $compara->dbID() ] );
+      }
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL =>
+    q/insert into compara_analysis(method,division_id,set_name,dbname,data_release_id)
+        values(?,?,?,?,?)/,
+        -PARAMS => [ $compara->method(),
+                    $self->_get_division_id( $compara->division() ),
+                    $compara->set_name(),
+                    $compara->dbname(),
+                    $self->data_release()->dbID() ],
+        -CALLBACK => sub {
+          my ( $sth, $dbh, $rv ) = @_;
+          $compara->dbID( $dbh->{mysql_insertid} );
+        } );
+      $self->_store_compara_genomes($compara);
+      $self->_store_cached_obj($compara);
+      return 1;
+  });
   return;
 } ## end sub store
 

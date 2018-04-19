@@ -265,83 +265,87 @@ sub data_release {
 
 sub store {
   my ( $self, $genome ) = @_;
-  if ( !defined $genome->data_release() ) {
-    $genome->data_release( $self->data_release() );
-  }
-  if ( !defined $genome->data_release()->dbID() ) {
-    $self->db()->get_DataReleaseInfoAdaptor()
-      ->store( $genome->data_release() );
-  }
-  if ( !defined $genome->organism() ) {
-    throw("Genome must be associated with an organism");
-  }
-  if ( !defined $genome->assembly() ) {
-    throw("Genome must be associated with an assembly");
-  }
-  if ( !defined $genome->assembly()->dbID() ) {
-    $self->db()->get_GenomeAssemblyInfoAdaptor()
-      ->store( $genome->assembly() );
-  }
-  if ( !defined $genome->dbID() ) {
-    # find out if genome exists first
-    my ($dbID) =
-      @{
-      $self->dbc()->sql_helper()->execute_simple(
-        -SQL =>
-"select genome_id from genome where data_release_id=? and assembly_id=?",
-        -PARAMS => [ $genome->data_release()->dbID(),
-                     $genome->assembly()->dbID() ] ) };
-
-    if ( defined $dbID ) {
-      $genome->dbID($dbID);
-      $genome->adaptor($self);
-    }
-  }
-
-  if ( defined $genome->dbID() ) {
-    return $self->update($genome);
-  }
-  else {
-    # Check if we already have this genome for this given release
-    # This will usually happen when the assembly change.
-    # Remove this genome from database to avoid duplication
-    my $release_genome = $self->fetch_by_name($genome->{organism}->{name});
-    if (defined $release_genome){
-      $self->clear_genome($release_genome);
-    }
-  }
-  $self->db()->get_GenomeOrganismInfoAdaptor()
-    ->store( $genome->organism() );
-  $self->db()->get_GenomeAssemblyInfoAdaptor()
-    ->store( $genome->assembly() );
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL => q/insert into genome(division_id,
-genebuild,has_pan_compara,has_variations,has_peptide_compara,
-has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
-		values(?,?,?,?,?,?,?,?,?,?,?)/,
-    -PARAMS => [ $self->_get_division_id( $genome->division() ),
-                 $genome->genebuild(),
-                 $genome->has_pan_compara(),
-                 $genome->has_variations(),
-                 $genome->has_peptide_compara(),
-                 $genome->has_genome_alignments(),
-                 $genome->has_synteny(),
-                 $genome->has_other_alignments(),
-                 $genome->assembly()->dbID(),
-                 $genome->organism()->dbID(),
-                 $genome->data_release()->dbID() ],
+  $self->dbc()->sql_helper()->transaction(
     -CALLBACK => sub {
-      my ( $sth, $dbh, $rv ) = @_;
-      $genome->dbID( $dbh->{mysql_insertid} );
-    } );
-  $genome->adaptor($self);
-  $self->_store_databases($genome);
-  $self->_store_annotations($genome);
-  $self->_store_features($genome);
-  $self->_store_variations($genome);
-  $self->_store_alignments($genome);
-  $self->_store_compara($genome);
-  $self->_store_cached_obj($genome);
+      if ( !defined $genome->data_release() ) {
+        $genome->data_release( $self->data_release() );
+      }
+      if ( !defined $genome->data_release()->dbID() ) {
+        $self->db()->get_DataReleaseInfoAdaptor()
+          ->store( $genome->data_release() );
+      }
+      if ( !defined $genome->organism() ) {
+        throw("Genome must be associated with an organism");
+      }
+      if ( !defined $genome->assembly() ) {
+        throw("Genome must be associated with an assembly");
+      }
+      if ( !defined $genome->assembly()->dbID() ) {
+        $self->db()->get_GenomeAssemblyInfoAdaptor()
+          ->store( $genome->assembly() );
+      }
+      if ( !defined $genome->dbID() ) {
+        # find out if genome exists first
+        my ($dbID) =
+          @{
+          $self->dbc()->sql_helper()->execute_simple(
+            -SQL =>
+    "select genome_id from genome where data_release_id=? and assembly_id=?",
+            -PARAMS => [ $genome->data_release()->dbID(),
+                        $genome->assembly()->dbID() ] ) };
+
+        if ( defined $dbID ) {
+          $genome->dbID($dbID);
+          $genome->adaptor($self);
+        }
+      }
+
+      if ( defined $genome->dbID() ) {
+        return $self->update($genome);
+      }
+      else {
+        # Check if we already have this genome for this given release
+        # This will usually happen when the assembly change.
+        # Remove this genome from database to avoid duplication
+        my $release_genome = $self->fetch_by_name($genome->{organism}->{name});
+        if (defined $release_genome){
+          $self->clear_genome($release_genome);
+        }
+      }
+      $self->db()->get_GenomeOrganismInfoAdaptor()
+        ->store( $genome->organism() );
+      $self->db()->get_GenomeAssemblyInfoAdaptor()
+        ->store( $genome->assembly() );
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL => q/insert into genome(division_id,
+    genebuild,has_pan_compara,has_variations,has_peptide_compara,
+    has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
+        values(?,?,?,?,?,?,?,?,?,?,?)/,
+        -PARAMS => [ $self->_get_division_id( $genome->division() ),
+                    $genome->genebuild(),
+                    $genome->has_pan_compara(),
+                    $genome->has_variations(),
+                    $genome->has_peptide_compara(),
+                    $genome->has_genome_alignments(),
+                    $genome->has_synteny(),
+                    $genome->has_other_alignments(),
+                    $genome->assembly()->dbID(),
+                    $genome->organism()->dbID(),
+                    $genome->data_release()->dbID() ],
+        -CALLBACK => sub {
+          my ( $sth, $dbh, $rv ) = @_;
+          $genome->dbID( $dbh->{mysql_insertid} );
+        } );
+      $genome->adaptor($self);
+      $self->_store_databases($genome);
+      $self->_store_annotations($genome);
+      $self->_store_features($genome);
+      $self->_store_variations($genome);
+      $self->_store_alignments($genome);
+      $self->_store_compara($genome);
+      $self->_store_cached_obj($genome);
+      return 1;
+  });
   return;
 } ## end sub store
 
@@ -356,47 +360,51 @@ has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,d
 
 sub update {
   my ( $self, $genome ) = @_;
-  if ( !defined $genome->dbID() ) {
-    croak "Cannot update an object that has not already been stored";
-  }
-  if ($genome->{databases}->[0]->type() eq 'core'){
-    $self->db()->get_GenomeOrganismInfoAdaptor()
-      ->store( $genome->organism() );
-    $self->db()->get_GenomeAssemblyInfoAdaptor()
-      ->store( $genome->assembly() );
-    $self->dbc()->sql_helper()->execute_update(
-      -SQL => q/update genome set division_id=?,
-genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
-has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
-    ,
-      -PARAMS => [ $self->_get_division_id( $genome->division() ),
-                 $genome->genebuild(),
-                 $genome->has_pan_compara(),
-                 $genome->has_variations(),
-                 $genome->has_peptide_compara(),
-                 $genome->has_genome_alignments(),
-                 $genome->has_synteny(),
-                 $genome->has_other_alignments(),
-                 $genome->assembly()->dbID(),
-                 $genome->organism()->dbID(),
-                 $genome->data_release()->dbID(),
-                 $genome->dbID() ] );
-  }
-  $genome->adaptor($self);
-  $self->_store_databases($genome);
-  if ($genome->{databases}->[0]->type() eq 'core'){
-    $self->_store_annotations($genome);
-    $self->_store_features($genome);
-  }
-  if ($genome->{databases}->[0]->type() eq 'variation') {
-    $self->_store_variations($genome);
-  }
-  if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){
-    $self->_store_alignments($genome);
-  }
-  if ($genome->{databases}->[0]->type() eq 'core') {
-    $self->_store_compara($genome);
-  }
+  $self->dbc()->sql_helper()->transaction(
+    -CALLBACK => sub {
+      if ( !defined $genome->dbID() ) {
+        croak "Cannot update an object that has not already been stored";
+      }
+      if ($genome->{databases}->[0]->type() eq 'core'){
+        $self->db()->get_GenomeOrganismInfoAdaptor()
+          ->store( $genome->organism() );
+        $self->db()->get_GenomeAssemblyInfoAdaptor()
+          ->store( $genome->assembly() );
+        $self->dbc()->sql_helper()->execute_update(
+          -SQL => q/update genome set division_id=?,
+    genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
+    has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
+        ,
+          -PARAMS => [ $self->_get_division_id( $genome->division() ),
+                    $genome->genebuild(),
+                    $genome->has_pan_compara(),
+                    $genome->has_variations(),
+                    $genome->has_peptide_compara(),
+                    $genome->has_genome_alignments(),
+                    $genome->has_synteny(),
+                    $genome->has_other_alignments(),
+                    $genome->assembly()->dbID(),
+                    $genome->organism()->dbID(),
+                    $genome->data_release()->dbID(),
+                    $genome->dbID() ] );
+      }
+      $genome->adaptor($self);
+      $self->_store_databases($genome);
+      if ($genome->{databases}->[0]->type() eq 'core'){
+        $self->_store_annotations($genome);
+        $self->_store_features($genome);
+      }
+      if ($genome->{databases}->[0]->type() eq 'variation') {
+        $self->_store_variations($genome);
+      }
+      if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){
+        $self->_store_alignments($genome);
+      }
+      if ($genome->{databases}->[0]->type() eq 'core') {
+        $self->_store_compara($genome);
+      }
+      return 1;
+    });
   return;
 } ## end sub update
 
@@ -1289,6 +1297,10 @@ sub _store_compara {
       }
       $self->dbc()->sql_helper()->execute_update(
         -SQL =>
+q/delete from genome_compara_analysis where genome_id=? and compara_analysis_id=?/,
+        -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL =>
 q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)/,
         -PARAMS => [ $genome->dbID(), $compara->dbID() ] );
     }
@@ -1336,7 +1348,6 @@ q/insert into genome_compara_analysis(genome_id,compara_analysis_id) values(?,?)
   return;
 
 }
-
 
 =head1 METHODS
 =head2 clear_genome

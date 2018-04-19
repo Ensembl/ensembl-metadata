@@ -71,64 +71,68 @@ use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 
 sub store {
   my ( $self, $data_release ) = @_;
-  if ( !defined $data_release->dbID() ) {
-    # find out if organism exists first
-    my $dbID;
-    if ( defined $data_release->ensembl_genomes_version() ) {
-      ($dbID) =
-        @{
-        $self->dbc()->sql_helper()->execute_simple(
-          -SQL =>
-"select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version=?",
-          -PARAMS => [ $data_release->ensembl_version(),
-                       $data_release->ensembl_genomes_version() ] ) };
-    }
-    else {
-      ($dbID) =
-        @{
-        $self->dbc()->sql_helper()->execute_simple(
-          -SQL =>
-"select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version is null",
-          -PARAMS => [ $data_release->ensembl_version() ] ) };
-    }
+  $self->dbc()->sql_helper()->transaction(
+    -CALLBACK => sub {
+      if ( !defined $data_release->dbID() ) {
+        # find out if organism exists first
+        my $dbID;
+        if ( defined $data_release->ensembl_genomes_version() ) {
+          ($dbID) =
+            @{
+            $self->dbc()->sql_helper()->execute_simple(
+              -SQL =>
+    "select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version=?",
+              -PARAMS => [ $data_release->ensembl_version(),
+                          $data_release->ensembl_genomes_version() ] ) };
+        }
+        else {
+          ($dbID) =
+            @{
+            $self->dbc()->sql_helper()->execute_simple(
+              -SQL =>
+    "select data_release_id from data_release where ensembl_version=? and ensembl_genomes_version is null",
+              -PARAMS => [ $data_release->ensembl_version() ] ) };
+        }
 
-    if ( defined $dbID ) {
-      $data_release->dbID($dbID);
-      $data_release->adaptor($self);
-    }
-  } ## end if ( !defined $data_release...)
-  if ( defined $data_release->dbID() ) {
-    $self->update($data_release);
-  }
-  else {
-    #Remove current release before the add the new release
-    if ($data_release->is_current()){
-      my $current_release;
-      if ( defined $data_release->ensembl_genomes_version() ) {
-        $current_release = $self->fetch_current_ensembl_genomes_release();
+        if ( defined $dbID ) {
+          $data_release->dbID($dbID);
+          $data_release->adaptor($self);
+        }
+      } ## end if ( !defined $data_release...)
+      if ( defined $data_release->dbID() ) {
+        $self->update($data_release);
       }
       else {
-        $current_release = $self->fetch_current_ensembl_release();
+        #Remove current release before the add the new release
+        if ($data_release->is_current()){
+          my $current_release;
+          if ( defined $data_release->ensembl_genomes_version() ) {
+            $current_release = $self->fetch_current_ensembl_genomes_release();
+          }
+          else {
+            $current_release = $self->fetch_current_ensembl_release();
+          }
+          if (defined $current_release){
+            $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
+          }
+        }
+        $self->dbc()->sql_helper()->execute_update(
+          -SQL =>
+    q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,is_current) values (?,?,?,?)/,
+          -PARAMS => [ $data_release->ensembl_version(),
+                      $data_release->ensembl_genomes_version(),
+                      $data_release->release_date(),
+                      $data_release->is_current() ],
+          -CALLBACK => sub {
+            my ( $sth, $dbh, $rv ) = @_;
+            $data_release->dbID( $dbh->{mysql_insertid} );
+          } );
+        $data_release->adaptor($self);
+        $self->_store_databases($data_release);
+        $self->_store_cached_obj($data_release);
       }
-      if (defined $current_release){
-        $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
-      }
-    }
-    $self->dbc()->sql_helper()->execute_update(
-      -SQL =>
-q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,is_current) values (?,?,?,?)/,
-      -PARAMS => [ $data_release->ensembl_version(),
-                   $data_release->ensembl_genomes_version(),
-                   $data_release->release_date(),
-                   $data_release->is_current() ],
-      -CALLBACK => sub {
-        my ( $sth, $dbh, $rv ) = @_;
-        $data_release->dbID( $dbh->{mysql_insertid} );
-      } );
-    $data_release->adaptor($self);
-    $self->_store_databases($data_release);
-    $self->_store_cached_obj($data_release);
-  }
+      return 1;
+  });
   return;
 } ## end sub store
 =head2 update
@@ -141,30 +145,34 @@ q/insert into data_release(ensembl_version,ensembl_genomes_version,release_date,
 =cut
 sub update {
   my ( $self, $data_release ) = @_;
-  if ( !defined $data_release->dbID() ) {
-    croak "Cannot update an object that has not already been stored";
-  }
-  #Remove current release before the add the new release
-  if ($data_release->is_current()){
-    my $current_release;
-    if ( defined $data_release->ensembl_genomes_version() ) {
-      $current_release = $self->fetch_current_ensembl_genomes_release();
-    }
-    else {
-      $current_release = $self->fetch_current_ensembl_release();
-    }
-    $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
-  }
-  $self->dbc()->sql_helper()->execute_update(
-    -SQL =>
-q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=?, is_current=? where data_release_id=?/,
-    -PARAMS => [ $data_release->ensembl_version(),
-                 $data_release->ensembl_genomes_version(),
-                 $data_release->release_date(),
-                 $data_release->is_current(),
-                 $data_release->dbID() ] );
+  $self->dbc()->sql_helper()->transaction(
+    -CALLBACK => sub {
+      if ( !defined $data_release->dbID() ) {
+        croak "Cannot update an object that has not already been stored";
+      }
+      #Remove current release before the add the new release
+      if ($data_release->is_current()){
+        my $current_release;
+        if ( defined $data_release->ensembl_genomes_version() ) {
+          $current_release = $self->fetch_current_ensembl_genomes_release();
+        }
+        else {
+          $current_release = $self->fetch_current_ensembl_release();
+        }
+        $self->db()->get_DatabaseInfoAdaptor()->clear_current_release($current_release);
+      }
+      $self->dbc()->sql_helper()->execute_update(
+        -SQL =>
+    q/update data_release set ensembl_version=?, ensembl_genomes_version=?, release_date=?, is_current=? where data_release_id=?/,
+        -PARAMS => [ $data_release->ensembl_version(),
+                    $data_release->ensembl_genomes_version(),
+                    $data_release->release_date(),
+                    $data_release->is_current(),
+                    $data_release->dbID() ] );
 
-  $self->_store_databases($data_release);
+      $self->_store_databases($data_release);
+      return 1;
+  });
   return;
 }
 
