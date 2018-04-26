@@ -130,7 +130,7 @@ sub get_release_and_process_release_db {
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   # Parse EG databases including core, core like, variation, funcgen and compara
-  if (($database->{dbname} =~ m/_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/\w+_?\w*_(\d+)_\d+$/) ){
+  if (($database->{dbname} =~ m/(?:core|otherfeatures|rnaseq|cdna|variation|funcgen)_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/ensembl_compara_(?:fungi|metazoa|protists|bacteria|plants|pan_homology)_(\d+)_\d+$/) or ($database->{dbname} =~ m/(?:fungi|plants|metazoa|protists)_\w+_mart_(\d+)$/) or ($database->{dbname} =~ m/ensemblgenomes_info_(\d+)$/)or ($database->{dbname} =~ m/ensemblgenomes_stable_ids_(\d+)_\d+$/)){
     $release = $rdba->fetch_by_ensembl_genomes_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -142,7 +142,7 @@ sub get_release_and_process_release_db {
     }
   }
   # Parse Ensembl release
-  elsif(($database->{dbname} =~ m/_(\d+)_\d+$/) or ($database->{dbname} =~ m/\w+_(\d+)$/)){
+  elsif(($database->{dbname} =~ m/(?:core|otherfeatures|rnaseq|cdna|variation|funcgen)_(\d+)_\d+$/) or ($database->{dbname} =~ m/ensembl_compara_(\d+)$/) or ($database->{dbname} =~ m/\w+_mart_(\d+)$/)){
     $release = $rdba->fetch_by_ensembl_release($1);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
@@ -150,16 +150,7 @@ sub get_release_and_process_release_db {
               " ".$release->{release_date});
     }
     else{
-      $release = $rdba->fetch_by_ensembl_genomes_release($1);
-      # Check EG mart as they match the same regex
-      if (defined $release){
-        $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
-                      "/EG".$release->{ensembl_genomes_version}."" : "" ) .
-                    " ".$release->{release_date});
-      }
-      else{
-        die "Can't find release $release for Ensembl or EG in metadata database";
-      }
+      die "Can't find release $release for Ensembl or EG in metadata database";
     }
   }
   elsif($database->{dbname} =~ m/_(\d+)$/){
