@@ -85,7 +85,10 @@ my $output = {
 		  metadata_uri=>$metadata_uri,
 		  database_uri=>$database_uri,
       email => $email,
-		  runtime => $runtime
+		  runtime => $runtime,
+      comment => $comment,
+      update_type => $update_type,
+      source => $source
 		 };
 $self->dataflow_output_id({
 			       job_id=>$self->input_job()->dbID(),
