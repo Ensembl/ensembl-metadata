@@ -266,6 +266,8 @@ sub data_release {
 sub store {
   my ( $self, $genome ) = @_;
   $self->dbc()->sql_helper()->transaction(
+    -RETRY => 3,
+    -PAUSE => 2,
     -CALLBACK => sub {
       if ( !defined $genome->data_release() ) {
         $genome->data_release( $self->data_release() );
@@ -345,7 +347,11 @@ sub store {
       $self->_store_compara($genome);
       $self->_store_cached_obj($genome);
       return 1;
-  });
+  },
+  -CONDITION => sub {
+      my ($error) = @_;
+      return ( $error =~ /deadlock/ ) ? 1 : 0;
+    });
   return;
 } ## end sub store
 
@@ -361,6 +367,8 @@ sub store {
 sub update {
   my ( $self, $genome ) = @_;
   $self->dbc()->sql_helper()->transaction(
+    -RETRY => 3,
+    -PAUSE => 2,
     -CALLBACK => sub {
       if ( !defined $genome->dbID() ) {
         croak "Cannot update an object that has not already been stored";
@@ -404,6 +412,10 @@ sub update {
         $self->_store_compara($genome);
       }
       return 1;
+    },
+  -CONDITION => sub {
+      my ($error) = @_;
+      return ( $error =~ /deadlock/ ) ? 1 : 0;
     });
   return;
 } ## end sub update
