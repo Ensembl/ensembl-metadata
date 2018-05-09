@@ -77,18 +77,15 @@ if(!Log::Log4perl->initialized()) {
 
 $hive_dbc->disconnect_if_idle() if defined $hive_dbc;
 
-process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$update_type,$source);
+my $events = process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$update_type,$source);
 
 my $runtime =  duration(time() - $start_time);
-
 my $output = {
 		  metadata_uri=>$metadata_uri,
 		  database_uri=>$database_uri,
       email => $email,
 		  runtime => $runtime,
-      comment => $comment,
-      update_type => $update_type,
-      source => $source
+      events => $events
 		 };
 $self->dataflow_output_id({
 			       job_id=>$self->input_job()->dbID(),
