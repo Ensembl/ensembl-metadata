@@ -55,18 +55,35 @@ my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "eg"];
+my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "eg", "release:i"];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 $opts->{dbname} ||= 'ensembl_metadata';
 
 my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
-my $gdba =
-  Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args)
-  ->get_GenomeInfoAdaptor();
+my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
+my $gdba = $metadatadba->get_GenomeInfoAdaptor();
+my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
+my $release;
 
 if ( defined $opts->{eg} || defined $opts->{division} ) {
-  $gdba->set_ensembl_genomes_release();
+  if (defined $opts->{release})
+  {
+    $release = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
+    $gdba->data_release($release);
+  }
+  else{
+    $gdba->set_ensembl_genomes_release();
+  }
+}
+else{
+  if (defined $opts->{release}){
+    $release = $rdba->fetch_by_ensembl_release($opts->{release});
+    $gdba->data_release($release);
+  }
+  else{
+    $gdba->set_ensembl_release();
+  }
 }
 
 my $report = {
@@ -74,9 +91,9 @@ my $report = {
 	      ensembl_version=> $gdba->data_release()->ensembl_version()
 };
 
-$logger->info("Getting genomes from current release");
+$logger->info("Getting genomes from release ".$opts->{release}) if defined $opts->{release} || $logger->info("Getting genomes from current release");
 my $genomes = get_genomes($gdba, $opts->{division});
-$logger->info("Found ".scalar(keys %$genomes)." genomes from current release");
+$logger->info("Found ".scalar(keys %$genomes)." genomes from from release ".$opts->{release}) if defined $opts->{release} || $logger->info("Found ".scalar(keys %$genomes)." genomes from current release");
 # decrement releases
 if ( defined $opts->{eg} || defined $opts->{division} ) {
   my $prev_eg = $gdba->data_release()->ensembl_genomes_version()-1;

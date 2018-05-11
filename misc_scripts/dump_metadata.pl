@@ -54,6 +54,8 @@ perl dump_metadata.pl -host mysql-eg-staging-2.ebi.ac.uk -port 4275 -user ensro 
   
   --dumper=dumper				     dumper to use (must extend Bio::EnsEMBL::MetaData::MetaDataDumper)
 
+  --release=release            release version for the dump, if not defined current release will be used
+
 =head1 AUTHOR
 
 Dan Staines
@@ -79,6 +81,7 @@ push( @{$optsd}, "dumper:s@" );
 push( @{$optsd}, "division:s@" );
 push( @{$optsd}, "verbose" );
 push( @{$optsd}, "eg" );
+push ( @{$optsd}, "release" );
 
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 
@@ -94,13 +97,30 @@ $opts->{dbname} ||= 'ensembl_metadata';
 
 my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 print Dumper($args);
-my $gdba =
-  Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args)
-  ->get_GenomeInfoAdaptor();
+my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
+my $gdba = $metadatadba->get_GenomeInfoAdaptor();
+my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
+my $release;
 
 if ( defined $opts->{eg} ) {
-  $gdba->set_ensembl_genomes_release();
+  if (defined $opts->{release}){
+    $release = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
+    $gdba->data_release($release);
+  }
+  else{
+    $gdba->set_ensembl_genomes_release();
+  }
 }
+else{
+  if (defined $opts->{release}){
+    $release = $rdba->fetch_by_ensembl_release($opts->{release});
+    $gdba->data_release($release);
+  }
+  else{
+    $gdba->set_ensembl_release();
+  }
+}
+$logger->info("Getting genomes from release ".$opts->{release}) if defined $opts->{release} || $logger->info("Getting genomes from current release");
 
 # get all metadata
 my $dump_all = 0;
