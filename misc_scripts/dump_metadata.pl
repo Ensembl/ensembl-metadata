@@ -81,7 +81,7 @@ push( @{$optsd}, "dumper:s@" );
 push( @{$optsd}, "division:s@" );
 push( @{$optsd}, "verbose" );
 push( @{$optsd}, "eg" );
-push ( @{$optsd}, "release" );
+push ( @{$optsd}, "release:i" );
 
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 
@@ -96,7 +96,6 @@ my $logger = get_logger();
 $opts->{dbname} ||= 'ensembl_metadata';
 
 my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
-print Dumper($args);
 my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
