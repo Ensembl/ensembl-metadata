@@ -90,7 +90,7 @@ sub args_for_genome {
 =cut
 sub args_for_division {
   my ($self, $division) = @_;
-  if($division eq 'Ensembl') {
+  if($division eq 'EnsemblVertebrates') {
     return e_args();    
   } else {
     return eg_args();
