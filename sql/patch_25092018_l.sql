@@ -17,4 +17,4 @@
 # Title: Update Vertebrates division name
 #
 # Description: Update Vertebrates division name from "Ensembl" to "EnsemblVertebrates" and short name from "E" to "EV"
-UPDATE division SET name="EnsemblVertebrates", short_name="EV" where name="Ensembl" and short_name="E"
+UPDATE division SET name='EnsemblVertebrates', short_name='EV' WHERE name='Ensembl' AND short_name='E';
