@@ -32,7 +32,7 @@ Bio::EnsEMBL::MetaData::GenomeInfo
   my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(
 	  -species    => $dba->species(),
 	  -species_id => $dba->species_id(),
-	  -division   => $meta->get_division() || 'Ensembl',
+	  -division   => $meta->get_division() || 'EnsemblVertebrates',
 	  -dbname     => $dbname);
 	  
   print Dumper($genome->to_hash());
