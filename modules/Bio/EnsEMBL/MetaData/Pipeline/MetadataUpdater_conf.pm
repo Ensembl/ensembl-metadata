@@ -82,8 +82,7 @@ sub pipeline_analyses {
             -flow_into =>
             { 2 => ['metadata_updater_core'],
             3 => ['metadata_updater_other'],
-            4 => ['metadata_updater_compara'] },
-            -meadow_type => 'LOCAL',
+            4 => ['metadata_updater_compara'] }
         },
         {
             -logic_name => 'metadata_updater_core',
