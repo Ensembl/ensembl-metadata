@@ -431,7 +431,7 @@ sub process_release_database {
       $division="EnsemblPan";
     }
     else{
-      $division = "Ensembl";
+      $division = "EnsemblVertebrates";
     }
   }
   $log->info( "Adding database " . $database->{dbname} . " to release" );

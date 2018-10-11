@@ -54,20 +54,20 @@ sub new {
   my ($proto, @args) = @_;
   my $self = $proto->SUPER::new(@args);
   $self->{file}     ||= 'species.tt2';
-  $self->{division} ||= 'Ensembl';
+  $self->{division} ||= 'EnsemblVertebrates';
   $self->{div_links} = {
 					  EnsemblBacteria => "http://bacteria.ensembl.org/",
 					  EnsemblFungi    => "http://fungi.ensembl.org/",
 					  EnsemblMetazoa  => "http://metazoa.ensembl.org/",
 					  EnsemblProtists => "http://protists.ensembl.org/",
 					  EnsemblPlants   => "http://plants.ensembl.org/",
-					  Ensembl         => "http://www.ensembl.org/",};
+					  EnsemblVertebrates   => "http://www.ensembl.org/",};
   $self->{div_names} = {EnsemblBacteria => "Bacteria",
 						EnsemblFungi    => "Fungi",
 						EnsemblMetazoa  => "Metazoa",
 						EnsemblProtists => "Protists",
 						EnsemblPlants   => "Plants",
-						Ensembl         => "Ensembl",};
+						EnsemblVertebrates => "Vertebrates",};
 
   return $self;
 }

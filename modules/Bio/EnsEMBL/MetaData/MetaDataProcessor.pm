@@ -171,7 +171,7 @@ sub process_core {
         -SQL =>
           "select count(*) from information_schema.tables where table_schema=?",
         -PARAMS => [$dbname] );
-
+  
   my $scientific_name = $meta->single_value_by_key('species.scientific_name');
   my $url_name        = $meta->single_value_by_key('species.url');
   my $display_name    = $meta->single_value_by_key('species.display_name');
@@ -203,7 +203,7 @@ sub process_core {
          -SQL =>
            'select name from coord_system where species_id=? order by rank asc',
          -PARAMS => [ $dba->species_id() ] ) };
-  my $division  = 'Ensembl';
+  my $division  = 'EnsemblVertebrates';
   my @divisions = sort @{ $meta->list_value_by_key('species.division') };
   if ( scalar @divisions > 0 ) {
     $division = $divisions[-1];
@@ -541,7 +541,7 @@ sub process_compara {
     $division = $DIVISION_NAMES->{$division} || $division;
 
     if($division =~ m/ensembl_compara_[0-9]+/) {
-      $division = 'Ensembl';
+      $division = 'EnsemblVertebrates';
     }
 
     my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();

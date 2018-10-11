@@ -256,7 +256,7 @@ sub _fetch_generic {
   Status     : Stable
 =cut
 
-my $division_names = { 'Ensembl'         => 'E',
+my $division_names = { 'EnsemblVertebrates' => 'EV',
                        'EnsemblGenomes'  => 'EG',
                        'EnsemblBacteria' => 'EB',
                        'EnsemblMetazoa'  => 'EM',
