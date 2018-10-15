@@ -225,7 +225,7 @@ sub _parse_type {
     return 'ontology';
   }
   else {
-    if ($dbname =~ m/^.+_([a-z]+)_[0-9]+_?[0-9]+?_[0-9]+$/){
+    if ($dbname =~ m/^.+_([a-z]+)_[0-9]+_?[0-9]+?_[0-9a-z]+$/){
       return $1;
     }
     else {
