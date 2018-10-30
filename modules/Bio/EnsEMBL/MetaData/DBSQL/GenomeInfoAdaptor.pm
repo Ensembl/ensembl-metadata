@@ -1383,7 +1383,7 @@ my $base_genome_fetch_sql =
 has_pan_compara, has_variations, has_peptide_compara, 
 has_genome_alignments, has_synteny, has_other_alignments, 
 assembly_id, data_release_id, organism_id
-from genome join division using (division_id) join genome_database using (genome_id)/;
+from genome join division using (division_id)/;
 
 sub _get_base_sql {
   return $base_genome_fetch_sql;
