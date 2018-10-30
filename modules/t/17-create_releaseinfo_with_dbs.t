@@ -76,21 +76,6 @@ is( $eg->ensembl_genomes_version(),
   my $dbs = $gdba->fetch_databases($release);
   is( scalar @$dbs, 3, "3 dbs found" );
 }
-{
-  diag("testing mart database retrieval");
-  my $core_database = $gdba->fetch_all_by_dbname('smelly_mart_27');
-  is(scalar @$core_database, 1, "mart db found");
-}
-{
-  diag("testing snp mart database retrieval");
-  my $core_database = $gdba->fetch_all_by_dbname('smelly_snp_mart_27');
-  is(scalar @$core_database, 1, "snp mart db found");
-}
-{
-  diag("testing weird database retrieval");
-  my $core_database = $gdba->fetch_all_by_dbname('weird_db_27');
-  is(scalar @$core_database, 1, "weird db found");
-}
 
 done_testing;
 $multi->cleanup();
