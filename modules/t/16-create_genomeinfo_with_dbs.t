@@ -99,6 +99,27 @@ is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'otherfeatures'} @{$
 is (scalar(grep {$_->dbname() eq 'test_species_funcgen_27_80_1'} grep {$_->type() eq 'funcgen'} @{$genome2_dbs}), 1, "Has funcgen");
 is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'funcgen'} @{$genome2_dbs}), 1, "Has funcgen species_id");
 
+{
+  diag("testing core database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_core_27_80_1');
+  is(scalar @$core_database, 1, "core db found");
+}
+{
+  diag("testing variation database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_variation_27_80_1');
+  is(scalar @$core_database, 1, "variation db found");
+}
+{
+  diag("testing otherfeatures database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_otherfeatures_27_80_1');
+  is(scalar @$core_database, 1, "otherfeatures db found");
+}
+{
+  diag("testing funcgen database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_funcgen_27_80_1');
+  is(scalar @$core_database, 1, "funcgen db found");
+}
+
 $gdba->_clear_cache();
 my $genome3 = $gdba->fetch_by_dbID( $genome->dbID() );
 my $genome3_dbs = $genome3->databases();
@@ -116,6 +137,26 @@ is (scalar(grep {$_->species_id() == 1} grep {$_->type() eq 'funcgen'} @{$genome
 {
   my $dbs = $gdba->fetch_databases();
   is(scalar @$dbs, 4, "4 dbs found");
+}
+{
+  diag("testing core database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_core_27_80_1');
+  is(scalar @$core_database, 1, "core db found");
+}
+{
+  diag("testing variation database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_variation_27_80_1');
+  is(scalar @$core_database, 1, "variation db found");
+}
+{
+  diag("testing otherfeatures database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_otherfeatures_27_80_1');
+  is(scalar @$core_database, 1, "otherfeatures db found");
+}
+{
+  diag("testing funcgen database retrieval");
+  my $core_database = $gdba->fetch_all_by_dbname('test_species_funcgen_27_80_1');
+  is(scalar @$core_database, 1, "funcgen db found");
 }
 
 done_testing;
