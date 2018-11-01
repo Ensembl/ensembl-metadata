@@ -779,7 +779,10 @@ sub fetch_by_any_name {
 
 sub fetch_all_by_dbname {
   my ( $self, $name, $keen ) = @_;
-  return $self->_fetch_generic_with_args( { 'dbname', $name }, $keen );
+  my ($sql, $params) = $self->_args_to_sql($self->_get_base_sql().
+  q/ JOIN genome_database USING (genome_id) /
+  ,{'dbname', $name});
+  return $self->_fetch_generic( $sql, $params, $self->_get_obj_class(), $keen );
 }
 
 =head2 fetch_all_by_name_pattern
