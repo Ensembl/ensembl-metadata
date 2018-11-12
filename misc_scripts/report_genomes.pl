@@ -100,7 +100,7 @@ if ( defined $opts->{eg} || defined $opts->{division} ) {
   $logger->info("Switching release to EG $prev_eg");
   $gdba->set_ensembl_genomes_release($gdba->data_release()->ensembl_genomes_version()-1);
 } else {
-  my $prev_ens = $gdba->data_release()->ensembl_genomes_version()-1;
+  my $prev_ens = $gdba->data_release()->ensembl_version()-1;
   $logger->info("Switching release to Ensembl $prev_ens");
   $gdba->set_ensembl_release($prev_ens);
 }
