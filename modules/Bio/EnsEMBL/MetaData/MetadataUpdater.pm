@@ -292,6 +292,10 @@ sub get_species_and_dbtype {
     elsif ($database->{dbname} =~ m/^\w+_?\d*_\d+$/){
       $db_type="other";
     }
+    #dealing with non versionned ncbi_taxonomy, ensembl_metadata and ensembl_accounts
+    elsif ($database->{dbname} =~ m/ncbi_taxonomy|ensembl_metadata|ensembl_accounts/){
+      $db_type="other";
+    }
     #Dealing with anything else
     else{
       die "Can't find data_type for database $database->{dbname}";
@@ -414,20 +418,20 @@ sub process_release_database {
   my $division;
   my @events;
   if (defined $release->{ensembl_genomes_version}){
-    if ($database->{dbname} =~ m/^([a-z]+)_/){
+    #ontology db, ncbi_taxonomy, ensembl_metadata and ontology mart database are from the Pan division
+    if ($database->{dbname} =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids)/){
+      $division="EnsemblPan";
+    }
+    elsif ($database->{dbname} =~ m/^([a-z]+)_/){
       $division = "Ensembl".ucfirst($1);
-      #databases like ensemblgenomes_stable_ids_38_91 and ensemblgenomes_info_38 are from the Pan division
-      if ($division eq "EnsemblEnsemblgenomes"){
-        $division="EnsemblPan";
-      }
     }
     else{
       die "Can't find division for database ".$database->{dbname};
     }
   }
   else{
-    #ontology db and ontology mart database are from the Pan division
-    if ($database->{dbname} =~ m/ontology/){
+    #ontology db, ncbi_taxonomy, ensembl_metadata and ontology mart database are from the Pan division
+    if ($database->{dbname} =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids)/){
       $division="EnsemblPan";
     }
     else{
