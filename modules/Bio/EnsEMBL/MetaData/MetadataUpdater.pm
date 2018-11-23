@@ -288,12 +288,12 @@ sub get_species_and_dbtype {
       $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
       $dba->dbc()->disconnect_if_idle();
     }
-    # Dealing with other databases like mart, ontology,...
+    # Dealing with other versionned databases like mart, ontology,...
     elsif ($database->{dbname} =~ m/^\w+_?\d*_\d+$/){
       $db_type="other";
     }
-    #dealing with non versionned ncbi_taxonomy, ensembl_metadata and ensembl_accounts
-    elsif ($database->{dbname} =~ m/ncbi_taxonomy|ensembl_metadata|ensembl_accounts/){
+    # Check other non versionned databases like ncbi_taxonomy, ensembl_metadata
+    elsif (check_pan_databases($database->{dbname})){
       $db_type="other";
     }
     #Dealing with anything else
@@ -418,10 +418,12 @@ sub process_release_database {
   my $division;
   my @events;
   if (defined $release->{ensembl_genomes_version}){
-    #ontology db, ncbi_taxonomy, ensembl_metadata and ontology mart database are from the Pan division
-    if ($database->{dbname} =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids)/){
+    #Check pan division databases
+    if (check_pan_databases($database->{dbname})){
       $division="EnsemblPan";
     }
+    #If not in the Pan division list, get division name from database prefix.
+    # e.g: plants_gene_mart_42
     elsif ($database->{dbname} =~ m/^([a-z]+)_/){
       $division = "Ensembl".ucfirst($1);
     }
@@ -430,8 +432,8 @@ sub process_release_database {
     }
   }
   else{
-    #ontology db, ncbi_taxonomy, ensembl_metadata and ontology mart database are from the Pan division
-    if ($database->{dbname} =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids)/){
+    #Check pan division databases
+    if (check_pan_databases($database->{dbname})){
       $division="EnsemblPan";
     }
     else{
@@ -462,6 +464,16 @@ sub process_release_database {
   push @events, $event_hash;
   $log->info("Completed processing ".$database->{dbname});
   return \@events;
+}
+#Check pan division databases like ontology db, ncbi_taxonomy, ensembl_metadata,...
+sub check_pan_databases {
+  my ($database_name) = @_;
+  if ($database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids)/){
+    return 1;
+  }
+  else {
+    return 0;
+  }
 }
 
 #Subroutine to add or force update a species database
