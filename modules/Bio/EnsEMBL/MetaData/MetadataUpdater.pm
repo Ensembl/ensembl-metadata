@@ -468,12 +468,7 @@ sub process_release_database {
 #Check pan division databases like ontology db, ncbi_taxonomy, ensembl_metadata,...
 sub check_pan_databases {
   my ($database_name) = @_;
-  if ($database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids)/){
-    return 1;
-  }
-  else {
-    return 0;
-  }
+  return $database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids)/;
 }
 
 #Subroutine to add or force update a species database
