@@ -380,6 +380,7 @@ sub get_db_connection_params {
 #Subroutine to process compara database and add or force update
 sub process_compara {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  die "Problem with ".$database->{dbname}.", can't find compara name" if !check_array_ref_empty($species);
   my $dba=create_database_dba($database,$species,$db_type,$species_ids);
   my @events;
   my $cdba = $metadatadba->get_GenomeComparaInfoAdaptor();
@@ -474,6 +475,7 @@ sub check_pan_databases {
 #Subroutine to add or force update a species database
 sub process_core {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
     my $update=$update_type;
@@ -515,6 +517,7 @@ sub process_core {
 #Subroutine to add or force update a species database
 sub process_other_database {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
     my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
@@ -596,6 +599,11 @@ sub to_hash {
   $event_hash{'type'} = $event->{type};
   $event_hash{'genome'}=$event->{subject}->{organism}->{name};
   return \%event_hash;
+}
+
+sub check_array_ref_empty {
+  my ($array_ref) = @_;
+  return scalar @$array_ref;
 }
 
 sub check_new_assembly {
