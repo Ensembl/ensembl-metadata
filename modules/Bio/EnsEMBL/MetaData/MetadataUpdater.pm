@@ -288,8 +288,12 @@ sub get_species_and_dbtype {
       $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
       $dba->dbc()->disconnect_if_idle();
     }
-    # Dealing with other databases like mart, ontology,...
+    # Dealing with other versionned databases like mart, ontology,...
     elsif ($database->{dbname} =~ m/^\w+_?\d*_\d+$/){
+      $db_type="other";
+    }
+    # Check other non versionned databases like ncbi_taxonomy, ensembl_metadata
+    elsif (check_pan_databases($database->{dbname})){
       $db_type="other";
     }
     #Dealing with anything else
@@ -414,20 +418,22 @@ sub process_release_database {
   my $division;
   my @events;
   if (defined $release->{ensembl_genomes_version}){
-    if ($database->{dbname} =~ m/^([a-z]+)_/){
+    #Check pan division databases
+    if (check_pan_databases($database->{dbname})){
+      $division="EnsemblPan";
+    }
+    #If not in the Pan division list, get division name from database prefix.
+    # e.g: plants_gene_mart_42
+    elsif ($database->{dbname} =~ m/^([a-z]+)_/){
       $division = "Ensembl".ucfirst($1);
-      #databases like ensemblgenomes_stable_ids_38_91 and ensemblgenomes_info_38 are from the Pan division
-      if ($division eq "EnsemblEnsemblgenomes"){
-        $division="EnsemblPan";
-      }
     }
     else{
       die "Can't find division for database ".$database->{dbname};
     }
   }
   else{
-    #ontology db and ontology mart database are from the Pan division
-    if ($database->{dbname} =~ m/ontology/){
+    #Check pan division databases
+    if (check_pan_databases($database->{dbname})){
       $division="EnsemblPan";
     }
     else{
@@ -458,6 +464,11 @@ sub process_release_database {
   push @events, $event_hash;
   $log->info("Completed processing ".$database->{dbname});
   return \@events;
+}
+#Check pan division databases like ontology db, ncbi_taxonomy, ensembl_metadata,...
+sub check_pan_databases {
+  my ($database_name) = @_;
+  return $database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids)/;
 }
 
 #Subroutine to add or force update a species database
