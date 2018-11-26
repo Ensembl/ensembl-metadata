@@ -592,12 +592,7 @@ sub to_hash {
 
 sub check_array_ref_empty {
   my ($array_ref) = @_;
-  if (scalar @$array_ref == 0){
-    return 0;
-  }
-  else {
-    return 1;
-  }
+  return (scalar @$array_ref);
 }
 
 sub check_new_assembly {
