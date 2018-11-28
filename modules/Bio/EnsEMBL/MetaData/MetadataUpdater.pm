@@ -380,7 +380,6 @@ sub get_db_connection_params {
 #Subroutine to process compara database and add or force update
 sub process_compara {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
-  die "Problem with ".$database->{dbname}.", can't find compara name" if !check_array_ref_empty($species);
   my $dba=create_database_dba($database,$species,$db_type,$species_ids);
   my @events;
   my $cdba = $metadatadba->get_GenomeComparaInfoAdaptor();
