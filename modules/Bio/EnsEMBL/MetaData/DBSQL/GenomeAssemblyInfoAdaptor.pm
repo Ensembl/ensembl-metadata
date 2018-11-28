@@ -76,16 +76,26 @@ sub store {
   if ( !defined $assembly->dbID() ) {
     # find out if assembly exists first
     my $dbID;
-    if(defined $assembly->assembly_accession()) {
-      # try to use the unique assembly accession
+    if(defined $assembly->assembly_accession() and defined $assembly->assembly_default()) {
+      # try to use the unique pair assembly accession and assembly default
             ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
-"select assembly_id from assembly where assembly_accession=?",
-        -PARAMS => [ $assembly->assembly_accession() ]
+"select assembly_id from assembly where assembly_accession=? and assembly_default=?",
+        -PARAMS => [ $assembly->assembly_accession(), $assembly->assembly_default() ]
       ) };   
-    } else {
+    } elsif (defined $assembly->assembly_default()) {
+      # Try with the assembly default if it exists
+      ($dbID) =
+      @{
+      $self->dbc()->sql_helper()->execute_simple(
+        -SQL =>
+"select assembly_id from assembly where assembly_default=?",
+        -PARAMS => [ $assembly->assembly_default() ]
+      ) };
+    }
+    else {
       # otherwise, we have to assume the name is unique :-(
       ($dbID) =
       @{
