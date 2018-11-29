@@ -18,4 +18,4 @@
 #
 # Description: Update Assemnly unique index to allow more flexibility, I think its fine if a genome as duplicated accession as long as the assembly name and default are different
 DROP INDEX assembly_accession_idx on assembly;
-ALTER TABLE assembly ADD UNIQUE assembly_idx (assembly_accession,assembly_default,assembly_name);
+ALTER TABLE assembly ADD UNIQUE assembly_idx (assembly_accession,assembly_default);
