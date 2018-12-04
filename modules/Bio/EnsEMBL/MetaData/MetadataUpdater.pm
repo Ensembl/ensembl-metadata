@@ -184,8 +184,8 @@ sub get_species_and_dbtype {
   my $species_ids;
   $log->info("Connecting to database $database->{dbname}");
   #dealing with Compara
-  if ($database->{dbname} =~ m/_compara_/){
-    $species="multi";
+  if ($database->{dbname} =~ m/_compara_([a-z]*)_*/){
+    $species = $1 ne '' ? $1 : 'multi';
     $db_type="compara";
   }
   #dealing with collections
