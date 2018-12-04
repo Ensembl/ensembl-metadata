@@ -179,13 +179,12 @@ sub get_species_and_dbtype {
   my ($database_uri)=@_;
   my $database = get_db_connection_params( $database_uri);
   my $db_type;
-  my $species;
+  my $species='';
   my $dba;
   my $species_ids;
   $log->info("Connecting to database $database->{dbname}");
   #dealing with Compara
-  if ($database->{dbname} =~ m/_compara_([a-z]*)_*/){
-    $species = $1 ne '' ? $1 : 'multi';
+  if ($database->{dbname} =~ m/_compara_/){
     $db_type="compara";
   }
   #dealing with collections
@@ -311,7 +310,6 @@ sub create_database_dba {
       -host   => $database->{host},
       -port   => $database->{port},
       -pass => $database->{pass},
-      -species => $species,
       -group => $db_type
     );
   }
