@@ -25,7 +25,62 @@
 
 =head1 DESCRIPTION
 
-This script is used to find which genomes have changed between two releases of Ensembl Bacteria
+This script is used to find which and how genomes have changed between a given release of ensembl and the previous one
+The script produces the following files:
+ - new_genomes.txt, list of new genomes between the current release and the previous one
+ - removed_genomes.txt, list of genomes that have been removed between the current release and the previous one
+ - renamed_genomes.txt, list of genomes that have been renamed between the current release and the previous one
+ - summary.txt, Summary of the changes between the current release and the previous one in HTML format
+ - updated_annotations.txt, list of genomes with annotation update between the current release and the previous one
+ - updated_assemblies.txt, list of genomes with assemby update between the current release and the previous one
+
+=head1 SYNOPSIS
+
+perl report_genomes.pl $(mysql-ens-meta-prod-1 details script) \
+   -release 95 -division vertebrates
+
+perl report_genomes.pl $(mysql-ens-meta-prod-1 details script) \
+   -release 42 -division metazoa
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<-h[ost]> <host>
+
+Mandatory. Host name of the metadata server
+
+=item B<-n[ame]> <ensembl_metadata>
+
+Mandatory. metadata database name, default "ensembl_metadata"
+
+=item B<-p[ort]> <port>
+
+Mandatory. Port number of the metadata server
+
+=item B<-p[assword]> <password>
+
+Password of the metadata server
+
+=item B<-di[vision]> [EnsemblVertebrates|vertebrates|EnsemblBacteria|bacteria|EnsemblFungi|fungi|EnsemblPlants|plants|EnsemblProtists|protists|EnsemblMetazoa|metazoa]
+
+Name of the division.
+If not defined, it will dump all the non-verbetrates species if release is specified
+
+=item B<-r[elease]> <release>
+
+Release number of the vertebrates or non-vertebrates release
+If not defined, the script will get the current release if division is specified
+
+=item B<-h[elp]>
+
+Print usage information.
+
+=item B<-m[man]>
+
+Print full usage information.
+
+=back
 
 =head1 AUTHOR
 
@@ -33,7 +88,8 @@ dstaines
 
 =head1 MAINTANER
 
-$Author$
+tmaurel
+
 =head1 VERSION
 
 $Revision$
@@ -55,35 +111,57 @@ my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "eg", "release:i"];
+my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "release:i", "help", "man"];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 $opts->{dbname} ||= 'ensembl_metadata';
+pod2usage(1) if $opts->{help};
+pod2usage(-verbose => 2) if $opts->{man};
 
 my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
+my $release_info;
 my $release;
+my $division_name;
+my $division;
 
-if ( defined $opts->{eg} || defined $opts->{division} ) {
-  if (defined $opts->{release})
-  {
-    $release = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-    $gdba->data_release($release);
-  }
-  else{
-    $gdba->set_ensembl_genomes_release();
-  }
+#Creating the Division name EnsemblBla and division bla variables
+if ($opts->{division} !~ m/[E|e]nsembl/){
+  $division = $opts->{division};
+  $division_name = 'Ensembl'.ucfirst($opts->{division}) if defined $opts->{division};
 }
 else{
+  $division_name = $opts->{division};
+  $division = $opts->{division};
+  $division =~ s/Ensembl//;
+  $division = lc($division);
+}
+
+#Get the release for the given division
+if ( $division eq "vertebrates" ) {
   if (defined $opts->{release}){
-    $release = $rdba->fetch_by_ensembl_release($opts->{release});
-    $gdba->data_release($release);
+    $release_info = $rdba->fetch_by_ensembl_release($opts->{release});
+    $gdba->data_release($release_info);
   }
   else{
-    $gdba->set_ensembl_release();
+    $release_info = $rdba->fetch_current_ensembl_release();
+    $gdba->data_release($release_info);
   }
+  $release = $release_info->{ensembl_version};
+}
+else{
+    if (defined $opts->{release})
+  {
+    $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
+    $gdba->data_release($release_info);
+  }
+  else{
+    $release_info = $rdba->fetch_current_ensembl_genomes_release();
+    $gdba->data_release($release_info);
+  }
+  $release = $release_info->{ensembl_genomes_version};
 }
 
 my $report = {
@@ -91,22 +169,22 @@ my $report = {
 	      ensembl_version=> $gdba->data_release()->ensembl_version()
 };
 
-$logger->info("Getting genomes from release ".$opts->{release}) if defined $opts->{release} || $logger->info("Getting genomes from current release");
-my $genomes = get_genomes($gdba, $opts->{division});
-$logger->info("Found ".scalar(keys %$genomes)." genomes from from release ".$opts->{release}) if defined $opts->{release} || $logger->info("Found ".scalar(keys %$genomes)." genomes from current release");
+$logger->info("Getting genomes from release ".$release." for ".$division);
+my $genomes = get_genomes($gdba, $division_name);
+$logger->info("Found ".scalar(keys %$genomes)." genomes from from release ".$release." for ".$division);
 # decrement releases
-if ( defined $opts->{eg} || defined $opts->{division} ) {
+if ( $division eq "vertebrates" ) {
+  my $prev_ens = $gdba->data_release()->ensembl_version()-1;
+  $logger->info("Switching release to Ensembl $prev_ens");
+  $gdba->set_ensembl_release($prev_ens);
+} else {
   my $prev_eg = $gdba->data_release()->ensembl_genomes_version()-1;
   $logger->info("Switching release to EG $prev_eg");
   $gdba->set_ensembl_genomes_release($gdba->data_release()->ensembl_genomes_version()-1);
-} else {
-  my $prev_ens = $gdba->data_release()->ensembl_genomes_version()-1;
-  $logger->info("Switching release to Ensembl $prev_ens");
-  $gdba->set_ensembl_release($prev_ens);
 }
-$logger->info("Getting genomes from previous release");
-my $prev_genomes = get_genomes($gdba, $opts->{division});
-$logger->info("Found ".scalar(keys %$prev_genomes)." genomes from previous release");
+$logger->info("Getting genomes from previous release for ".$division);
+my $prev_genomes = get_genomes($gdba, $division_name);
+$logger->info("Found ".scalar(keys %$prev_genomes)." genomes from previous release for ".$division);
 
 # new genomes
 my $new_genomes = [];
@@ -154,7 +232,7 @@ $report->{new_genomes}     = scalar @$new_genomes;
 $report->{new_assemblies}  = scalar @$new_assemblies;
 $report->{new_annotations} = scalar @$new_annotations;
 $report->{renamed_genomes} = scalar @$renamed_genomes;
-$report->{removed_genomes} = scalar @$removed_genomes; 
+$report->{removed_genomes} = scalar @$removed_genomes;
 
 
 # print to file
@@ -211,21 +289,22 @@ write_to_file(
 
 my $summary_file = "summary.txt";
 $logger->info("Writing summary to $summary_file");
-my $news;
-my $division = $opts->{division};
-$division =~ s/^Ensembl/Ensembl /;
-my $division2 = lc($division);
-$division2 =~ s/Ensembl //;
-my $url = "ftp://ftp.ensemblgenomes.org/pub/current/$division2/";
+my $news='';
+my $url;
+if ($division eq "vertebrates"){
+  $url = "ftp://ftp.ensembl.org/pub/release-".$release."/"
+}
+else{
+  $url = "ftp://ftp.ensemblgenomes.org/pub/release-".$release."/$division/";
+}
 
-if($opts->{division} eq 'EnsemblBacteria') {
-
+if($division eq 'bacteria') {
   # get counts of bacteria and archaea
   my $taxon_sql = q/select count(*) from ncbi_taxonomy.ncbi_taxa_name n join ncbi_taxonomy.ncbi_taxa_node p on (n.taxon_id=p.taxon_id) join ncbi_taxonomy.ncbi_taxa_node c on (c.left_index between p.left_index and p.right_index) join organism o on (o.taxonomy_id=c.taxon_id) join genome using (organism_id) where n.name=? and n.name_class='scientific name' and data_release_id=?/;
   $report->{bacteria} = $gdba->dbc()->sql_helper()->execute_single_result(-SQL=>$taxon_sql, -PARAMS=>['Bacteria',$gdba->data_release()->dbID()]);
   $report->{archaea} = $gdba->dbc()->sql_helper()->execute_single_result(-SQL=>$taxon_sql, -PARAMS=>['Archaea',$gdba->data_release()->dbID()]);
   $news = <<"END_B";
-Release $report->{eg_version} of $opts->{division} has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{bacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $release of Ensembl $division has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{bacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 
 Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes ($report->{eubacteria} bacteria and $report->{archaea} archaea) from the INSDC archives.
 END_B
@@ -233,7 +312,7 @@ END_B
 } else {
 
     $news = <<"END";
-Release $report->{eg_version} of $division has been loaded into $report->{databases} Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $release of Ensembl $division has been loaded into $report->{databases} Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{new_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{new_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 END
 
 }
