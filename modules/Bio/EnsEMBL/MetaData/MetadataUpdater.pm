@@ -287,8 +287,12 @@ sub get_species_and_dbtype {
       $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
       $dba->dbc()->disconnect_if_idle();
     }
-    # Dealing with other databases like mart, ontology,...
+    # Dealing with other versionned databases like mart, ontology,...
     elsif ($database->{dbname} =~ m/^\w+_?\d*_\d+$/){
+      $db_type="other";
+    }
+    # Check other non versionned databases like ncbi_taxonomy, ensembl_metadata
+    elsif (check_pan_databases($database->{dbname})){
       $db_type="other";
     }
     #Dealing with anything else
@@ -412,20 +416,22 @@ sub process_release_database {
   my $division;
   my @events;
   if (defined $release->{ensembl_genomes_version}){
-    if ($database->{dbname} =~ m/^([a-z]+)_/){
+    #Check pan division databases
+    if (check_pan_databases($database->{dbname})){
+      $division="EnsemblPan";
+    }
+    #If not in the Pan division list, get division name from database prefix.
+    # e.g: plants_gene_mart_42
+    elsif ($database->{dbname} =~ m/^([a-z]+)_/){
       $division = "Ensembl".ucfirst($1);
-      #databases like ensemblgenomes_stable_ids_38_91 and ensemblgenomes_info_38 are from the Pan division
-      if ($division eq "EnsemblEnsemblgenomes"){
-        $division="EnsemblPan";
-      }
     }
     else{
       die "Can't find division for database ".$database->{dbname};
     }
   }
   else{
-    #ontology db and ontology mart database are from the Pan division
-    if ($database->{dbname} =~ m/ontology/){
+    #Check pan division databases
+    if (check_pan_databases($database->{dbname})){
       $division="EnsemblPan";
     }
     else{
@@ -457,14 +463,26 @@ sub process_release_database {
   $log->info("Completed processing ".$database->{dbname});
   return \@events;
 }
+#Check pan division databases like ontology db, ncbi_taxonomy, ensembl_metadata,...
+sub check_pan_databases {
+  my ($database_name) = @_;
+  return $database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids)/;
+}
 
 #Subroutine to add or force update a species database
 sub process_core {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
+    my $update=$update_type;
     my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
+    #Check if this is a new genebuild
+    $update = check_new_genebuild($dba, $gdba, $species_name, $update);
+    #Check if this is a new assembly
+    my $old_assembly_database_list;
+    ($update,$old_assembly_database_list) = check_new_assembly($dba, $gdba, $species_name, $update);
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
                   Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
@@ -479,10 +497,12 @@ sub process_core {
     $gdba->store($md);
     my $ea = $metadatadba->get_EventInfoAdaptor();
     $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
+    my $event_details={"email"=>$email,"comment"=>$comment};
+    $event_details->{'old_assembly_database_list'} = $old_assembly_database_list if defined $old_assembly_database_list;
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
-                                                    -TYPE    => $update_type,
+                                                    -TYPE    => $update,
                                                     -SOURCE  => $source,
-                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) ); 
+                                                    -DETAILS => encode_json($event_details) );
     $ea->store( $event );
     my $event_hash = to_hash($event);
     push @events, $event_hash;
@@ -494,6 +514,7 @@ sub process_core {
 #Subroutine to add or force update a species database
 sub process_other_database {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
     my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
@@ -576,4 +597,66 @@ sub to_hash {
   $event_hash{'genome'}=$event->{subject}->{organism}->{name};
   return \%event_hash;
 }
+
+sub check_array_ref_empty {
+  my ($array_ref) = @_;
+  return scalar @$array_ref;
+}
+
+sub check_new_assembly {
+  #Check the core database assembly value and compare it with what we have in the Metadata database
+  #if the assembly doesn't exist in the metadata database then it's a new species, update the handover type
+  #if the assembly is the same, all good, nothing to do here
+  #if the assembly is different, make sure that we update the handover type and generate a list of old assembly databases to clean up except for collections
+  my ($dba, $gdba, $species_name, $update_type) = @_;
+  my $old_assembly_database_list;
+  my $meta = $dba->get_MetaContainer();
+  my $assembly_default = $meta->single_value_by_key('assembly.default');
+  my $md = $gdba->fetch_by_name($species_name);
+  #Checking if this is a new species
+  if (defined $md){
+    if ($assembly_default ne $md->assembly()->{assembly_default}){
+      $update_type = 'new_assembly';
+      # We don't want to drop the database if a genome in a collection has changed.
+      if ($dba->dbc->dbname !~ /_collection_/){
+        my $old_databases = $md->databases();
+        foreach my $old_database (@{$old_databases})
+        {
+          push @{$old_assembly_database_list}, $old_database->dbname
+        }
+      }
+    }
+  }
+  #If the species is not in the metadata database then flag is as a new assembly
+  else {
+    $update_type = 'new_assembly';
+  }
+  return ($update_type,$old_assembly_database_list);
+}
+
+sub check_new_genebuild {
+  # Check the core database genebuild.version or (genebuild.start_date/genebuild.last_geneset_update) value and compare it with what we have in the Metadata database
+  #if the Genebuild is the same, all good, nothing to do here
+  #if the Genebuild is different, make sure that we update the handover type
+  my ($dba, $gdba, $species_name, $update_type) = @_;
+  my $old_assembly_database_list;
+  my $meta = $dba->get_MetaContainer();
+  my ($genebuild)        = @{$meta->list_value_by_key('genebuild.start_date')};
+  my ($genebuild_version)= @{$meta->list_value_by_key('genebuild.version')};
+  my ($genebuild_upd)    = @{$meta->list_value_by_key('genebuild.last_geneset_update')};
+  my $gb_string = $genebuild_version;
+  if(!defined $gb_string) {
+    $gb_string = $genebuild;
+    $gb_string .= "/".$genebuild_upd if defined $genebuild_upd;
+  }
+  my $md = $gdba->fetch_by_name($species_name);
+  #If this species exist already
+  if (defined $md){
+    if ($gb_string ne $md->genebuild()){
+      $update_type = 'new_genebuild';
+    }
+  }
+  return ($update_type);
+}
+
 1;
