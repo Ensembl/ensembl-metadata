@@ -186,7 +186,7 @@ sub fetch_division_databases {
     $release = $self->data_release();
   }
   return $self->dbc()->sql_helper()->execute_simple(
-    -SQL => qw/select distinct c.dbname from compara_analysis c
+    -SQL => q/select distinct c.dbname from compara_analysis c
       join division d using (division_id)
       where data_release_id=? and (d.name=? OR d.short_name=?)/,
     -PARAMS => [ $self->data_release()->dbID(), $division, $division ] );
