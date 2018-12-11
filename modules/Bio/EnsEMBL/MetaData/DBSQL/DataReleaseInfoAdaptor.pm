@@ -190,7 +190,7 @@ sub fetch_by_ensembl_release {
     $self->_first_element(
              $self->_fetch_generic(
                _get_base_sql() .
-                 ' where ensembl_version=? and ensembl_genomes_version is null',
+                 ' where ensembl_version=? order by release_date limit 1',
                [$release] ) );
 }
 =head2 fetch_by_ensembl_genomes_release
@@ -222,7 +222,7 @@ sub fetch_current_ensembl_release {
     $self->_first_element(
     $self->_fetch_generic(
       _get_base_sql() .
-' where ensembl_genomes_version is null and is_current=1 order by release_date desc limit 1' ) );
+' where is_current=1 order by release_date limit 1' ) );
 }
 =head2 fetch_current_ensembl_genomes_release
   Description: Retrieve details for the current Ensembl Genomes release
