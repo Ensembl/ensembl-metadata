@@ -415,28 +415,26 @@ sub process_release_database {
   my ($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source) = @_;
   my $division;
   my @events;
-  if (defined $release->{ensembl_genomes_version}){
-    #Check pan division databases
-    if (check_pan_databases($database->{dbname})){
-      $division="EnsemblPan";
-    }
-    #If not in the Pan division list, get division name from database prefix.
-    # e.g: plants_gene_mart_42
-    elsif ($database->{dbname} =~ m/^([a-z]+)_/){
-      $division = "Ensembl".ucfirst($1);
-    }
-    else{
-      die "Can't find division for database ".$database->{dbname};
-    }
+  #Check pan division databases
+  if (check_pan_databases($database->{dbname})){
+    $division="EnsemblPan";
   }
-  else{
-    #Check pan division databases
-    if (check_pan_databases($database->{dbname})){
-      $division="EnsemblPan";
+  #Specific case for ancestral and production db.
+  elsif ($database->{dbname} =~ m/^ensembl_ancestral_\d+$/ or $database->{dbname} =~ m/^ensembl_production_\d+$/){
+    $division = "EnsemblVertebrates";
+  }
+  #for the marts, get division name from database prefix.
+  # e.g: plants_gene_mart_42
+  elsif ($database->{dbname} =~ m/^(fungi|plants|metazoa|protists|)_?\w*_mart_\d+$/){
+    if ($1){
+      $division = "Ensembl".ucfirst($1);
     }
     else{
       $division = "EnsemblVertebrates";
     }
+  }
+  else{
+    die "Can't find division for database ".$database->{dbname};
   }
   $log->info( "Adding database " . $database->{dbname} . " to release" );
   $release->add_database($database->{dbname},$division);
