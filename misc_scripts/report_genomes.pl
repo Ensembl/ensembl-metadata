@@ -140,28 +140,27 @@ else{
 }
 
 #Get the release for the given division
-if ( $division eq "vertebrates" ) {
-  if (defined $opts->{release}){
+if (defined $opts->{release}){
+  $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
+  if (!$release_info){
     $release_info = $rdba->fetch_by_ensembl_release($opts->{release});
-    $gdba->data_release($release_info);
+    $release = $release_info->{ensembl_version};
   }
   else{
-    $release_info = $rdba->fetch_current_ensembl_release();
-    $gdba->data_release($release_info);
+    $release = $release_info->{ensembl_genomes_version};
   }
-  $release = $release_info->{ensembl_version};
+  $gdba->data_release($release_info);
 }
 else{
-    if (defined $opts->{release})
-  {
-    $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-    $gdba->data_release($release_info);
+  $release_info = $rdba->fetch_current_ensembl_release();
+  if (!$release_info){
+    $release_info = $rdba->fetch_current_ensembl_genomes_release();
+    $release = $release_info->{ensembl_genomes_version};
   }
   else{
-    $release_info = $rdba->fetch_current_ensembl_genomes_release();
-    $gdba->data_release($release_info);
+    $release = $release_info->{ensembl_version};
   }
-  $release = $release_info->{ensembl_genomes_version};
+  $gdba->data_release($release_info);
 }
 
 my $report = {

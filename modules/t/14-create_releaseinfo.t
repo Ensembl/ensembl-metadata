@@ -57,18 +57,19 @@ eval {
 };
 my $gdba =
   $multi->get_DBAdaptor('empty_metadata')->get_DataReleaseInfoAdaptor();
-$gdba->store($release);
-ok( defined( $release->dbID() ),    "dbID" );
-ok( defined( $release->adaptor() ), "Adaptor" );
+
 $gdba->store($release2);
 ok( defined( $release2->dbID() ),    "dbID" );
 ok( defined( $release2->adaptor() ), "Adaptor" );
+$gdba->store($release);
+ok( defined( $release->dbID() ),    "dbID" );
+ok( defined( $release->adaptor() ), "Adaptor" );
 $gdba->store($release3);
-ok( defined( $release2->dbID() ),    "dbID" );
-ok( defined( $release2->adaptor() ), "Adaptor" );
+ok( defined( $release3->dbID() ),    "dbID" );
+ok( defined( $release3->adaptor() ), "Adaptor" );
 $gdba->store($release4);
-ok( defined( $release2->dbID() ),    "dbID" );
-ok( defined( $release2->adaptor() ), "Adaptor" );
+ok( defined( $release4->dbID() ),    "dbID" );
+ok( defined( $release4->adaptor() ), "Adaptor" );
 
 my $e = $gdba->fetch_by_ensembl_release( $release2->ensembl_version() );
 ok( defined $e,               "Obj" );

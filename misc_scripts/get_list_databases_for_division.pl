@@ -129,44 +129,20 @@ else{
 }
 
 #Get the release for the given division
-if ( $division eq "vertebrates") {
-  if (defined $opts->{release}){
+#Get the release for the given division
+if (defined $opts->{release}){
+  $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
+  if (!$release_info){
     $release_info = $rdba->fetch_by_ensembl_release($opts->{release});
-    $gdba->data_release($release_info);
   }
-  else{
-    $release_info = $rdba->fetch_current_ensembl_release();
-    $gdba->data_release($release_info);
-  }
-}
-#pan exists for both vertebrates and non-vertebrates so release need to be checked
-elsif ($division eq "pan"){
-  if (defined $opts->{release})
-  {
-    $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-    if (!$release_info){
-      $release_info = $rdba->fetch_by_ensembl_release($opts->{release});
-    }
-    $gdba->data_release($release_info);
-  }
-  else{
-    $release_info = $rdba->fetch_current_ensembl_genomes_release();
-    if (!$release_info){
-      $release_info = $rdba->fetch_current_ensembl_release();
-    }
-    $gdba->data_release($release_info);
-  }
+  $gdba->data_release($release_info);
 }
 else{
-  if (defined $opts->{release})
-  {
-    $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-    $gdba->data_release($release_info);
-  }
-  else{
+  $release_info = $rdba->fetch_current_ensembl_release();
+  if (!$release_info){
     $release_info = $rdba->fetch_current_ensembl_genomes_release();
-    $gdba->data_release($release_info);
   }
+  $gdba->data_release($release_info);
 }
 
 my $division_databases;
