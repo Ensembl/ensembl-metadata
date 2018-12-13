@@ -47,7 +47,6 @@ sub default_options {
     current_release=>'',
     email => '',
     timestamp =>'',
-    update_type => '',
     comment => ''};
 }
 
