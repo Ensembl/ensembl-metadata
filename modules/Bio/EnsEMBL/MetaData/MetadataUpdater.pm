@@ -36,7 +36,7 @@ use Bio::EnsEMBL::MetaData::EventInfo;
 use JSON;
 
 sub process_database {
-  my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$update_type,$source)  = @_;
+  my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$source)  = @_;
   #Connect to metadata database
   my $metadatadba = create_metadata_dba($metadata_uri);
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
@@ -45,17 +45,17 @@ sub process_database {
   my ($species,$db_type,$database,$species_ids)=get_species_and_dbtype($database_uri);
   if (defined $e_release) {
     # Check if release already exist or create it
-    $gdba = update_release_and_process_release_db($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$update_type,$comment,$source,$db_type,$database);
+    $gdba = update_release_and_process_release_db($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database);
   }
   #get current release and process release db
   else {
-    $gdba = get_release_and_process_release_db($metadatadba,$gdba,$database,$email,$update_type,$comment,$source,$db_type);
+    $gdba = get_release_and_process_release_db($metadatadba,$gdba,$database,$email,$comment,$source,$db_type);
   }
   if ($db_type eq "core"){
-    $events = process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
+    $events = process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source);
   }
   elsif ($db_type eq "compara") {
-    $events = process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
+    $events = process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source);
   }
   #Already processed mart, ontology, in get_release...
   elsif ($db_type eq "other"){
@@ -63,7 +63,7 @@ sub process_database {
   }
   else {
     check_if_coredb_exist($gdba,$species,$metadatadba);
-    $events = process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source);
+    $events = process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source);
   }
   # Disconnecting from server
   $gdba->dbc()->disconnect_if_idle();
@@ -91,7 +91,7 @@ sub create_metadata_dba {
 }
 
 sub update_release_and_process_release_db {
-  my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$update_type,$comment,$source,$db_type,$database) = @_;
+  my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   if ( defined $eg_release ) {
@@ -119,7 +119,7 @@ sub update_release_and_process_release_db {
     }
   }
   if ($db_type eq "other"){
-    process_release_database($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source);
+    process_release_database($metadatadba,$gdba,$release,$database,$email,$comment,$source);
   }
   $gdba->data_release($release);
   $rdba->dbc()->disconnect_if_idle();
@@ -127,7 +127,7 @@ sub update_release_and_process_release_db {
 }
 
 sub get_release_and_process_release_db {
-  my ($metadatadba,$gdba,$database,$email,$update_type,$comment,$source,$db_type) = @_;
+  my ($metadatadba,$gdba,$database,$email,$comment,$source,$db_type) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   # Parse EG databases including core, core like, variation, funcgen and compara
@@ -169,7 +169,7 @@ sub get_release_and_process_release_db {
     die "Can't find release for database $database->{dbname}";
   }
   if ($db_type eq "other"){
-    process_release_database($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source);
+    process_release_database($metadatadba,$gdba,$release,$database,$email,$comment,$source);
   }
   $gdba->data_release($release);
   $rdba->dbc()->disconnect_if_idle();
@@ -377,7 +377,7 @@ sub get_db_connection_params {
 
 #Subroutine to process compara database and add or force update
 sub process_compara {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source) = @_;
   my $dba=create_database_dba($database,$species,$db_type,$species_ids);
   my @events;
   my $cdba = $metadatadba->get_GenomeComparaInfoAdaptor();
@@ -397,7 +397,7 @@ sub process_compara {
     $cdba->store($compara_info);
     $log->info( "Storing compara event for " . $nom );
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $compara_info,
-                                                    -TYPE    => $update_type,
+                                                    -TYPE    => 'other',
                                                     -SOURCE  => $source,
                                                     -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) );
     $ea->store( $event );
@@ -412,7 +412,7 @@ sub process_compara {
 
 #Subroutine to process release databases like mart or ontology
 sub process_release_database {
-  my ($metadatadba,$gdba,$release,$database,$email,$update_type,$comment,$source) = @_;
+  my ($metadatadba,$gdba,$release,$database,$email,$comment,$source) = @_;
   my $division;
   my @events;
   #Check pan division databases
@@ -452,7 +452,7 @@ sub process_release_database {
   my $ea = $metadatadba->get_EventInfoAdaptor();
   $log->info( "Storing release event for " . $database->{dbname} );
   my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $release_database,
-                                                  -TYPE    => $update_type,
+                                                  -TYPE    => 'other',
                                                   -SOURCE  => $source,
                                                   -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) );
   $ea->store( $event );
@@ -469,18 +469,18 @@ sub check_pan_databases {
 
 #Subroutine to add or force update a species database
 sub process_core {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source) = @_;
   die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
-    my $update=$update_type;
+    my $update_type='other';
     my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
     #Check if this is a new genebuild
-    $update = check_new_genebuild($dba, $gdba, $species_name, $update);
+    $update_type = check_new_genebuild($dba, $gdba, $species_name, $update_type);
     #Check if this is a new assembly
     my $old_assembly_database_list;
-    ($update,$old_assembly_database_list) = check_new_assembly($dba, $gdba, $species_name, $update);
+    ($update_type,$old_assembly_database_list) = check_new_assembly($dba, $gdba, $species_name, $update_type);
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
                   Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
@@ -498,7 +498,7 @@ sub process_core {
     my $event_details={"email"=>$email,"comment"=>$comment};
     $event_details->{'old_assembly_database_list'} = $old_assembly_database_list if defined $old_assembly_database_list;
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
-                                                    -TYPE    => $update,
+                                                    -TYPE    => $update_type,
                                                     -SOURCE  => $source,
                                                     -DETAILS => encode_json($event_details) );
     $ea->store( $event );
@@ -511,7 +511,7 @@ sub process_core {
 
 #Subroutine to add or force update a species database
 sub process_other_database {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$update_type,$comment,$source) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source) = @_;
   die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
@@ -531,7 +531,7 @@ sub process_other_database {
     my $ea = $metadatadba->get_EventInfoAdaptor();
     $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
-                                                    -TYPE    => $update_type,
+                                                    -TYPE    => 'other',
                                                     -SOURCE  => $source,
                                                     -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) );
     $ea->store( $event );
