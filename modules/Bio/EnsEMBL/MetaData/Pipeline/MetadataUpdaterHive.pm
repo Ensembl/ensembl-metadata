@@ -79,6 +79,9 @@ $hive_dbc->disconnect_if_idle() if defined $hive_dbc;
 my $events = process_database($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$source);
 
 my $runtime =  duration(time() - $start_time);
+#Clean up if job already exist in result.
+my $sql=q/DELETE FROM result WHERE job_id = ?/;
+$hive_dbc->sql_helper()->execute_update(-SQL=>$sql,-PARAMS=>[$self->input_job()->dbID()]);
 my $output = {
 		  metadata_uri=>$metadata_uri,
 		  database_uri=>$database_uri,
