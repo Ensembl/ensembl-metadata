@@ -146,20 +146,20 @@ diag "Testing organism-related retrieval";
 {
   diag "Testing by direct organism retrieval";
   my $org  = $odba->fetch_by_name("test");
-  my $info = $gdba->fetch_by_organism($org);
-  ok( defined $info && $info->name() eq 'test' );
+  my $info = $gdba->fetch_all_by_organism($org);
+  ok( defined $info && $info->[0]->name() eq 'test' );
   my $infos = $gdba->fetch_all_by_organisms( [$org] );
   ok( defined $infos && $infos->[0]->name() eq 'test' );
 }
 {
   diag "Testing by organism name retrieval";
   my $info = $gdba->fetch_by_name("test");
-  ok( defined $info && $info->name() eq 'test' );
+  ok( defined $info && $info->[0]->name() eq 'test' );
 }
 {
   diag "Testing by organism any name retrieval";
   my $info = $gdba->fetch_by_any_name("test");
-  ok( defined $info && $info->name() eq 'test' );
+  ok( defined $info && $info->[0]->name() eq 'test' );
 }
 {
   diag "Testing by organism any name retrieval";

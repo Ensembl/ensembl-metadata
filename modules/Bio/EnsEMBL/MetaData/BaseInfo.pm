@@ -53,6 +53,8 @@ use warnings;
 
 package Bio::EnsEMBL::MetaData::BaseInfo;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
+use Exporter qw/import/;
+our @EXPORT_OK = qw(get_division);
 
 =head1 CONSTRUCTOR
 =head2 new 
@@ -241,6 +243,49 @@ sub _load_child {
     $self->adaptor()->$method($self);
   }
   return;
+}
+
+=head2 get_division
+  Description: Get division for a given database adaptor. If the database is a core like, get the core database
+  Arg        : Database adaptor
+  Returntype : String
+  Exceptions : none
+  Caller     : Internal
+  Status     : Stable
+=cut
+sub get_division {
+  my ($dba) = @_;
+  if ($dba->group eq 'core') {
+    return $dba->get_MetaContainer->get_division();
+  }
+  else {
+    my $core_dba = create_core_dba($dba);
+    if ($core_dba->group eq 'core') {
+      my $division = $core_dba->get_MetaContainer->get_division();
+      $core_dba->dbc()->disconnect_if_idle();
+      return $division;
+    } else {
+      $core_dba->dbc()->disconnect_if_idle();
+      die "Could not retrieve Core database for ".$core_dba->dbc->dbname();
+    }
+  }
+}
+
+sub create_core_dba {
+  my ($dba) = @_;
+  my $core_dbname = $dba->dbc->dbname();
+  $core_dbname =~ s/(_otherfeatures_|_rnaseq_|_cdna_|_variation_|_funcgen_)/_core_/;
+  my $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
+  my $core_dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+    -user   => $dba->dbc->user,
+    -host   => $dba->dbc->host,
+    -port   => $dba->dbc->port,
+    -pass => $dba->dbc->pass,
+    -dbname => $core_dbname,
+    -species => $species,
+    -group => 'core'
+    );
+  return $core_dba;
 }
 
 1;
