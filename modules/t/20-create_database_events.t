@@ -29,7 +29,6 @@ my $release =
 ok( defined $release, "Release object exists" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval { $multi->load_database('empty_metadata'); };
 my $gdba =
   $multi->get_DBAdaptor('empty_metadata')->get_DataReleaseInfoAdaptor();
 $release->add_database( "smelly_mart_27",     "EnsemblNanas" );

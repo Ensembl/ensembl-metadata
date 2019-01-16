@@ -52,9 +52,6 @@ my $release4 =
                                                 -IS_CURRENT => 0);
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval {
-     $multi->load_database('empty_metadata');
-};
 my $gdba =
   $multi->get_DBAdaptor('empty_metadata')->get_DataReleaseInfoAdaptor();
 
@@ -100,5 +97,5 @@ is( $c_eg->ensembl_version(), $release->ensembl_version(), "E version" );
 is( $c_eg->ensembl_genomes_version(),
     $release->ensembl_genomes_version(),
     "EG version" );
-done_testing;
-$multi->cleanup();
+# $multi->cleanup();
+done_testing();
