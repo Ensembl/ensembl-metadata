@@ -24,7 +24,7 @@ use Data::Dumper;
 
 my %args = ( '-ASSEMBLY_NAME'      => "v2.0",
              '-ASSEMBLY_DEFAULT'   => "v2_0",
-             '-ASSEMBLY_USCS'      => "wotevs",
+             '-ASSEMBLY_UCSC'      => "wotevs",
 			 '-ASSEMBLY_ACCESSION' => 'GCA_181818181.1',
 			 '-ASSEMBLY_LEVEL'     => 'chromosome',
 			 '-BASE_COUNT'         => 99 );
