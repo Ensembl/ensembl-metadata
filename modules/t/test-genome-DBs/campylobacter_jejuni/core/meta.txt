@@ -1,5 +1,5 @@
 1	\N	schema_type	core
-2	\N	schema_version	83
+2	\N	schema_version	96
 3	\N	patch	patch_82_83_a.sql|schema_version
 113	1	species.species_name	Campylobacter jejuni
 112	1	simple_featurebuild.level	toplevel
@@ -65,3 +65,38 @@
 129	1	sample.vep_pileup	cBHLOS 1404 T A\\nc512 209 * -A
 130	1	sample.vep_ensembl	cBHLOS 1404 1404 T/A 1\\nc512 210 210 A/- 1
 131	1	schema.copy_src	bacteria_17_collection_core_30_83_1/1
+132	\N	patch	patch_83_84_a.sql|schema_version
+133	\N	patch	patch_83_84_b.sql|xref.version_default
+134	\N	patch	patch_83_84_c.sql|protein_feature_unique
+135	\N	patch	patch_83_84_d.sql|longer_synonym
+136	\N	patch	patch_83_84_e.sql|nullable_versions
+137	\N	patch	patch_84_85_a.sql|schema_version
+138	\N	patch	patch_84_85_b.sql|remove_duplicated_key
+139	\N	patch	patch_85_86_a.sql|schema_version
+140	\N	patch	patch_85_86_b.sql|add dna_align_feature_attrib table
+141	\N	patch	patch_85_86_c.sql|meta_case_insensitive
+142	\N	patch	patch_86_87_a.sql|schema_version
+143	\N	patch	patch_86_87_b.sql|meta_value_NOT_NULL
+144	\N	patch	patch_86_87_c.sql|datetime_default_NULL
+145	\N	patch	patch_87_88_a.sql|schema_version
+146	\N	patch	patch_87_88_b.sql|seq_region_name_255
+147	\N	patch	patch_87_88_c.sql|protein_featue_uniqueness
+148	\N	patch	patch_88_89_a.sql|schema_version
+149	\N	patch	patch_89_90_a.sql|schema_version
+150	\N	patch	patch_89_90_b.sql|remove_status
+151	\N	patch	patch_89_90_c.sql|pf_hit_name_case_sensitive
+152	\N	patch	patch_90_91_a.sql|schema_version
+153	\N	patch	patch_90_91_b.sql|align_type
+154	\N	patch	patch_90_91_c.sql|protein_align_type
+155	\N	patch	patch_90_91_d.sql|remove_external_data
+156	\N	patch	patch_91_92_a.sql|schema_version
+157	\N	patch	patch_91_92_b.sql|add_cigar_line_align_type
+158	\N	patch	patch_92_93_a.sql|schema_version
+159	\N	patch	patch_92_93_b.sql|biotype_table
+160	\N	patch	patch_92_93_c.sql|collate_index_interpro
+161	\N	patch	patch_93_94_a.sql|schema_version
+162	\N	patch	patch_93_94_b.sql|nullable_ox_analysis
+163	\N	patch	patch_93_94_c.sql|default_aln_type
+164	\N	patch	patch_94_95_a.sql|schema_version
+165	\N	patch	patch_94_95_b.sql|vertebrate_division_rename
+166	\N	patch	patch_95_96_a.sql|schema_version

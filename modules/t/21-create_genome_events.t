@@ -59,7 +59,6 @@ my $genome = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 ok( defined $genome, "Genome object exists" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval { $multi->load_database('empty_metadata'); };
 
 my $gdba = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
 $gdba->data_release($release);

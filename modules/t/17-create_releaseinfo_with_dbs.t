@@ -20,7 +20,6 @@ use Bio::EnsEMBL::Test::MultiTestDB;
 use Bio::EnsEMBL::MetaData::DataReleaseInfo;
 use Data::Dumper;
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval { $multi->load_database('empty_metadata'); };
 
 my $release =
   Bio::EnsEMBL::MetaData::DataReleaseInfo->new( -ENSEMBL_VERSION         => 99,

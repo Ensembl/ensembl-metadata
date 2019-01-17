@@ -47,9 +47,6 @@ $org->aliases( [ "one", "two" ] );
 ok( scalar @{ $org->aliases() } eq 2 );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval {
-     $multi->load_database('empty_metadata');
-};
 my $mdba  = $multi->get_DBAdaptor('empty_metadata');
 my $odba  = $mdba->get_GenomeOrganismInfoAdaptor();
 

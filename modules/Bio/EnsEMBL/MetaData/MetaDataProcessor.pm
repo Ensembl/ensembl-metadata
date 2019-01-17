@@ -42,6 +42,7 @@ Dan Staines
 package Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
+use Bio::EnsEMBL::MetaData::BaseInfo qw(get_division);
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
@@ -160,7 +161,6 @@ sub process_core {
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
-  $dba->dbc()->reconnect_when_lost(1);
 
   # get metadata container
   my $meta   = $dba->get_MetaContainer();
@@ -213,7 +213,7 @@ sub process_core {
                       -species_id          => $dba->species_id(),
                       -division            => $division,
                       -dbname              => $dbname,
-                      -data_release        => $self->{data_release},
+                      -data_release        => $self->{info_adaptor}->data_release(),
                       -strain              => $strain,
                       -serotype            => $serotype,
                       -display_name        => $display_name,
@@ -336,7 +336,6 @@ where a.code='toplevel' and species_id=?/,
     $md->db_size($size);
 
   } ## end if ( defined $self->{annotation_analyzer...})
-  $dba->dbc()->disconnect_if_idle();
   return $md;
 } ## end sub process_core
 
@@ -354,12 +353,16 @@ sub process_otherfeatures {
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
-  $dba->dbc()->reconnect_when_lost(1);
   my $size   = get_dbsize($dba);
   # features
   my $other_ali = {};
   my $gdba = $self->{info_adaptor};
-  my $md=$gdba->fetch_by_name($dba->species());
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($dba->species());
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   $self->{logger}
     ->info( "Processing " . $dba->species() . " otherfeatures annotation" );
   my %features = ( %{ $md->features() },
@@ -375,7 +378,6 @@ sub process_otherfeatures {
     $md->db_size($size);
 
   } ## end if ( defined $self->{annotation_analyzer...})
-  $dba->dbc()->disconnect_if_idle();
   return $md;
 }
 
@@ -393,12 +395,16 @@ sub process_rnaseq {
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
-  $dba->dbc()->reconnect_when_lost(1);
   my $size   = get_dbsize($dba);
   # features
   my $rnaseq_ali = {};
   my $gdba = $self->{info_adaptor};
-  my $md=$gdba->fetch_by_name($dba->species());
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($dba->species());
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   $self->{logger}
     ->info( "Processing " . $dba->species() . " rnaseq annotation" );
   my %features = ( %{ $md->features() },
@@ -414,7 +420,6 @@ sub process_rnaseq {
     $md->db_size($size);
 
   } ## end if ( defined $self->{annotation_analyzer...})
-  $dba->dbc()->disconnect_if_idle();
   return $md;
 }
 
@@ -432,12 +437,16 @@ sub process_cdna {
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
-  $dba->dbc()->reconnect_when_lost(1);
   my $size   = get_dbsize($dba);
   # features
   my $cdna_ali = {};
   my $gdba = $self->{info_adaptor};
-  my $md=$gdba->fetch_by_name($dba->species());
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($dba->species());
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   $self->{logger}
     ->info( "Processing " . $dba->species() . " cdna annotation" );
   my %features = ( %{ $md->features() },
@@ -451,7 +460,6 @@ sub process_cdna {
     $md->other_alignments( \%all_ali );
     $md->db_size($size);
   } ## end if ( defined $self->{annotation_analyzer...})
-  $dba->dbc()->disconnect_if_idle();
   return $md;
 }
 
@@ -465,21 +473,24 @@ sub process_cdna {
 =cut
 
 sub process_variation {
-  my ($self,$dba) = @_;
+  my ($self, $dba) = @_;
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
-  $dba->dbc()->reconnect_when_lost(1);
   my $size   = get_dbsize($dba);
   my $gdba = $self->{info_adaptor};
-  my $md=$gdba->fetch_by_name($dba->species());
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($dba->species());
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   $self->{logger}
     ->info( "Processing " . $dba->species() . " variation annotation" );
   $md->variations(
               $self->{annotation_analyzer}->analyze_variation($dba) );
   $md->add_database( $dba->dbc()->dbname() );
   $md->db_size($size);
-  $dba->dbc()->disconnect_if_idle();
   return $md;
 }
 
@@ -493,18 +504,21 @@ sub process_variation {
 =cut
 
 sub process_funcgen {
-  my ($self,$dba) = @_;
+  my ($self, $dba) = @_;
   if ( !defined $dba ) {
     confess "DBA not defined for processing";
   }
-  $dba->dbc()->reconnect_when_lost(1);
   my $size   = get_dbsize($dba);
   my $gdba = $self->{info_adaptor};
-  my $md=$gdba->fetch_by_name($dba->species());
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($dba->species());
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   $self->{logger}->info( "Processing " . $dba->species() . " regulation annotation" );
   $md->add_database( $dba->dbc()->dbname() );
   $md->db_size($size);
-  $dba->dbc()->disconnect_if_idle();
   return $md;
 }
 

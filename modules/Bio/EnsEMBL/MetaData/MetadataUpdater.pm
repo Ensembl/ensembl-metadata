@@ -33,6 +33,7 @@ use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::MetaData::EventInfo;
+use Bio::EnsEMBL::MetaData::BaseInfo qw(get_division);
 use JSON;
 
 sub process_database {
@@ -42,7 +43,7 @@ sub process_database {
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
   my $events;
   # Get database db_type and species  
-  my ($species,$db_type,$database,$species_ids)=get_species_and_dbtype($database_uri);
+  my ($species,$db_type,$database,$species_ids,$dba)=get_species_and_dbtype($database_uri);
   if (defined $e_release) {
     # Check if release already exist or create it
     $gdba = update_release_and_process_release_db($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database);
@@ -52,18 +53,17 @@ sub process_database {
     $gdba = get_release_and_process_release_db($metadatadba,$gdba,$database,$email,$comment,$source,$db_type);
   }
   if ($db_type eq "core"){
-    $events = process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source);
+    $events = process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba);
   }
   elsif ($db_type eq "compara") {
-    $events = process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source);
+    $events = process_compara($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba);
   }
   #Already processed mart, ontology, in get_release...
   elsif ($db_type eq "other"){
     1;
   }
   else {
-    check_if_coredb_exist($gdba,$species,$metadatadba);
-    $events = process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source);
+    $events = process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba);
   }
   # Disconnecting from server
   $gdba->dbc()->disconnect_if_idle();
@@ -177,15 +177,21 @@ sub get_release_and_process_release_db {
 }
 sub get_species_and_dbtype {
   my ($database_uri)=@_;
-  my $database = get_db_connection_params( $database_uri);
-  my $db_type;
-  my $species='';
-  my $dba;
-  my $species_ids;
+  $DB::single = 1;
+  my $database = get_db_connection_params($database_uri);
+  my ($db_type,$species,$dba,$species_ids);
   $log->info("Connecting to database $database->{dbname}");
   #dealing with Compara
   if ($database->{dbname} =~ m/_compara_/){
     $db_type="compara";
+    $dba = Bio::EnsEMBL::Compara::DBSQL::DBAdaptor->new(
+      -user   => $database->{user},
+      -dbname => $database->{dbname},
+      -host   => $database->{host},
+      -port   => $database->{port},
+      -pass => $database->{pass},
+      -group => $db_type
+    );
   }
   #dealing with collections
   elsif ($database->{dbname} =~ m/_collection_/){
@@ -200,39 +206,36 @@ sub get_species_and_dbtype {
     $species = $dba->all_species();
     $db_type=$dba->group();
     foreach my $species_name (@{$species}){
-      my $species_id=$dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select species_id from meta where meta_key=? and meta_value=?/, -PARAMS => ['species.production_name',$species_name]);
+      my $species_id=$dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select species_id from meta where meta_key=? and meta_value=?/, -PARAMS => ['species.db_name',$species_name]);
       $species_ids->{$species_name}=$species_id->[0];
     }
-    $dba->dbc()->disconnect_if_idle();
   }
   #dealing with Variation
-  elsif ($database->{dbname} =~ m/_variation_/){
+  elsif ($database->{dbname} =~ m/^(.*)_variation_/){
     $db_type="variation";
     $dba = Bio::EnsEMBL::Variation::DBSQL::DBAdaptor->new(
     -user   => $database->{user},
     -dbname => $database->{dbname},
     -host   => $database->{host},
     -port   => $database->{port},
-    -pass => $database->{pass}
+    -pass => $database->{pass},
+    -species => $1,
     );
-    $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-    $dba->dbc()->disconnect_if_idle();
   }
   #dealing with Regulation
-  elsif ($database->{dbname} =~ m/_funcgen_/){
+  elsif ($database->{dbname} =~ m/^(.*)_funcgen_/){
     $db_type="funcgen";
     $dba = Bio::EnsEMBL::Funcgen::DBSQL::DBAdaptor->new(
     -user   => $database->{user},
     -dbname => $database->{dbname},
     -host   => $database->{host},
     -port   => $database->{port},
-    -pass => $database->{pass}
+    -pass => $database->{pass},
+    -species => $1,
     );
-    $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-    $dba->dbc()->disconnect_if_idle();
   }
   #dealing with Core
-  elsif ($database->{dbname} =~ m/_core_/){
+  elsif ($database->{dbname} =~ m/^(.*)_core_/){
       $db_type="core";
       $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
         -user   => $database->{user},
@@ -240,13 +243,12 @@ sub get_species_and_dbtype {
         -host   => $database->{host},
         -port   => $database->{port},
         -pass => $database->{pass},
-        -group => $db_type
+        -group => $db_type,
+        -species => $1
       );
-      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-      $dba->dbc()->disconnect_if_idle();
     }
     #dealing with otherfeatures
-    elsif ($database->{dbname} =~ m/_otherfeatures_/){
+    elsif ($database->{dbname} =~ m/^(.*)_otherfeatures_/){
       $db_type="otherfeatures";
       $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
         -user   => $database->{user},
@@ -254,13 +256,12 @@ sub get_species_and_dbtype {
         -host   => $database->{host},
         -port   => $database->{port},
         -pass => $database->{pass},
-        -group => $db_type
+        -group => $db_type,
+        -species => $1
       );
-      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-      $dba->dbc()->disconnect_if_idle();
     }
       #dealing with rnaseq
-    elsif ($database->{dbname} =~ m/_rnaseq_/){
+    elsif ($database->{dbname} =~ m/^(.*)_rnaseq_/){
       $db_type="rnaseq";
       $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
         -user   => $database->{user},
@@ -268,13 +269,12 @@ sub get_species_and_dbtype {
         -host   => $database->{host},
         -port   => $database->{port},
         -pass => $database->{pass},
-        -group => $db_type
+        -group => $db_type,
+        -species => $1
       );
-      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-      $dba->dbc()->disconnect_if_idle();
     }
       #dealing with cdna
-    elsif ($database->{dbname} =~ m/_cdna_/){
+    elsif ($database->{dbname} =~ m/^(.*)_cdna_/){
       $db_type="cdna";
       $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
         -user   => $database->{user},
@@ -282,10 +282,9 @@ sub get_species_and_dbtype {
         -host   => $database->{host},
         -port   => $database->{port},
         -pass => $database->{pass},
-        -group => $db_type
+        -group => $db_type,
+        -species => $1
       );
-      $species = $dba->dbc()->sql_helper()->execute_simple( -SQL =>qq/select meta_value from meta where meta_key=?/, -PARAMS => ['species.production_name']);
-      $dba->dbc()->disconnect_if_idle();
     }
     # Dealing with other versionned databases like mart, ontology,...
     elsif ($database->{dbname} =~ m/^\w+_?\d*_\d+$/){
@@ -299,74 +298,29 @@ sub get_species_and_dbtype {
     else{
       die "Can't find data_type for database $database->{dbname}";
     }
-  return ($species,$db_type,$database,$species_ids);
+    if ($species eq ''){
+      push @{$species},$1;
+    }
+  return ($species,$db_type,$database,$species_ids,$dba);
 }
 
-sub create_database_dba {
-  my ($database,$species,$db_type,$species_ids)=@_;
+#Subroutine to create a DBA object for a species in a collection database
+sub create_species_collection_database_dba {
+  my ($database,$species,$db_type,$species_ids,$original_dba)=@_;
   my $dba;
   $log->info("Connecting to database ".$database->{dbname}." with species $species");
-  #dealing with Compara
-  if ($database->{dbname} =~ m/_compara_/){
-    $dba = Bio::EnsEMBL::Compara::DBSQL::DBAdaptor->new(
-      -user   => $database->{user},
-      -dbname => $database->{dbname},
-      -host   => $database->{host},
-      -port   => $database->{port},
-      -pass => $database->{pass},
-      -group => $db_type
-    );
-  }
   #dealing with collections
-  elsif ($database->{dbname} =~ m/_collection_/){
-     my $species_id = $species_ids->{$species};
-     $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
-      -user   => $database->{user},
-      -dbname => $database->{dbname},
-      -host   => $database->{host},
-      -port   => $database->{port},
-      -pass => $database->{pass},
-      -multispecies_db => 1,
-      -species => $species,
-      -group => $db_type,
-      -species_id => $species_id
-    );
-  }
-  elsif ($database->{dbname} =~ m/_variation_/){
-    $dba = Bio::EnsEMBL::Variation::DBSQL::DBAdaptor->new(
-    -user   => $database->{user},
-    -dbname => $database->{dbname},
-    -host   => $database->{host},
-    -port   => $database->{port},
-    -pass => $database->{pass},
-    -species => $species
-    );
-  }
-  #dealing with Regulation
-  elsif ($database->{dbname} =~ m/_funcgen_/){
-    $dba = Bio::EnsEMBL::Funcgen::DBSQL::DBAdaptor->new(
-    -user   => $database->{user},
-    -dbname => $database->{dbname},
-    -host   => $database->{host},
-    -port   => $database->{port},
-    -pass => $database->{pass},
-    -species => $species
-    );
-  }
-  #Dealing with anything else
-  else{
-    $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
-      -user   => $database->{user},
-      -dbname => $database->{dbname},
-      -host   => $database->{host},
-      -port   => $database->{port},
-      -pass => $database->{pass},
-      -species => $species,
-      -group => $db_type
-    );
-  }
+  my $species_id = $species_ids->{$species};
+  $dba = Bio::EnsEMBL::DBSQL::DBAdaptor->new(
+    -dbconn => $original_dba->dbc,
+    -multispecies_db => 1,
+    -species => $species,
+    -group => $db_type,
+    -species_id => $species_id
+  );
   return ($dba); 
 }
+
 #Subroutine to parse Server URI and return connection details
 sub get_db_connection_params {
   my ($uri) = @_;
@@ -377,8 +331,7 @@ sub get_db_connection_params {
 
 #Subroutine to process compara database and add or force update
 sub process_compara {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source) = @_;
-  my $dba=create_database_dba($database,$species,$db_type,$species_ids);
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
   my @events;
   my $cdba = $metadatadba->get_GenomeComparaInfoAdaptor();
   my $opts = { -INFO_ADAPTOR => $gdba,
@@ -469,12 +422,17 @@ sub check_pan_databases {
 
 #Subroutine to add or force update a species database
 sub process_core {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
   die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
     my $update_type='other';
-    my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
+    if ($dba->is_multispecies){
+      $dba=create_species_collection_database_dba($database,$species_name,$db_type,$species_ids,$dba);
+    }
+    else{
+      $dba->species($species_name);
+    }
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
     #Check if this is a new genebuild
     $update_type = check_new_genebuild($dba, $gdba, $species_name, $update_type);
@@ -488,7 +446,6 @@ sub process_core {
                 -CONTIGS      => 1,
                 -FORCE_UPDATE => 0,
                 -VARIATION => 0};
-
     my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
     my $md = $processor->process_core($dba);
     $log->info( "Storing " . $md->name() );
@@ -504,18 +461,24 @@ sub process_core {
     $ea->store( $event );
     my $event_hash = to_hash($event);
     push @events, $event_hash;
-    $dba->dbc()->disconnect_if_idle();
   }
+  $dba->dbc()->disconnect_if_idle();
   return \@events;
 }
 
 #Subroutine to add or force update a species database
 sub process_other_database {
-  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source) = @_;
+  my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
   die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
   foreach my $species_name (@{$species}){
-    my $dba=create_database_dba($database,$species_name,$db_type,$species_ids);
+    if ($dba->is_multispecies){
+      $dba=create_species_collection_database_dba($database,$species_name,$db_type,$species_ids,$dba);
+    }
+    else{
+      $dba->species($species_name);
+    }
+    check_if_coredb_exist($dba,$gdba,$species_name,$metadatadba);
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
                   Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
@@ -537,8 +500,8 @@ sub process_other_database {
     $ea->store( $event );
     my $event_hash = to_hash($event);
     push @events, $event_hash;
-    $dba->dbc()->disconnect_if_idle();
   }
+  $dba->dbc()->disconnect_if_idle();
   return \@events;
 }
 
@@ -558,30 +521,37 @@ sub store_new_release {
 }
 
 sub check_if_coredb_exist {
-  my ($gdba,$species,$metadatadba) = @_;
+  my ($dba,$gdba,$species_name,$metadatadba) = @_;
   my $dbia = $metadatadba->get_DatabaseInfoAdaptor();
-  foreach my $species_name (@{$species}){
-    my $md=$gdba->fetch_by_name($species_name);
-    my @databases;
-    eval{
-      @databases = @{$dbia->fetch_databases($md)};
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($species_name);
+  my $md;
+  foreach my $genome (@{$mds}){
+    if ($genome->division() eq $division){
+      $md = $genome;
     }
-    or do{
-      die "$species_name core database need to be loaded first for this release";
-    };
-    my $coredbfound=0;
-    foreach my $db (@databases){
-      if ($db->{type} eq "core")
-      {
-        $coredbfound=1;
-      }
+  }
+  my @databases;
+  eval{
+    @databases = @{$dbia->fetch_databases($md)};
+  }
+  or do{
+    $dba->dbc()->disconnect_if_idle();
+    die "$species_name core database need to be loaded first for this release";
+  };
+  my $coredbfound=0;
+  foreach my $db (@databases){
+    if ($db->{type} eq "core")
+    {
+      $coredbfound=1;
     }
-    if ($coredbfound){
-      1;
-    }
-    else{
-      die "$species_name core database need to be loaded first for this release";
-    }
+  }
+  if ($coredbfound){
+    1;
+  }
+  else{
+    $dba->dbc()->disconnect_if_idle();
+    die "$species_name core database need to be loaded first for this release";
   }
   return;
 }
@@ -610,7 +580,12 @@ sub check_new_assembly {
   my $old_assembly_database_list;
   my $meta = $dba->get_MetaContainer();
   my $assembly_default = $meta->single_value_by_key('assembly.default');
-  my $md = $gdba->fetch_by_name($species_name);
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($species_name);
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   #Checking if this is a new species
   if (defined $md){
     if ($assembly_default ne $md->assembly()->{assembly_default}){
@@ -647,7 +622,12 @@ sub check_new_genebuild {
     $gb_string = $genebuild;
     $gb_string .= "/".$genebuild_upd if defined $genebuild_upd;
   }
-  my $md = $gdba->fetch_by_name($species_name);
+  my $division = get_division($dba);
+  my $mds=$gdba->fetch_by_name($species_name);
+  my $md;
+  foreach my $genome (@{$mds}){
+    $md = $genome if ($genome->division() eq $division);
+  }
   #If this species exist already
   if (defined $md){
     if ($gb_string ne $md->genebuild()){

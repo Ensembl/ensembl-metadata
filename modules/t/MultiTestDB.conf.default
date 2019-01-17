@@ -1,8 +1,3 @@
-# This provides a default set of configurations which is merged with your
-# provided MultiTestDB.conf.
-#
-# You should provide a MultiTestDB.conf which defines the database connections
-
 {
   'databases' => {
 	'campylobacter_jejuni' => {
@@ -11,12 +6,12 @@
 	'homo_sapiens' => {
    		'core' => 'Bio::EnsEMBL::DBSQL::DBAdaptor'
    	},
-        'meleagris_gallopavo' => {
-                 'variation' => 'Bio::EnsEMBL::Variation::DBSQL::DBAdaptor'
-        },
-        'multi' => {
-                  'empty_metadata' => 'Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor',
-                  'compara' => 'Bio::EnsEMBL::Compara::DBSQL::DBAdaptor'
-        },
-  },
+    'meleagris_gallopavo' => {
+        'variation' => 'Bio::EnsEMBL::Variation::DBSQL::DBAdaptor'
+    },
+    'multi' => {
+       'empty_metadata' => 'Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor',
+       'compara' => 'Bio::EnsEMBL::Compara::DBSQL::DBAdaptor'
+    }
+  }
 }

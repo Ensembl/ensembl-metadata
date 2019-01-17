@@ -75,9 +75,6 @@ ok( $genome->strain()   eq $oargs{-STRAIN},   "strain correct" );
 ok( $genome->serotype() eq $oargs{-SEROTYPE}, "serotype correct" );
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval {
-     $multi->load_database('empty_metadata');
-};
 
 my $gdba  = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
 $gdba->data_release($release);
@@ -146,20 +143,20 @@ diag "Testing organism-related retrieval";
 {
   diag "Testing by direct organism retrieval";
   my $org  = $odba->fetch_by_name("test");
-  my $info = $gdba->fetch_by_organism($org);
-  ok( defined $info && $info->name() eq 'test' );
+  my $info = $gdba->fetch_all_by_organism($org);
+  ok( defined $info && $info->[0]->name() eq 'test' );
   my $infos = $gdba->fetch_all_by_organisms( [$org] );
   ok( defined $infos && $infos->[0]->name() eq 'test' );
 }
 {
   diag "Testing by organism name retrieval";
   my $info = $gdba->fetch_by_name("test");
-  ok( defined $info && $info->name() eq 'test' );
+  ok( defined $info && $info->[0]->name() eq 'test' );
 }
 {
   diag "Testing by organism any name retrieval";
   my $info = $gdba->fetch_by_any_name("test");
-  ok( defined $info && $info->name() eq 'test' );
+  ok( defined $info && $info->[0]->name() eq 'test' );
 }
 {
   diag "Testing by organism any name retrieval";
