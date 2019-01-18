@@ -98,6 +98,15 @@ $Revision$
 use strict;
 use warnings;
 
+use FindBin qw($Bin);
+use vars qw( $SERVERROOT );
+BEGIN {
+  $SERVERROOT = "$Bin/../..";
+  unshift @INC,"$SERVERROOT/ensembl/modules";
+  unshift @INC,"$SERVERROOT/ensembl-metadata/modules";
+  unshift @INC,"$SERVERROOT/ensembl-taxonomy/modules";
+}
+
 use Pod::Usage;
 use Bio::EnsEMBL::Utils::CliHelper;
 use Bio::EnsEMBL::DBSQL::DBConnection;
