@@ -1,123 +1,123 @@
-230	protein_coding	1	151	2872	4536	-1	\N	ena	ANNOTATED	hypothetical protein	1	230	CJBH_0877	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-229	protein_coding	1	151	2663	2872	-1	\N	ena	ANNOTATED	hypothetical protein	1	229	CJBH_0875	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-228	protein_coding	1	151	1	2670	-1	\N	ena	ANNOTATED	putative hdsR	1	228	CJBH_0874	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-227	protein_coding	1	150	1	273	1	\N	ena	ANNOTATED	hypothetical protein	1	227	CJBH_1917c	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-226	protein_coding	1	149	1	264	1	\N	ena	ANNOTATED	hypothetical protein	1	226	CJBH_0711	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-225	protein_coding	1	148	5842	6168	1	\N	ena	ANNOTATED	hypothetical protein	1	225	CJBH_0340	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-224	protein_coding	1	148	3385	4305	1	\N	ena	ANNOTATED	hypothetical protein	1	224	CJBH_0337	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-223	protein_coding	1	148	2633	3298	1	\N	ena	ANNOTATED	hypothetical protein	1	223	CJBH_0336	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-222	protein_coding	1	148	2061	2645	1	\N	ena	ANNOTATED	hypothetical protein	1	222	CJBH_0335	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-221	protein_coding	1	148	840	1535	1	\N	ena	ANNOTATED	hypothetical protein	1	221	CJBH_0334	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-220	protein_coding	1	148	206	826	1	\N	ena	ANNOTATED	putative vgrG protein	1	220	CJBH_0333	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-219	tRNA	7	147	2609	2682	1	45	Rfam	NOVEL	\N	1	219	EBG00000978036	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-218	protein_coding	1	147	1834	2184	-1	\N	ena	ANNOTATED	hypothetical protein	1	218	CJBH_2433	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-217	protein_coding	1	147	852	1790	1	\N	ena	ANNOTATED	hypothetical protein	1	217	CJBH_2432	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-216	protein_coding	1	147	463	705	-1	\N	ena	ANNOTATED	hypothetical protein	1	216	CJBH_2431	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-215	protein_coding	1	146	2250	2462	1	\N	ena	ANNOTATED	putative DNA breaking-rejoining enzyme	1	215	CJBH_1161	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-214	protein_coding	1	146	1108	2247	1	\N	ena	ANNOTATED	putative Bacteriophage P4 integrase	1	214	CJBH_1158	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-213	tRNA	7	146	726	807	-1	45	Rfam	NOVEL	\N	1	213	EBG00000978038	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-212	tRNA	7	146	645	718	-1	45	Rfam	NOVEL	\N	1	212	EBG00000978037	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-211	tRNA	7	146	554	627	-1	45	Rfam	NOVEL	\N	1	211	EBG00000978040	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-210	tRNA	7	146	474	547	-1	45	Rfam	NOVEL	\N	1	210	EBG00000978041	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-209	tRNA	7	146	373	447	-1	45	Rfam	NOVEL	\N	1	209	EBG00000978039	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-208	protein_coding	1	145	629	970	-1	\N	ena	ANNOTATED	hypothetical protein	1	208	CJBH_0933	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-207	protein_coding	1	145	210	650	-1	\N	ena	ANNOTATED	hypothetical protein	1	207	CJBH_0931	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-206	protein_coding	1	145	1	201	-1	\N	ena	ANNOTATED	hypothetical protein	1	206	CJBH_0930	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-205	protein_coding	1	144	1	318	1	\N	ena	ANNOTATED	HdsR Type I R-M	1	205	CJBH_0156c	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-204	protein_coding	1	143	773	1207	1	\N	ena	ANNOTATED	hypothetical protein	1	204	CJBH_1427	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-203	protein_coding	1	143	55	606	1	\N	ena	ANNOTATED	hypothetical protein	1	203	CJBH_1425	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-202	protein_coding	1	142	1	369	1	\N	ena	ANNOTATED	hypothetical protein	1	202	CJBH_2445c	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-201	protein_coding	1	141	1	231	1	\N	ena	ANNOTATED	hypothetical protein	1	201	CJBH_0986	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-200	protein_coding	1	139	1	285	1	\N	ena	ANNOTATED	hypothetical protein	1	200	CJBH_0572c	1	2015-09-06 14:35:53	2015-09-06 14:35:53
-199	protein_coding	1	138	1175	2423	1	\N	ena	ANNOTATED	hypothetical protein	1	199	CJBH_0675	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-198	protein_coding	1	138	714	1178	1	\N	ena	ANNOTATED	hypothetical protein	1	198	CJBH_0674	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-197	protein_coding	1	138	51	668	1	\N	ena	ANNOTATED	hypothetical protein	1	197	CJBH_0673	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-196	protein_coding	1	137	1	423	1	\N	ena	ANNOTATED	putative DNA methylase	1	196	CJBH_1921c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-195	protein_coding	1	136	347	979	1	\N	ena	ANNOTATED	hypothetical protein	1	195	CJBH_0141	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-194	protein_coding	1	136	48	347	1	\N	ena	ANNOTATED	hypothetical protein	1	194	CJBH_0140	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-193	protein_coding	1	135	1	1065	1	\N	ena	ANNOTATED	hypothetical protein	1	193	CJBH_0152c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-192	protein_coding	1	134	1	951	1	\N	ena	ANNOTATED	putative toxin-like outer membrane protein	1	192	CJBH_0570c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-191	protein_coding	1	133	15637	16283	1	432	ena	ANNOTATED	ADP-heptose-LPS heptosyltransferase II	1	191	CJBH_L19	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-190	protein_coding	1	133	14838	15656	-1	423	ena	ANNOTATED	putative lipooligosaccharide biosynthesis glycosyltransferase	1	190	CJBH_L18c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-189	protein_coding	1	133	13876	14835	1	\N	ena	ANNOTATED	hypothetical protein	1	189	CJBH_L17	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-188	protein_coding	1	133	12923	13879	1	\N	ena	ANNOTATED	hypothetical protein	1	188	CJBH_L16	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-187	protein_coding	1	133	12158	12916	1	\N	ena	ANNOTATED	hypothetical protein	1	187	CJBH_L15	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-186	protein_coding	1	133	11065	12093	-1	\N	ena	ANNOTATED	hypothetical protein	1	186	CJBH_L14c	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-185	protein_coding	1	133	9815	11068	-1	\N	ena	ANNOTATED	hypothetical protein	1	185	CJBH_L13c	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-184	protein_coding	1	133	8890	9783	1	\N	ena	ANNOTATED	hypothetical protein	1	184	CJBH_L12	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-183	protein_coding	1	133	7624	8700	1	\N	ena	ANNOTATED	hypothetical protein	1	183	CJBH_L11	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-182	protein_coding	1	133	6794	7327	1	\N	ena	ANNOTATED	hypothetical protein	1	182	CJBH_L10	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-181	protein_coding	1	133	6336	6803	1	\N	ena	ANNOTATED	hypothetical protein	1	181	CJBH_L09	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-180	protein_coding	1	133	5942	6346	1	\N	ena	ANNOTATED	hypothetical protein	1	180	CJBH_L08	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-179	protein_coding	1	133	5495	5920	1	\N	ena	ANNOTATED	hypothetical protein	1	179	CJBH_L07	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-178	protein_coding	1	133	4461	5492	1	337	ena	ANNOTATED	putative dTDP-glucose 4,6-dehydratase	1	178	CJBH_L06	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-177	protein_coding	1	133	3538	4461	1	\N	ena	ANNOTATED	glucose-1-phosphate thymidyltransferase	1	177	CJBH_L05	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-176	protein_coding	1	133	2871	3572	1	291	ena	ANNOTATED	glycosyltransferase	1	176	CJBH_L04	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-175	protein_coding	1	133	1996	2874	1	280	ena	ANNOTATED	lipid A biosynthesis lauroyl acyltransferase	1	175	CJBH_L03	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-174	protein_coding	1	133	1401	2006	1	270	ena	ANNOTATED	lipopolysaccharide heptosyltransferase	1	174	CJBH_L02	1	2015-09-06 14:35:51	2015-09-06 14:35:51
-173	protein_coding	1	133	305	946	-1	\N	ena	ANNOTATED	hypothetical protein	1	173	CJBH_L01c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
-172	protein_coding	1	132	9289	9630	-1	\N	ena	ANNOTATED	hypothetical protein	1	172	CJBH_2288	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-171	protein_coding	1	132	4794	5054	-1	\N	ena	ANNOTATED	hypothetical protein	1	171	CJBH_2282	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-170	protein_coding	1	132	3769	4812	-1	\N	ena	ANNOTATED	hypothetical protein	1	170	CJBH_2280	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-169	protein_coding	1	132	2866	3765	1	\N	ena	ANNOTATED	hypothetical protein	1	169	CJBH_2278	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-168	protein_coding	1	132	211	807	1	\N	ena	ANNOTATED	conserved hypothetical protein IcmF	1	168	CJBH_2273	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-167	protein_coding	1	131	699	1659	1	\N	ena	ANNOTATED	hypothetical protein	1	167	CJBH_0143	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-166	protein_coding	1	131	82	648	1	\N	ena	ANNOTATED	hypothetical protein	1	166	CJBH_0142	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-165	protein_coding	1	130	167	682	-1	\N	ena	ANNOTATED	hypothetical protein	1	165	CJBH_1566	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-164	protein_coding	1	129	1	345	1	\N	ena	ANNOTATED	hypothetical protein	1	164	CJBH_2509c	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-163	protein_coding	1	127	1187	2119	1	\N	ena	ANNOTATED	hypothetical protein	1	163	CJBH_0504	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-162	protein_coding	1	127	76	1164	1	\N	ena	ANNOTATED	hypothetical protein	1	162	CJBH_0503	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-161	tRNA	7	126	318	378	1	45	Rfam	NOVEL	\N	1	161	EBG00000978032	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-160	tRNA	7	126	220	305	1	45	Rfam	NOVEL	\N	1	160	EBG00000978033	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-159	tRNA	7	126	128	198	1	45	Rfam	NOVEL	\N	1	159	EBG00000978035	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-158	tRNA	7	126	19	103	1	45	Rfam	NOVEL	\N	1	158	EBG00000978034	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-157	protein_coding	1	125	483	1775	-1	\N	ena	ANNOTATED	hypothetical protein	1	157	CJBH_1036	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-156	protein_coding	1	125	1	460	-1	\N	ena	ANNOTATED	hypothetical protein	1	156	CJBH_1035	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-155	protein_coding	1	123	1	273	1	\N	ena	ANNOTATED	hypothetical protein	1	155	CJBH_2444c	1	2015-09-06 14:35:50	2015-09-06 14:35:50
-154	protein_coding	1	122	316	882	1	\N	ena	ANNOTATED	hypothetical protein	1	154	CJBH_1314	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-153	protein_coding	1	121	1	297	1	\N	ena	ANNOTATED	hypothetical protein	1	153	CJBH_0987	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-152	protein_coding	1	120	2167	3056	1	\N	ena	ANNOTATED	hypothetical protein	1	152	CJBH_1133	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-151	protein_coding	1	120	238	1734	1	\N	ena	ANNOTATED	lipase family protein	1	151	CJBH_1131	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-150	protein_coding	1	119	1	478	-1	\N	ena	ANNOTATED	hypothetical protein	1	150	CJBH_1100	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-149	protein_coding	1	118	523	901	1	\N	ena	ANNOTATED	putative vgrG protein	1	149	CJBH_1317	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-148	protein_coding	1	118	1	593	1	\N	ena	ANNOTATED	hypothetical protein	1	148	CJBH_1316	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-147	protein_coding	1	117	3697	4386	-1	\N	ena	ANNOTATED	hypothetical protein	1	147	CJBH_0044	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-146	protein_coding	1	116	315	1169	-1	\N	ena	ANNOTATED	hypothetical protein	1	146	CJBH_0644	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-145	protein_coding	1	116	1	376	-1	\N	ena	ANNOTATED	putative sugar transferase	1	145	CJBH_0643	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-144	protein_coding	1	115	6	959	1	\N	ena	ANNOTATED	putative vgrG protein	1	144	CJBH_1281	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-143	protein_coding	1	114	1	363	1	\N	ena	ANNOTATED	hypothetical protein	1	143	CJBH_1987c	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-142	protein_coding	1	113	887	1441	1	\N	ena	ANNOTATED	hypothetical protein	1	142	CJBH_0854	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-141	protein_coding	1	113	486	872	1	\N	ena	ANNOTATED	hypothetical protein	1	141	CJBH_0853	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-140	protein_coding	1	113	59	496	1	\N	ena	ANNOTATED	hypothetical protein	1	140	CJBH_0852	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-139	protein_coding	1	112	1263	1633	1	\N	ena	ANNOTATED	hypothetical protein	1	139	CJBH_0416	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-138	protein_coding	1	112	147	959	1	\N	ena	ANNOTATED	hypothetical protein	1	138	CJBH_0415	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-137	protein_coding	1	111	214	825	-1	\N	ena	ANNOTATED	putative sugar transferase	1	137	CJBH_0597	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-136	protein_coding	1	110	4188	4403	1	\N	ena	ANNOTATED	hypothetical protein	1	136	CJBH_1340	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-135	rRNA	7	110	4063	5568	1	47	Rfam	NOVEL	\N	1	135	EBG00000978046	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-134	tRNA	7	110	3886	3958	1	45	Rfam	NOVEL	\N	1	134	EBG00000978047	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-133	tRNA	7	110	3801	3874	1	45	Rfam	NOVEL	\N	1	133	EBG00000978042	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-131	rRNA	7	110	3096	3250	1	37	Rfam	NOVEL	\N	1	131	EBG00000978043	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-132	protein_coding	1	110	3132	3401	1	\N	ena	ANNOTATED	hypothetical protein	1	132	CJBH_1338	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-130	protein_coding	1	110	1079	1372	1	\N	ena	ANNOTATED	lipoprotein, putative	1	130	CJBH_1337	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-129	rRNA	7	110	852	959	1	29	Rfam	NOVEL	\N	1	129	EBG00000978044	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-128	protein_coding	1	110	488	856	1	\N	ena	ANNOTATED	putative cell wall-associated hydrolase	1	128	CJBH_1335	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-127	rRNA	7	110	356	3262	1	22	Rfam	NOVEL	\N	1	127	EBG00000978045	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-126	rRNA	7	110	5	121	1	20	Rfam	NOVEL	\N	1	126	EBG00000978048	1	2015-09-06 14:35:49	2015-09-06 14:35:49
-125	protein_coding	1	109	1	1410	1	\N	ena	ANNOTATED	hypothetical protein	1	125	CJBH_1918c	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-124	protein_coding	1	108	298	525	1	\N	ena	ANNOTATED	hypothetical protein	1	124	CJBH_0514	1	2015-09-06 14:35:48	2015-09-06 14:35:48
-231	protein_coding	1	151	4550	5359	-1	\N	ena	ANNOTATED	putative type I restriction-modification	1	231	CJBH_0878	1	2015-09-06 14:35:54	2015-09-06 14:35:54
-232	protein_coding	1	154	1	534	1	\N	ena	ANNOTATED	putative lipoprotein	1	232	CJBH_2443c	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-233	protein_coding	1	155	99	545	-1	\N	ena	ANNOTATED	putative lipoprotein	1	233	CJBH_0970	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-234	protein_coding	1	155	1986	2471	1	\N	ena	ANNOTATED	hypothetical protein	1	234	CJBH_0974	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-235	protein_coding	1	155	2473	3927	1	\N	ena	ANNOTATED	hypothetical protein	1	235	CJBH_0976	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-236	protein_coding	1	155	3930	4322	1	\N	ena	ANNOTATED	hypothetical protein	1	236	CJBH_0977	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-237	protein_coding	1	156	51	658	1	\N	ena	ANNOTATED	hypothetical protein	1	237	CJBH_1222	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-238	protein_coding	1	157	1	621	1	\N	ena	ANNOTATED	putative vacuolating cytotoxin precursor	1	238	CJBH_0571c	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-239	protein_coding	1	158	1	369	1	\N	ena	ANNOTATED	hypothetical protein	1	239	CJBH_0985	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-240	protein_coding	1	159	1	457	-1	\N	ena	ANNOTATED	putative Phage lysozyme	1	240	CJBH_0466	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-241	protein_coding	1	159	983	1939	1	\N	ena	ANNOTATED	hypothetical protein	1	241	CJBH_0468	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-242	protein_coding	1	159	1940	2344	1	\N	ena	ANNOTATED	hypothetical protein	1	242	CJBH_0469	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-243	protein_coding	1	159	2471	2863	1	\N	ena	ANNOTATED	hypothetical protein	1	243	CJBH_0470	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-244	protein_coding	1	159	2851	3105	1	\N	ena	ANNOTATED	hypothetical protein	1	244	CJBH_0471	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-245	protein_coding	1	159	4703	4966	1	\N	ena	ANNOTATED	hypothetical protein	1	245	CJBH_0474	1	2015-09-06 14:35:55	2015-09-06 14:35:55
-246	protein_coding	1	159	5108	6628	1	\N	ena	ANNOTATED	hypothetical protein	1	246	CJBH_0475	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+230	protein_coding	1	151	2872	4536	-1	\N	ena	hypothetical protein	1	230	CJBH_0877	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+229	protein_coding	1	151	2663	2872	-1	\N	ena	hypothetical protein	1	229	CJBH_0875	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+228	protein_coding	1	151	1	2670	-1	\N	ena	putative hdsR	1	228	CJBH_0874	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+227	protein_coding	1	150	1	273	1	\N	ena	hypothetical protein	1	227	CJBH_1917c	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+226	protein_coding	1	149	1	264	1	\N	ena	hypothetical protein	1	226	CJBH_0711	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+225	protein_coding	1	148	5842	6168	1	\N	ena	hypothetical protein	1	225	CJBH_0340	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+224	protein_coding	1	148	3385	4305	1	\N	ena	hypothetical protein	1	224	CJBH_0337	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+223	protein_coding	1	148	2633	3298	1	\N	ena	hypothetical protein	1	223	CJBH_0336	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+222	protein_coding	1	148	2061	2645	1	\N	ena	hypothetical protein	1	222	CJBH_0335	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+221	protein_coding	1	148	840	1535	1	\N	ena	hypothetical protein	1	221	CJBH_0334	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+220	protein_coding	1	148	206	826	1	\N	ena	putative vgrG protein	1	220	CJBH_0333	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+219	tRNA	7	147	2609	2682	1	45	Rfam	\N	1	219	EBG00000978036	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+218	protein_coding	1	147	1834	2184	-1	\N	ena	hypothetical protein	1	218	CJBH_2433	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+217	protein_coding	1	147	852	1790	1	\N	ena	hypothetical protein	1	217	CJBH_2432	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+216	protein_coding	1	147	463	705	-1	\N	ena	hypothetical protein	1	216	CJBH_2431	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+215	protein_coding	1	146	2250	2462	1	\N	ena	putative DNA breaking-rejoining enzyme	1	215	CJBH_1161	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+214	protein_coding	1	146	1108	2247	1	\N	ena	putative Bacteriophage P4 integrase	1	214	CJBH_1158	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+213	tRNA	7	146	726	807	-1	45	Rfam	\N	1	213	EBG00000978038	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+212	tRNA	7	146	645	718	-1	45	Rfam	\N	1	212	EBG00000978037	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+211	tRNA	7	146	554	627	-1	45	Rfam	\N	1	211	EBG00000978040	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+210	tRNA	7	146	474	547	-1	45	Rfam	\N	1	210	EBG00000978041	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+209	tRNA	7	146	373	447	-1	45	Rfam	\N	1	209	EBG00000978039	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+208	protein_coding	1	145	629	970	-1	\N	ena	hypothetical protein	1	208	CJBH_0933	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+207	protein_coding	1	145	210	650	-1	\N	ena	hypothetical protein	1	207	CJBH_0931	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+206	protein_coding	1	145	1	201	-1	\N	ena	hypothetical protein	1	206	CJBH_0930	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+205	protein_coding	1	144	1	318	1	\N	ena	HdsR Type I R-M	1	205	CJBH_0156c	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+204	protein_coding	1	143	773	1207	1	\N	ena	hypothetical protein	1	204	CJBH_1427	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+203	protein_coding	1	143	55	606	1	\N	ena	hypothetical protein	1	203	CJBH_1425	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+202	protein_coding	1	142	1	369	1	\N	ena	hypothetical protein	1	202	CJBH_2445c	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+201	protein_coding	1	141	1	231	1	\N	ena	hypothetical protein	1	201	CJBH_0986	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+200	protein_coding	1	139	1	285	1	\N	ena	hypothetical protein	1	200	CJBH_0572c	1	2015-09-06 14:35:53	2015-09-06 14:35:53
+199	protein_coding	1	138	1175	2423	1	\N	ena	hypothetical protein	1	199	CJBH_0675	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+198	protein_coding	1	138	714	1178	1	\N	ena	hypothetical protein	1	198	CJBH_0674	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+197	protein_coding	1	138	51	668	1	\N	ena	hypothetical protein	1	197	CJBH_0673	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+196	protein_coding	1	137	1	423	1	\N	ena	putative DNA methylase	1	196	CJBH_1921c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+195	protein_coding	1	136	347	979	1	\N	ena	hypothetical protein	1	195	CJBH_0141	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+194	protein_coding	1	136	48	347	1	\N	ena	hypothetical protein	1	194	CJBH_0140	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+193	protein_coding	1	135	1	1065	1	\N	ena	hypothetical protein	1	193	CJBH_0152c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+192	protein_coding	1	134	1	951	1	\N	ena	putative toxin-like outer membrane protein	1	192	CJBH_0570c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+191	protein_coding	1	133	15637	16283	1	432	ena	ADP-heptose-LPS heptosyltransferase II	1	191	CJBH_L19	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+190	protein_coding	1	133	14838	15656	-1	423	ena	putative lipooligosaccharide biosynthesis glycosyltransferase	1	190	CJBH_L18c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+189	protein_coding	1	133	13876	14835	1	\N	ena	hypothetical protein	1	189	CJBH_L17	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+188	protein_coding	1	133	12923	13879	1	\N	ena	hypothetical protein	1	188	CJBH_L16	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+187	protein_coding	1	133	12158	12916	1	\N	ena	hypothetical protein	1	187	CJBH_L15	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+186	protein_coding	1	133	11065	12093	-1	\N	ena	hypothetical protein	1	186	CJBH_L14c	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+185	protein_coding	1	133	9815	11068	-1	\N	ena	hypothetical protein	1	185	CJBH_L13c	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+184	protein_coding	1	133	8890	9783	1	\N	ena	hypothetical protein	1	184	CJBH_L12	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+183	protein_coding	1	133	7624	8700	1	\N	ena	hypothetical protein	1	183	CJBH_L11	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+182	protein_coding	1	133	6794	7327	1	\N	ena	hypothetical protein	1	182	CJBH_L10	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+181	protein_coding	1	133	6336	6803	1	\N	ena	hypothetical protein	1	181	CJBH_L09	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+180	protein_coding	1	133	5942	6346	1	\N	ena	hypothetical protein	1	180	CJBH_L08	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+179	protein_coding	1	133	5495	5920	1	\N	ena	hypothetical protein	1	179	CJBH_L07	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+178	protein_coding	1	133	4461	5492	1	337	ena	putative dTDP-glucose 4,6-dehydratase	1	178	CJBH_L06	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+177	protein_coding	1	133	3538	4461	1	\N	ena	glucose-1-phosphate thymidyltransferase	1	177	CJBH_L05	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+176	protein_coding	1	133	2871	3572	1	291	ena	glycosyltransferase	1	176	CJBH_L04	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+175	protein_coding	1	133	1996	2874	1	280	ena	lipid A biosynthesis lauroyl acyltransferase	1	175	CJBH_L03	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+174	protein_coding	1	133	1401	2006	1	270	ena	lipopolysaccharide heptosyltransferase	1	174	CJBH_L02	1	2015-09-06 14:35:51	2015-09-06 14:35:51
+173	protein_coding	1	133	305	946	-1	\N	ena	hypothetical protein	1	173	CJBH_L01c	1	2015-09-06 14:35:52	2015-09-06 14:35:52
+172	protein_coding	1	132	9289	9630	-1	\N	ena	hypothetical protein	1	172	CJBH_2288	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+171	protein_coding	1	132	4794	5054	-1	\N	ena	hypothetical protein	1	171	CJBH_2282	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+170	protein_coding	1	132	3769	4812	-1	\N	ena	hypothetical protein	1	170	CJBH_2280	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+169	protein_coding	1	132	2866	3765	1	\N	ena	hypothetical protein	1	169	CJBH_2278	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+168	protein_coding	1	132	211	807	1	\N	ena	conserved hypothetical protein IcmF	1	168	CJBH_2273	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+167	protein_coding	1	131	699	1659	1	\N	ena	hypothetical protein	1	167	CJBH_0143	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+166	protein_coding	1	131	82	648	1	\N	ena	hypothetical protein	1	166	CJBH_0142	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+165	protein_coding	1	130	167	682	-1	\N	ena	hypothetical protein	1	165	CJBH_1566	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+164	protein_coding	1	129	1	345	1	\N	ena	hypothetical protein	1	164	CJBH_2509c	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+163	protein_coding	1	127	1187	2119	1	\N	ena	hypothetical protein	1	163	CJBH_0504	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+162	protein_coding	1	127	76	1164	1	\N	ena	hypothetical protein	1	162	CJBH_0503	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+161	tRNA	7	126	318	378	1	45	Rfam	\N	1	161	EBG00000978032	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+160	tRNA	7	126	220	305	1	45	Rfam	\N	1	160	EBG00000978033	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+159	tRNA	7	126	128	198	1	45	Rfam	\N	1	159	EBG00000978035	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+158	tRNA	7	126	19	103	1	45	Rfam	\N	1	158	EBG00000978034	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+157	protein_coding	1	125	483	1775	-1	\N	ena	hypothetical protein	1	157	CJBH_1036	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+156	protein_coding	1	125	1	460	-1	\N	ena	hypothetical protein	1	156	CJBH_1035	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+155	protein_coding	1	123	1	273	1	\N	ena	hypothetical protein	1	155	CJBH_2444c	1	2015-09-06 14:35:50	2015-09-06 14:35:50
+154	protein_coding	1	122	316	882	1	\N	ena	hypothetical protein	1	154	CJBH_1314	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+153	protein_coding	1	121	1	297	1	\N	ena	hypothetical protein	1	153	CJBH_0987	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+152	protein_coding	1	120	2167	3056	1	\N	ena	hypothetical protein	1	152	CJBH_1133	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+151	protein_coding	1	120	238	1734	1	\N	ena	lipase family protein	1	151	CJBH_1131	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+150	protein_coding	1	119	1	478	-1	\N	ena	hypothetical protein	1	150	CJBH_1100	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+149	protein_coding	1	118	523	901	1	\N	ena	putative vgrG protein	1	149	CJBH_1317	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+148	protein_coding	1	118	1	593	1	\N	ena	hypothetical protein	1	148	CJBH_1316	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+147	protein_coding	1	117	3697	4386	-1	\N	ena	hypothetical protein	1	147	CJBH_0044	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+146	protein_coding	1	116	315	1169	-1	\N	ena	hypothetical protein	1	146	CJBH_0644	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+145	protein_coding	1	116	1	376	-1	\N	ena	putative sugar transferase	1	145	CJBH_0643	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+144	protein_coding	1	115	6	959	1	\N	ena	putative vgrG protein	1	144	CJBH_1281	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+143	protein_coding	1	114	1	363	1	\N	ena	hypothetical protein	1	143	CJBH_1987c	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+142	protein_coding	1	113	887	1441	1	\N	ena	hypothetical protein	1	142	CJBH_0854	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+141	protein_coding	1	113	486	872	1	\N	ena	hypothetical protein	1	141	CJBH_0853	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+140	protein_coding	1	113	59	496	1	\N	ena	hypothetical protein	1	140	CJBH_0852	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+139	protein_coding	1	112	1263	1633	1	\N	ena	hypothetical protein	1	139	CJBH_0416	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+138	protein_coding	1	112	147	959	1	\N	ena	hypothetical protein	1	138	CJBH_0415	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+137	protein_coding	1	111	214	825	-1	\N	ena	putative sugar transferase	1	137	CJBH_0597	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+136	protein_coding	1	110	4188	4403	1	\N	ena	hypothetical protein	1	136	CJBH_1340	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+135	rRNA	7	110	4063	5568	1	47	Rfam	\N	1	135	EBG00000978046	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+134	tRNA	7	110	3886	3958	1	45	Rfam	\N	1	134	EBG00000978047	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+133	tRNA	7	110	3801	3874	1	45	Rfam	\N	1	133	EBG00000978042	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+131	rRNA	7	110	3096	3250	1	37	Rfam	\N	1	131	EBG00000978043	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+132	protein_coding	1	110	3132	3401	1	\N	ena	hypothetical protein	1	132	CJBH_1338	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+130	protein_coding	1	110	1079	1372	1	\N	ena	lipoprotein, putative	1	130	CJBH_1337	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+129	rRNA	7	110	852	959	1	29	Rfam	\N	1	129	EBG00000978044	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+128	protein_coding	1	110	488	856	1	\N	ena	putative cell wall-associated hydrolase	1	128	CJBH_1335	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+127	rRNA	7	110	356	3262	1	22	Rfam	\N	1	127	EBG00000978045	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+126	rRNA	7	110	5	121	1	20	Rfam	\N	1	126	EBG00000978048	1	2015-09-06 14:35:49	2015-09-06 14:35:49
+125	protein_coding	1	109	1	1410	1	\N	ena	hypothetical protein	1	125	CJBH_1918c	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+124	protein_coding	1	108	298	525	1	\N	ena	hypothetical protein	1	124	CJBH_0514	1	2015-09-06 14:35:48	2015-09-06 14:35:48
+231	protein_coding	1	151	4550	5359	-1	\N	ena	putative type I restriction-modification	1	231	CJBH_0878	1	2015-09-06 14:35:54	2015-09-06 14:35:54
+232	protein_coding	1	154	1	534	1	\N	ena	putative lipoprotein	1	232	CJBH_2443c	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+233	protein_coding	1	155	99	545	-1	\N	ena	putative lipoprotein	1	233	CJBH_0970	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+234	protein_coding	1	155	1986	2471	1	\N	ena	hypothetical protein	1	234	CJBH_0974	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+235	protein_coding	1	155	2473	3927	1	\N	ena	hypothetical protein	1	235	CJBH_0976	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+236	protein_coding	1	155	3930	4322	1	\N	ena	hypothetical protein	1	236	CJBH_0977	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+237	protein_coding	1	156	51	658	1	\N	ena	hypothetical protein	1	237	CJBH_1222	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+238	protein_coding	1	157	1	621	1	\N	ena	putative vacuolating cytotoxin precursor	1	238	CJBH_0571c	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+239	protein_coding	1	158	1	369	1	\N	ena	hypothetical protein	1	239	CJBH_0985	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+240	protein_coding	1	159	1	457	-1	\N	ena	putative Phage lysozyme	1	240	CJBH_0466	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+241	protein_coding	1	159	983	1939	1	\N	ena	hypothetical protein	1	241	CJBH_0468	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+242	protein_coding	1	159	1940	2344	1	\N	ena	hypothetical protein	1	242	CJBH_0469	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+243	protein_coding	1	159	2471	2863	1	\N	ena	hypothetical protein	1	243	CJBH_0470	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+244	protein_coding	1	159	2851	3105	1	\N	ena	hypothetical protein	1	244	CJBH_0471	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+245	protein_coding	1	159	4703	4966	1	\N	ena	hypothetical protein	1	245	CJBH_0474	1	2015-09-06 14:35:55	2015-09-06 14:35:55
+246	protein_coding	1	159	5108	6628	1	\N	ena	hypothetical protein	1	246	CJBH_0475	1	2015-09-06 14:35:55	2015-09-06 14:35:55

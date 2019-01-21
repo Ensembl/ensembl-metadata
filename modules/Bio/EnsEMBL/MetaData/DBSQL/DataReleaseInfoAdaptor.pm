@@ -186,12 +186,19 @@ sub update {
 =cut
 sub fetch_by_ensembl_release {
   my ( $self, $release ) = @_;
-  return
-    $self->_first_element(
+  my $ens_release = $self->_first_element(
              $self->_fetch_generic(
                _get_base_sql() .
-                 ' where ensembl_version=? order by release_date desc limit 1',
+                 ' where ensembl_version=? and ensembl_genomes_version is null',
                [$release] ) );
+  if (!defined $ens_release){
+    $ens_release = $self->_first_element(
+             $self->_fetch_generic(
+               _get_base_sql() .
+                 ' where ensembl_version=?',
+               [$release] ) );
+  }
+  return $ens_release;
 }
 =head2 fetch_by_ensembl_genomes_release
   Arg        : String - Ensembl Genomes Release
@@ -218,11 +225,17 @@ sub fetch_by_ensembl_genomes_release {
 =cut
 sub fetch_current_ensembl_release {
   my ($self) = @_;
-  return
-    $self->_first_element(
-    $self->_fetch_generic(
-      _get_base_sql() .
-' where is_current=1 order by release_date desc limit 1' ) );
+    my $ens_release = $self->_first_element(
+             $self->_fetch_generic(
+               _get_base_sql() .
+                 ' where ensembl_genomes_version is null and is_current=1' ) );
+  if (!defined $ens_release){
+    $ens_release = $self->_first_element(
+             $self->_fetch_generic(
+               _get_base_sql() .
+                 ' where is_current=1' ) );
+  }
+  return $ens_release;
 }
 =head2 fetch_current_ensembl_genomes_release
   Description: Retrieve details for the current Ensembl Genomes release

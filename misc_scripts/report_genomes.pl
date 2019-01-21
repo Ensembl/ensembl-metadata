@@ -345,7 +345,7 @@ sub get_genomes {
     # name
     my $gd = {
 	      name=>$genome->name(),
-	      assembly=>$genome->assembly_name(),
+	      assembly=>$genome->assembly_default(),
 	      genebuild=>$genome->genebuild(),
 	      database=>$genome->dbname(),
 	      species_id=>$genome->species_id(),

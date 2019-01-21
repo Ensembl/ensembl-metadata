@@ -53,8 +53,8 @@ my $gdba = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(-USER=>'anonymo
 To find genomes, use the fetch methods. These will work with the release set on the adaptor
 which is the latest Ensembl release by default.
 
-# find a genome by name
-my $genome = $gdba->fetch_by_name('homo_sapiens');
+# find genomes for a given name
+my $genomes = $gdba->fetch_by_name('homo_sapiens');
 
 # find and iterate over all genomes
 for my $genome (@{$gdba->fetch_all()}) {
@@ -70,7 +70,7 @@ for my $genome (@{$gdba->fetch_all_with_variation()}) {
 $gdba->set_ensembl_release(82);
 $gdba->set_ensembl_genomes_release(82);
 
-my $genome = $gdba->fetch_by_name('arabidopsis_thaliana');
+my $genomes = $gdba->fetch_by_name('arabidopsis_thaliana');
 
 # find and iterate over all genomes from plants
 for my $genome (@{$gdba->fetch_all_by_division('EnsemblPlants')}) {
@@ -287,14 +287,12 @@ sub store {
           ->store( $genome->assembly() );
       }
       if ( !defined $genome->dbID() ) {
-        # find out if genome exists first
-        my ($dbID) =
-          @{
+        # find out if genome exists first for this assembly, release and division
+        my ($dbID) = @{
           $self->dbc()->sql_helper()->execute_simple(
-            -SQL =>
-    "select genome_id from genome where data_release_id=? and assembly_id=?",
+            -SQL => "select genome_id from genome where data_release_id=? and assembly_id=? and division_id=?",
             -PARAMS => [ $genome->data_release()->dbID(),
-                        $genome->assembly()->dbID() ] ) };
+                        $genome->assembly()->dbID(), $self->_get_division_id($genome->division()) ] ) };
 
         if ( defined $dbID ) {
           $genome->dbID($dbID);
@@ -306,12 +304,14 @@ sub store {
         return $self->update($genome);
       }
       else {
-        # Check if we already have this genome for this given release
+        # Check if we already have this genome for this given release and division
         # This will usually happen when the assembly change.
         # Remove this genome from database to avoid duplication
-        my $release_genome = $self->fetch_by_name($genome->{organism}->{name});
-        if (defined $release_genome){
-          $self->clear_genome($release_genome);
+        my $release_genomes = $self->fetch_by_name($genome->{organism}->{name});
+        foreach my $release_genome (@{$release_genomes}){
+          if (defined $release_genome and ($release_genome->division() eq $genome->division())){
+            $self->clear_genome($release_genome);
+          }
         }
       }
       $self->db()->get_GenomeOrganismInfoAdaptor()
@@ -463,7 +463,7 @@ sub fetch_division_databases {
     -PARAMS => [ $release->dbID(), $division, $division ] );
 }
 
-=head2 fetch_by_organism 
+=head2 fetch_all_by_organism
   Arg	     : Bio::EnsEMBL::MetaData::GenomeOrganismInfo
   Arg        : (optional) if 1, expand children of genome info
   Description: Fetch genome info for specified organism
@@ -473,16 +473,16 @@ sub fetch_division_databases {
   Status     : Stable
 =cut
 
-sub fetch_by_organism {
+sub fetch_all_by_organism {
   my ( $self, $organism, $keen ) = @_;
   if ( ref($organism) eq 'Bio::EnsEMBL::MetaData::GenomeOrganismInfo' )
   {
     $organism = $organism->dbID();
   }
   return
-    $self->_first_element( $self->_fetch_generic_with_args(
+   $self->_fetch_generic_with_args(
                                      { 'organism_id', $organism }, $keen
-                           ) );
+                           );
 }
 
 =head2 fetch_all_by_organisms
@@ -729,7 +729,7 @@ sub fetch_all_by_division {
 sub fetch_by_display_name {
   my ( $self, $name, $keen ) = @_;
   my $org = $self->_organism_adaptor()->fetch_by_display_name($name);
-  return $self->fetch_by_organism( $org, $keen );
+  return $self->fetch_all_by_organism( $org, $keen );
 }
 
 =head2 fetch_by_name
@@ -745,7 +745,7 @@ sub fetch_by_display_name {
 sub fetch_by_name {
   my ( $self, $name, $keen ) = @_;
   my $org = $self->_organism_adaptor()->fetch_by_name($name);
-  return $self->fetch_by_organism( $org, $keen );
+  return $self->fetch_all_by_organism( $org, $keen );
 }
 
 =head2 fetch_by_any_name
@@ -764,7 +764,7 @@ sub fetch_by_any_name {
   if ( !defined $org ) {
     $org = $self->_organism_adaptor()->fetch_by_alias($name);
   }
-  return $self->fetch_by_organism( $org, $keen );
+  return $self->fetch_all_by_organism( $org, $keen );
 }
 
 =head2 fetch_all_by_dbname
@@ -816,7 +816,7 @@ sub fetch_by_alias {
   my ( $self, $name, $keen ) = @_;
   my $org =
     $self->_organism_adaptor()->fetch_all_by_name_pattern($name);
-  return $self->fetch_by_organism( $org, $keen );
+  return $self->fetch_all_by_organism( $org, $keen );
 }
 
 =head2 fetch_all_with_variation

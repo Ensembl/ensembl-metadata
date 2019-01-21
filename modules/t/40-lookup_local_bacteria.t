@@ -29,10 +29,14 @@ my $test = Bio::EnsEMBL::Test::MultiTestDB->new('campylobacter_jejuni');
 my $core = $test->get_DBAdaptor('core');
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval {
-     $multi->load_database('empty_metadata');
-};
-my $gdba = $multi->get_DBAdaptor('empty_metadata');
+my $gdba = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
+
+$gdba->data_release(
+    Bio::EnsEMBL::MetaData::DataReleaseInfo->new(
+        -ENSEMBL_VERSION         => 99,
+        -ENSEMBL_GENOMES_VERSION => 66,
+        -RELEASE_DATE            => '2015-09-29',
+        -IS_CURRENT              => 1));;
 
 my $lookup = Bio::EnsEMBL::LookUp::LocalLookUp->new();
 $lookup->clear_cache(1);

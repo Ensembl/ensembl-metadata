@@ -29,7 +29,6 @@ my $test = Bio::EnsEMBL::Test::MultiTestDB->new('campylobacter_jejuni');
 my $core = $test->get_DBAdaptor('core');
 
 my $multi = Bio::EnsEMBL::Test::MultiTestDB->new('multi');
-eval { $multi->load_database('empty_metadata'); };
 my $gdba = $multi->get_DBAdaptor('empty_metadata')->get_GenomeInfoAdaptor();
 
 $gdba->data_release(
