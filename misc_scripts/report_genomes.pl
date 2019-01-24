@@ -201,7 +201,7 @@ my $dbs = {};
 my $species = {};
 $logger->info("Comparing releases");
 my @set_chains = sort keys %{$genomes};
-foreach my $set_chain (sort keys %{$genomes}) {
+foreach my $set_chain (@set_chains) {
   my $genome = $genomes->{$set_chain};
   $species->{$genome->{species_taxonomy_id}}++;
   $dbs->{$genome->{database}}++;
