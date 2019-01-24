@@ -200,7 +200,9 @@ my $removed_genomes = [];
 my $dbs = {};
 my $species = {};
 $logger->info("Comparing releases");
-while (my ($set_chain, $genome) = each %{$genomes}) {  
+my @set_chains = sort keys %{$genomes};
+foreach my $set_chain (@set_chains) {
+  my $genome = $genomes->{$set_chain};
   $species->{$genome->{species_taxonomy_id}}++;
   $dbs->{$genome->{database}}++;
   $report->{protein_coding} += $genome->{protein_coding};
