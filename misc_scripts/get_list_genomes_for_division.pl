@@ -94,6 +94,7 @@ use warnings;
 use Pod::Usage;
 use Bio::EnsEMBL::Utils::CliHelper;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+use Bio::EnsEMBL::MetaData::Base qw(process_division_names fetch_and_set_release);
 use List::MoreUtils qw(uniq);
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
@@ -112,38 +113,13 @@ my $gcdba = $metadatadba->get_GenomeComparaInfoAdaptor();
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $dbdba = $metadatadba->get_DatabaseInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
-my $release_info;
-my $division_name;
-my $division;
 
-#Creating the Division name EnsemblBla and division bla variables
-if ($opts->{division} !~ m/[E|e]nsembl/){
-  $division = $opts->{division};
-  $division_name = 'Ensembl'.ucfirst($opts->{division}) if defined $opts->{division};
-}
-else{
-  $division_name = $opts->{division};
-  $division = $opts->{division};
-  $division =~ s/Ensembl//;
-  $division = lc($division);
-}
+#Get both division short and full name from a division short or full name
+my ($division,$division_name)=process_division_names($opts->{division});
 
 #Get the release for the given division
-#Get the release for the given division
-if (defined $opts->{release}){
-  $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-  if (!$release_info){
-    $release_info = $rdba->fetch_by_ensembl_release($opts->{release});
-  }
-  $gdba->data_release($release_info);
-}
-else{
-  $release_info = $rdba->fetch_current_ensembl_release();
-  if (!$release_info){
-    $release_info = $rdba->fetch_current_ensembl_genomes_release();
-  }
-  $gdba->data_release($release_info);
-}
+my ($release,$release_info);
+($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
 
 my $genomes = $gdba->fetch_all_by_division($division_name);
 my @sorted_genomes =  sort { $a->name() cmp $b->name() } @$genomes;
