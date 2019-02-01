@@ -33,7 +33,7 @@ use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::MetaData::EventInfo;
-use Bio::EnsEMBL::MetaData::BaseInfo qw(get_division);
+use Bio::EnsEMBL::MetaData::Base qw(get_division);
 use JSON;
 
 sub process_database {
