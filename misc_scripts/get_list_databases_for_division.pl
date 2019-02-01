@@ -138,8 +138,7 @@ foreach my $mart_database (@{$dbdba->fetch_databases_DataReleaseInfo($release_in
 foreach my $compara_database (@{$gcdba->fetch_division_databases($division_name,$release_info)}){
   push (@$division_databases,$compara_database);
 }
-my @division_databases_uniq = uniq @$division_databases;
 # Print the list of unique databases 
-foreach my $division_database (sort @division_databases_uniq){
+foreach my $division_database (sort(uniq(@$division_databases))){
     print $division_database."\n";
 }
