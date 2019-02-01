@@ -101,7 +101,8 @@ use warnings;
 use Pod::Usage;
 use Bio::EnsEMBL::Utils::CliHelper;
 use Bio::EnsEMBL::DBSQL::DBConnection;
-use  Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+use Bio::EnsEMBL::MetaData::Base qw(process_division_names fetch_and_set_release);
 use Log::Log4perl qw(:easy);
 use Data::Dumper;
 use Carp;
@@ -122,46 +123,13 @@ my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
-my $release_info;
-my $release;
-my $division_name;
-my $division;
 
-#Creating the Division name EnsemblBla and division bla variables
-if ($opts->{division} !~ m/[E|e]nsembl/){
-  $division = $opts->{division};
-  $division_name = 'Ensembl'.ucfirst($opts->{division}) if defined $opts->{division};
-}
-else{
-  $division_name = $opts->{division};
-  $division = $opts->{division};
-  $division =~ s/Ensembl//;
-  $division = lc($division);
-}
+#Get both division short and full name from a division short or full name
+my ($division,$division_name)=process_division_names($opts->{division});
 
 #Get the release for the given division
-if (defined $opts->{release}){
-  $release_info = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-  if (!$release_info){
-    $release_info = $rdba->fetch_by_ensembl_release($opts->{release});
-    $release = $release_info->{ensembl_version};
-  }
-  else{
-    $release = $release_info->{ensembl_genomes_version};
-  }
-  $gdba->data_release($release_info);
-}
-else{
-  $release_info = $rdba->fetch_current_ensembl_release();
-  if (!$release_info){
-    $release_info = $rdba->fetch_current_ensembl_genomes_release();
-    $release = $release_info->{ensembl_genomes_version};
-  }
-  else{
-    $release = $release_info->{ensembl_version};
-  }
-  $gdba->data_release($release_info);
-}
+my ($release,$release_info);
+($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
 
 my $report = {
 	      eg_version=> $gdba->data_release()->ensembl_genomes_version(),

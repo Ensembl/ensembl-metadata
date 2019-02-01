@@ -42,7 +42,7 @@ Dan Staines
 package Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
-use Bio::EnsEMBL::MetaData::BaseInfo qw(get_division);
+use Bio::EnsEMBL::MetaData::Base qw(get_division);
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
