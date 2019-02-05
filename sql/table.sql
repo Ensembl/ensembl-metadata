@@ -198,7 +198,7 @@ CREATE TABLE `genome` (
   KEY `genome_ibfk_4` (`division_id`),
   CONSTRAINT `genome_ibfk_1` FOREIGN KEY (`assembly_id`) REFERENCES `assembly` (`assembly_id`),
   CONSTRAINT `genome_ibfk_2` FOREIGN KEY (`data_release_id`) REFERENCES `data_release` (`data_release_id`),
-  CONSTRAINT `genome_ibfk_3` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`),
+  CONSTRAINT `genome_ibfk_3` FOREIGN KEY (`organism_id`) REFERENCES `organism` (`organism_id`) ON DELETE CASCADE,
   CONSTRAINT `genome_ibfk_4` FOREIGN KEY (`division_id`) REFERENCES `division` (`division_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
