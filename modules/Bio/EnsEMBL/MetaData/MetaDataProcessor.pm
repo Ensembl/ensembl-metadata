@@ -329,8 +329,10 @@ where a.code='toplevel' and species_id=?/,
     my %all_ali = ( %{$core_ali} );
 
     # add bam tracks by count - use source name
-    for my $bam ( @{ $read_ali->{bam} } ) {
-      $all_ali{bam}{ $bam->{id} }++;
+    foreach my $key (keys $read_ali){
+      for my $bam ( @{ $read_ali->{$key} } ) {
+        $all_ali{$key}{ $bam->{id} }++;
+      }
     }
     $md->other_alignments( \%all_ali );
     $md->db_size($size);
