@@ -329,7 +329,7 @@ where a.code='toplevel' and species_id=?/,
     my %all_ali = ( %{$core_ali} );
 
     # add bam tracks by count - use source name
-    foreach my $key (keys $read_ali){
+    foreach my $key (keys %$read_ali){
       for my $bam ( @{ $read_ali->{$key} } ) {
         $all_ali{$key}{ $bam->{id} }++;
       }
