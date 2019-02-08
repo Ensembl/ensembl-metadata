@@ -139,6 +139,6 @@ foreach my $compara_database (@{$gcdba->fetch_division_databases($division_name,
   push (@$division_databases,$compara_database);
 }
 # Print the list of unique databases 
-foreach my $division_database (sort uniq(@$division_databases)){
+foreach my $division_database (sort(uniq(@$division_databases))){
     print $division_database."\n";
 }
