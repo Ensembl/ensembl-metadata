@@ -53,9 +53,7 @@ use Data::Dumper;
 use Config::IniFiles;
 use LWP::UserAgent;
 my $ua = LWP::UserAgent->new();
-
-my $url_template =
-'https://raw.github.com/EnsemblGenomes/eg-web-DIVISION/master/conf/ini-files/SPECIES.ini';
+my $url_template = 'https://raw.githubusercontent.com/EnsemblGenomes/eg-web-DIVISION/master/conf/ini-files/SPECIES.ini';
 
 =head1 SUBROUTINES/METHODS
 
@@ -232,7 +230,6 @@ sub analyze_alignments {
 
 sub analyze_tracks {
   my ( $self, $species, $division ) = @_;
-  $species = ucfirst($species);
   ( $division = lc $division ) =~ s/ensembl//;
   # get the ini file from git
   ( my $ini_url = $url_template ) =~ s/SPECIES/$species/;

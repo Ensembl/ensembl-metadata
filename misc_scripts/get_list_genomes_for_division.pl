@@ -25,14 +25,14 @@
 
 =head1 DESCRIPTION
 
-This script is used to retrieve the list of databases for a given division and release
+This script is used to retrieve the list of genomes for a given division and release
 
 =head1 SYNOPSIS
 
-perl get_list_databases_for_division.pl $(mysql-ens-meta-prod-1 details script) \
+perl get_list_genomes_for_division.pl $(mysql-ens-meta-prod-1 details script) \
    -release 95 -division vertebrates
 
-perl get_list_databases_for_division.pl $(mysql-ens-meta-prod-1 details script) \
+perl get_list_genomes_for_division.pl $(mysql-ens-meta-prod-1 details script) \
    -release 42 -division metazoa
 
 =head1 OPTIONS
@@ -121,24 +121,9 @@ my ($division,$division_name)=process_division_names($opts->{division});
 my ($release,$release_info);
 ($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
 
-
-my $division_databases;
 my $genomes = $gdba->fetch_all_by_division($division_name);
-#Genome databases
-foreach my $genome (@$genomes){
-  foreach my $database (@{$genome->databases()}){
-    push (@$division_databases,$database->dbname);
-  }
-}
-#mart databases
-foreach my $mart_database (@{$dbdba->fetch_databases_DataReleaseInfo($release_info,$division_name)}){
-  push (@$division_databases,$mart_database->dbname);
-}
-#compara databases
-foreach my $compara_database (@{$gcdba->fetch_division_databases($division_name,$release_info)}){
-  push (@$division_databases,$compara_database);
-}
-# Print the list of unique databases 
-foreach my $division_database (sort(uniq(@$division_databases))){
-    print $division_database."\n";
+my @sorted_genomes =  sort { $a->name() cmp $b->name() } @$genomes;
+#Genome database
+foreach my $genome (@sorted_genomes){
+    print $genome->name()."\n";
 }

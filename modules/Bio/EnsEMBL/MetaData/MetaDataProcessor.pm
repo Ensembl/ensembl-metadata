@@ -42,7 +42,7 @@ Dan Staines
 package Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::GenomeInfo;
 use Bio::EnsEMBL::MetaData::GenomeComparaInfo;
-use Bio::EnsEMBL::MetaData::BaseInfo qw(get_division);
+use Bio::EnsEMBL::MetaData::Base qw(get_division);
 use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::Utils::Exception qw/throw warning/;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
@@ -329,8 +329,10 @@ where a.code='toplevel' and species_id=?/,
     my %all_ali = ( %{$core_ali} );
 
     # add bam tracks by count - use source name
-    for my $bam ( @{ $read_ali->{bam} } ) {
-      $all_ali{bam}{ $bam->{id} }++;
+    foreach my $key (keys %$read_ali){
+      for my $bam ( @{ $read_ali->{$key} } ) {
+        $all_ali{$key}{ $bam->{id} }++;
+      }
     }
     $md->other_alignments( \%all_ali );
     $md->db_size($size);

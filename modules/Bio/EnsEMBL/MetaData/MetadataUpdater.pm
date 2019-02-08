@@ -33,7 +33,7 @@ use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::MetaData::EventInfo;
-use Bio::EnsEMBL::MetaData::BaseInfo qw(get_division);
+use Bio::EnsEMBL::MetaData::Base qw(get_division);
 use JSON;
 
 sub process_database {
@@ -66,6 +66,7 @@ sub process_database {
     $events = process_other_database($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba);
   }
   # Disconnecting from server
+  $gdba->_clear_cache();
   $gdba->dbc()->disconnect_if_idle();
   $metadatadba->dbc()->disconnect_if_idle();
   $log->info("All done");
@@ -177,7 +178,6 @@ sub get_release_and_process_release_db {
 }
 sub get_species_and_dbtype {
   my ($database_uri)=@_;
-  $DB::single = 1;
   my $database = get_db_connection_params($database_uri);
   my ($db_type,$species,$dba,$species_ids);
   $log->info("Connecting to database $database->{dbname}");
