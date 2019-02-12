@@ -157,7 +157,7 @@ q/update assembly set assembly_accession=?,assembly_name=?,assembly_default=?,as
                  $assembly->assembly_default(),   $assembly->assembly_ucsc(),
                  $assembly->assembly_level(),     $assembly->base_count(),
                  $assembly->dbID() ] );
-
+  $self->_store_sequences($assembly);
   return;
 }
 
