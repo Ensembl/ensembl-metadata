@@ -33,7 +33,7 @@ use Bio::EnsEMBL::MetaData::MetaDataProcessor;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::MetaData::EventInfo;
-use Bio::EnsEMBL::MetaData::Base qw(get_division);
+use Bio::EnsEMBL::MetaData::Base qw(get_division check_assembly_update check_genebuild_update);
 use JSON;
 
 sub process_database {
@@ -298,7 +298,7 @@ sub get_species_and_dbtype {
     else{
       die "Can't find data_type for database $database->{dbname}";
     }
-    if ($species eq ''){
+    if (!defined $species or $species eq ''){
       push @{$species},$1;
     }
   return ($species,$db_type,$database,$species_ids,$dba);
@@ -434,11 +434,6 @@ sub process_core {
       $dba->species($species_name);
     }
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
-    #Check if this is a new genebuild
-    $update_type = check_new_genebuild($dba, $gdba, $species_name, $update_type);
-    #Check if this is a new assembly
-    my $old_assembly_database_list;
-    ($update_type,$old_assembly_database_list) = check_new_assembly($dba, $gdba, $species_name, $update_type);
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
                   Bio::EnsEMBL::MetaData::AnnotationAnalyzer->new(),
@@ -448,6 +443,11 @@ sub process_core {
                 -VARIATION => 0};
     my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
     my $md = $processor->process_core($dba);
+    #Check if this is a new genebuild
+    $update_type = check_new_genebuild($dba, $gdba, $species_name, $update_type, $md);
+    #Check if this is a new assembly
+    my $old_assembly_database_list;
+    ($update_type,$old_assembly_database_list) = check_new_assembly($dba, $gdba, $species_name, $update_type, $md);
     $log->info( "Storing " . $md->name() );
     $gdba->store($md);
     my $ea = $metadatadba->get_EventInfoAdaptor();
@@ -576,23 +576,22 @@ sub check_new_assembly {
   #if the assembly doesn't exist in the metadata database then it's a new species, update the handover type
   #if the assembly is the same, all good, nothing to do here
   #if the assembly is different, make sure that we update the handover type and generate a list of old assembly databases to clean up except for collections
-  my ($dba, $gdba, $species_name, $update_type) = @_;
+  my ($dba, $gdba, $species_name, $update_type, $updated_genome) = @_;
   my $old_assembly_database_list;
-  my $meta = $dba->get_MetaContainer();
-  my $assembly_default = $meta->single_value_by_key('assembly.default');
   my $division = get_division($dba);
-  my $mds=$gdba->fetch_by_name($species_name);
-  my $md;
-  foreach my $genome (@{$mds}){
-    $md = $genome if ($genome->division() eq $division);
+  my $current_genomes=$gdba->fetch_by_name($species_name);
+  my $current_genome;
+  foreach my $genome (@{$current_genomes}){
+    $current_genome = $genome if ($genome->division() eq $division);
   }
   #Checking if this is a new species
-  if (defined $md){
-    if ($assembly_default ne $md->assembly()->{assembly_default}){
+  if (defined $current_genome){
+    my $updated_assembly=check_assembly_update($updated_genome,$current_genome);
+    if ($updated_assembly){
       $update_type = 'new_assembly';
       # We don't want to drop the database if a genome in a collection has changed.
       if ($dba->dbc->dbname !~ /_collection_/){
-        my $old_databases = $md->databases();
+        my $old_databases = $current_genome->databases();
         foreach my $old_database (@{$old_databases})
         {
           push @{$old_assembly_database_list}, $old_database->dbname
@@ -611,26 +610,18 @@ sub check_new_genebuild {
   # Check the core database genebuild.version or (genebuild.start_date/genebuild.last_geneset_update) value and compare it with what we have in the Metadata database
   #if the Genebuild is the same, all good, nothing to do here
   #if the Genebuild is different, make sure that we update the handover type
-  my ($dba, $gdba, $species_name, $update_type) = @_;
-  my $old_assembly_database_list;
+  my ($dba, $gdba, $species_name, $update_type, $updated_genome) = @_;
   my $meta = $dba->get_MetaContainer();
-  my ($genebuild)        = @{$meta->list_value_by_key('genebuild.start_date')};
-  my ($genebuild_version)= @{$meta->list_value_by_key('genebuild.version')};
-  my ($genebuild_upd)    = @{$meta->list_value_by_key('genebuild.last_geneset_update')};
-  my $gb_string = $genebuild_version;
-  if(!defined $gb_string) {
-    $gb_string = $genebuild;
-    $gb_string .= "/".$genebuild_upd if defined $genebuild_upd;
-  }
   my $division = get_division($dba);
-  my $mds=$gdba->fetch_by_name($species_name);
-  my $md;
-  foreach my $genome (@{$mds}){
-    $md = $genome if ($genome->division() eq $division);
+  my $current_genomes=$gdba->fetch_by_name($species_name);
+  my $current_genome;
+  foreach my $genome (@{$current_genomes}){
+    $current_genome = $genome if ($genome->division() eq $division);
   }
   #If this species exist already
-  if (defined $md){
-    if ($gb_string ne $md->genebuild()){
+  if (defined $current_genome){
+    my $updated_genebuild=check_genebuild_update($updated_genome,$current_genome);
+    if ($updated_genebuild){
       $update_type = 'new_genebuild';
     }
   }

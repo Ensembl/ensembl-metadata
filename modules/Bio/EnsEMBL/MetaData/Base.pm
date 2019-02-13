@@ -43,7 +43,7 @@ use warnings;
 package Bio::EnsEMBL::MetaData::Base;
 use Bio::EnsEMBL::Utils::Argument qw(rearrange);
 use Exporter qw/import/;
-our @EXPORT_OK = qw(get_division process_division_names fetch_and_set_release);
+our @EXPORT_OK = qw(get_division process_division_names fetch_and_set_release check_assembly_update check_genebuild_update);
 
 =head2 get_division
   Description: Get division for a given database adaptor. If the database is a core like, get the core database
@@ -159,6 +159,43 @@ sub fetch_and_set_release {
     $gdba->data_release($release_info);
   }
   return ($rdba,$gdba,$release,$release_info);
+}
+
+=head2 check_assembly_update
+  Description: Compare assembly information between two genomes from different releases and check if the assembly has been updated.
+  Arg        : Current release genome object
+  Arg        : Previous release genome object
+  Returntype : string
+  Exceptions : none
+  Caller     : Internal
+  Status     : Stable
+=cut
+sub check_assembly_update {
+  my ($genome,$prev_genome) = @_;
+  my $updated_assembly=0;
+  # Check assembly default meta key
+  $updated_assembly = 1 if $genome->assembly_default() ne $prev_genome->assembly_default();
+  # Check base_count value which is the sum of lenght of seq_region. If new sequences have been added to the assembly, this will change.
+  # We can pick up new MT or scaffolds
+  $updated_assembly = 1 if $genome->base_count() ne $prev_genome->base_count();
+  return $updated_assembly;
+}
+
+
+=head2 check_genebuild_update
+  Description: Compare genebuild information between two genomes from different releases and check if the gene set has been updated.
+  Arg        : Current release genome object
+  Arg        : Previous release genome object
+  Returntype : string
+  Exceptions : none
+  Caller     : Internal
+  Status     : Stable
+=cut
+sub check_genebuild_update {
+  my ($genome,$prev_genome) = @_;
+  my $updated_genebuild = 0;
+  $updated_genebuild = 1 if $genome->genebuild() ne $prev_genome->genebuild();
+  return $updated_genebuild;
 }
 
 1;

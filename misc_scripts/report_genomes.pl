@@ -102,7 +102,7 @@ use Pod::Usage;
 use Bio::EnsEMBL::Utils::CliHelper;
 use Bio::EnsEMBL::DBSQL::DBConnection;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
-use Bio::EnsEMBL::MetaData::Base qw(process_division_names fetch_and_set_release);
+use Bio::EnsEMBL::MetaData::Base qw(process_division_names fetch_and_set_release check_assembly_update check_genebuild_update);
 use Log::Log4perl qw(:easy);
 use Data::Dumper;
 use Carp;
@@ -182,9 +182,11 @@ foreach my $set_chain (@set_chains) {
     if ($genome->{name} ne $prev_genome->{name}) {
       push @$renamed_genomes, {new => $genome, old => $prev_genome};
     }
-    if ($genome->{assembly} ne $prev_genome->{assembly}) {
+    my $updated_assembly=check_assembly_update($genome->{genome},$prev_genome->{genome});
+    my $updated_genebuild=check_genebuild_update($genome->{genome},$prev_genome->{genome});
+    if ($updated_assembly) {
       push @$new_assemblies, {new => $genome, old => $prev_genome};
-    } elsif ($genome->{genebuild} ne $prev_genome->{genebuild}) {
+    } elsif ($updated_genebuild) {
       push @$new_annotations, {new => $genome, old => $prev_genome};
     }
   }
@@ -314,6 +316,7 @@ sub get_genomes {
   for my $genome (@{$genomes}) {
     # name
     my $gd = {
+        genome=>$genome,
 	      name=>$genome->name(),
 	      assembly=>$genome->assembly_default(),
 	      genebuild=>$genome->genebuild(),

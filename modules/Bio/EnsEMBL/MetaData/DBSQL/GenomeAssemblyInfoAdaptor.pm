@@ -77,22 +77,22 @@ sub store {
     # find out if assembly exists first
     my $dbID;
     if(defined $assembly->assembly_accession() and defined $assembly->assembly_default()) {
-      # try to use the unique pair assembly accession and assembly default
+      # try to use the unique pair assembly accession, assembly default and base_count
             ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
-"select assembly_id from assembly where assembly_accession=? and assembly_default=?",
-        -PARAMS => [ $assembly->assembly_accession(), $assembly->assembly_default() ]
+"select assembly_id from assembly where assembly_accession=? and assembly_default=? and base_count=?",
+        -PARAMS => [ $assembly->assembly_accession(), $assembly->assembly_default(), $assembly->base_count() ]
       ) };   
     } elsif (defined $assembly->assembly_default()) {
-      # Try with the assembly default if it exists
+      # Try with the assembly default and base_count if they exists
       ($dbID) =
       @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
-"select assembly_id from assembly where assembly_default=?",
-        -PARAMS => [ $assembly->assembly_default() ]
+"select assembly_id from assembly where assembly_default=? and base_count=?",
+        -PARAMS => [ $assembly->assembly_default(),$assembly->base_count() ]
       ) };
     }
     else {
@@ -101,8 +101,8 @@ sub store {
       @{
       $self->dbc()->sql_helper()->execute_simple(
         -SQL =>
-"select assembly_id from assembly where assembly_name=?",
-        -PARAMS => [ $assembly->assembly_name() ]
+"select assembly_id from assembly where assembly_name=? and base_count=?",
+        -PARAMS => [ $assembly->assembly_name(), $assembly->base_count() ]
       ) };
     }
     if ( defined $dbID ) {
@@ -157,7 +157,6 @@ q/update assembly set assembly_accession=?,assembly_name=?,assembly_default=?,as
                  $assembly->assembly_default(),   $assembly->assembly_ucsc(),
                  $assembly->assembly_level(),     $assembly->base_count(),
                  $assembly->dbID() ] );
-  $self->_store_sequences($assembly);
   return;
 }
 
