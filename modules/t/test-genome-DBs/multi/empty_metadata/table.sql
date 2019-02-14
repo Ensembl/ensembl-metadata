@@ -31,7 +31,7 @@ CREATE TABLE `assembly` (
   `assembly_level` varchar(50) NOT NULL,
   `base_count` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`assembly_id`),
-  UNIQUE KEY `assembly_accession_idx` (`assembly_accession`,`assembly_default`)
+  UNIQUE KEY `assembly_idx` (`assembly_accession`,`assembly_default`,`base_count`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -293,10 +293,20 @@ sub store {
             -SQL => "select genome_id from genome where data_release_id=? and assembly_id=? and division_id=?",
             -PARAMS => [ $genome->data_release()->dbID(),
                         $genome->assembly()->dbID(), $self->_get_division_id($genome->division()) ] ) };
-
         if ( defined $dbID ) {
-          $genome->dbID($dbID);
-          $genome->adaptor($self);
+          #Check if the assembly sequences have changed, e.g: new MT, scaffold...
+          my $release_genomes = $self->fetch_by_name($genome->{organism}->{name});
+          foreach my $release_genome (@{$release_genomes}){
+            if (defined $release_genome and ($release_genome->division() eq $genome->division())){
+              if ($release_genome->base_count() ne $genome->base_count()){
+                $dbID='';
+              }
+              else{
+                $genome->dbID($dbID);
+                $genome->adaptor($self);
+              }
+            }
+          }
         }
       }
 
