@@ -201,11 +201,8 @@ foreach my $div (@{$opts->{divisions}}){
     my $prev_genome = $prev_genomes->{$set_chain};
     # Gather list of new genomes
     if (!defined $prev_genome) {
-      $report_updates->{$division}->{new_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id}};
+      $report_updates->{$division}->{new_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},display_name=>$genome->{display_name}};
       } else {
-          if ($genome->{name} ne $prev_genome->{name}) {
-            $report_updates->{$division}->{renamed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_name=>$prev_genome->{name},database=>$genome->{database},species_id=>$genome->{species_id}};
-          }
           # Gather list of updated assemblies and genebuild
           my $updated_assembly=check_assembly_update($genome->{genome},$prev_genome->{genome});
           my $updated_genebuild=check_genebuild_update($genome->{genome},$prev_genome->{genome});
@@ -217,10 +214,23 @@ foreach my $div (@{$opts->{divisions}}){
         }
   }
   # Gather list of removed genomes
-  while (my ($set_chain, $genome) = each %{$prev_genomes->{genomes}}) {
-    if (!defined $genomes->{genomes}->{$set_chain}) {
-    $report_updates->{$division}->{removed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id}};
+  while (my ($set_chain, $genome) = each %{$prev_genomes}) {
+    if (!defined $genomes->{$set_chain}) {
+      $report_updates->{$division}->{removed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},display_name=>$genome->{display_name}};
     }
+  }
+  # Gather list of renamed genomes
+  for my $new_genome (keys %{$report_updates->{$division}->{new_genomes}}){
+    for my $removed_genome (keys %{$report_updates->{$division}->{removed_genomes}}){
+      if ($report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly} eq $report_updates->{$division}->{removed_genomes}->{$removed_genome}->{assembly}  or $report_updates->{$division}->{new_genomes}->{$new_genome}->{display_name} eq $report_updates->{$division}->{removed_genomes}->{$removed_genome}->{display_name}){
+        $report_updates->{$division}->{renamed_genomes}->{$new_genome} = {name=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{name},assembly=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly},old_name=>$report_updates->{$division}->{removed_genomes}->{$removed_genome}->{name},database=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{database},species_id=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{species_id}};
+      }
+    }
+  }
+  # Renamed genomes will appear in both new_genomes and removed_genomes so these hashes need to be cleaned up
+  for my $renamed_genome (keys %{$report_updates->{$division}->{renamed_genomes}}){
+    delete $report_updates->{$division}->{new_genomes}->{$report_updates->{$division}->{renamed_genomes}->{$renamed_genome}->{name}};
+    delete $report_updates->{$division}->{removed_genomes}->{$report_updates->{$division}->{renamed_genomes}->{$renamed_genome}->{old_name}};
   }
   #Get a count for each type of updates and store in report hash
   $report->{databases} = scalar keys %$dbs;
@@ -361,6 +371,7 @@ sub get_genomes {
       genome=>$genome,
       name=>$genome->name(),
       assembly=>$genome->assembly_default(),
+      display_name=>$genome->display_name(),
       genebuild=>$genome->genebuild(),
       database=>$genome->dbname(),
       species_id=>$genome->species_id(),
