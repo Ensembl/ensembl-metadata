@@ -222,6 +222,7 @@ foreach my $div (@{$opts->{divisions}}){
   # Gather list of renamed genomes
   for my $new_genome (keys %{$report_updates->{$division}->{new_genomes}}){
     for my $removed_genome (keys %{$report_updates->{$division}->{removed_genomes}}){
+      # If the assembly name or display name is the same between a removed genomes and new genomes then it extremely likely that it has been renamed.
       if ($report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly} eq $report_updates->{$division}->{removed_genomes}->{$removed_genome}->{assembly}  or $report_updates->{$division}->{new_genomes}->{$new_genome}->{display_name} eq $report_updates->{$division}->{removed_genomes}->{$removed_genome}->{display_name}){
         $report_updates->{$division}->{renamed_genomes}->{$new_genome} = {name=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{name},assembly=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly},old_name=>$report_updates->{$division}->{removed_genomes}->{$removed_genome}->{name},database=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{database},species_id=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{species_id}};
       }
