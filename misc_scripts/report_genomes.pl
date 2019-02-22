@@ -236,11 +236,11 @@ foreach my $div (@{$opts->{divisions}}){
   #Get a count for each type of updates and store in report hash
   $report->{databases} = scalar keys %$dbs;
   $report->{species} = scalar keys %$species;
-  $report->{new_genomes}     = (keys %{$report_updates->{$division}->{new_genomes}} ? scalar keys $report_updates->{$division}->{new_genomes} : 0);
-  $report->{updated_assemblies}  = (keys %{$report_updates->{$division}->{updated_assemblies}} ? scalar keys $report_updates->{$division}->{updated_assemblies} : 0);
-  $report->{updated_annotations} = (keys %{$report_updates->{$division}->{updated_annotations}} ? scalar keys $report_updates->{$division}->{updated_annotations}: 0);
-  $report->{renamed_genomes} = (keys %{$report_updates->{$division}->{renamed_genomes}} ? scalar keys $report_updates->{$division}->{renamed_genomes} : 0);
-  $report->{removed_genomes} = (keys %{$report_updates->{$division}->{removed_genomes}} ? scalar keys $report_updates->{$division}->{removed_genomes} : 0);
+  $report->{new_genomes}     = (keys %{$report_updates->{$division}->{new_genomes}} ? scalar keys %{$report_updates->{$division}->{new_genomes}} : 0);
+  $report->{updated_assemblies}  = (keys %{$report_updates->{$division}->{updated_assemblies}} ? scalar keys %{$report_updates->{$division}->{updated_assemblies}} : 0);
+  $report->{updated_annotations} = (keys %{$report_updates->{$division}->{updated_annotations}} ? scalar keys %{$report_updates->{$division}->{updated_annotations}}: 0);
+  $report->{renamed_genomes} = (keys %{$report_updates->{$division}->{renamed_genomes}} ? scalar keys %{$report_updates->{$division}->{renamed_genomes}} : 0);
+  $report->{removed_genomes} = (keys %{$report_updates->{$division}->{removed_genomes}} ? scalar keys %{$report_updates->{$division}->{removed_genomes}} : 0);
   # If output format is txt, export all changes into multiple tab separated text files
   if ($opts->{output_format} eq 'txt'){
     write_output_to_file($report_updates,$dump_all,$division,$release,$report);
