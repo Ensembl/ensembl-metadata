@@ -618,8 +618,12 @@ sub process_compara {
           # have we got one in the database already?
           if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
             $self->{logger}->debug("Checking in the database");
-            $genomeInfo = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
-
+            my $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
+            foreach my $gen (@{$genomeInfos}){
+              if ($gen->division() eq $division){
+                $genomeInfo=$gen;
+              }
+            }
             if ( !defined $genomeInfo ) {
               my $current_release = $self->{info_adaptor}->data_release();
               if ( defined $current_release->ensembl_genomes_version() ) {
@@ -629,8 +633,12 @@ sub process_compara {
                   ->fetch_by_ensembl_release(
                                           $current_release->ensembl_version() );
                 $self->{info_adaptor}->data_release($ensembl_release);
-                $genomeInfo =
-                  $self->{info_adaptor}->fetch_by_name( $gdb->name() );
+                $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
+                foreach my $gen (@{$genomeInfos}){
+                  if ($gen->division() eq $division){
+                    $genomeInfo=$gen;
+                  }
+                }
                 $self->{info_adaptor}->data_release($current_release);
               }
             }
