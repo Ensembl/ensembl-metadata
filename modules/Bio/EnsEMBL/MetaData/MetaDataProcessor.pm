@@ -635,7 +635,7 @@ sub process_compara {
                 $self->{info_adaptor}->data_release($ensembl_release);
                 $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
                 foreach my $gen (@{$genomeInfos}){
-                  if ($gen->division() eq $division){
+                  if ($gen->division() eq "EnsemblVertebrates"){
                     $genomeInfo=$gen;
                   }
                 }
