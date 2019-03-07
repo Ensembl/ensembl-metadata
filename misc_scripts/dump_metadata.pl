@@ -71,6 +71,7 @@ use Log::Log4perl qw(:easy);
 use Pod::Usage;
 use Module::Load;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+use Bio::EnsEMBL::MetaData::Base qw(process_division_names fetch_and_set_release);
 
 use Data::Dumper;
 
@@ -80,7 +81,6 @@ my $optsd = [ @{ $cli_helper->get_dba_opts() } ];
 push( @{$optsd}, "dumper:s@" );
 push( @{$optsd}, "division:s@" );
 push( @{$optsd}, "verbose" );
-push( @{$optsd}, "eg" );
 push ( @{$optsd}, "release:i" );
 
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
@@ -99,37 +99,24 @@ my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
-my $release;
 
-if ( defined $opts->{eg} ) {
-  if (defined $opts->{release}){
-    $release = $rdba->fetch_by_ensembl_genomes_release($opts->{release});
-    $gdba->data_release($release);
-  }
-  else{
-    $gdba->set_ensembl_genomes_release();
-  }
-}
-else{
-  if (defined $opts->{release}){
-    $release = $rdba->fetch_by_ensembl_release($opts->{release});
-    $gdba->data_release($release);
-  }
-  else{
-    $gdba->set_ensembl_release();
-  }
-}
+#Get both division short and full name from a division short or full name
+my ($division,$division_name)=process_division_names($opts->{division});
+
+#Get the release for the given division
+my ($release,$release_info);
+($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
 $logger->info("Getting genomes from release ".$opts->{release}) if defined $opts->{release} || $logger->info("Getting genomes from current release");
 
 # get all metadata
 my $dump_all = 0;
-if ( !defined $opts->{division} || scalar( @{ $opts->{division} } ) == 0 ) {
-  $opts->{division} = $gdba->list_divisions();
+if ( !defined $division_name || scalar( @{ $division_name } ) == 0 ) {
+  $division_name = $gdba->list_divisions();
   $dump_all = 1;
 }
 
 my @metadata = ();
-for my $division ( @{ $opts->{division} } ) {
+for my $division ( @{ $division_name } ) {
   $logger->info("Fetching metadata for $division");
   @metadata = ( @{ $gdba->fetch_all_by_division($division) }, @metadata );
 }
@@ -147,7 +134,7 @@ my @dumpers = map { print "Loading $_"; load $_; $_->new() } @{ $opts->{dumper} 
 # start dumpers
 $logger->info("Starting dumpers");
 for my $dumper (@dumpers) {
-  $dumper->start( $opts->{division}, $dumper->{file}, $dump_all );
+  $dumper->start( $division_name, $dumper->{file}, $dump_all );
 }
 # process metadata
 $logger->info("Writing metadata");
