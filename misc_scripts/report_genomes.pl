@@ -211,6 +211,9 @@ foreach my $div (@{$opts->{divisions}}){
           } elsif ($updated_genebuild) {
             $report_updates->{$division}->{updated_annotations}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},new_genebuild=>$genome->{genebuild},old_genebuild=>$prev_genome->{genebuild},database=>$genome->{database},species_id=>$genome->{species_id}};
           }
+          elsif ($genome->{name} ne $prev_genome->{name}){
+            $report_updates->{$division}->{renamed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_name=>$prev_genome->{name},database=>$genome->{database},species_id=>$genome->{species_id}};
+          }
         }
   }
   # Gather list of removed genomes
