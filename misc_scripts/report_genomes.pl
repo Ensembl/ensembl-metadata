@@ -306,7 +306,7 @@ sub write_output_to_file {
   # name assembly database species_id
   write_to_file(
     $report_updates->{$division}->{removed_genomes},
-    $dump_all ? "$division-renamed_genomes.txt" : "removed_genomes.txt",
+    $dump_all ? "$division-removed_genomes.txt" : "removed_genomes.txt",
     [qw/ name assembly database species_id /],
     sub {
       return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
