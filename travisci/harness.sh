@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PERL5LIB=$PWD/bioperl-live-bioperl-release-1-2-3:$PWD/ensembl-test/modules:$PWD/ensembl/modules:$PWD/ensembl-hive/modules:$PWD/ensembl-taxonomy/modules:$PWD/ensembl-compara/modules:$PWD/ensembl-variation/modules:$PWD/modules
+export PERL5LIB=$PWD/bioperl-live:$PWD/ensembl-test/modules:$PWD/ensembl/modules:$PWD/ensembl-hive/modules:$PWD/ensembl-taxonomy/modules:$PWD/ensembl-compara/modules:$PWD/ensembl-variation/modules:$PWD/modules
 
 SKIP_TESTS="--skip 55-build_pruned_tree_big.t"
 if [ "$DB" = 'mysql' ]; then
