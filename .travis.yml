@@ -6,10 +6,7 @@ perl:
   - "5.26"
 
 env:
-  matrix:
   - COVERALLS=true  DB=mysql
-  - COVERALLS=false DB=mysql
-  - COVERALLS=false DB=sqlite
   
 sudo: false
   
