@@ -614,66 +614,56 @@ sub process_compara {
             . $compara->dbc()->dbname() );
 
           my $genomeInfo = $genomes->{ $gdb->name() };
-
           # have we got one in the database already?
           if ( !defined $genomeInfo && defined $self->{info_adaptor} ) {
             $self->{logger}->debug("Checking in the database");
             my $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
             foreach my $gen (@{$genomeInfos}){
+              # Make sure species division match the compara division
               if ($gen->division() eq $division){
                 $genomeInfo=$gen;
               }
+              # Except for Pan Compara which contain species from multiple divisions
+              elsif ($division eq "EnsemblPan"){
+              # Check for species common between Vert and non-vert, we want to use the non-vert
+                if ($gen->name() eq "caenorhabditis_elegans" or $gen->name() eq "drosophila_melanogaster" or $gen->name() eq "saccharomyces_cerevisiae"){
+                  if ($gen->division() ne "EnsemblVertebrates"){
+                    $genomeInfo=$gen;
+                  }
+                }
+                else{
+                  $genomeInfo=$gen;
+                }
+              }
             }
-            if ( !defined $genomeInfo ) {
-              my $current_release = $self->{info_adaptor}->data_release();
-              if ( defined $current_release->ensembl_genomes_version() ) {
-                # try the ensembl release
-                my $ensembl_release =
+          }
+          if ( !defined $genomeInfo ) {
+            my $current_release = $self->{info_adaptor}->data_release();
+            if ( defined $current_release->ensembl_genomes_version() ) {
+              # try the ensembl release
+              my $ensembl_release =
                   $self->{info_adaptor}->db()->get_DataReleaseInfoAdaptor()
                   ->fetch_by_ensembl_release(
                                           $current_release->ensembl_version() );
-                $self->{info_adaptor}->data_release($ensembl_release);
-                $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
-                foreach my $gen (@{$genomeInfos}){
-                  if ($gen->division() eq "EnsemblVertebrates"){
+              $self->{info_adaptor}->data_release($ensembl_release);
+              my $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
+              foreach my $gen (@{$genomeInfos}){
+                if ($gen->division() eq "EnsemblVertebrates"){
+                  $genomeInfo=$gen;
+                }
+                # Except for Pan Compara which contain species from multiple divisions
+                elsif ($division eq "EnsemblPan"){
+                  if ($gen->name() ne "caenorhabditis_elegans" and $gen->name() ne "drosophila_melanogaster" and $gen->name() ne "saccharomyces_cerevisiae"){
                     $genomeInfo=$gen;
                   }
                 }
                 $self->{info_adaptor}->data_release($current_release);
               }
             }
-
-            if ( !defined $genomeInfo ) {
-              croak "Could not find genome info object for " . $gdb->name();
-            }
+            croak "Could not find genome info for " . $gdb->name() unless defined $genomeInfo;
             $self->{logger}->debug("Got one from the database");
             $genomes->{ $gdb->name() } = $genomeInfo;
           } ## end if ( !defined $genomeInfo...)
-
-          # last attempt, create one
-          if ( !defined $genomeInfo ) {
-            $self->{logger}->info( "Creating info object for " . $gdb->name() );
-
-            # get core dba
-            my $dba;
-            eval {
-              $dba =
-                Bio::EnsEMBL::Registry->get_DBAdaptor( $gdb->name(), 'core' );
-            };
-            if ( defined $dba ) {
-              $genomeInfo = $self->process_core( { core => $dba } );
-            }
-            else {
-              croak "Could not find DBAdaptor for " . $gdb->name();
-            }
-            $genomeInfo->base_count(0);
-            if ( !defined $genomeInfo ) {
-              croak "Could not create a genome info object for " . $gdb->name();
-            }
-            $genomes->{ $gdb->name() } = $genomeInfo;
-          }
-          croak "Could not find genome info for " . $gdb->name()
-            unless defined $genomeInfo;
 
           push @{ $compara_info->genomes() }, $genomeInfo;
 
@@ -694,7 +684,7 @@ sub process_compara {
          "Completed processing compara database " . $compara->dbc()->dbname() );
   };    ## end eval
   if ($@) {
-    $self->{logger}->warn( "Could not process compara: " . $@ );
+    die "Could not process compara: " . $@;
   }
   return $comparas;
 } ## end sub process_compara
