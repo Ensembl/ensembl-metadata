@@ -78,6 +78,8 @@ use Data::Dumper;
 use Carp qw(croak cluck);
 use strict;
 use warnings;
+use File::Path qw/mkpath/;
+use Bio::EnsEMBL::MetaData::Base qw(process_division_names);
 
 =head1 SUBROUTINES/METHODS
 
@@ -161,12 +163,16 @@ sub write_metadata {
 =cut
 
 sub start {
-  my ( $self, $divisions, $file, $dump_all ) = @_;
+  my ( $self, $divisions, $dump_path, $file, $dump_all ) = @_;
   $self->{files}     = {};
   $self->{filenames} = {};
   $self->logger()->debug("Opening output files");
   for my $division ( @{$divisions} ) {
     ( my $out_file = $file ) =~ s/(.+)(\.[^.]+)$/$1_$division$2/;
+    my ($div,$division_name)=process_division_names($division);
+    my $dir = $dump_path."/".$div;
+    mkpath($dir);
+    $out_file = $dir."/".$out_file;
     my $fh;
     $self->logger()
       ->debug("Opening output file $out_file for division $division");
@@ -177,6 +183,8 @@ sub start {
   }
   if ( defined $dump_all && $dump_all == 1 ) {
     my $fh;
+    mkpath($dump_path);
+    $file = $dump_path."/".$file;
     $self->logger()->debug("Opening output file $file");
     open( $fh, '>', $file ) || croak "Could not open $file for writing";
     $self->{files}->{ $self->{all} }     = $fh;

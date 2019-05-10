@@ -59,8 +59,8 @@ sub new {
 }
 
 sub start {
-  my ($self, $divisions, $file, $dump_all) = @_;
-  $self->SUPER::start($divisions, $file, $dump_all);
+  my ($self, $divisions, $dump_path, $file, $dump_all) = @_;
+  $self->SUPER::start($divisions, $dump_path, $file, $dump_all);
   for my $fh (values %{$self->{files}}) {
 	print $fh '#'
 	  .
