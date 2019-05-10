@@ -82,6 +82,7 @@ push( @{$optsd}, "dumper:s@" );
 push( @{$optsd}, "division:s@" );
 push( @{$optsd}, "verbose" );
 push ( @{$optsd}, "release:i" );
+push ( @{$optsd}, "dump_path:s" );
 
 my $opts = $cli_helper->process_args( $optsd, \&pod2usage );
 
@@ -95,13 +96,12 @@ my $logger = get_logger();
 
 $opts->{dbname} ||= 'ensembl_metadata';
 
+$opts->{dump_path} ||= './';
+
 my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
-
-#Get both division short and full name from a division short or full name
-my ($division,$division_name)=process_division_names($opts->{division});
 
 #Get the release for the given division
 my ($release,$release_info);
@@ -110,15 +110,22 @@ $logger->info("Getting genomes from release ".$opts->{release}) if defined $opts
 
 # get all metadata
 my $dump_all = 0;
-if ( !defined $division_name || scalar( @{ $division_name } ) == 0 ) {
-  $division_name = $gdba->list_divisions();
+if ( !defined $opts->{division} || scalar( @{ $opts->{division} } ) == 0 ) {
+  $opts->{division} = $gdba->list_divisions();
+  $dump_all = 1;
+}
+elsif(scalar( @{ $opts->{division} } ) == 6){
   $dump_all = 1;
 }
 
 my @metadata = ();
-for my $division ( @{ $division_name } ) {
+my $division_list = [];
+for my $div ( @{ $opts->{division} } ) {
+  #Get both division short and full name from a division short or full name
+  my ($division,$division_name)=process_division_names($div);
   $logger->info("Fetching metadata for $division");
-  @metadata = ( @{ $gdba->fetch_all_by_division($division) }, @metadata );
+  push $division_list, $division_name;
+  @metadata = ( @{ $gdba->fetch_all_by_division($division_name, 1) }, @metadata );
 }
 $logger->info( "Retrieved metadata for " . scalar(@metadata) . " genomes" );
 @metadata =
@@ -134,7 +141,7 @@ my @dumpers = map { print "Loading $_"; load $_; $_->new() } @{ $opts->{dumper} 
 # start dumpers
 $logger->info("Starting dumpers");
 for my $dumper (@dumpers) {
-  $dumper->start( $division_name, $dumper->{file}, $dump_all );
+  $dumper->start( $division_list, $opts->{dump_path}, $dumper->{file}, $dump_all );
 }
 # process metadata
 $logger->info("Writing metadata");

@@ -86,6 +86,10 @@ Script output format, options in text files one per change type, see description
 Json to print the summary on json on the screen and inside an output file
 Default option is text
 
+=item B<-d[ump_path]> <dump_path>
+
+Location where to dump the files. Default is current directory
+
 =item B<-h[elp]>
 
 Print usage information.
@@ -121,13 +125,14 @@ use Log::Log4perl qw(:easy);
 use Data::Dumper;
 use Carp;
 use JSON;
+use File::Path qw/mkpath/;
 
 Log::Log4perl->easy_init($INFO);
 my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "output_format:s", "release:i", "help", "man"];
+my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "output_format:s", "release:i", "dump_path:s", "help", "man"];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 $opts->{dbname} ||= 'ensembl_metadata';
@@ -156,6 +161,13 @@ if (!defined $opts->{output_format}){
 }
 elsif ($opts->{output_format} ne 'txt' and $opts->{output_format} ne 'json'){
   die "$opts->{output_format} is not valid, it should be txt|json";
+}
+
+if (!defined $opts->{dump_path}){
+  $opts->{dump_path} = './';
+}
+else{
+  mkpath($opts->{dump_path});
 }
 
 my $report_updates = {};
@@ -254,7 +266,7 @@ foreach my $div (@{$opts->{divisions}}){
 if ($opts->{output_format} eq 'json'){
   my $report_json = JSON->new->pretty->encode($report_updates);
   print "$report_json\n";
-  open my $fh, ">", "report_updates.json";
+  open my $fh, ">", $opts->{dump_path}."/report_updates.json";
   print $fh $report_json;
   close $fh;
 }
@@ -351,7 +363,7 @@ END
 sub write_to_file {
   my ($data, $file_name, $header, $callback) = @_;
   $logger->info("Writing to $file_name");
-  open my $file, ">", $file_name or croak "Could not open output file $file_name";
+  open my $file, ">", $opts->{dump_path}."/".$file_name or croak "Could not open output file $file_name";
   print $file "#".join("\t", @{$header}) . "\n";
   for my $datum (sort keys %$data) {
     print $file join("\t", @{$callback->($data->{$datum})}) . "\n";
