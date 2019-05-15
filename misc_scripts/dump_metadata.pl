@@ -114,7 +114,7 @@ if ( !defined $opts->{division} || scalar( @{ $opts->{division} } ) == 0 ) {
   $opts->{division} = $gdba->list_divisions();
   $dump_all = 1;
 }
-elsif(scalar( @{ $opts->{division} } ) == 6){
+elsif(scalar( @{ $opts->{division} } ) > 1){
   $dump_all = 1;
 }
 

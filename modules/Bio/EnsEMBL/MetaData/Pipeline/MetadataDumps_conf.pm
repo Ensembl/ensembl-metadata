@@ -43,7 +43,7 @@ sub default_options {
            'port'      => undef,
            'host'      => undef,
            'dbname'      => 'ensembl_metadata',
-           'division'      => ['metazoa','plants','fungi','protists','bacteria','vertebrates'],
+           'division'      => [],
            'base_dir'     => getcwd,
            'release'  => undef,
            'pipeline_name' => 'metadata_dumps_'.$self->o('release'), 
@@ -99,7 +99,7 @@ sub pipeline_analyses {
       -logic_name  => 'metadata_xml_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
       -meadow_type => 'LSF',
-      -rc_name         => 'default',
+      -rc_name         => 'himem',
       -parameters  => {
         'cmd' =>'perl #base_dir#/ensembl-metadata/misc_scripts/dump_metadata.pl -user #user# -port #port# -host #host# -dbname #dbname# -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper -release #release# -dump_path #dump_path# -division #expr( join(" -division ", @{ #division# }) )expr#',
         'dbname' => $self->o('dbname'),
@@ -133,7 +133,7 @@ sub pipeline_analyses {
       -logic_name  => 'metadata_uniprot_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
       -meadow_type => 'LSF',
-      -rc_name         => 'himem',
+      -rc_name         => 'default',
       -parameters  => {
         'cmd' =>'perl #base_dir#/ensembl-metadata/misc_scripts/dump_metadata.pl -user #user# -port #port# -host #host# -dbname #dbname# -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper -release #release# -dump_path #dump_path# -division #expr( join(" -division ", @{ #division# }) )expr#',
         'dbname' => $self->o('dbname'),
