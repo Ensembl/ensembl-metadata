@@ -43,7 +43,7 @@ sub default_options {
            'port'      => undef,
            'host'      => undef,
            'dbname'      => 'ensembl_metadata',
-           'division'      => ['metazoa','plants','fungi','protists','bacteria','vertebrates'],
+           'division'      => [],
            'base_dir'     => getcwd,
            'release'  => undef,
            'pipeline_name' => 'metadata_dumps_'.$self->o('release'), 
