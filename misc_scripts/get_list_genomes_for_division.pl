@@ -35,6 +35,9 @@ perl get_list_genomes_for_division.pl $(mysql-ens-meta-prod-1 details script) \
 perl get_list_genomes_for_division.pl $(mysql-ens-meta-prod-1 details script) \
    -release 42 -division metazoa
 
+perl get_list_genomes_for_division.pl $(mysql-ens-meta-prod-1 details script) \
+   -release 44 -division plants -strain
+
 =head1 OPTIONS
 
 =over 8
@@ -64,6 +67,10 @@ If not defined, it will dump all the non-verbetrates species if release is speci
 
 Release number of the vertebrates or non-vertebrates release
 If not defined, the script will get the current release if division is specified
+
+=item B<-strain>
+
+Print strain/cultivar/ecotype name after genome name
 
 =item B<-h[elp]>
 
@@ -99,7 +106,7 @@ use List::MoreUtils qw(uniq);
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "release:i", "help", "man"];
+my $optsd = [@{$cli_helper->get_dba_opts()}, "division:s", "release:i", "help", "man", "strain"];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 $opts->{dbname} ||= 'ensembl_metadata';
@@ -125,5 +132,11 @@ my $genomes = $gdba->fetch_all_by_division($division_name);
 my @sorted_genomes =  sort { $a->name() cmp $b->name() } @$genomes;
 #Genome database
 foreach my $genome (@sorted_genomes){
-    print $genome->name()."\n";
+    print $genome->name();
+    if($opts->{strain}){ 
+        printf("\t%s", $genome->strain() || "NA"); 
+    }
+    print "\n";
 }
+
+

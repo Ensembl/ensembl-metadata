@@ -315,13 +315,15 @@ sub store {
       }
       else {
         # Check if we already have this genome for this given release and division
-        # This will usually happen when the assembly change.
-        # Remove this genome from database to avoid duplication
-        my $release_genomes = $self->fetch_by_name($genome->{organism}->{name});
-        foreach my $release_genome (@{$release_genomes}){
-          if (defined $release_genome and ($release_genome->division() eq $genome->division())){
-            $self->clear_genome($release_genome);
-          }
+        # fetch using dbID in case the genome has been renamed
+        my ($dbID) = @{
+          $self->dbc()->sql_helper()->execute_simple(
+            -SQL => "select genome_id from genome where data_release_id=? and assembly_id=? and division_id=?",
+            -PARAMS => [ $genome->data_release()->dbID(),
+                        $genome->assembly()->dbID(), $self->_get_division_id($genome->division()) ] ) };
+        my $release_genome = $self->fetch_by_dbID($dbID);
+        if (defined $release_genome){
+          $self->clear_genome($release_genome);
         }
       }
       $self->db()->get_GenomeOrganismInfoAdaptor()
