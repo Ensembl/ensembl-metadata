@@ -8,6 +8,6 @@
   'driver' => 'mysql',
   'user'   => 'root',
   'pass'   => '',
-  'host'   => 'localhost'
+  'host'   => '127.0.0.1'
 
 }
