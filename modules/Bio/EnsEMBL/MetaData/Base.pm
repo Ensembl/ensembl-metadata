@@ -176,10 +176,10 @@ sub check_assembly_update {
   # Check assembly default meta key
   $updated_assembly = 1 if $genome->assembly_default() ne $prev_genome->assembly_default();
   # Also check the assembly name meta key for patches update. Mainly affects human and mouse
-  $updated_assembly = 1 if $genome->assembly_name() ne $prev_genome->assembly_name();
+  $updated_assembly = 2 if $genome->assembly_name() ne $prev_genome->assembly_name();
   # Check base_count value which is the sum of lenght of seq_region. If new sequences have been added to the assembly, this will change.
   # We can pick up new MT or scaffolds
-  $updated_assembly = 1 if $genome->base_count() ne $prev_genome->base_count();
+  $updated_assembly = 3 if $genome->base_count() ne $prev_genome->base_count();
   return $updated_assembly;
 }
 

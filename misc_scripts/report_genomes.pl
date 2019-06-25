@@ -219,13 +219,13 @@ foreach my $div (@{$opts->{divisions}}){
           my $updated_assembly=check_assembly_update($genome->{genome},$prev_genome->{genome});
           my $updated_genebuild=check_genebuild_update($genome->{genome},$prev_genome->{genome});
           if ($updated_assembly) {
-            # Report asssembly_default change
-            if ($genome->{assembly} ne $prev_genome->{assembly}){
-              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_assembly=>$prev_genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id}};
-            }
-            # or report the asssembly_name meta key when we have new patches for human or mouse
-            else{
+            # report the asssembly_name meta key when we have new patches for human or mouse
+            if ($updated_assembly == 2){
               $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly_name},old_assembly=>$prev_genome->{assembly_name},database=>$genome->{database},species_id=>$genome->{species_id}};
+            }
+            # Report asssembly_default change
+            else{
+              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_assembly=>$prev_genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id}};
             }
           } elsif ($updated_genebuild) {
             $report_updates->{$division}->{updated_annotations}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},new_genebuild=>$genome->{genebuild},old_genebuild=>$prev_genome->{genebuild},database=>$genome->{database},species_id=>$genome->{species_id}};
