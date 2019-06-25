@@ -1,5 +1,8 @@
 language: "perl"
 
+services:
+  - mysql
+
 perl:
   - "5.14"
   - "5.12"
@@ -37,7 +40,7 @@ install:
     - cpanm -n DBD::SQLite
     - cp travisci/MultiTestDB.conf.travisci.mysql  modules/t/MultiTestDB.conf.mysql
     - cp travisci/MultiTestDB.conf.travisci.SQLite modules/t/MultiTestDB.conf.SQLite
-    - mysql -u root -h 127.0.0.1 -e 'GRANT ALL PRIVILEGES ON *.* TO "travis"@"%"'
+    - mysql -u root -h localhost -e 'GRANT ALL PRIVILEGES ON *.* TO "travis"@"%"'
 
 script: "./travisci/harness.sh"
 
