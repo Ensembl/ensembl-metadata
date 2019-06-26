@@ -321,6 +321,14 @@ sub store {
             -SQL => "select genome_id from genome where data_release_id=? and assembly_id=? and division_id=?",
             -PARAMS => [ $genome->data_release()->dbID(),
                         $genome->assembly()->dbID(), $self->_get_division_id($genome->division()) ] ) };
+        # The genome migh have somekind of changes in the assembly, e.g: new patches for human or renaming. In this case check if we have existing data for this genome.
+        if ( !defined $dbID ) {
+          ($dbID) = @{
+          $self->dbc()->sql_helper()->execute_simple(
+            -SQL => "select genome_id from genome join organism USING (organism_id) where data_release_id=? and division_id=? and name=?",
+            -PARAMS => [ $genome->data_release()->dbID(),
+                         $self->_get_division_id($genome->division()),$genome->name() ] ) };
+        }
         my $release_genome = $self->fetch_by_dbID($dbID);
         if (defined $release_genome){
           $self->clear_genome($release_genome);
