@@ -429,6 +429,10 @@ sub process_core {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
   die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
+  # if processing a collection database, delete genomes from metadata genomes that don't exist anymore or have been renamed in the new handed over database
+  if ($dba->is_multispecies){
+    cleanup_removed_genomes_collections($species,$database,$gdba);
+  }
   foreach my $species_name (@{$species}){
     my $update_type='other';
     if ($dba->is_multispecies){
@@ -630,6 +634,24 @@ sub check_new_genebuild {
     }
   }
   return ($update_type);
+}
+
+sub cleanup_removed_genomes_collections {
+  # This subroutine will remove from the metadata database, genomes that have been removed or renamed from a newly handed over collection database.
+  # When we run the pre-handover metadata load, we load all the databases from staging MySQL servers. If a collection database is handed over minus some genomes or some genomes have been renamed, the old records will still be present in the metadata db
+  # This compares the list of current genomes from the metadata database with the list of genomes from the new collection database and cleanup the metadata database
+  my ($species,$database,$gdba) = @_;
+  my $current_genomes = $gdba->fetch_all_by_dbname($database->{dbname});
+  foreach my $current_genome (@{$current_genomes}){
+    if (grep $_ eq $current_genome->name(), @{$species}){
+      next;
+    }
+    else{
+      # If the genome is not anymore in the collection database, delete it from the metadata database
+      $gdba->clear_genome($current_genome);
+    }
+  }
+return 1;
 }
 
 sub get_release_from_db {
