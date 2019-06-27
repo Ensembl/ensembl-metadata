@@ -643,7 +643,6 @@ sub cleanup_removed_genomes_collections {
       next;
     }
     else{
-      $DB::single = 1;
       # If the genome is not anymore in the collection database, delete it from the metadata database
       $gdba->clear_genome($current_genome);
     }
