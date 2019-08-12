@@ -563,7 +563,7 @@ sub process_compara {
     my $adaptor = $compara->get_MethodLinkSpeciesSetAdaptor();
 
     for my $method (
-      qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY/
+      qw/PROTEIN_TREES BLASTZ_NET LASTZ_NET TRANSLATED_BLAT TRANSLATED_BLAT_NET SYNTENY FAMILY/
       )
     {
 
@@ -619,21 +619,20 @@ sub process_compara {
             $self->{logger}->debug("Checking in the database");
             my $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
             foreach my $gen (@{$genomeInfos}){
-              # Make sure species division match the compara division
-              if ($gen->division() eq $division){
-                $genomeInfo=$gen;
-              }
-              # Except for Pan Compara which contain species from multiple divisions
-              elsif ($division eq "EnsemblPan"){
-              # Check for species common between Vert and non-vert, we want to use the non-vert
-                if ($gen->name() eq "caenorhabditis_elegans" or $gen->name() eq "drosophila_melanogaster" or $gen->name() eq "saccharomyces_cerevisiae"){
+              # Check for species common between Vert and non-vert, we want to use the non-vert for pan
+              if ($gen->name() eq "caenorhabditis_elegans" or $gen->name() eq "drosophila_melanogaster" or $gen->name() eq "saccharomyces_cerevisiae"){
+                if ($division eq "EnsemblPan" or $division eq "EnsemblPlants"){
                   if ($gen->division() ne "EnsemblVertebrates"){
                     $genomeInfo=$gen;
                   }
                 }
-                else{
+                # Make sure species division match the compara division
+                elsif ($gen->division() eq $division){
                   $genomeInfo=$gen;
                 }
+              }
+              else{
+                $genomeInfo=$gen;
               }
             }
           }
@@ -648,14 +647,9 @@ sub process_compara {
               $self->{info_adaptor}->data_release($ensembl_release);
               my $genomeInfos = $self->{info_adaptor}->fetch_by_name( $gdb->name() );
               foreach my $gen (@{$genomeInfos}){
+                # When using ensembl release we should only look at vertebrates
                 if ($gen->division() eq "EnsemblVertebrates"){
                   $genomeInfo=$gen;
-                }
-                # Except for Pan Compara which contain species from multiple divisions
-                elsif ($division eq "EnsemblPan"){
-                  if ($gen->name() ne "caenorhabditis_elegans" and $gen->name() ne "drosophila_melanogaster" and $gen->name() ne "saccharomyces_cerevisiae"){
-                    $genomeInfo=$gen;
-                  }
                 }
                 $self->{info_adaptor}->data_release($current_release);
               }

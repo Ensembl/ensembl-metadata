@@ -95,7 +95,17 @@ sub update_release_and_process_release_db {
   my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
-  if ( defined $eg_release ) {
+  my ($e_version,$eg_version)=get_release_from_db($database->{dbname});
+  if ( defined $eg_version ) {
+    if ($eg_release != $eg_version){
+        die "Database release $eg_version does not match given release $eg_release";
+    }
+    elsif (defined $e_version and $e_release != $e_version){
+      die "Database release $e_version does not match given release $e_release";
+    }
+    elsif ($e_release != ($eg_release + 53) ){
+        die "Given non-vertebrate release is $eg_release, Vertebrate release should be ".($eg_release + 53)." instead of $e_release";
+    }
     $release = $rdba->fetch_by_ensembl_genomes_release($eg_release);
     if (!defined $release){
       store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release);
@@ -108,6 +118,12 @@ sub update_release_and_process_release_db {
     }
   }
   else {
+    if (defined $e_version and $e_release != $e_version){
+      die "Database release $e_version does not match given release $e_release";
+    }
+    elsif ($eg_release != ($e_release - 53) ){
+      die "Given Vertebrate release is $e_release, non-vertebrate release should be ".($e_release - 53)." instead of $eg_release";
+    }
     $release = $rdba->fetch_by_ensembl_release($e_release);
     if (!defined $release){
       store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release);
@@ -131,9 +147,9 @@ sub get_release_and_process_release_db {
   my ($metadatadba,$gdba,$database,$email,$comment,$source,$db_type) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
-  # Parse EG databases including core, core like, variation, funcgen and compara
-  if (($database->{dbname} =~ m/(?:core|otherfeatures|rnaseq|cdna|variation|funcgen)_(\d+)_\d+_\d+$/) or ($database->{dbname} =~ m/ensembl_compara_(?:fungi|metazoa|protists|bacteria|plants|pan_homology)_(\d+)_\d+$/) or ($database->{dbname} =~ m/(?:fungi|plants|metazoa|protists)_\w+_mart_(\d+)$/) or ($database->{dbname} =~ m/ensemblgenomes_info_(\d+)$/)or ($database->{dbname} =~ m/ensemblgenomes_stable_ids_(\d+)_\d+$/)){
-    $release = $rdba->fetch_by_ensembl_genomes_release($1);
+  my ($e_version,$eg_version)=get_release_from_db($database->{dbname});
+  if (defined $eg_version){
+  $release = $rdba->fetch_by_ensembl_genomes_release($eg_version);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
                     "/EG".$release->{ensembl_genomes_version}."" : "" ) .
@@ -143,20 +159,8 @@ sub get_release_and_process_release_db {
       die "Can't find release $release for EG in metadata database";
     }
   }
-  # Parse Ensembl release
-  elsif(($database->{dbname} =~ m/(?:core|otherfeatures|rnaseq|cdna|variation|funcgen)_(\d+)_\d+$/) or ($database->{dbname} =~ m/ensembl_compara_(\d+)$/) or ($database->{dbname} =~ m/\w+_mart_(\d+)$/)){
-    $release = $rdba->fetch_by_ensembl_release($1);
-    if (defined $release){
-      $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
-                "/EG".$release->{ensembl_genomes_version}."" : "" ) .
-              " ".$release->{release_date});
-    }
-    else{
-      die "Can't find release $release for Ensembl or EG in metadata database";
-    }
-  }
-  elsif($database->{dbname} =~ m/_(\d+)$/){
-    $release = $rdba->fetch_by_ensembl_release($1);
+  elsif (defined $e_version){
+    $release = $rdba->fetch_by_ensembl_release($e_version);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
                 "/EG".$release->{ensembl_genomes_version}."" : "" ) .
@@ -425,6 +429,10 @@ sub process_core {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
   die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
   my @events;
+  # if processing a collection database, delete genomes from metadata genomes that don't exist anymore or have been renamed in the new handed over database
+  if ($dba->is_multispecies){
+    cleanup_removed_genomes_collections($species,$database,$gdba);
+  }
   foreach my $species_name (@{$species}){
     my $update_type='other';
     if ($dba->is_multispecies){
@@ -628,4 +636,37 @@ sub check_new_genebuild {
   return ($update_type);
 }
 
+sub cleanup_removed_genomes_collections {
+  # This subroutine will remove from the metadata database, genomes that have been removed or renamed from a newly handed over collection database.
+  # When we run the pre-handover metadata load, we load all the databases from staging MySQL servers. If a collection database is handed over minus some genomes or some genomes have been renamed, the old records will still be present in the metadata db
+  # This compares the list of current genomes from the metadata database with the list of genomes from the new collection database and cleanup the metadata database
+  my ($species,$database,$gdba) = @_;
+  my $current_genomes = $gdba->fetch_all_by_dbname($database->{dbname});
+  foreach my $current_genome (@{$current_genomes}){
+    if (grep $_ eq $current_genome->name(), @{$species}){
+      next;
+    }
+    else{
+      # If the genome is not anymore in the collection database, delete it from the metadata database
+      $gdba->clear_genome($current_genome);
+    }
+  }
+return 1;
+}
+
+sub get_release_from_db {
+  # Get the Vertebrates and non-vertebrates release numbers from the database name.
+  my ($database_name) = @_;
+  my ($e_version,$eg_version);
+  # Parse EG databases including core, core like, variation, funcgen and compara
+  if (($database_name =~ m/(?:core|otherfeatures|rnaseq|cdna|variation|funcgen)_(\d+)_(\d+)_\d+$/) or ($database_name =~ m/ensembl_compara_(?:fungi|metazoa|protists|bacteria|plants|pan_homology)_(\d+)_(\d+)$/) or ($database_name =~ m/(?:fungi|plants|metazoa|protists)_?\w*_mart_(\d+)$/) or ($database_name =~ m/ensemblgenomes_info_(\d+)$/)or ($database_name =~ m/ensemblgenomes_stable_ids_(\d+)_(\d+)$/)){
+    $eg_version=$1;
+    $e_version=$2 if defined $2;
+  }
+  # Parse Ensembl release
+  elsif(($database_name =~ m/(?:core|otherfeatures|rnaseq|cdna|variation|funcgen)_(\d+)_\d+$/) or ($database_name =~ m/ensembl_compara_(\d+)$/) or ($database_name =~ m/\w+_mart_(\d+)$/) or ($database_name =~ m/_(\d+)$/)){
+    $e_version=$1;
+  }
+  return($e_version,$eg_version);
+}
 1;
