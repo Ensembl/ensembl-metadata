@@ -451,17 +451,17 @@ sub process_core {
                 -VARIATION => 0};
     my $processor = Bio::EnsEMBL::MetaData::MetaDataProcessor->new(%$opts);
     my $md = $processor->process_core($dba);
+    my $current_database_list;
     #Check if this is a new genebuild
-    $update_type = check_new_genebuild($dba, $gdba, $species_name, $update_type, $md);
+    ($update_type,$current_database_list) = check_new_genebuild($dba, $gdba, $species_name, $update_type, $current_database_list, $md);
     #Check if this is a new assembly
-    my $old_assembly_database_list;
-    ($update_type,$old_assembly_database_list) = check_new_assembly($dba, $gdba, $species_name, $update_type, $md);
+    ($update_type,$current_database_list) = check_new_assembly($dba, $gdba, $species_name, $update_type, $current_database_list, $md);
     $log->info( "Storing " . $md->name() );
     $gdba->store($md);
     my $ea = $metadatadba->get_EventInfoAdaptor();
     $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
     my $event_details={"email"=>$email,"comment"=>$comment};
-    $event_details->{'old_assembly_database_list'} = $old_assembly_database_list if defined $old_assembly_database_list;
+    $event_details->{'current_database_list'} = $current_database_list if defined $current_database_list;
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
                                                     -TYPE    => $update_type,
                                                     -SOURCE  => $source,
@@ -584,8 +584,7 @@ sub check_new_assembly {
   #if the assembly doesn't exist in the metadata database then it's a new species, update the handover type
   #if the assembly is the same, all good, nothing to do here
   #if the assembly is different, make sure that we update the handover type and generate a list of old assembly databases to clean up except for collections
-  my ($dba, $gdba, $species_name, $update_type, $updated_genome) = @_;
-  my $old_assembly_database_list;
+  my ($dba, $gdba, $species_name, $update_type, $current_database_list, $updated_genome) = @_;
   my $division = get_division($dba);
   my $current_genomes=$gdba->fetch_by_name($species_name);
   my $current_genome;
@@ -602,7 +601,7 @@ sub check_new_assembly {
         my $old_databases = $current_genome->databases();
         foreach my $old_database (@{$old_databases})
         {
-          push @{$old_assembly_database_list}, $old_database->dbname
+          push @{$current_database_list}, $old_database->dbname
         }
       }
     }
@@ -611,14 +610,15 @@ sub check_new_assembly {
   else {
     $update_type = 'new_assembly';
   }
-  return ($update_type,$old_assembly_database_list);
+  return ($update_type,$current_database_list);
 }
 
 sub check_new_genebuild {
   # Check the core database genebuild.version or (genebuild.start_date/genebuild.last_geneset_update) value and compare it with what we have in the Metadata database
   #if the Genebuild is the same, all good, nothing to do here
   #if the Genebuild is different, make sure that we update the handover type
-  my ($dba, $gdba, $species_name, $update_type, $updated_genome) = @_;
+  my ($dba, $gdba, $species_name, $update_type, $current_database_list, $updated_genome) = @_;
+  my $current_database_list;
   my $meta = $dba->get_MetaContainer();
   my $division = get_division($dba);
   my $current_genomes=$gdba->fetch_by_name($species_name);
@@ -631,9 +631,17 @@ sub check_new_genebuild {
     my $updated_genebuild=check_genebuild_update($updated_genome,$current_genome);
     if ($updated_genebuild){
       $update_type = 'new_genebuild';
+      # We don't want to drop the database if a genome in a collection has changed.
+      if ($dba->dbc->dbname !~ /_collection_/){
+        my $old_databases = $current_genome->databases();
+        foreach my $old_database (@{$old_databases})
+        {
+          push @{$current_database_list}, $old_database->dbname
+        }
+      }
     }
   }
-  return ($update_type);
+  return ($update_type,$current_database_list);
 }
 
 sub cleanup_removed_genomes_collections {
