@@ -54,7 +54,7 @@ perl report_genomes.pl $(mysql-ens-meta-prod-1 details script) \
 
 =over 8
 
-=item B<-h[ost]> <host>
+=item B<-H[ost]> <host>
 
 Mandatory. Host name of the metadata server
 
@@ -62,7 +62,7 @@ Mandatory. Host name of the metadata server
 
 Mandatory. metadata database name, default "ensembl_metadata"
 
-=item B<-p[ort]> <port>
+=item B<-P[ort]> <port>
 
 Mandatory. Port number of the metadata server
 
