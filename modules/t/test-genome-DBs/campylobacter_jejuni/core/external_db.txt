@@ -494,9 +494,7 @@
 50681	Ens_Ac_transcript	\N	XREF	40	Ensembl Anole Lizard Transcript	MISC	\N	\N	\N
 50682	BGI_Gene	1	XREF	50	BGI_2005_indica_Gene	MISC	\N	\N	BGI gene identifier
 50683	GeneIndex	1	XREF	50	GeneIndex	MISC	\N	\N	\N
-50684	EO	1	XREF	0	Environment Ontology	MISC	\N	\N	Plant environmental conditions ontology terms.\
-More information in there:\
-http://www.gramene.org/plant_ontology/ontology_browse.html#eo
+50684	EO	1	XREF	0	Environment Ontology	MISC	\N	\N	Plant environmental conditions ontology terms.\nMore information in there:\nhttp://www.gramene.org/plant_ontology/ontology_browse.html#eo
 50685	Ens_Rn_transcript	\N	XREF	5	Ensembl Rat Transcript	MISC	\N	\N	\N
 50686	Ens_Rn_translation	\N	XREF	5	Ensembl Rat Translation	MISC	\N	\N	\N
 50687	Uppsala University	\N	KNOWN	5	Uppsala University	MISC	\N	\N	\N
@@ -543,8 +541,7 @@ http://www.gramene.org/plant_ontology/ontology_browse.html#eo
 50731	Turkey Genome Consortium	\N	KNOWN	5	Turkey Genome Consortium	MISC	\N	\N	Turkey Genome Consortium
 50732	Yutaka_Satou_Kyoto_University	\N	KNOWN	5	Yutaka Satou Kyoto University	MISC	\N	\N	Yutaka Satou Kyoto University
 50733	Chicken_Genome_Consortium	\N	KNOWN	5	International Chicken Genome Consortium	MISC	\N	\N	\N
-50734	TAIR_TRANSLATION	1	XREF	1	TAIR Translation identifier	MISC	\N	\N	TAIR identifier to link to Ensembl Translation entities.\
-The main requirement behind this entry, is to be able to link TAIR GO annotations to Ensembl Translation objects.
+50734	TAIR_TRANSLATION	1	XREF	1	TAIR Translation identifier	MISC	\N	\N	TAIR identifier to link to Ensembl Translation entities.\nThe main requirement behind this entry, is to be able to link TAIR GO annotations to Ensembl Translation objects.
 50735	AGI_GENE	1	XREF	1	AGI Gene	MISC	\N	\N	annotation provided by Arizona Genome Institute
 50736	AGI_TRANSCRIPT	1	XREF	1	AGI Transcript	MISC	\N	\N	annotation provided by Arizona Genome Institute
 50737	CGNC	\N	KNOWNXREF	100	CGNC Symbol	PRIMARY_DB_SYNONYM	\N	\N	\N
@@ -583,8 +580,7 @@ The main requirement behind this entry, is to be able to link TAIR GO annotation
 50778	Xenbase_trans_name	\N	KNOWNXREF	1	Xenbase transcript name	MISC	\N	\N	transcript name from Xenbase
 50779	NasoniaBase	\N	KNOWN	0	NasoniaBase	MISC	\N	\N	\N
 50780	wormbase_gseqname	\N	KNOWN	6	WormBase Gene Sequence-name	MISC	\N	\N	\N
-50781	TriTryp_pathway_comparison	1	KNOWNXREF	50	TriTryp pathway comparison database	MISC	\N	\N	TriTryp pathway comparison database (http://tritrypdb.org/tritrypdb/)\
-
+50781	TriTryp_pathway_comparison	1	KNOWNXREF	50	TriTryp pathway comparison database	MISC	\N	\N	TriTryp pathway comparison database (http://tritrypdb.org/tritrypdb/)\n
 50782	Sanger	\N	KNOWN	5	Sanger Wellcome Trust Institute	MISC	\N	\N	\N
 50783	ENSP_ident	\N	XREF	1	Ensembl translation having exact match with Havana	ALT_TRANS	\N	\N	\N
 50784	Ensembl_Metazoa	1	XREF	1	Ensembl Metazoa	ENSEMBL	\N	\N	Ensembl Metazoa identifiers serving GO projections from a reference species to other metazoa species.
@@ -622,8 +618,7 @@ The main requirement behind this entry, is to be able to link TAIR GO annotation
 50818	Smar_Community_Annotation	\N	KNOWN	50	Strigamia maritima Community Annotation	MISC	\N	\N	\N
 50819	RFAM_GENE	\N	KNOWN	0	Rfam Gene Name	MISC	\N	\N	Name for gene assigned from Rfam alignment
 50820	PGSB_WHEAT_GENE	2.2	KNOWNXREF	1	Wheat survey sequence PGSB gene identifier	MISC	\N	\N	Bread wheat survey sequence gene models from PGSB Wheat Genome Database (formerly MIPS). Release 2.2
-50821	GDEC_GENE	1.0	KNOWNXREF	1	GDEC 3B gene identifier	MISC	\N	\N	Bread wheat 3B pseudomolecule gene models from INRA GDEC group.\
-
+50821	GDEC_GENE	1.0	KNOWNXREF	1	GDEC 3B gene identifier	MISC	\N	\N	Bread wheat 3B pseudomolecule gene models from INRA GDEC group.\n
 50822	ARAPORT_GENE	1	KNOWNXREF	0	Araport	MISC	\N	\N	Gene identifiers from Araport, the Arabidopsis information portal (formerly TAIR).
 50823	MTGD	4.0	KNOWNXREF	0	MTGD	PRIMARY_DB_SYNONYM	\N	\N	The Medicago truncatula Genome Database (MTGD), maintained by JCVI.
 50824	Reactome_gene	\N	KNOWNXREF	0	Reactome	PRIMARY_DB_SYNONYM	\N	\N	Reactome entries linked to genes
