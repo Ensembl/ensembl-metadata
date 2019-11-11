@@ -377,7 +377,7 @@ sub process_release_database {
     $division="EnsemblPan";
   }
   #Specific case for ancestral and production db.
-  elsif ($database->{dbname} =~ m/^ensembl_ancestral_\d+$/ or $database->{dbname} =~ m/^ensembl_production_\d+$/){
+  elsif ($database->{dbname} =~ m/^ensembl_ancestral_\d+$/){
     $division = "EnsemblVertebrates";
   }
   #for the marts, get division name from database prefix.
@@ -421,7 +421,7 @@ sub process_release_database {
 #Check pan division databases like ontology db, ncbi_taxonomy, ensembl_metadata,...
 sub check_pan_databases {
   my ($database_name) = @_;
-  return $database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids)/;
+  return $database_name =~ m/(ontology|ensembl_metadata|ensembl_website|ncbi_taxonomy|ensembl_accounts|ensembl_archive|ensembl_stable_ids|ensemblgenomes_stable_ids|ensembl_production)/;
 }
 
 #Subroutine to add or force update a species database
