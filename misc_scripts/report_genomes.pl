@@ -361,7 +361,7 @@ Release $release of Ensembl $division has been loaded into $report->{databases} 
 END
 
   }
-  open my $summary, ">", "$summary_file" || croak "Could not open $summary_file for writing";
+  open my $summary, ">", $opts->{dump_path}."/$summary_file" || croak "Could not open $summary_file for writing";
   print $summary $news;
   close $summary;
   return;
