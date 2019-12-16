@@ -460,7 +460,7 @@ sub process_core {
     my $ea = $metadatadba->get_EventInfoAdaptor();
     $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
     my $event_details={"email"=>$email,"comment"=>$comment};
-    $event_details->{'current_database_list'} = $current_database_list if $update_type ne 'other';
+    $event_details->{'current_database_list'} = $current_database_list if $update_type ne 'other' and check_array_ref_empty($current_database_list);
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
                                                     -TYPE    => $update_type,
                                                     -SOURCE  => $source,
