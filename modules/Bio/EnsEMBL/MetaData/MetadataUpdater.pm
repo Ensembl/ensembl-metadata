@@ -616,7 +616,7 @@ sub check_new_genebuild_or_assembly {
 #Get the list of databases for the current genome
 sub get_current_genome_database_list {
   my ($dba, $gdba, $species_name) = @_;
-  my $current_database_list;
+  my $current_database_list=();
   my $division = get_division($dba);
   my $current_genomes=$gdba->fetch_by_name($species_name);
   my $current_genome;
