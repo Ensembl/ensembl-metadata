@@ -427,7 +427,7 @@ sub check_pan_databases {
 #Subroutine to add or force update a species database
 sub process_core {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
-  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
+  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if scalar(@$species) == 0;
   my @events;
   # if processing a collection database, delete genomes from metadata genomes that don't exist anymore or have been renamed in the new handed over database
   if ($dba->is_multispecies){
@@ -435,14 +435,15 @@ sub process_core {
   }
   foreach my $species_name (@{$species}){
     my $update_type='other';
+    my $current_database_list;
     if ($dba->is_multispecies){
       $dba=create_species_collection_database_dba($database,$species_name,$db_type,$species_ids,$dba);
     }
     else{
       $dba->species($species_name);
+      # Retrieve list of current genome databases. We want to do this before we start processing the updated genome
+      $current_database_list = get_current_genome_database_list($dba, $gdba, $species_name);
     }
-    # Retrieve list of current genome databases. We want to do this before we start processing the updated genome
-    my $current_database_list = get_current_genome_database_list($dba, $gdba, $species_name);
     $log->info("Processing $species_name in database ".$dba->dbc()->dbname());
     my $opts = { -INFO_ADAPTOR => $gdba,
                 -ANNOTATION_ANALYZER =>
@@ -460,7 +461,7 @@ sub process_core {
     my $ea = $metadatadba->get_EventInfoAdaptor();
     $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
     my $event_details={"email"=>$email,"comment"=>$comment};
-    $event_details->{'current_database_list'} = $current_database_list if $update_type ne 'other' and check_array_ref_empty($current_database_list);
+    $event_details->{'current_database_list'} = $current_database_list if $update_type ne 'other' and defined $current_database_list;
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
                                                     -TYPE    => $update_type,
                                                     -SOURCE  => $source,
@@ -476,7 +477,7 @@ sub process_core {
 #Subroutine to add or force update a species database
 sub process_other_database {
   my ($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba) = @_;
-  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if !check_array_ref_empty($species);
+  die "Problem with ".$database->{dbname}.", can't find species name. Check species.production_name meta key" if scalar(@$species) == 0;
   my @events;
   foreach my $species_name (@{$species}){
     if ($dba->is_multispecies){
@@ -573,11 +574,6 @@ sub to_hash {
   return \%event_hash;
 }
 
-sub check_array_ref_empty {
-  my ($array_ref) = @_;
-  return scalar @$array_ref;
-}
-
 sub check_new_genebuild_or_assembly {
   # For Genebuild update:
   # Check the core database genebuild.version or (genebuild.start_date/genebuild.last_geneset_update) value and compare it with what we have in the Metadata database
@@ -616,7 +612,7 @@ sub check_new_genebuild_or_assembly {
 #Get the list of databases for the current genome
 sub get_current_genome_database_list {
   my ($dba, $gdba, $species_name) = @_;
-  my $current_database_list=();
+  my $current_database_list;
   my $division = get_division($dba);
   my $current_genomes=$gdba->fetch_by_name($species_name);
   my $current_genome;
@@ -626,12 +622,10 @@ sub get_current_genome_database_list {
   #If this species exist already
   if (defined $current_genome){
       # We don't want to drop the database if a genome in a collection has changed.
-      if ($dba->dbc->dbname !~ /_collection_/){
-        my $old_databases = $current_genome->databases();
-        foreach my $old_database (@{$old_databases})
-        {
-          push @{$current_database_list}, $old_database->dbname
-        }
+      my $old_databases = $current_genome->databases();
+      foreach my $old_database (@{$old_databases})
+      {
+        push @{$current_database_list}, $old_database->dbname
       }
   }
   return $current_database_list;
