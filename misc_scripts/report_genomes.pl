@@ -58,7 +58,7 @@ perl report_genomes.pl $(mysql-ens-meta-prod-1 details script) \
 
 Mandatory. Host name of the metadata server
 
-=item B<-n[ame]> <ensembl_metadata>
+=item B<-db[name]> <ensembl_metadata>
 
 Mandatory. metadata database name, default "ensembl_metadata"
 
