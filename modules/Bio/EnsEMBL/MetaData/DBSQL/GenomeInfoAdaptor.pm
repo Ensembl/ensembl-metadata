@@ -422,7 +422,7 @@ sub update {
         $self->_store_annotations($genome);
         $self->_store_features($genome);
       }
-      if ($genome->{databases}->[0]->type() eq 'variation') {
+      if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'variation') {
         $self->_store_variations($genome);
       }
       if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){

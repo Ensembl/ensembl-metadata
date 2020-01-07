@@ -678,10 +678,10 @@ sub has_variations {
   if ( defined $arg ) {
     $self->{has_variations} = $arg;
   }
-  elsif ( !defined( $self->{has_variations} ) ) {
+  elsif ( !defined( $self->{has_variations} ) && defined $self->variations() ) {
     $self->{has_variations} = $self->count_variation() > 0 ? 1 : 0;
   }
-  return $self->{has_variations};
+  return $self->{has_variations} || 0;
 }
 
 =head2 has_genome_alignments
