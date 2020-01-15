@@ -11,7 +11,7 @@ In addition, additional Perl modules are required, listed in [the cpan dependenc
 
 # Usage
 
-Full Perl documentation can be found at http://ensembl.github.io/ensembl-metadata/.
+Full Perl documentation can be found at http://www.ensembl.org/info/docs/Doxygen/metadata-api/.
 
 Some usage examples are shown below. Example scripts can also be found in the [misc-scripts](misc-scripts) directory. 
 
