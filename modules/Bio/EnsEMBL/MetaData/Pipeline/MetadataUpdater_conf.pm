@@ -29,7 +29,8 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');  # All Hive datab
 sub resource_classes {
     my ($self) = @_;
     return { 'default' => { 'LSF' => '-q production-rh74'},
-         'himem' => { 'LSF' => '-q production-rh74 -M  20000 -R "rusage[mem=20000]"' } };
+         '10GB' => { 'LSF' => '-q production-rh74 -M 10000 -R "rusage[mem=10000]"' },
+         '20GB' => { 'LSF' => '-q production-rh74 -M 20000 -R "rusage[mem=20000]"' } };
 }
 
 sub default_options {
@@ -90,7 +91,7 @@ sub pipeline_analyses {
             -analysis_capacity => 30,
             -parameters => {
              },
-            -rc_name => 'himem',
+            -rc_name => '20GB',
             -flow_into     => {
                    2 => [ '?table_name=result']
             },
@@ -103,7 +104,7 @@ sub pipeline_analyses {
             -wait_for      => [ 'metadata_updater_core' ],
             -parameters => {
              },
-            -rc_name => 'himem',
+            -rc_name => '10GB',
             -flow_into     => {
                    2 => [ '?table_name=result']
             },
@@ -116,7 +117,7 @@ sub pipeline_analyses {
             -wait_for      => [ 'metadata_updater_core', 'metadata_updater_other' ],
             -parameters => {
              },
-            -rc_name => 'default',
+            -rc_name => '10GB',
             -flow_into     => {
                    2 => [ '?table_name=result']
             },
