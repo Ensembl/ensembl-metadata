@@ -75,7 +75,7 @@ sub process_database {
 
 sub create_metadata_dba {
   my ($metadata_uri)=@_;
-  my $metadata = get_db_connection_params( $metadata_uri);
+  my $metadata = Bio::EnsEMBL::Hive::Utils::URL::parse($metadata_uri);
   $log->info("Connecting to Metadata database $metadata->{dbname}");
   my $metadatadba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
                                              -USER =>,
@@ -182,7 +182,7 @@ sub get_release_and_process_release_db {
 }
 sub get_species_and_dbtype {
   my ($database_uri)=@_;
-  my $database = get_db_connection_params($database_uri);
+  my $database = Bio::EnsEMBL::Hive::Utils::URL::parse($database_uri);
   my ($db_type,$species,$dba,$species_ids);
   $log->info("Connecting to database $database->{dbname}");
   #dealing with Compara
@@ -323,14 +323,6 @@ sub create_species_collection_database_dba {
     -species_id => $species_id
   );
   return ($dba); 
-}
-
-#Subroutine to parse Server URI and return connection details
-sub get_db_connection_params {
-  my ($uri) = @_;
-  return '' unless defined $uri;
-  my $db = Bio::EnsEMBL::Hive::Utils::URL::parse($uri);
-  return $db;
 }
 
 #Subroutine to process compara database and add or force update

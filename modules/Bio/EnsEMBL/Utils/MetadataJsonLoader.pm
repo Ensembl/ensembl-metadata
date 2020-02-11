@@ -199,7 +199,7 @@ sub populate_genome_tables{
 
 sub create_metadata_dba {
   my ($metadata_uri)=@_;
-  my $metadata = get_db_connection_params( $metadata_uri);
+  my $metadata = Bio::EnsEMBL::Hive::Utils::URL::parse($metadata_uri);
   $log->info("Connecting to Metadata database $metadata->{dbname}");
   my $metadatadba = Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(
                                              -USER =>,
@@ -246,14 +246,6 @@ sub update_release_and_process_release_db {
   $gdba->data_release($release);
   $rdba->dbc()->disconnect_if_idle();
   return $gdba;
-}
-
-#Subroutine to parse Server URI and return connection details
-sub get_db_connection_params {
-  my ($uri) = @_;
-  return '' unless defined $uri;
-  my $db = Bio::EnsEMBL::Hive::Utils::URL::parse($uri);
-  return $db;
 }
 
 #Subroutine to store a new release in metadata database
