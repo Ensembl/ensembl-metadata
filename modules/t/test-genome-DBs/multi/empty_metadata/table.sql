@@ -277,8 +277,7 @@ CREATE TABLE `genome_database` (
   `species_id` int(10) unsigned NOT NULL,
   `type` enum('core','funcgen','variation','otherfeatures','rnaseq','cdna','vega') DEFAULT NULL,
   PRIMARY KEY (`genome_database_id`),
-  UNIQUE KEY `id_dbname` (`genome_id`,`dbname`),
-  UNIQUE KEY `dbname_species_id` (`dbname`,`species_id`),
+  UNIQUE KEY `genome_db_species` (`genome_id`,`dbname`,`species_id`),
   CONSTRAINT `genome_database_ibfk_1` FOREIGN KEY (`genome_id`) REFERENCES `genome` (`genome_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
