@@ -348,7 +348,7 @@ sub process_compara {
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $compara_info,
                                                     -TYPE    => 'other',
                                                     -SOURCE  => $source,
-                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) );
+                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment,"database"=>$dba->dbc()->dbname()}) );
     $ea->store( $event );
     my $event_hash = to_hash($event);
     push @events, $event_hash;
@@ -368,9 +368,15 @@ sub process_release_database {
   if (check_pan_databases($database->{dbname})){
     $division="EnsemblPan";
   }
-  #Specific case for ancestral and production db.
-  elsif ($database->{dbname} =~ m/^ensembl_ancestral_\d+$/){
-    $division = "EnsemblVertebrates";
+  # Specific case for ancestral database
+  # e.g: ensembl_ancestral_100 or ensembl_ancestral_plants_47_100
+  elsif ($database->{dbname} =~ m/^ensembl_ancestral_(fungi|plants|metazoa|protists|)_?\d*?_?\d+$/){
+    if ($1){
+      $division = "Ensembl".ucfirst($1);
+    }
+    else{
+      $division = "EnsemblVertebrates";
+    }
   }
   #for the marts, get division name from database prefix.
   # e.g: plants_gene_mart_42
@@ -403,7 +409,7 @@ sub process_release_database {
   my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $release_database,
                                                   -TYPE    => 'other',
                                                   -SOURCE  => $source,
-                                                  -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) );
+                                                  -DETAILS => encode_json({"email"=>$email,"comment"=>$comment,"database"=>$database->{dbname}}) );
   $ea->store( $event );
   my $event_hash = to_hash($event);
   push @events, $event_hash;
@@ -452,7 +458,7 @@ sub process_core {
     $gdba->store($md);
     my $ea = $metadatadba->get_EventInfoAdaptor();
     $log->info( "Storing event for $species_name in database ".$dba->dbc()->dbname() );
-    my $event_details={"email"=>$email,"comment"=>$comment};
+    my $event_details={"email"=>$email,"comment"=>$comment,"database"=>$dba->dbc()->dbname()};
     $event_details->{'current_database_list'} = $current_database_list if $update_type ne 'other' and defined $current_database_list;
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
                                                     -TYPE    => $update_type,
@@ -496,7 +502,7 @@ sub process_other_database {
     my $event = Bio::EnsEMBL::MetaData::EventInfo->new( -SUBJECT => $md,
                                                     -TYPE    => 'other',
                                                     -SOURCE  => $source,
-                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment}) );
+                                                    -DETAILS => encode_json({"email"=>$email,"comment"=>$comment,"database"=>$dba->dbc()->dbname()}) );
     $ea->store( $event );
     my $event_hash = to_hash($event);
     push @events, $event_hash;
