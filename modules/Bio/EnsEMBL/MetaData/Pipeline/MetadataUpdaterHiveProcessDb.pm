@@ -34,19 +34,32 @@ use warnings;
 sub run {
 my ($self) = @_;
 my $database_uri = $self->param_required('database_uri');
-my $output_hash={
-			       'metadata_uri' => $self->param_required('metadata_uri'),
-             'database_uri' => $database_uri,
-             'release_date' => $self->param('release_date'),
-             'e_release' => $self->param('e_release'),
-             'eg_release' => $self->param('eg_release'),
-             'current_release' => $self->param('current_release'),
-             'comment' => $self->param('comment'),
-             'source' => $self->param('source'),
-             'email' => $self->param_required('email'),
-             'timestamp' => $self->param('timestamp')
-			      };
-
+my $output_hash;
+my $e_release = $self->param('e_release');
+if (!defined $e_release){
+  $output_hash={
+            'metadata_uri' => $self->param_required('metadata_uri'),
+            'database_uri' => $database_uri,
+            'comment' => $self->param('comment'),
+            'source' => $self->param('source'),
+            'email' => $self->param_required('email'),
+            'timestamp' => $self->param('timestamp')
+          };
+}
+else{
+  $output_hash={
+          'metadata_uri' => $self->param_required('metadata_uri'),
+          'database_uri' => $database_uri,
+          'release_date' => $self->param('release_date'),
+          'e_release' => $e_release,
+          'eg_release' => $self->param('eg_release'),
+          'current_release' => $self->param('current_release'),
+          'comment' => $self->param('comment'),
+          'source' => $self->param('source'),
+          'email' => $self->param_required('email'),
+          'timestamp' => $self->param('timestamp')
+        };
+}
 my $database = Bio::EnsEMBL::Hive::Utils::URL::parse($database_uri);
 if ($database->{dbname} =~ m/_core_/){
   $self->dataflow_output_id($output_hash, 2);
