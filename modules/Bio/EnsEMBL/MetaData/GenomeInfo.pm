@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2019] EMBL-European Bioinformatics Institute
+Copyright [1999-2020] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -678,10 +678,10 @@ sub has_variations {
   if ( defined $arg ) {
     $self->{has_variations} = $arg;
   }
-  elsif ( !defined( $self->{has_variations} ) ) {
+  elsif ( !defined( $self->{has_variations} ) && defined $self->variations() ) {
     $self->{has_variations} = $self->count_variation() > 0 ? 1 : 0;
   }
-  return $self->{has_variations};
+  return $self->{has_variations} || 0;
 }
 
 =head2 has_genome_alignments

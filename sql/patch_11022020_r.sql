@@ -12,11 +12,13 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-# patch_01022018_a.sql
+# patch_11022020_r
 #
-# Title: Set is_current default to 0 instead of NULL
+# Title: Group unique keys genome_database table
 #
-# Description:
-# Set old releases is_current column to 0 instead of NULL in data_release. Update is_current column from data_release default to be 0 instead of NULL.
-UPDATE data_release set is_current=0 where is_current is null;
-ALTER TABLE data_release MODIFY COLUMN is_current tinyint(3) unsigned NOT NULL DEFAULT '0';
+# Description: Group the two unique keys from genome_database in one to avoid deadlocks
+ALTER TABLE genome_database DROP FOREIGN KEY genome_database_ibfk_1;
+DROP INDEX id_dbname on genome_database;
+DROP INDEX dbname_species_id on genome_database;
+ALTER TABLE genome_database ADD UNIQUE genome_db_species (genome_id,dbname,species_id);
+ALTER TABLE genome_database ADD CONSTRAINT genome_database_ibfk_1 FOREIGN KEY (genome_id) REFERENCES genome (genome_id) ON DELETE CASCADE;

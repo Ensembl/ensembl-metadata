@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2019] EMBL-European Bioinformatics Institute
+Copyright [1999-2020] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -422,7 +422,7 @@ sub update {
         $self->_store_annotations($genome);
         $self->_store_features($genome);
       }
-      if ($genome->{databases}->[0]->type() eq 'variation') {
+      if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'variation') {
         $self->_store_variations($genome);
       }
       if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){

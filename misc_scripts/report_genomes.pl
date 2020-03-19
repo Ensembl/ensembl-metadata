@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Copyright [2009-2019] EMBL-European Bioinformatics Institute
+# Copyright [2009-2020] EMBL-European Bioinformatics Institute
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ perl report_genomes.pl $(mysql-ens-meta-prod-1 details script) \
 
 Mandatory. Host name of the metadata server
 
-=item B<-n[ame]> <ensembl_metadata>
+=item B<-db[name]> <ensembl_metadata>
 
 Mandatory. metadata database name, default "ensembl_metadata"
 

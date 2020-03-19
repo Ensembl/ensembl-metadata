@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2019] EMBL-European Bioinformatics Institute
+Copyright [1999-2020] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -271,23 +271,14 @@ sub process_core {
   } ## end if ( defined $self->{contigs...})
 
   $md->assembly()->sequences($seqs_arr);
-
   # get toplevel base count
-  my $base_counts =
-    $dba->dbc()->sql_helper()->execute_simple(
-    -SQL =>
-q/select value from genome_statistics where statistic='ref_length' and species_id=?/,
-    -PARAMS => [ $dba->species_id() ] );
-
-  if ( scalar @$base_counts == 0 ) {
-    $base_counts = $dba->dbc()->sql_helper()->execute_simple(
+  my $base_counts = $dba->dbc()->sql_helper()->execute_simple(
       -SQL => q/select sum(s.length) from seq_region s 
 join coord_system c using (coord_system_id) 
 join seq_region_attrib sa using (seq_region_id) 
 join attrib_type a using (attrib_type_id) 
 where a.code='toplevel' and species_id=?/,
       -PARAMS => [ $dba->species_id() ] );
-  }
 
   $md->assembly()->base_count( $base_counts->[0] );
   # get associated PMIDs
