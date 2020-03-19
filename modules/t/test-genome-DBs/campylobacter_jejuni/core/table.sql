@@ -1913,8 +1913,8 @@ CREATE TABLE mapping_session (
   new_db_name                 VARCHAR(80) NOT NULL DEFAULT '',
   old_release                 VARCHAR(5) NOT NULL DEFAULT '',
   new_release                 VARCHAR(5) NOT NULL DEFAULT '',
-  old_assembly                VARCHAR(20) NOT NULL DEFAULT '',
-  new_assembly                VARCHAR(20) NOT NULL DEFAULT '',
+  old_assembly                VARCHAR(80) NOT NULL DEFAULT '',
+  new_assembly                VARCHAR(80) NOT NULL DEFAULT '',
   created                     DATETIME NOT NULL,
 
   PRIMARY KEY (mapping_session_id)
@@ -2159,7 +2159,7 @@ CREATE TABLE external_db (
   status                      ENUM('KNOWNXREF','KNOWN','XREF','PRED','ORTH', 'PSEUDO') NOT NULL,
   priority                    INT NOT NULL,
   db_display_name             VARCHAR(255),
-  type                        ENUM('ARRAY', 'ALT_TRANS', 'ALT_GENE', 'MISC', 'LIT', 'PRIMARY_DB_SYNONYM', 'ENSEMBL'),
+  type                        ENUM('ARRAY', 'ALT_TRANS', 'ALT_GENE', 'MISC', 'LIT', 'PRIMARY_DB_SYNONYM', 'ENSEMBL') NOT NULL,
   secondary_db_name           VARCHAR(255) DEFAULT NULL,
   secondary_db_table          VARCHAR(255) DEFAULT NULL,
   description                 TEXT,

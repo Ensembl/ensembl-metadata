@@ -415,6 +415,7 @@ CREATE TABLE `phenotype` (
   `stable_id` VARCHAR(255) DEFAULT NULL,
   `name` VARCHAR(50) DEFAULT NULL,
   `description` VARCHAR(255) DEFAULT NULL,
+  `class_attrib_id` INT DEFAULT NULL,
   PRIMARY KEY (`phenotype_id`),
   KEY `name_idx` (`name`),
   UNIQUE KEY `desc_idx` (`description`),
@@ -1134,6 +1135,8 @@ CREATE TABLE structural_variation (
 	is_evidence TINYINT(4) DEFAULT 0,
 	somatic TINYINT(1) NOT NULL DEFAULT 0,
 	copy_number TINYINT(2) DEFAULT NULL,
+        allele_freq FLOAT DEFAULT NULL,
+        allele_count INT(10) UNSIGNED DEFAULT NULL,
 	
   PRIMARY KEY (structural_variation_id),
   UNIQUE KEY (variation_name),
@@ -1754,6 +1757,7 @@ CREATE TABLE publication (
 
 @column publication_id       Primary key, internal identifier.
 @column variation_id         Primary key, foreign key references @link variation
+@column data_source_attrib   Foreign key references to the @link attrib table.
 
 @see publication
 @see variation
@@ -1762,7 +1766,9 @@ CREATE TABLE publication (
 CREATE TABLE variation_citation (
    variation_id INT(10) UNSIGNED NOT NULL,
    publication_id INT(10) UNSIGNED NOT NULL,
-   PRIMARY KEY variation_citation_idx (variation_id, publication_id)
+   data_source_attrib SET('615','616','617','618','619','620') DEFAULT NULL,
+   PRIMARY KEY variation_citation_idx (variation_id, publication_id),
+   KEY data_source_attrib_idx (data_source_attrib)
 );
 
 
