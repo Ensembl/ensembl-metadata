@@ -169,7 +169,7 @@ CREATE TABLE genome_db (
   has_karyotype			tinyint(1) NOT NULL DEFAULT 0,
   is_good_for_alignment       TINYINT(1) NOT NULL DEFAULT 0,
   genome_component            varchar(5) DEFAULT NULL,
-  strain_name                 varchar(40) DEFAULT NULL,
+  strain_name                 varchar(100) DEFAULT NULL,
   display_name                varchar(255) DEFAULT NULL,
   locator                     varchar(400),
   first_release               smallint,
@@ -367,7 +367,6 @@ CREATE TABLE method_link_species_set_tag (
 @desc This table contains the distribution of the gene order conservation scores 
 @colour   #3CB371
 @column method_link_species_set_id          internal unique ID for the orthologs
-@column n_goc_null                            the number of orthologs for with no neighbors
 @column n_goc_0                               the number of orthologs with no gene order conservation among their neighbours
 @column n_goc_25                              the number of orthologs with 25% gene order conservation among their neighbours
 @column n_goc_50                              the number of orthologs with 50% gene order conservation among their neighbours
@@ -386,7 +385,6 @@ CREATE TABLE method_link_species_set_tag (
 
 CREATE TABLE method_link_species_set_attr (
   method_link_species_set_id  int(10) unsigned NOT NULL, # FK method_link_species_set.method_link_species_set_id
-  n_goc_null                    int,
   n_goc_0                       int,
   n_goc_25                      int,
   n_goc_50                      int,
@@ -629,7 +627,7 @@ CREATE TABLE synteny_region (
 
 CREATE TABLE dnafrag (
   dnafrag_id                  bigint unsigned NOT NULL AUTO_INCREMENT, # unique internal id
-  length                      int(11) DEFAULT 0 NOT NULL,
+  length                      int unsigned DEFAULT 0 NOT NULL,
   name                        varchar(255) DEFAULT '' NOT NULL,
   genome_db_id                int(10) unsigned NOT NULL, # FK genome_db.genome_db_id
   coord_system_name           varchar(40) DEFAULT '' NOT NULL,
@@ -717,6 +715,7 @@ CREATE TABLE genomic_align_block (
   length                      int(10) NOT NULL,
   group_id                    bigint unsigned DEFAULT NULL,
   level_id                    tinyint(2) unsigned DEFAULT 0 NOT NULL,
+  direction                   tinyint(1) unsigned DEFAULT NULL,
 
   FOREIGN KEY (method_link_species_set_id) REFERENCES method_link_species_set(method_link_species_set_id),
 
@@ -754,10 +753,13 @@ CREATE TABLE genomic_align_tree (
   root_id                     bigint(20) unsigned NOT NULL default 0,
   left_index                  int(10) NOT NULL default 0,
   right_index                 int(10) NOT NULL default 0,
-  left_node_id                bigint(10),
-  right_node_id               bigint(10),
+  left_node_id                bigint(20) unsigned,
+  right_node_id               bigint(20) unsigned,
   distance_to_parent          double NOT NULL default 1,
 
+  FOREIGN KEY (`parent_id`) REFERENCES genomic_align_tree(node_id),
+  FOREIGN KEY (`left_node_id`) REFERENCES genomic_align_tree(node_id),
+  FOREIGN KEY (`right_node_id`) REFERENCES genomic_align_tree(node_id),
   PRIMARY KEY node_id (node_id),
   KEY parent_id (parent_id),
   KEY left_index (root_id, left_index)
@@ -1924,7 +1926,7 @@ CREATE TABLE hmm_curated_annot (
 */
 
 CREATE TABLE homology (
-  homology_id                 int(10) unsigned NOT NULL AUTO_INCREMENT, # unique internal id
+  homology_id                 bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, # unique internal id
   method_link_species_set_id  int(10) unsigned NOT NULL, # FK method_link_species_set.method_link_species_set_id
   description                 ENUM('ortholog_one2one','ortholog_one2many','ortholog_many2many','within_species_paralog','other_paralog','gene_split','between_species_paralog','alt_allele','homoeolog_one2one','homoeolog_one2many','homoeolog_many2many') NOT NULL,
   is_tree_compliant           tinyint(1) NOT NULL DEFAULT 0,
@@ -2101,7 +2103,7 @@ The alignment will be:<br />
 */
 
 CREATE TABLE homology_member (
-  homology_id                 int(10) unsigned NOT NULL, # FK homology.homology_id
+  homology_id                 bigint(20) UNSIGNED NOT NULL, # FK homology.homology_id
   gene_member_id              int(10) unsigned NOT NULL, # FK gene_member.gene_member_id
   seq_member_id               int(10) unsigned, # FK seq_member.seq_member_id
   cigar_line                  mediumtext,
