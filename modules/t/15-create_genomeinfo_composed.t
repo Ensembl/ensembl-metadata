@@ -27,7 +27,7 @@ my %org_args = ( '-NAME'                => "test",
                  '-SPECIES_TAXONOMY_ID' => 99,
                  '-STRAIN'              => 'stress',
                  '-SEROTYPE'            => 'icky',
-                 '-IS_REFERENCE'        => 1 );
+                 '-REFERENCE'           => 'testus' );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%org_args);
 
 ok( defined $org, "Organism object exists" );
@@ -38,7 +38,7 @@ ok( $org->species_taxonomy_id() eq $org_args{-SPECIES_TAXONOMY_ID},
     "species taxid correct" );
 ok( $org->strain()       eq $org_args{-STRAIN},       "strain correct" );
 ok( $org->serotype()     eq $org_args{-SEROTYPE},     "serotype correct" );
-ok( $org->is_reference() eq $org_args{-IS_REFERENCE}, "is_ref correct" );
+ok( $org->reference()    eq $org_args{-REFERENCE},    "reference correct" );
 
 my %ass_args = ( '-ASSEMBLY_NAME'      => "v2.0",
                  '-ASSEMBLY_ACCESSION' => 'GCA_181818181',
@@ -76,7 +76,6 @@ ok( $genome->species_taxonomy_id() eq $org_args{-SPECIES_TAXONOMY_ID},
     "species taxid correct" );
 ok( $genome->strain()   eq $org_args{-STRAIN},   "strain correct" );
 ok( $genome->serotype() eq $org_args{-SEROTYPE}, "serotype correct" );
-ok( $genome->is_reference() eq $org_args{-IS_REFERENCE},
-    "is_reference correct" );
+ok( $genome->reference() eq $org_args{-REFERENCE}, "reference correct" );
 
 done_testing;
