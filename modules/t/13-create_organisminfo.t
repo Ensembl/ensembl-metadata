@@ -28,7 +28,7 @@ my %args = ( '-NAME'                => "test",
              '-SPECIES_TAXONOMY_ID' => 99,
              '-STRAIN'              => 'stress',
              '-SEROTYPE'            => 'icky',
-             '-REFERENCE'        => 'testus' );
+             '-REFERENCE'           => 'testus' );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
 
 ok( defined $org, "Organism object exists" );
