@@ -177,6 +177,7 @@ sub process_core {
   my $display_name    = $meta->single_value_by_key('species.display_name');
   my $strain          = $meta->single_value_by_key('species.strain');
   my $serotype        = $meta->single_value_by_key('species.serotype');
+  my $reference       = $meta->single_value_by_key('species.strain_group');
   my $name            = $meta->get_display_name();
   my $taxonomy_id     = $meta->get_taxonomy_id();
   my ($species_taxonomy_id) =
@@ -216,6 +217,7 @@ sub process_core {
                       -data_release        => $self->{info_adaptor}->data_release(),
                       -strain              => $strain,
                       -serotype            => $serotype,
+                      -reference           => $reference,
                       -display_name        => $display_name,
                       -scientific_name     => $scientific_name,
                       -url_name            => $url_name,

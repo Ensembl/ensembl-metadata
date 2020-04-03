@@ -26,7 +26,7 @@ my %oargs = ( '-NAME'                => "test",
               '-SPECIES_TAXONOMY_ID' => 99,
               '-STRAIN'              => 'stress',
               '-SEROTYPE'            => 'icky',
-              '-IS_REFERENCE'        => 1 );
+              '-REFERENCE'        => 'testus' );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
 $org->aliases( ["alias"] );
 
@@ -49,7 +49,6 @@ my %args = ( '-DBNAME'       => "test_species_core_27_80_1",
              '-SPECIES_ID'   => 1,
              '-GENEBUILD'    => 'awesomeBuild1',
              '-DIVISION'     => 'EnsemblSomewhere',
-             '-IS_REFERENCE' => 1,
              '-ASSEMBLY'     => $assembly,
              '-ORGANISM'     => $org,
              '-DATA_RELEASE' => $release );
@@ -59,7 +58,7 @@ ok( $genome->dbname()       eq $args{-DBNAME},       "dbname correct" );
 ok( $genome->species_id()   eq $args{-SPECIES_ID},   "species_id correct" );
 ok( $genome->division()     eq $args{-DIVISION},     "division correct" );
 ok( $genome->genebuild()    eq $args{-GENEBUILD},    "genebuild correct" );
-ok( $genome->is_reference() eq $args{-IS_REFERENCE}, "is_reference correct" );
+ok( $genome->reference()    eq $oargs{-REFERENCE},    "reference correct" );
 ok( $genome->assembly_name() eq $aargs{-ASSEMBLY_NAME}, "ass name correct" );
 ok( $genome->assembly_default() eq $aargs{-ASSEMBLY_DEFAULT}, "ass def correct" );
 ok( $genome->assembly_accession() eq $aargs{-ASSEMBLY_ACCESSION},
@@ -99,7 +98,7 @@ ok( $genome2->dbname()       eq $args{-DBNAME},       "dbname correct" );
 ok( $genome2->species_id()   eq $args{-SPECIES_ID},   "species_id correct" );
 ok( $genome2->division()     eq $args{-DIVISION},     "division correct" );
 ok( $genome2->genebuild()    eq $args{-GENEBUILD},    "genebuild correct" );
-ok( $genome2->is_reference() eq $args{-IS_REFERENCE}, "is_reference correct" );
+ok( $genome2->reference()    eq $oargs{-REFERENCE},    "reference correct" );
 ok( $genome2->assembly_name() eq $aargs{-ASSEMBLY_NAME}, "ass name correct" );
 ok( $genome2->assembly_accession() eq $aargs{-ASSEMBLY_ACCESSION},
     "ass ID correct" );
@@ -133,7 +132,7 @@ ok( $genome3->species_taxonomy_id() eq $oargs{-SPECIES_TAXONOMY_ID},
     "species taxid correct" );
 ok( $genome3->strain()   eq $oargs{-STRAIN},   "strain correct" );
 ok( $genome3->serotype() eq $oargs{-SEROTYPE}, "serotype correct" );
-ok( $genome3->is_reference() eq $args{-IS_REFERENCE}, "is_reference correct" );
+ok( $genome3->reference() eq $oargs{-REFERENCE}, "reference correct" );
 
 my $genome4 = Bio::EnsEMBL::MetaData::GenomeInfo->new(%args);
 $gdba->store($genome4);

@@ -32,7 +32,7 @@ Bio::EnsEMBL::MetaData::GenomeOrganismInfo
 	  my $info =
 		Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
 		-SCIENTIFIC_NAME=>$scientific_name,
-		-DISPLAY_NAME=>$display_name, -NAME=>$name, -STRAIN=>$strain, -SEROTYPE=>$serotype, -IS_REFERENCE=>$is_reference
+		-DISPLAY_NAME=>$display_name, -NAME=>$name, -STRAIN=>$strain, -SEROTYPE=>$serotype, -REFERENCE=>$reference
       );
 
 =head1 DESCRIPTION
@@ -91,14 +91,13 @@ sub new {
   my $self = $class->SUPER::new(@args);
   ( $self->{display_name}, $self->{name}, $self->{scientific_name}, $self->{url_name},
     $self->{strain},       $self->{serotype},
-    $self->{is_reference}, $self->{taxonomy_id},
+    $self->{reference}, $self->{taxonomy_id},
     $self->{species_taxonomy_id} )
     = rearrange( [ 'DISPLAY_NAME', 'NAME', 'SCIENTIFIC_NAME', 'URL_NAME',
                    'STRAIN',       'SEROTYPE',
-                   'IS_REFERENCE', 'TAXONOMY_ID',
+                   'REFERENCE', 'TAXONOMY_ID',
                    'SPECIES_TAXONOMY_ID' ],
                  @args );
-  $self->{is_reference} ||= 0;
   $self->{scientific_name} ||= $self->{display_name};
   return $self;
 }
@@ -262,19 +261,19 @@ sub publications {
   return $self->{publications};
 }
 
-=head2 is_reference
-  Arg        : (optional) whether organism is reference
-  Description: Gets/sets whether this organism is the reference for its species
+=head2 reference
+  Arg        : (optional) whether organism has a reference
+  Description: Gets/sets whether this organism has a reference
   Returntype : string
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub is_reference {
-  my ( $self, $is_reference ) = @_;
-  $self->{is_reference} = $is_reference if ( defined $is_reference );
-  return $self->{is_reference};
+sub reference {
+  my ( $self, $reference ) = @_;
+  $self->{reference} = $reference if ( defined $reference );
+  return $self->{reference};
 }
 
 =head1 UTILITY METHODS

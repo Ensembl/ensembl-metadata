@@ -91,13 +91,13 @@ sub store {
     $self->dbc()->sql_helper()->execute_update(
       -SQL =>
         q/insert into organism(name,display_name,scientific_name,url_name,strain,serotype,taxonomy_id,
-species_taxonomy_id,is_reference)
+species_taxonomy_id,reference)
 		values(?,?,?,?,?,?,?,?,?)/,
       -PARAMS => [ $organism->name(),        $organism->display_name(),
                    $organism->scientific_name(), $organism->url_name(),
                    $organism->strain(),      $organism->serotype(),
                    $organism->taxonomy_id(), $organism->species_taxonomy_id(),
-                   $organism->is_reference() ],
+                   $organism->reference() ],
       -CALLBACK => sub {
         my ( $sth, $dbh, $rv ) = @_;
         $organism->dbID( $dbh->{mysql_insertid} );
@@ -129,12 +129,12 @@ sub update {
     -SQL =>
 q/update organism set name=?,display_name=?,scientific_name=?, url_name=?,
 strain=?,serotype=?,taxonomy_id=?,species_taxonomy_id=?,
-is_reference=? where organism_id=?/,
+reference=? where organism_id=?/,
     -PARAMS => [ $organism->name(),         $organism->display_name(),
                  $organism->scientific_name(), $organism->url_name(),
                  $organism->strain(),       $organism->serotype(),
                  $organism->taxonomy_id(),  $organism->species_taxonomy_id(),
-                 $organism->is_reference(), $organism->dbID() ] );
+                 $organism->reference(), $organism->dbID() ] );
  
   $self->_store_aliases($organism);
   $self->_store_publications($organism);
@@ -491,7 +491,7 @@ sub taxonomy_adaptor {
 # internal implementation
 
 my $base_organism_fetch_sql =
-q/select organism_id as dbID, name, display_name, scientific_name, url_name, taxonomy_id, species_taxonomy_id, strain, serotype, is_reference from organism/;
+q/select organism_id as dbID, name, display_name, scientific_name, url_name, taxonomy_id, species_taxonomy_id, strain, serotype, reference from organism/;
 
 sub _get_base_sql {
   return $base_organism_fetch_sql;

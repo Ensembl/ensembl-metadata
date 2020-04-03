@@ -112,8 +112,8 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
         string - name of strain to which genome belongs
   Arg [-SEROTYPE]:
         string - name of serotype to which genome belongs
-  Arg [-IS_REFERENCE]:
-        bool - 1 if this genome is the reference for its species
+  Arg [-REFERENCE]:
+        string - name of the reference species for this strain
 
   Example    : $info = Bio::EnsEMBL::MetaData::GenomeInfo->new(...);
   Description: Creates a new info object
@@ -134,14 +134,14 @@ sub new {
        $assembly_id,
        $assembly_default,    $assembly_ucsc,
        $assembly_level,      $strain,        $serotype,
-       $is_reference);
+       $reference);
   ( $name,                $display_name,      
     $scientific_name, $url_name,
     $dbname,              $species_id,        $taxonomy_id,
     $species_taxonomy_id, $assembly_name,     $assembly_id,
     $assembly_default,    $assembly_ucsc,
     $assembly_level,      $self->{genebuild}, $self->{division},
-    $strain,              $serotype,          $is_reference,
+    $strain,              $serotype,          $reference,
     $self->{assembly},    $self->{organism},          $self->{data_release} )
     = rearrange( [ 'NAME',                'DISPLAY_NAME',
                    'SCIENTIFIC_NAME',     'URL_NAME', 'DBNAME',
@@ -151,7 +151,7 @@ sub new {
 		   'ASSEMBLY_UCSC',       'ASSEMBLY_LEVEL',
                    'GENEBUILD',           'DIVISION',
                    'STRAIN',              'SEROTYPE',
-                   'IS_REFERENCE',        'ASSEMBLY',
+                   'REFERENCE',        'ASSEMBLY',
                    'ORGANISM',            'DATA_RELEASE' ],
                  @args );
 
@@ -180,7 +180,7 @@ sub new {
                        -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
                        -STRAIN              => $strain,
                        -SEROTYPE            => $serotype,
-                       -IS_REFERENCE        => $is_reference );
+                       -REFERENCE           => $reference );
     $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->organism($organism);
   }
@@ -480,18 +480,18 @@ sub division {
   return $self->{division};
 }
 
-=head2 is_reference
-  Arg        : (optional) value of is_reference
-  Description: Gets/sets whether this is a reference for the species
-  Returntype : bool
+=head2 reference
+  Arg        : (optional) value of reference
+  Description: Gets/sets whether this strain has a reference
+  Returntype : string
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub is_reference {
+sub reference {
   my ( $self, $is_ref ) = @_;
-  return $self->organism()->is_reference($is_ref);
+  return $self->organism()->reference($is_ref);
 }
 
 =head2 db_size

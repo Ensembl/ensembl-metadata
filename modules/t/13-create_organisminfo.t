@@ -28,7 +28,7 @@ my %args = ( '-NAME'                => "test",
              '-SPECIES_TAXONOMY_ID' => 99,
              '-STRAIN'              => 'stress',
              '-SEROTYPE'            => 'icky',
-             '-IS_REFERENCE'        => 1 );
+             '-REFERENCE'           => 'testus' );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%args);
 
 ok( defined $org, "Organism object exists" );
@@ -40,7 +40,7 @@ ok( $org->taxonomy_id()         eq $args{-TAXONOMY_ID} );
 ok( $org->species_taxonomy_id() eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org->strain()              eq $args{-STRAIN} );
 ok( $org->serotype()            eq $args{-SEROTYPE} );
-ok( $org->is_reference()        eq $args{-IS_REFERENCE} );
+ok( $org->reference()           eq $args{-REFERENCE} );
 $org->publications( [ 1, 2, 3, 4 ] );
 ok( scalar @{ $org->publications() } eq 4 );
 $org->aliases( [ "one", "two" ] );
@@ -78,7 +78,7 @@ ok( $org2->taxonomy_id()              eq $args{-TAXONOMY_ID} );
 ok( $org2->species_taxonomy_id()      eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org2->strain()                   eq $args{-STRAIN} );
 ok( $org2->serotype()                 eq $args{-SEROTYPE} );
-ok( $org2->is_reference()             eq $args{-IS_REFERENCE} );
+ok( $org2->reference()                eq $args{-REFERENCE} );
 ok( scalar @{ $org2->publications() } eq 4 );
 ok( scalar @{ $org2->aliases() }      eq 2 );
 $odba->_clear_cache();
@@ -91,7 +91,7 @@ ok( $org2->taxonomy_id()              eq $args{-TAXONOMY_ID} );
 ok( $org2->species_taxonomy_id()      eq $args{-SPECIES_TAXONOMY_ID} );
 ok( $org2->strain()                   eq $args{-STRAIN} );
 ok( $org2->serotype()                 eq $args{-SEROTYPE} );
-ok( $org2->is_reference()             eq $args{-IS_REFERENCE} );
+ok( $org2->reference()                eq $args{-REFERENCE} );
 ok( scalar @{ $org2->publications() } eq 4 );
 ok( scalar @{ $org2->aliases() }      eq 2 );
 
