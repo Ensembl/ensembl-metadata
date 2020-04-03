@@ -78,7 +78,7 @@ sub populate_organism_tables{
   }
   else{
     $log->info("Populating organism info for ".$species->{species});
-    $metadatadba->dbc()->sql_helper()->execute_update(-SQL =>qq/INSERT INTO organism (taxonomy_id,is_reference,species_taxonomy_id,name,url_name,display_name,scientific_name,strain,serotype,description,image) VALUES(?,?,?,?,?,?,?,?,?,?,?)/, -PARAMS => [$species->{taxonomy_id},$species->{is_reference} || 0,$species->{species_taxonomy_id}, $species->{species},ucfirst($species->{species}),$species->{name},$species->{name},$species->{strain},$species->{serotype},undef,undef]);
+    $metadatadba->dbc()->sql_helper()->execute_update(-SQL =>qq/INSERT INTO organism (taxonomy_id,reference,species_taxonomy_id,name,url_name,display_name,scientific_name,strain,serotype,description,image) VALUES(?,?,?,?,?,?,?,?,?,?,?)/, -PARAMS => [$species->{taxonomy_id},$species->{strain_group} || 'NULL',$species->{species_taxonomy_id}, $species->{species},ucfirst($species->{species}),$species->{name},$species->{name},$species->{strain},$species->{serotype},undef,undef]);
     my $organism=$metadatadba->dbc()->sql_helper()->execute( -SQL =>qq/select * from organism where name=?/,-USE_HASHREFS => 1, -PARAMS => [$species->{species}]);
     $log->info("Populating organism aliases for ".$species->{species});
     foreach my $alias (@{$species->{aliases}}){

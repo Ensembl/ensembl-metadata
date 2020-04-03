@@ -313,17 +313,17 @@ sub species_taxonomy_id {
   return $self->organism()->species_taxonomy_id();
 }
 
-=head2 is_reference
-  Description: Gets whether this is a reference for the species
-  Returntype : bool
+=head2 reference
+  Description: Gets the reference of a given strain
+  Returntype : string
   Exceptions : none
   Caller     : general
   Status     : Stable
 =cut
 
-sub is_reference {
+sub reference {
   my ($self) = @_;
-  return $self->organism()->is_reference();
+  return $self->organism()->reference();
 }
 
 =head1 UTILITY METHODS
