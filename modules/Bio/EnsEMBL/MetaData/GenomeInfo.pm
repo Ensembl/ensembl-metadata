@@ -180,7 +180,7 @@ sub new {
                        -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
                        -STRAIN              => $strain,
                        -SEROTYPE            => $serotype,
-                       -IS_REFERENCE        => $reference );
+                       -REFERENCE           => $reference );
     $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
     $self->organism($organism);
   }

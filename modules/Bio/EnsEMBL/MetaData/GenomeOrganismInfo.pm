@@ -95,10 +95,9 @@ sub new {
     $self->{species_taxonomy_id} )
     = rearrange( [ 'DISPLAY_NAME', 'NAME', 'SCIENTIFIC_NAME', 'URL_NAME',
                    'STRAIN',       'SEROTYPE',
-                   'IS_REFERENCE', 'TAXONOMY_ID',
+                   'REFERENCE', 'TAXONOMY_ID',
                    'SPECIES_TAXONOMY_ID' ],
                  @args );
-  $self->{reference} ||= 0;
   $self->{scientific_name} ||= $self->{display_name};
   return $self;
 }

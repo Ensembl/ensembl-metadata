@@ -18,5 +18,5 @@
 #
 # Description: Replace is_reference column which a boolean with no data for any species with reference corresponding to species.strain_group meta key
 # 
-ALTER TABLE organims DROP COLUMN is_reference;
-ALTER TABLE organims CREATE COLUMN reference varchar(128) DEFAULT NULL;
+ALTER TABLE organism DROP COLUMN is_reference;
+ALTER TABLE organism ADD COLUMN reference varchar(128) DEFAULT NULL AFTER taxonomy_id;
