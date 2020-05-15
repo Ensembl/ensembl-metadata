@@ -18,12 +18,11 @@ use strict;
 use Getopt::Long;
 use Carp;
 use Data::Dumper;
-use Bio::EnsEMBL::MetaData::MetadataUpdater
-  qw/process_database/;
+use Bio::EnsEMBL::MetaData::MetadataUpdater qw/process_database process_parasite_database/;
 use Log::Log4perl qw/:easy/;
 
 my $opts = {};
-GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','current_release=s','email=s','comment=s','source=s','verbose' );
+GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','parasite_release=s','current_release=s','email=s','comment=s','source=s','verbose' );
 
 if ( $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
@@ -38,4 +37,9 @@ if ( !defined $opts->{metadata_uri} || !defined $opts->{database_uri}) {
 }
 
 #Process the given database
-process_database($opts->{metadata_uri}, $opts->{database_uri},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},$opts->{email},$opts->{comment},$opts->{source},$opts->{verbose});
+my @process_database_args = ($opts->{metadata_uri}, $opts->{database_uri},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},$opts->{email},$opts->{comment},$opts->{source},$opts->{verbose});
+if ( $opts->{parasite_release} ) {
+   process_parasite_database($opts->{parasite_release}, @process_database_args);
+} else {
+   process_database(@process_database_args);
+}

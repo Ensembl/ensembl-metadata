@@ -20,7 +20,7 @@ use strict;
 use warnings;
 
 use Exporter qw/import/;
-our @EXPORT_OK = qw(process_database);
+our @EXPORT_OK = qw(process_database process_parasite_database);
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($INFO);
 my $log = get_logger();
@@ -35,6 +35,20 @@ use Bio::EnsEMBL::MetaData::AnnotationAnalyzer;
 use Bio::EnsEMBL::MetaData::EventInfo;
 use Bio::EnsEMBL::MetaData::Base qw(get_division check_assembly_update check_genebuild_update);
 use JSON;
+
+# very ugly hack permitting ParaSite use, where core dbs names incorporate the ParaSite release rather than the EG release
+our $PARASITE_RELEASE;
+our $EG_RELEASE;
+
+# wrapper for process_database for ParaSite releases
+sub process_parasite_database {
+  # ParaSite release is additional first parameter, compared to process_database()
+  $PARASITE_RELEASE = shift();
+  # EG release is extracted from db name in the code, so in case of ParaSite databases
+  # that can't be done:  need to save the parameter value passed
+  $EG_RELEASE = $_[4];
+  return process_database(@_);
+}
 
 sub process_database {
   my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$source)  = @_;
@@ -98,7 +112,14 @@ sub update_release_and_process_release_db {
   my ($e_version,$eg_version)=get_release_from_db($database->{dbname});
   if ( defined $eg_version ) {
     if ($eg_release != $eg_version){
-        die "Database release $eg_version does not match given release $eg_release";
+        # if it is a ParaSite db, $eg_version returned by get_release_from_db() will be the ParaSite release number
+        if (defined $PARASITE_RELEASE){
+          if ($PARASITE_RELEASE != $eg_version){
+            die "Database $database->{dbname} release $eg_version does not match given ParaSite release $PARASITE_RELEASE";
+          }
+        } else {
+          die "Database release $eg_version does not match given release $eg_release";
+        }
     }
     elsif (defined $e_version and $e_release != $e_version){
       die "Database release $e_version does not match given release $e_release";
@@ -148,6 +169,11 @@ sub get_release_and_process_release_db {
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   my ($e_version,$eg_version)=get_release_from_db($database->{dbname});
+  # if it is a ParaSite db, $eg_version returned by get_release_from_db() will be the ParaSite release number
+  # => can't get EG release from db name, have to trust parameter passed ($EG_RELEASE)
+  if (defined $PARASITE_RELEASE){
+    $eg_version = $EG_RELEASE;
+  }
   if (defined $eg_version){
   $release = $rdba->fetch_by_ensembl_genomes_release($eg_version);
     if (defined $release){
