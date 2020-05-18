@@ -37,20 +37,42 @@ use Bio::EnsEMBL::MetaData::Base qw(get_division check_assembly_update check_gen
 use JSON;
 
 sub process_database {
-  my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$source)  = @_;
+  my $this = (caller(0))[3];
+  my ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$parasite_release,$current_release,$email,$comment,$source);
+  if( ref({}) eq ref($_[0]) ) {
+    # named paremters passed
+    my $p = $_[0];
+    $metadata_uri       = $p->{-metadata_uri}      || die "$this requires -metadata_uri";
+    $database_uri       = $p->{-database_uri}      || die "$this requires -database_uri";
+    $release_date       = $p->{-release_date}      || die "$this requires -release_date";
+    $e_release          = $p->{-e_release}         || die "$this requires -e_release";
+    $eg_release         = $p->{-eg_release}        || die "$this requires -eg_release";
+    $parasite_release   = $p->{-parasite_release}; # should be undefined unless updating ParaSite databases
+    $current_release    = $p->{-current_release}   || die "$this requires -current_release";
+    $email              = $p->{-email}             || die "$this requires -email";
+    $comment            = $p->{-comment}           || die "$this requires -comment";
+    $source             = $p->{-source}            || die "$this requires -source";
+    # available but unused: $p->{verbose}
+  } else {
+    # deprecated: positional parameters
+    ($metadata_uri,$database_uri,$release_date,$e_release,$eg_release,$current_release,$email,$comment,$source)  = @_;
+  }
   #Connect to metadata database
   my $metadatadba = create_metadata_dba($metadata_uri);
   my $gdba = $metadatadba->get_GenomeInfoAdaptor();
   my $events;
   # Get database db_type and species  
   my ($species,$db_type,$database,$species_ids,$dba)=get_species_and_dbtype($database_uri);
+  # extra parameters required to support ParaSite releases
+  # should be undefined unless updating ParaSite databases
+  my $parasite_param = $parasite_release ? {parasite_release=>$parasite_release,eg_release=>$eg_release} : undef;
   if (defined $e_release) {
     # Check if release already exist or create it
-    $gdba = update_release_and_process_release_db($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database);
+    $gdba = update_release_and_process_release_db($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database,$parasite_param);
   }
   #get current release and process release db
   else {
-    $gdba = get_release_and_process_release_db($metadatadba,$gdba,$database,$email,$comment,$source,$db_type);
+    $gdba = get_release_and_process_release_db($metadatadba,$gdba,$database,$email,$comment,$source,$db_type,$parasite_param);
   }
   if ($db_type eq "core"){
     $events = process_core($species,$metadatadba,$gdba,$db_type,$database,$species_ids,$email,$comment,$source,$dba);
@@ -92,13 +114,20 @@ sub create_metadata_dba {
 }
 
 sub update_release_and_process_release_db {
-  my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database) = @_;
+  my ($metadatadba,$eg_release,$e_release,$release_date,$current_release,$gdba,$email,$comment,$source,$db_type,$database,$parasite_param) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   my ($e_version,$eg_version)=get_release_from_db($database->{dbname});
   if ( defined $eg_version ) {
     if ($eg_release != $eg_version){
-        die "Database release $eg_version does not match given release $eg_release";
+        # if it is a ParaSite db, $eg_version returned by get_release_from_db() will be the ParaSite release number
+        if ( $parasite_param && $parasite_param->{parasite_release} ) {
+          if ($parasite_param->{parasite_release} != $eg_version){
+            die "Database $database->{dbname} release $eg_version does not match given ParaSite release $parasite_param->{parasite_release}";
+          }
+        } else {
+          die "Database release $eg_version does not match given release $eg_release";
+        }
     }
     elsif (defined $e_version and $e_release != $e_version){
       die "Database release $e_version does not match given release $e_release";
@@ -144,12 +173,17 @@ sub update_release_and_process_release_db {
 }
 
 sub get_release_and_process_release_db {
-  my ($metadatadba,$gdba,$database,$email,$comment,$source,$db_type) = @_;
+  my ($metadatadba,$gdba,$database,$email,$comment,$source,$db_type,$parasite_param) = @_;
   my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
   my $release;
   my ($e_version,$eg_version)=get_release_from_db($database->{dbname});
   if (defined $eg_version){
-  $release = $rdba->fetch_by_ensembl_genomes_release($eg_version);
+    # if it is a ParaSite db, $eg_version returned by get_release_from_db() will be the ParaSite release number
+    # => can't get EG release from db name, have to trust parameter originally passed to process_database()
+    if ( $parasite_param && $parasite_param->{parasite_release} ) {
+      $eg_version = $parasite_param->{eg_release};
+    }
+    $release = $rdba->fetch_by_ensembl_genomes_release($eg_version);
     if (defined $release){
       $log->info("Using release e".$release->{ensembl_version}."" . ( ( defined $release->{ensembl_genomes_version} ) ?
                     "/EG".$release->{ensembl_genomes_version}."" : "" ) .

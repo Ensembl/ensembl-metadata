@@ -23,7 +23,7 @@ use Bio::EnsEMBL::MetaData::MetadataUpdater
 use Log::Log4perl qw/:easy/;
 
 my $opts = {};
-GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','current_release=s','email=s','comment=s','source=s','verbose' );
+GetOptions( $opts, 'metadata_uri=s','database_uri=s','release_date=s','e_release=s','eg_release=s','parasite_release=s','current_release=s','email=s','comment=s','source=s','verbose' );
 
 if ( $opts->{verbose} ) {
   Log::Log4perl->easy_init($DEBUG);
@@ -38,4 +38,10 @@ if ( !defined $opts->{metadata_uri} || !defined $opts->{database_uri}) {
 }
 
 #Process the given database
-process_database($opts->{metadata_uri}, $opts->{database_uri},$opts->{release_date},$opts->{e_release}, $opts->{eg_release}, $opts->{current_release},$opts->{email},$opts->{comment},$opts->{source},$opts->{verbose});
+#  pass options to process_database as named parameters
+#  using perl conversion on '-' on parameter names
+my $process_database_param = {};
+foreach my $opt (keys %{$opts}) {
+   $process_database_param->{'-'.$opt} = $opts->{$opt};
+}
+process_database($process_database_param);
