@@ -112,7 +112,7 @@ sub new {
       $self->{provider} =
         Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider->new(
                                                          -HOST => $self->{host},
-                                                         -POR  => $self->{port},
+                                                         -PORT  => $self->{port},
                                                          -USER => $self->{user},
                                                          -PASS => $self->{pass}
         );
