@@ -74,8 +74,8 @@ use warnings;
         string - name of strain to which organism belongs
   Arg [-SEROTYPE]:
         string - name of serotype to which organism belongs
-  Arg [-IS_REFERENCE]:
-        bool - 1 if this organism is the reference for its species
+  Arg [-REFERENCE]:
+        string - name of the reference organism to which this organism belongs, e.g: mus_musculus
 
   Example    : $info = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(...);
   Description: Creates a new info object

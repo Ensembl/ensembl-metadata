@@ -28,7 +28,7 @@ my %oargs = ( '-NAME'                => "test",
               '-SPECIES_TAXONOMY_ID' => 99,
               '-STRAIN'              => 'stress',
               '-SEROTYPE'            => 'icky',
-              '-IS_REFERENCE'        => 1 );
+              '-REFERENCE'           => 'testus' );
 my $org = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(%oargs);
 $org->aliases( ["alias"] );
 
@@ -51,7 +51,7 @@ my %args = ( '-DBNAME'       => "test_species_core_27_80_1",
              '-SPECIES_ID'   => 1,
              '-GENEBUILD'    => 'awesomeBuild1',
              '-DIVISION'     => 'EnsemblSomewhere',
-             '-IS_REFERENCE' => 1,
+             '-REFERENCE'    => 'test_species',
              '-ASSEMBLY'     => $assembly,
              '-DATA_RELEASE' => $release,
               '-ORGANISM'           => $org );
