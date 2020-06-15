@@ -33,7 +33,7 @@ Bio::EnsEMBL::LookUp
 
 =head1 SYNOPSIS
 
-my $adaptor = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomesadaptor();
+my $adaptor = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 my $lookup = Bio::EnsEMBL::RemoteLookUp->new(-ADAPTOR=>$adaptor);
 my $dbas = $lookup->registry()->get_all();
 $dbas = $lookup->get_all_by_taxon_id(388919);
