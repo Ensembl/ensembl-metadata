@@ -213,7 +213,7 @@ foreach my $div (@{$opts->{divisions}}){
     my $prev_genome = $prev_genomes->{$set_chain};
     # Gather list of new genomes
     if (!defined $prev_genome) {
-      $report_updates->{$division}->{new_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},display_name=>$genome->{display_name}};
+      $report_updates->{$division}->{new_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},display_name=>$genome->{display_name},strain=>$genome->{strain}};
       } else {
           # Gather list of updated assemblies and genebuild
           my $updated_assembly=check_assembly_update($genome->{genome},$prev_genome->{genome});
@@ -221,24 +221,24 @@ foreach my $div (@{$opts->{divisions}}){
           if ($updated_assembly) {
             # report the asssembly_name meta key when we have new patches for human or mouse
             if ($updated_assembly == 2){
-              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly_name},old_assembly=>$prev_genome->{assembly_name},database=>$genome->{database},species_id=>$genome->{species_id}};
+              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly_name},old_assembly=>$prev_genome->{assembly_name},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
             }
             # Report asssembly_default change
             else{
-              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_assembly=>$prev_genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id}};
+              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_assembly=>$prev_genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
             }
           } elsif ($updated_genebuild) {
-            $report_updates->{$division}->{updated_annotations}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},new_genebuild=>$genome->{genebuild},old_genebuild=>$prev_genome->{genebuild},database=>$genome->{database},species_id=>$genome->{species_id}};
+            $report_updates->{$division}->{updated_annotations}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},new_genebuild=>$genome->{genebuild},old_genebuild=>$prev_genome->{genebuild},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
           }
           elsif ($genome->{name} ne $prev_genome->{name}){
-            $report_updates->{$division}->{renamed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_name=>$prev_genome->{name},database=>$genome->{database},species_id=>$genome->{species_id}};
+            $report_updates->{$division}->{renamed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_name=>$prev_genome->{name},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
           }
         }
   }
   # Gather list of removed genomes
   while (my ($set_chain, $genome) = each %{$prev_genomes}) {
     if (!defined $genomes->{$set_chain}) {
-      $report_updates->{$division}->{removed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},display_name=>$genome->{display_name}};
+      $report_updates->{$division}->{removed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},display_name=>$genome->{display_name},strain=>$genome->{strain}};
     }
   }
   # Gather list of renamed genomes
@@ -246,7 +246,7 @@ foreach my $div (@{$opts->{divisions}}){
     for my $removed_genome (keys %{$report_updates->{$division}->{removed_genomes}}){
       # If the assembly name or display name is the same between a removed genomes and new genomes then it extremely likely that it has been renamed.
       if ($report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly} eq $report_updates->{$division}->{removed_genomes}->{$removed_genome}->{assembly}  or $report_updates->{$division}->{new_genomes}->{$new_genome}->{display_name} eq $report_updates->{$division}->{removed_genomes}->{$removed_genome}->{display_name}){
-        $report_updates->{$division}->{renamed_genomes}->{$new_genome} = {name=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{name},assembly=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly},old_name=>$report_updates->{$division}->{removed_genomes}->{$removed_genome}->{name},database=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{database},species_id=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{species_id}};
+        $report_updates->{$division}->{renamed_genomes}->{$new_genome} = {name=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{name},assembly=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{assembly},old_name=>$report_updates->{$division}->{removed_genomes}->{$removed_genome}->{name},database=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{database},species_id=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{species_id},strain=>$report_updates->{$division}->{new_genomes}->{$new_genome}->{strain}};
       }
     }
   }
@@ -288,7 +288,7 @@ sub write_output_to_file {
     $dump_all ? "$division-new_genomes.txt" : "new_genomes.txt",
     [qw/name assembly database species_id/],
     sub {
-     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
+     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
      });
 
   # updated assemblies
@@ -298,7 +298,7 @@ sub write_output_to_file {
     $dump_all ? "$division-updated_assemblies.txt" : "updated_assemblies.txt",
     [qw/name assembly old_assembly  database species_id/],
     sub {
-     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_assembly}, $_[0]->{database}, $_[0]->{species_id}];
+     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
      });
 
   # updated annotation
@@ -308,7 +308,7 @@ sub write_output_to_file {
     $dump_all ? "$division-updated_annotations.txt" : "updated_annotations.txt",
     [qw/name assembly new_genebuild old_genebuild database species_id/],
     sub {
-      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{new_genebuild}, $_[0]->{old_genebuild}, $_[0]->{database}, $_[0]->{species_id}];
+      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{new_genebuild}, $_[0]->{old_genebuild}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
       });
 
   # renamed genomes
@@ -318,7 +318,7 @@ sub write_output_to_file {
     $dump_all ? "$division-renamed_genomes.txt" : "renamed_genomes.txt",
     [qw/ name assembly old_name database species_id /],
     sub {
-     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_name}, $_[0]->{database}, $_[0]->{species_id}];
+     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_name}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
      });
 
   # removed genomes
@@ -328,7 +328,7 @@ sub write_output_to_file {
     $dump_all ? "$division-removed_genomes.txt" : "removed_genomes.txt",
     [qw/ name assembly database species_id /],
     sub {
-      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}];
+      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
       });
 
 
@@ -399,6 +399,7 @@ sub get_genomes {
       genebuild=>$genome->genebuild(),
       database=>$genome->dbname(),
       species_id=>$genome->species_id(),
+      strain=>$genome->organism()->strain(),
       species_taxonomy_id=>($genome->organism()->species_taxonomy_id() || $genome->organism()->taxonomy_id()),
       protein_coding=>$genome->annotations()->{nProteinCoding}
     };
