@@ -117,6 +117,7 @@ use Scalar::Util qw(looks_like_number refaddr);
 use Bio::EnsEMBL::Utils::PublicMySQLServer qw/e_args eg_args/;
 use Bio::EnsEMBL::Utils::Exception qw/throw/;
 use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
+use Bio::EnsEMBL::ApiVersion qw/software_version/;
 
 =head1 METHODS
 
@@ -132,7 +133,8 @@ use Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor;
 sub build_ensembl_adaptor {
   my ( $self, $release ) = @_;
   my $args = e_args();
-  $args->{-DBNAME} = 'ensembl_metadata';
+  my $sofware_version=software_version();
+  $args->{-DBNAME} = 'ensembl_metadata_'.$sofware_version;
   my $adaptor =
     Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
         Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
@@ -154,7 +156,8 @@ sub build_ensembl_adaptor {
 sub build_ensembl_genomes_adaptor {
   my ( $self, $release ) = @_;
   my $args = eg_args();
-  $args->{-DBNAME} = 'ensembl_metadata';
+  my $sofware_version=software_version();
+  $args->{-DBNAME} = 'ensembl_metadata_'.$sofware_version;
   my $adaptor =
     Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->new(
         Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args) );
