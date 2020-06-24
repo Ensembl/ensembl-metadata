@@ -33,7 +33,7 @@ Bio::EnsEMBL::LookUp
 
 =head1 SYNOPSIS
 
-my $adaptor = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomesadaptor();
+my $adaptor = Bio::EnsEMBL::MetaData::DBSQL::GenomeInfoAdaptor->build_ensembl_genomes_adaptor();
 my $lookup = Bio::EnsEMBL::RemoteLookUp->new(-ADAPTOR=>$adaptor);
 my $dbas = $lookup->registry()->get_all();
 $dbas = $lookup->get_all_by_taxon_id(388919);
@@ -112,7 +112,7 @@ sub new {
       $self->{provider} =
         Bio::EnsEMBL::MetaData::DBSQL::ParameterMySQLServerProvider->new(
                                                          -HOST => $self->{host},
-                                                         -POR  => $self->{port},
+                                                         -PORT  => $self->{port},
                                                          -USER => $self->{user},
                                                          -PASS => $self->{pass}
         );
@@ -258,7 +258,7 @@ sub get_all_by_taxon_id {
 }
 
 =head2 get_by_name_exact
-	Description : Return database adaptor that has the supplied string as an alias/name
+	Description : Return all database adaptors that has the supplied string as an alias/name
 	Argument    : String
 	Exceptions  : None
 	Return type : Arrayref of Bio::EnsEMBL::DBSQL::DatabaseAdaptor
@@ -266,7 +266,7 @@ sub get_all_by_taxon_id {
 
 sub get_by_name_exact {
   my ( $self, $name ) = @_;
-  return $self->genome_to_dba( $self->adaptor()->fetch_by_any_name($name) );
+  return $self->genomes_to_dbas( $self->adaptor()->fetch_by_any_name($name) );
 }
 
 =head2 get_all_by_accession
