@@ -183,7 +183,7 @@ CREATE TABLE `genome` (
   `data_release_id` int(10) unsigned NOT NULL,
   `assembly_id` int(10) unsigned NOT NULL,
   `organism_id` int(10) unsigned NOT NULL,
-  `genebuild` varchar(64) NOT NULL,
+  `genebuild` varchar(255) NOT NULL,
   `division_id` int(10) unsigned NOT NULL,
   `has_pan_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_variations` tinyint(3) unsigned NOT NULL DEFAULT '0',
