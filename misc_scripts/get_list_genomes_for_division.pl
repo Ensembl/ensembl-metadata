@@ -61,12 +61,12 @@ Password of the metadata server
 =item B<-di[vision]> [EnsemblVertebrates|vertebrates|EnsemblBacteria|bacteria|EnsemblFungi|fungi|EnsemblPlants|plants|EnsemblProtists|protists|EnsemblMetazoa|metazoa]
 
 Name of the division.
-If not defined, it will dump all the non-verbetrates species if release is specified
+If not defined, it will dump all the divisions species if release is specified
 
 =item B<-r[elease]> <release>
 
 Release number of the vertebrates or non-vertebrates release
-If not defined, the script will get the current release if division is specified
+If not defined, the script will get the current release
 
 =item B<-strain>
 
@@ -121,22 +121,33 @@ my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $dbdba = $metadatadba->get_DatabaseInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
 
-#Get both division short and full name from a division short or full name
-my ($division,$division_name)=process_division_names($opts->{division});
-
 #Get the release for the given division
 my ($release,$release_info);
 ($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
 
-my $genomes = $gdba->fetch_all_by_division($division_name);
-my @sorted_genomes =  sort { $a->name() cmp $b->name() } @$genomes;
-#Genome database
-foreach my $genome (@sorted_genomes){
-    print $genome->name();
-    if($opts->{strain}){ 
-        printf("\t%s", $genome->strain() || "NA"); 
-    }
-    print "\n";
+
+if ( !defined $opts->{division} ) {
+  $opts->{divisions} = $gdba->list_divisions();
+}
+else {
+  $opts->{divisions} = [ $opts->{'division'} ];
+}
+foreach my $div (@{$opts->{divisions}}){
+   #Get both division short and full name from a division short or full name
+   my ($division,$division_name)=process_division_names($div);
+   print "Division: ".$division."\n\n";
+
+   my $genomes = $gdba->fetch_all_by_division($division_name);
+   my @sorted_genomes =  sort { $a->name() cmp $b->name() } @$genomes;
+   #Genome database
+   foreach my $genome (@sorted_genomes){
+      print $genome->name();
+      if($opts->{strain}){
+         printf("\t%s", $genome->strain() || "NA");
+      }
+      print "\n";
+   }
+   print "\n\n";
 }
 
 
