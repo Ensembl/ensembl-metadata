@@ -103,9 +103,6 @@ sub update_release_and_process_release_db {
     elsif (defined $e_version and $e_release != $e_version){
       die "Database release $e_version does not match given release $e_release";
     }
-    elsif ($e_release != ($eg_release + 53) ){
-        die "Given non-vertebrate release is $eg_release, Vertebrate release should be ".($eg_release + 53)." instead of $e_release";
-    }
     $release = $rdba->fetch_by_ensembl_genomes_release($eg_release);
     if (!defined $release){
       store_new_release($rdba,$e_release,$eg_release,$release_date,$current_release);
@@ -120,9 +117,6 @@ sub update_release_and_process_release_db {
   else {
     if (defined $e_version and $e_release != $e_version){
       die "Database release $e_version does not match given release $e_release";
-    }
-    elsif ($eg_release != ($e_release - 53) ){
-      die "Given Vertebrate release is $e_release, non-vertebrate release should be ".($e_release - 53)." instead of $eg_release";
     }
     $release = $rdba->fetch_by_ensembl_release($e_release);
     if (!defined $release){
