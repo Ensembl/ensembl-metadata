@@ -78,7 +78,7 @@ If not defined, the script will process all the divisions
 =item B<-r[elease]> <release>
 
 Release number of the vertebrates or non-vertebrates release
-If not defined, the script will get the current release if division is specified
+If not defined, the script will get the current release
 
 =item B<-o[output_format]> <output_format> [txt|json]
 
@@ -143,8 +143,12 @@ my ($args) = @{ $cli_helper->get_dba_args_for_opts( $opts, 1 ) };
 my $metadatadba=Bio::EnsEMBL::MetaData::DBSQL::MetaDataDBAdaptor->new(%$args);
 my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
-my $release_info;
-my $release;
+# Get the given release
+my ($release,$release_info);
+($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
+# Set previous releases
+my $prev_ens = $gdba->data_release()->ensembl_version()-1;
+my $prev_eg = $gdba->data_release()->ensembl_genomes_version()-1;
 
 # get all divisions
 my $dump_all = 0;
@@ -176,9 +180,6 @@ foreach my $div (@{$opts->{divisions}}){
   #Get both division short and full name from a division short or full name
   my ($division,$division_name)=process_division_names($div);
 
-  #Get the release for the given division
-  my ($release,$release_info);
-  ($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
   #Create report
   my $report = {
    eg_version=> $gdba->data_release()->ensembl_genomes_version(),
@@ -188,16 +189,13 @@ foreach my $div (@{$opts->{divisions}}){
   $logger->info("Getting genomes from release ".$release." for ".$division);
   my $genomes = get_genomes($gdba, $division_name);
   $logger->info("Found ".scalar(keys %$genomes)." genomes from from release ".$release." for ".$division);
-  # decrement releases
-  if ( $division eq "vertebrates" ) {
-    my $prev_ens = $gdba->data_release()->ensembl_version()-1;
+  eval {
     $logger->info("Switching release to Ensembl $prev_ens");
     $gdba->set_ensembl_release($prev_ens);
-    } else {
-      my $prev_eg = $gdba->data_release()->ensembl_genomes_version()-1;
+  } or do {
       $logger->info("Switching release to EG $prev_eg");
       $gdba->set_ensembl_genomes_release($gdba->data_release()->ensembl_genomes_version()-1);
-    }
+  };
   $logger->info("Getting genomes from previous release for ".$division);
   my $prev_genomes = get_genomes($gdba, $division_name);
   $logger->info("Found ".scalar(keys %$prev_genomes)." genomes from previous release for ".$division);
