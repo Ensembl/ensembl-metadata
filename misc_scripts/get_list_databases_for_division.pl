@@ -58,12 +58,12 @@ Password of the metadata server
 =item B<-di[vision]> [EnsemblVertebrates|vertebrates|EnsemblBacteria|bacteria|EnsemblFungi|fungi|EnsemblPlants|plants|EnsemblProtists|protists|EnsemblMetazoa|metazoa]
 
 Name of the division.
-If not defined, it will dump all the non-verbetrates species if release is specified
+If not defined, it will dump all the divisions if release is specified
 
 =item B<-r[elease]> <release>
 
 Release number of the vertebrates or non-vertebrates release
-If not defined, the script will get the current release if division is specified
+If not defined, the script will get the current release
 
 =item B<-h[elp]>
 
@@ -114,31 +114,40 @@ my $gdba = $metadatadba->get_GenomeInfoAdaptor();
 my $dbdba = $metadatadba->get_DatabaseInfoAdaptor();
 my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
 
-#Get both division short and full name from a division short or full name
-my ($division,$division_name)=process_division_names($opts->{division});
-
 #Get the release for the given division
 my ($release,$release_info);
 ($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
 
+if ( !defined $opts->{division} ) {
+  $opts->{divisions} = $gdba->list_divisions();
+}
+else {
+  $opts->{divisions} = [ $opts->{'division'} ];
+}
+foreach my $div (@{$opts->{divisions}}){
+  #Get both division short and full name from a division short or full name
+  my ($division,$division_name)=process_division_names($div);
+  print "Division: ".$division."\n\n";
 
-my $division_databases;
-my $genomes = $gdba->fetch_all_by_division($division_name);
-#Genome databases
-foreach my $genome (@$genomes){
-  foreach my $database (@{$genome->databases()}){
-    push (@$division_databases,$database->dbname);
+  my $division_databases;
+  my $genomes = $gdba->fetch_all_by_division($division_name);
+  #Genome databases
+  foreach my $genome (@$genomes){
+    foreach my $database (@{$genome->databases()}){
+      push (@$division_databases,$database->dbname);
+    }
   }
-}
-#mart databases
-foreach my $mart_database (@{$dbdba->fetch_databases_DataReleaseInfo($release_info,$division_name)}){
-  push (@$division_databases,$mart_database->dbname);
-}
-#compara databases
-foreach my $compara_database (@{$gcdba->fetch_division_databases($division_name,$release_info)}){
-  push (@$division_databases,$compara_database);
-}
-# Print the list of unique databases 
-foreach my $division_database (sort(uniq(@$division_databases))){
-    print $division_database."\n";
+  #mart databases
+  foreach my $mart_database (@{$dbdba->fetch_databases_DataReleaseInfo($release_info,$division_name)}){
+    push (@$division_databases,$mart_database->dbname);
+  }
+  #compara databases
+  foreach my $compara_database (@{$gcdba->fetch_division_databases($division_name,$release_info)}){
+    push (@$division_databases,$compara_database);
+  }
+  # Print the list of unique databases
+  foreach my $division_database (sort(uniq(@$division_databases))){
+      print $division_database."\n";
+  }
+  print "\n\n";
 }
