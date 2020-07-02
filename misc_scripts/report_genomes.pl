@@ -190,12 +190,13 @@ foreach my $div (@{$opts->{divisions}}){
   my $genomes = get_genomes($gdba, $division_name);
   $logger->info("Found ".scalar(keys %$genomes)." genomes from from release ".$release." for ".$division);
   eval {
-    $logger->info("Switching release to Ensembl $prev_ens");
     $gdba->set_ensembl_release($prev_ens);
-  } or do {
-      $logger->info("Switching release to EG $prev_eg");
-      $gdba->set_ensembl_genomes_release($gdba->data_release()->ensembl_genomes_version()-1);
+    $logger->info("Switching release to Ensembl $prev_ens");
   };
+  if ($@) {
+      $gdba->set_ensembl_genomes_release($prev_eg);
+      $logger->info("Switching release to EG $prev_eg");
+  }
   $logger->info("Getting genomes from previous release for ".$division);
   my $prev_genomes = get_genomes($gdba, $division_name);
   $logger->info("Found ".scalar(keys %$prev_genomes)." genomes from previous release for ".$division);
