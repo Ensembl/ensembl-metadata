@@ -195,7 +195,7 @@ sub fetch_by_ensembl_release {
     $ens_release = $self->_first_element(
              $self->_fetch_generic(
                _get_base_sql() .
-                 ' where ensembl_version=?',
+                 ' where ensembl_version=? order by ensembl_genomes_version desc',
                [$release] ) );
   }
   return $ens_release;
