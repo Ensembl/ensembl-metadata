@@ -202,7 +202,7 @@ sub process_core {
     @{
     $dba->dbc()->sql_helper()->execute_simple(
          -SQL =>
-           'select name from coord_system where species_id=? order by rank asc',
+           'select name from coord_system where species_id=? order by `rank` asc',
          -PARAMS => [ $dba->species_id() ] ) };
   my $division  = 'EnsemblVertebrates';
   my @divisions = sort @{ $meta->list_value_by_key('species.division') };
