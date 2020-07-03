@@ -179,7 +179,8 @@ my $report_updates = {};
 foreach my $div (@{$opts->{divisions}}){
   #Get both division short and full name from a division short or full name
   my ($division,$division_name)=process_division_names($div);
-
+  # Get the given release
+  ($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
   #Create report
   my $report = {
    eg_version=> $gdba->data_release()->ensembl_genomes_version(),
