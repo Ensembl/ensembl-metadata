@@ -285,9 +285,9 @@ sub write_output_to_file {
   write_to_file(
     $report_updates->{$division}->{new_genomes},
     $dump_all ? "$division-new_genomes.txt" : "new_genomes.txt",
-    [qw/name assembly database species_id/],
+    [qw/name assembly database species_id has_variation has_microarray strain /],
     sub {
-     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
+     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{has_variation}, $_[0]->{has_microarray}, $_[0]->{strain}];
      });
 
   # updated assemblies
@@ -295,9 +295,9 @@ sub write_output_to_file {
   write_to_file(
     $report_updates->{$division}->{updated_assemblies},
     $dump_all ? "$division-updated_assemblies.txt" : "updated_assemblies.txt",
-    [qw/name assembly old_assembly  database species_id/],
+    [qw/name assembly old_assembly  database species_id has_variation has_microarray strain /],
     sub {
-     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
+     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{has_variation}, $_[0]->{has_microarray}, $_[0]->{strain}];
      });
 
   # updated annotation
@@ -305,9 +305,9 @@ sub write_output_to_file {
   write_to_file(
     $report_updates->{$division}->{updated_annotations},
     $dump_all ? "$division-updated_annotations.txt" : "updated_annotations.txt",
-    [qw/name assembly new_genebuild old_genebuild database species_id/],
+    [qw/name assembly new_genebuild old_genebuild database species_id has_variation has_microarray strain /],
     sub {
-      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{new_genebuild}, $_[0]->{old_genebuild}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
+      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{new_genebuild}, $_[0]->{old_genebuild}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{has_variation}, $_[0]->{has_microarray}, $_[0]->{strain}];
       });
 
   # renamed genomes
@@ -315,9 +315,9 @@ sub write_output_to_file {
   write_to_file(
     $report_updates->{$division}->{renamed_genomes},
     $dump_all ? "$division-renamed_genomes.txt" : "renamed_genomes.txt",
-    [qw/ name assembly old_name database species_id /],
+    [qw/ name assembly old_name database species_id has_variation has_microarray strain /],
     sub {
-     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_name}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
+     return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{old_name}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{has_variation}, $_[0]->{has_microarray}, $_[0]->{strain}];
      });
 
   # removed genomes
@@ -325,9 +325,9 @@ sub write_output_to_file {
   write_to_file(
     $report_updates->{$division}->{removed_genomes},
     $dump_all ? "$division-removed_genomes.txt" : "removed_genomes.txt",
-    [qw/ name assembly database species_id /],
+    [qw/ name assembly database species_id has_variation has_microarray strain /],
     sub {
-      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{strain}];
+      return [$_[0]->{name}, $_[0]->{assembly}, $_[0]->{database}, $_[0]->{species_id}, $_[0]->{has_variation}, $_[0]->{has_microarray}, $_[0]->{strain}];
       });
 
 
