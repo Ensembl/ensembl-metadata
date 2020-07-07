@@ -187,6 +187,7 @@ CREATE TABLE `genome` (
   `division_id` int(10) unsigned NOT NULL,
   `has_pan_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_variations` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `has_microarray` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_peptide_compara` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_genome_alignments` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `has_synteny` tinyint(3) unsigned NOT NULL DEFAULT '0',

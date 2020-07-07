@@ -83,6 +83,7 @@ sub _write_metadata_to_file {
 				  $md->assembly_accession()   || '',
 				  $md->genebuild()     || '',
 				  $self->yesno($md->has_variations()),
+					$self->yesno($md->has_microarray()),
 				  $self->yesno($md->has_pan_compara()),
 				  $self->yesno($md->has_peptide_compara()),
 				  $self->yesno($md->has_genome_alignments()),

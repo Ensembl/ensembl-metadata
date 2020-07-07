@@ -684,6 +684,26 @@ sub has_variations {
   return $self->{has_variations} || 0;
 }
 
+=head2 has_microarray
+  Arg        : (optional) 1/0 to set if genome has microarray
+  Description: Boolean-style method, returns 1 if genome has microarrays, 0 if not
+  Returntype : 1 or 0
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub has_microarray {
+  my ( $self, $arg ) = @_;
+  if ( defined $arg ) {
+    $self->{has_microarray} = $arg;
+  }
+  elsif ( !defined( $self->{has_microarray} ) && defined $self->databases() ) {
+    $self->{has_microarray} = grep { $_->type() eq 'funcgen' } @{ $self->databases() };
+  }
+  return $self->{has_microarray} || 0;
+}
+
 =head2 has_genome_alignments
   Arg        : (optional) 1/0 to set if genome has genome alignments
   Description: Boolean-style method, returns 1 if genome has genome alignments, 0 if not

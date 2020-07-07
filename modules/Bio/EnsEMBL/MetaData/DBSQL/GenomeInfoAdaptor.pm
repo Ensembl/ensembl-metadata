@@ -66,6 +66,11 @@ for my $genome (@{$gdba->fetch_all_with_variation()}) {
 	print $genome->name()."\n";
 }
 
+# find and iterate over all genomes with microarray
+for my $genome (@{$gdba->fetch_all_with_microarray()}) {
+	print $genome->name()."\n";
+}
+
 # to change the release
 $gdba->set_ensembl_release(82);
 $gdba->set_ensembl_genomes_release(82);
@@ -345,13 +350,14 @@ sub store {
         ->store( $genome->assembly() );
       $self->dbc()->sql_helper()->execute_update(
         -SQL => q/insert into genome(division_id,
-    genebuild,has_pan_compara,has_variations,has_peptide_compara,
+    genebuild,has_pan_compara,has_variations,has_microarray,has_peptide_compara,
     has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
-        values(?,?,?,?,?,?,?,?,?,?,?)/,
+        values(?,?,?,?,?,?,?,?,?,?,?,?)/,
         -PARAMS => [ $self->_get_division_id( $genome->division() ),
                     $genome->genebuild(),
                     $genome->has_pan_compara(),
                     $genome->has_variations(),
+                    $genome->has_microarray(),
                     $genome->has_peptide_compara(),
                     $genome->has_genome_alignments(),
                     $genome->has_synteny(),
@@ -368,6 +374,7 @@ sub store {
       $self->_store_annotations($genome);
       $self->_store_features($genome);
       $self->_store_variations($genome);
+      $self->_update_microarrays($genome);
       $self->_store_alignments($genome);
       $self->_store_compara($genome);
       $self->_store_cached_obj($genome);
@@ -407,13 +414,14 @@ sub update {
           ->store( $genome->assembly() );
         $self->dbc()->sql_helper()->execute_update(
           -SQL => q/update genome set division_id=?,
-    genebuild=?,has_pan_compara=?,has_variations=?,has_peptide_compara=?,
+    genebuild=?,has_pan_compara=?,has_variations=?,has_microarray=?,has_peptide_compara=?,
     has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
         ,
           -PARAMS => [ $self->_get_division_id( $genome->division() ),
                     $genome->genebuild(),
                     $genome->has_pan_compara(),
                     $genome->has_variations(),
+                    $genome->has_microarray(),
                     $genome->has_peptide_compara(),
                     $genome->has_genome_alignments(),
                     $genome->has_synteny(),
@@ -431,6 +439,9 @@ sub update {
       }
       if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'variation') {
         $self->_store_variations($genome);
+      }
+      if ($genome->{databases}->[0]->type() eq 'funcgen') {
+        $self->_update_microarrays($genome);
       }
       if ($genome->{databases}->[0]->type() eq 'core' or $genome->{databases}->[0]->type() eq 'otherfeatures' or $genome->{databases}->[0]->type() eq 'rnaseq'){
         $self->_store_alignments($genome);
@@ -859,6 +870,22 @@ sub fetch_all_with_variation {
   my ( $self, $keen ) = @_;
   return
     $self->_fetch_generic_with_args( { 'has_variations' => '1' },
+                                     $keen );
+}
+
+=head2 fetch_all_with_microarray
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have microarray data
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_with_microarray {
+  my ( $self, $keen ) = @_;
+  return
+    $self->_fetch_generic_with_args( { 'has_microarray' => '1' },
                                      $keen );
 }
 
@@ -1292,6 +1319,27 @@ sub _store_variations {
   return;
 }
 
+=head2 _update_microarrays
+  Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
+  Description: Update flag for microarrays
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub _update_microarrays {
+  my ( $self, $genome ) = @_;
+  if (grep { $_->type() eq 'funcgen' } @{ $genome->{databases} }){
+      #Updating has_microarrays genome boolean
+      $self->dbc()->sql_helper()->execute_update(
+      -SQL => q/update genome g
+      set g.has_microarray=1 where g.genome_id = ?/,
+      -PARAMS   => [ $genome->dbID() ]);
+  }
+  return;
+}
+
 =head2 _store_alignments
   Arg	     : Bio::EnsEMBL::MetaData::GenomeInfo
   Description: Stores the alignments for the supplied object
@@ -1410,7 +1458,7 @@ sub clear_genome {
 
 my $base_genome_fetch_sql =
   q/select genome_id as dbID, division.name as division, genebuild, 
-has_pan_compara, has_variations, has_peptide_compara, 
+has_pan_compara, has_variations, has_microarray, has_peptide_compara,
 has_genome_alignments, has_synteny, has_other_alignments, 
 assembly_id, data_release_id, organism_id
 from genome join division using (division_id)/;

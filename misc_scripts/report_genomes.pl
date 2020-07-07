@@ -220,17 +220,17 @@ foreach my $div (@{$opts->{divisions}}){
           if ($updated_assembly) {
             # report the asssembly_name meta key when we have new patches for human or mouse
             if ($updated_assembly == 2){
-              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly_name},old_assembly=>$prev_genome->{assembly_name},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
+              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly_name},old_assembly=>$prev_genome->{assembly_name},database=>$genome->{database},species_id=>$genome->{species_id},has_variation=>$prev_genome->{has_variations},has_microarray=>$prev_genome->{has_microarray},strain=>$genome->{strain}};
             }
             # Report asssembly_default change
             else{
-              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_assembly=>$prev_genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
+              $report_updates->{$division}->{updated_assemblies}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_assembly=>$prev_genome->{assembly},database=>$genome->{database},species_id=>$genome->{species_id},has_variation=>$prev_genome->{has_variations},has_microarray=>$prev_genome->{has_microarray},strain=>$genome->{strain}};
             }
           } elsif ($updated_genebuild) {
-            $report_updates->{$division}->{updated_annotations}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},new_genebuild=>$genome->{genebuild},old_genebuild=>$prev_genome->{genebuild},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
+            $report_updates->{$division}->{updated_annotations}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},new_genebuild=>$genome->{genebuild},old_genebuild=>$prev_genome->{genebuild},database=>$genome->{database},species_id=>$genome->{species_id},has_variation=>$prev_genome->{has_variations},has_microarray=>$prev_genome->{has_microarray},strain=>$genome->{strain}};
           }
           elsif ($genome->{name} ne $prev_genome->{name}){
-            $report_updates->{$division}->{renamed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_name=>$prev_genome->{name},database=>$genome->{database},species_id=>$genome->{species_id},strain=>$genome->{strain}};
+            $report_updates->{$division}->{renamed_genomes}->{$genome->{name}} = {name=>$genome->{name},assembly=>$genome->{assembly},old_name=>$prev_genome->{name},database=>$genome->{database},species_id=>$genome->{species_id},has_variation=>$prev_genome->{has_variations},has_microarray=>$prev_genome->{has_microarray},strain=>$genome->{strain}};
           }
         }
   }
@@ -398,6 +398,8 @@ sub get_genomes {
       genebuild=>$genome->genebuild(),
       database=>$genome->dbname(),
       species_id=>$genome->species_id(),
+      has_variations=>$genome->has_variations(),
+      has_microarray=>$genome->has_microarray(),
       strain=>$genome->organism()->strain(),
       species_taxonomy_id=>($genome->organism()->species_taxonomy_id() || $genome->organism()->taxonomy_id()),
       protein_coding=>$genome->annotations()->{nProteinCoding}

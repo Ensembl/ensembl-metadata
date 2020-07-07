@@ -84,17 +84,15 @@ CREATE TABLE IF NOT EXISTS meta (
 CREATE TABLE ncbi_taxa_node (
   taxon_id                        int(10) unsigned NOT NULL,
   parent_id                       int(10) unsigned NOT NULL,
-
-  rank                            char(32) default '' NOT NULL,
+  `rank`                          char(32) default '' NOT NULL,
   genbank_hidden_flag             tinyint(1) default 0 NOT NULL,
-
   left_index                      int(10) DEFAULT 0 NOT NULL,
   right_index                     int(10) DEFAULT 0 NOT NULL,
   root_id                         int(10) default 1 NOT NULL,
 
   PRIMARY KEY (taxon_id),
   KEY (parent_id),
-  KEY (rank),
+  KEY (`rank`),
   KEY (left_index),
   KEY (right_index)
 
