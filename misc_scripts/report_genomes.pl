@@ -265,6 +265,8 @@ foreach my $div (@{$opts->{divisions}}){
   $report->{removed_genomes} = (keys %{$report_updates->{$division}->{removed_genomes}} ? scalar keys %{$report_updates->{$division}->{removed_genomes}} : 0);
   # If output format is txt, export all changes into multiple tab separated text files
   if ($opts->{output_format} eq 'txt'){
+    # Reset to current release before writting report
+    ($rdba,$gdba,$release,$release_info) = fetch_and_set_release($opts->{release},$rdba,$gdba);
     write_output_to_file($report_updates,$dump_all,$division,$release,$report);
   }
 }
@@ -351,13 +353,13 @@ sub write_output_to_file {
     $report->{bacteria} =  defined $number_bacteria ? $number_bacteria : 0;
     $report->{archaea} =  defined $number_archaea ? $number_archaea : 0;
     $news = <<"END_B";
-Release $release of Ensembl $division has been loaded from EMBL-Bank release XXX into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes ($report->{bacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{updated_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{updated_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $release of Ensembl $division has been loaded from EMBL-Bank into $report->{databases} multispecies Ensembl v$report->{ensembl_version} databases. The current dataset contains $report->{genomes} genomes ($report->{bacteria} bacteria and $report->{archaea} archaea) from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{updated_assemblies} genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{updated_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 Ensembl Bacteria has been updated to include the latest versions of $report->{genomes} genomes ($report->{bacteria} bacteria and $report->{archaea} archaea) from the INSDC archives.
 END_B
 
   } else {
     $news = <<"END";
-Release $release of Ensembl $division has been loaded into $report->{databases} Ensembl v$report->{ensembl_version} databases.  The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{updated_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{updated_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
+Release $release of Ensembl $division has been loaded into $report->{databases} Ensembl v$report->{ensembl_version} databases. The current dataset contains $report->{genomes} genomes from $report->{species} species containing $report->{protein_coding} protein coding genes. This release includes <a href="${url}new_genomes.txt">$report->{new_genomes}</a> new genomes, <a href="${url}updated_assemblies.txt">$report->{updated_assemblies}</a> genomes with updated assemblies, <a href="${url}updated_annotations.txt">$report->{updated_annotations}</a> genomes with updated annotation, <a href="${url}renamed_genomes.txt">$report->{renamed_genomes}</a> genomes where the assigned name has changed, and <a href="${url}removed_genomes.txt">$report->{removed_genomes}</a> genomes removed since the last release.
 END
 
   }
@@ -399,7 +401,7 @@ sub get_genomes {
       genebuild=>$genome->genebuild(),
       database=>$genome->dbname(),
       species_id=>$genome->species_id(),
-      strain=>$genome->organism()->strain(),
+      strain=>$genome->organism()->strain() || 'N/A',
       species_taxonomy_id=>($genome->organism()->species_taxonomy_id() || $genome->organism()->taxonomy_id()),
       protein_coding=>$genome->annotations()->{nProteinCoding}
     };
