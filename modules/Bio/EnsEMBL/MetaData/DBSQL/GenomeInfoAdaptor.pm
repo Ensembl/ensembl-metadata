@@ -273,7 +273,7 @@ sub store {
     -PAUSE => 2,
     -CALLBACK => sub {
       $self->dbc()->sql_helper()->execute_update(
-        -SQL => q/SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED/);
+        -SQL => q/SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED/);
       if ( !defined $genome->data_release() ) {
         $genome->data_release( $self->data_release() );
       }
@@ -396,7 +396,7 @@ sub update {
     -PAUSE => 2,
     -CALLBACK => sub {
       $self->dbc()->sql_helper()->execute_update(
-        -SQL => q/SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED/);
+        -SQL => q/SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED/);
       if ( !defined $genome->dbID() ) {
         croak "Cannot update an object that has not already been stored";
       }
