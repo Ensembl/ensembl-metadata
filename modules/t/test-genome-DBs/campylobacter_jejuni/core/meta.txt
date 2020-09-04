@@ -1,6 +1,6 @@
 1	\N	schema_type	core
-2	\N	schema_version	101
-3	\N	patch	patch_82_83_a.sql|schema_version
+2	\N	schema_version	103
+3	\N	patch	patch_98_99_a.sql|schema_version
 113	1	species.species_name	Campylobacter jejuni
 112	1	simple_featurebuild.level	toplevel
 111	1	exonbuild.level	toplevel
@@ -76,8 +76,8 @@
 140	\N	patch	patch_85_86_b.sql|add dna_align_feature_attrib table
 141	\N	patch	patch_85_86_c.sql|meta_case_insensitive
 142	\N	patch	patch_86_87_a.sql|schema_version
-143	\N	patch	patch_86_87_b.sql|meta_value_NOT_\N
-144	\N	patch	patch_86_87_c.sql|datetime_default_\N
+143	\N	patch	patch_86_87_b.sql|meta_value_NOT_N
+144	\N	patch	patch_86_87_c.sql|datetime_default_N
 145	\N	patch	patch_87_88_a.sql|schema_version
 146	\N	patch	patch_87_88_b.sql|seq_region_name_255
 147	\N	patch	patch_87_88_c.sql|protein_featue_uniqueness
@@ -107,7 +107,10 @@
 171	\N	patch	patch_96_97_e.sql|add_stable_id_event_type_rnaproduct
 172	\N	patch	patch_97_98_a.sql|schema_version
 173	\N	patch	patch_98_99_a.sql|schema_version
-174     \N      patch   patch_99_100_a.sql|schema_version
-175     \N      patch   patch_99_100_b.sql|alter_externaldb_type_notnull
-176     \N      patch   patch_99_100_c.sql|alter_mapping_session_assembly_length
-177     \N      patch   patch_100_101_a.sql|schema_version
+174	0		
+175	\N	patch	patch_99_100_a.sql|schema_version
+176	\N	patch	patch_99_100_b.sql|alter_externaldb_type_notnull
+177	\N	patch	patch_99_100_c.sql|alter_mapping_session_assembly_length
+178	\N	patch	patch_100_101_a.sql|schema_version
+179	\N	patch	patch_101_102_a.sql|schema_version
+180	\N	patch	patch_102_103_a.sql|schema_version
