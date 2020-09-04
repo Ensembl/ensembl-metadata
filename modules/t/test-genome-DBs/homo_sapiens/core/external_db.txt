@@ -108,7 +108,7 @@
 3800	CCDS	\N	KNOWN	240	CCDS	MISC	\N	\N	\N
 3900	PUBMED	\N	KNOWN	5	Sequence Publications	LIT	\N	\N	\N
 4000	MEDLINE	\N	KNOWN	5	MEDLINE	LIT	\N	\N	\N
-4100	UniGene	25 Apr 2013 \t	, UniGene Build #236 Homo sapiens	KNOWN	5	UniGene	MISC	\N	\N	\N
+4100	UniGene	25 Apr 2013 \t, UniGene Build #236 Homo sapiens	KNOWN	5	UniGene	MISC	\N	\N	\N
 4200	RFAM	\N	XREF	190	RFAM	MISC	\N	\N	\N
 4400	Xenopus_Jamboree	\N	KNOWN	1	Jamboree	MISC	\N	\N	\N
 4500	Tiffin	\N	XREF	1	Tiffin DNA motifs	MISC	\N	\N	\N
