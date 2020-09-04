@@ -541,9 +541,7 @@
 50731	Turkey Genome Consortium	\N	KNOWN	5	Turkey Genome Consortium	MISC	\N	\N	Turkey Genome Consortium
 50732	Yutaka_Satou_Kyoto_University	\N	KNOWN	5	Yutaka Satou Kyoto University	MISC	\N	\N	Yutaka Satou Kyoto University
 50733	Chicken_Genome_Consortium	\N	KNOWN	5	International Chicken Genome Consortium	MISC	\N	\N	\N
-50734	TAIR_TRANSLATION	1	XREF	1	TAIR Translation identifier	MISC	\N	\N	TAIR identifier to link to Ensembl Translation entities.
-\
-The main requirement behind this entry, is to be able to link TAIR GO annotations to Ensembl Translation objects.
+50734	TAIR_TRANSLATION	1	XREF	1	TAIR Translation identifier	MISC	\N	\N	TAIR identifier to link to Ensembl Translation entities.\nThe main requirement behind this entry, is to be able to link TAIR GO annotations to Ensembl Translation objects.
 50735	AGI_GENE	1	XREF	1	AGI Gene	MISC	\N	\N	annotation provided by Arizona Genome Institute
 50736	AGI_TRANSCRIPT	1	XREF	1	AGI Transcript	MISC	\N	\N	annotation provided by Arizona Genome Institute
 50737	CGNC	\N	KNOWNXREF	100	CGNC Symbol	PRIMARY_DB_SYNONYM	\N	\N	\N
