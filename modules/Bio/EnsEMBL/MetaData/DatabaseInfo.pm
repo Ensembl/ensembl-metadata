@@ -221,7 +221,7 @@ sub _parse_type {
   if ( $dbname =~ m/_mart_/ ) {
     return 'mart';
   }
-  elsif ( $dbname =~ m/_ontology_/ ) {
+  elsif ( $dbname =~ m/_ontology(?:_|$)/ ) {
     return 'ontology';
   }
   elsif ( $dbname =~ m/_ancestral_/ ){
