@@ -131,7 +131,7 @@ my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [ @{$cli_helper->get_dba_opts()}, "division:s", "output_format:s", "release:i", "force_eg:s", "dump_path:s", "help", "man" ];
+my $optsd = [ @{$cli_helper->get_dba_opts()}, "division:s", "output_format:s", "release:i", "eg_first:s", "dump_path:s", "help", "man" ];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 $opts->{dbname} ||= 'ensembl_metadata';
@@ -151,6 +151,10 @@ my $prev_eg = $gdba->data_release()->ensembl_genomes_version() - 1;
 
 # get all divisions
 my $dump_all = 0;
+my $eg_first = 0;
+if (defined $opts->{eg_first}) {
+    $eg_first = 1;
+}
 if (!defined $opts->{division}) {
     $opts->{divisions} = $gdba->list_divisions();
     $dump_all = 1;
@@ -189,22 +193,27 @@ foreach my $div (@{$opts->{divisions}}) {
     $logger->info("Getting genomes from release " . $release . " for " . $division);
     my $genomes = get_genomes($gdba, $division_name);
     $logger->info("Found " . scalar(keys %$genomes) . " genomes from release " . $release . " for " . $division);
-    if (!$opts->{force_eg}) {
+    if (! $eg_first) {
         eval {
             $gdba->set_ensembl_release($prev_ens);
             $logger->info("Switching release to Ensembl $prev_ens");
         };
-    }
-    else {
-        $logger->info("Forced usage of EG release to $prev_eg");
-        $gdba->set_ensembl_genomes_release($prev_eg);
-        $logger->info("Switching release to EG $prev_eg");
+        if ($@) {
+            $gdba->set_ensembl_genomes_release($prev_eg);
+            $logger->info("Switching release to EG $prev_eg");
+        }
+    } else {
+        $logger->info("Checking EG release first");
+        eval {
+            $gdba->set_ensembl_genomes_release($prev_eg);
+            $logger->info("Switching release to EG $prev_eg");
+        };
+        if ($@) {
+            $gdba->set_ensembl_release($prev_ens);
+            $logger->info("Switching release to Ensembl $prev_ens");
+        }
     }
 
-    if ($@) {
-        $gdba->set_ensembl_genomes_release($prev_eg);
-        $logger->info("Switching release to EG $prev_eg");
-    }
     $logger->info("Getting genomes from previous release for " . $division);
     my $prev_genomes = get_genomes($gdba, $division_name);
     $logger->info("Found " . scalar(keys %$prev_genomes) . " genomes from previous release for " . $division);
