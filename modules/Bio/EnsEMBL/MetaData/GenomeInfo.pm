@@ -494,7 +494,7 @@ sub reference {
 }
 
 =head2 is_reference
-  Description: Gets/sets whether this is a reference for the species
+  Description: Gets whether this is a reference for the species
   Returntype : bool
   Exceptions : none
   Caller     : general
