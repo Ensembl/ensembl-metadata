@@ -1,4 +1,3 @@
-
 =head1 LICENSE
 
 Copyright [1999-2020] EMBL-European Bioinformatics Institute
@@ -125,66 +124,66 @@ use Bio::EnsEMBL::MetaData::GenomeOrganismInfo;
 =cut
 
 sub new {
-  my ( $class, @args ) = @_;
-  my $self = $class->SUPER::new(@args);
-  my ( $name,                $display_name,  
-       $scientific_name, $url_name, $dbname,              
-       $species_id,    $taxonomy_id,
-       $species_taxonomy_id, $assembly_name, 
-       $assembly_id,
-       $assembly_default,    $assembly_ucsc,
-       $assembly_level,      $strain,        $serotype,
-       $reference);
-  ( $name,                $display_name,      
-    $scientific_name, $url_name,
-    $dbname,              $species_id,        $taxonomy_id,
-    $species_taxonomy_id, $assembly_name,     $assembly_id,
-    $assembly_default,    $assembly_ucsc,
-    $assembly_level,      $self->{genebuild}, $self->{division},
-    $strain,              $serotype,          $reference,
-    $self->{assembly},    $self->{organism},          $self->{data_release} )
-    = rearrange( [ 'NAME',                'DISPLAY_NAME',
-                   'SCIENTIFIC_NAME',     'URL_NAME', 'DBNAME',
-                   'SPECIES_ID',          'TAXONOMY_ID',
-                   'SPECIES_TAXONOMY_ID', 'ASSEMBLY_NAME',
-                   'ASSEMBLY_ACCESSION',  'ASSEMBLY_DEFAULT',    
-		   'ASSEMBLY_UCSC',       'ASSEMBLY_LEVEL',
-                   'GENEBUILD',           'DIVISION',
-                   'STRAIN',              'SEROTYPE',
-                   'REFERENCE',        'ASSEMBLY',
-                   'ORGANISM',            'DATA_RELEASE' ],
-                 @args );
+    my ($class, @args) = @_;
+    my $self = $class->SUPER::new(@args);
+    my ($name, $display_name,
+        $scientific_name, $url_name, $dbname,
+        $species_id, $taxonomy_id,
+        $species_taxonomy_id, $assembly_name,
+        $assembly_id,
+        $assembly_default, $assembly_ucsc,
+        $assembly_level, $strain, $serotype,
+        $reference);
+    ($name, $display_name,
+        $scientific_name, $url_name,
+        $dbname, $species_id, $taxonomy_id,
+        $species_taxonomy_id, $assembly_name, $assembly_id,
+        $assembly_default, $assembly_ucsc,
+        $assembly_level, $self->{genebuild}, $self->{division},
+        $strain, $serotype, $reference,
+        $self->{assembly}, $self->{organism}, $self->{data_release})
+        = rearrange([ 'NAME', 'DISPLAY_NAME',
+        'SCIENTIFIC_NAME', 'URL_NAME', 'DBNAME',
+        'SPECIES_ID', 'TAXONOMY_ID',
+        'SPECIES_TAXONOMY_ID', 'ASSEMBLY_NAME',
+        'ASSEMBLY_ACCESSION', 'ASSEMBLY_DEFAULT',
+        'ASSEMBLY_UCSC', 'ASSEMBLY_LEVEL',
+        'GENEBUILD', 'DIVISION',
+        'STRAIN', 'SEROTYPE',
+        'REFERENCE', 'ASSEMBLY',
+        'ORGANISM', 'DATA_RELEASE' ],
+        @args);
 
-  if ( defined $dbname ) {
-    $self->add_database( $dbname, $species_id );
-  }
+    if (defined $dbname) {
+        $self->add_database($dbname, $species_id);
+    }
 
-  if ( !defined $self->assembly() ) {
-    my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
-                       -ASSEMBLY_NAME       => $assembly_name,
-                       -ASSEMBLY_ACCESSION  => $assembly_id,
-                       -ASSEMBLY_DEFAULT    => $assembly_default,
-                       -ASSEMBLY_UCSC       => $assembly_ucsc,
-                       -ASSEMBLY_LEVEL      => $assembly_level );
-    $ass->adaptor( $self->adaptor() ) if defined $self->adaptor();
-    $self->assembly($ass);
-  }
-  
-    if ( !defined $self->{organism} ) {
-    my $organism = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
-                       -NAME                => $name,
-                       -DISPLAY_NAME        => $display_name,
-                       -SCIENTIFIC_NAME     => $scientific_name,
-                       -URL_NAME            => $url_name,
-                       -TAXONOMY_ID         => $taxonomy_id,
-                       -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
-                       -STRAIN              => $strain,
-                       -SEROTYPE            => $serotype,
-                       -REFERENCE           => $reference );
-    $organism->adaptor( $self->adaptor() ) if defined $self->adaptor();
-    $self->organism($organism);
-  }
-  return $self;
+    if (!defined $self->assembly()) {
+        my $ass = Bio::EnsEMBL::MetaData::GenomeAssemblyInfo->new(
+            -ASSEMBLY_NAME      => $assembly_name,
+            -ASSEMBLY_ACCESSION => $assembly_id,
+            -ASSEMBLY_DEFAULT   => $assembly_default,
+            -ASSEMBLY_UCSC      => $assembly_ucsc,
+            -ASSEMBLY_LEVEL     => $assembly_level);
+        $ass->adaptor($self->adaptor()) if defined $self->adaptor();
+        $self->assembly($ass);
+    }
+
+    if (!defined $self->{organism}) {
+        my $organism = Bio::EnsEMBL::MetaData::GenomeOrganismInfo->new(
+            -NAME                => $name,
+            -DISPLAY_NAME        => $display_name,
+            -SCIENTIFIC_NAME     => $scientific_name,
+            -URL_NAME            => $url_name,
+            -TAXONOMY_ID         => $taxonomy_id,
+            -SPECIES_TAXONOMY_ID => $species_taxonomy_id,
+            -STRAIN              => $strain,
+            -SEROTYPE            => $serotype,
+            -REFERENCE           => $reference);
+        $organism->adaptor($self->adaptor()) if defined $self->adaptor();
+        $self->organism($organism);
+    }
+    return $self;
 } ## end sub new
 
 =head1 ATTRIBUTE METHODS
@@ -198,8 +197,8 @@ sub new {
 =cut
 
 sub dbname {
-  my ($self) = @_;
-  return $self->_get_core()->dbname();
+    my ($self) = @_;
+    return $self->_get_core()->dbname();
 }
 
 =head2 species_id
@@ -211,8 +210,8 @@ sub dbname {
 =cut
 
 sub species_id {
-  my ($self) = @_;
-  return $self->_get_core()->species_id();
+    my ($self) = @_;
+    return $self->_get_core()->species_id();
 }
 
 =head2 databases
@@ -225,12 +224,12 @@ sub species_id {
 =cut
 
 sub databases {
-  my ( $self, $databases ) = @_;
-  if ( defined $databases ) {
-    $self->{databases} = $databases;
-  }
-  $self->_load_child( 'databases', '_fetch_databases' );
-  return $self->{databases};
+    my ($self, $databases) = @_;
+    if (defined $databases) {
+        $self->{databases} = $databases;
+    }
+    $self->_load_child('databases', '_fetch_databases');
+    return $self->{databases};
 }
 
 =head2 data_release
@@ -243,10 +242,10 @@ sub databases {
 =cut
 
 sub data_release {
-  my ( $self, $data_release ) = @_;
-  $self->{data_release} = $data_release if ( defined $data_release );
-  $self->_load_child( 'data_release', '_fetch_data_release' );
-  return $self->{data_release};
+    my ($self, $data_release) = @_;
+    $self->{data_release} = $data_release if (defined $data_release);
+    $self->_load_child('data_release', '_fetch_data_release');
+    return $self->{data_release};
 }
 
 =head2 organism
@@ -259,10 +258,10 @@ sub data_release {
 =cut
 
 sub organism {
-  my ( $self, $organism ) = @_;
-  $self->{organism} = $organism if ( defined $organism );
-  $self->_load_child( 'organism', '_fetch_organism' );
-  return $self->{organism};
+    my ($self, $organism) = @_;
+    $self->{organism} = $organism if (defined $organism);
+    $self->_load_child('organism', '_fetch_organism');
+    return $self->{organism};
 }
 
 =head2 display_name
@@ -274,8 +273,8 @@ sub organism {
 =cut
 
 sub display_name {
-  my ( $self, $name ) = @_;
-  return $self->organism()->display_name($name);
+    my ($self, $name) = @_;
+    return $self->organism()->display_name($name);
 }
 
 =head2 url_name
@@ -287,8 +286,8 @@ sub display_name {
 =cut
 
 sub url_name {
-  my ( $self, $name ) = @_;
-  return $self->organism()->url_name($name);
+    my ($self, $name) = @_;
+    return $self->organism()->url_name($name);
 }
 
 =head2 scientific_name
@@ -300,8 +299,8 @@ sub url_name {
 =cut
 
 sub scientific_name {
-  my ( $self, $name ) = @_;
-  return $self->organism()->scientific_name($name);
+    my ($self, $name) = @_;
+    return $self->organism()->scientific_name($name);
 }
 
 =head2 strain
@@ -313,8 +312,8 @@ sub scientific_name {
 =cut
 
 sub strain {
-  my ($self) = @_;
-  return $self->organism()->strain();
+    my ($self) = @_;
+    return $self->organism()->strain();
 }
 
 =head2 serotype
@@ -326,8 +325,8 @@ sub strain {
 =cut
 
 sub serotype {
-  my ($self) = @_;
-  return $self->organism()->serotype();
+    my ($self) = @_;
+    return $self->organism()->serotype();
 }
 
 =head2 name
@@ -339,8 +338,8 @@ sub serotype {
 =cut
 
 sub name {
-  my ($self) = @_;
-  return $self->organism()->name();
+    my ($self) = @_;
+    return $self->organism()->name();
 }
 
 =head2 taxonomy_id
@@ -352,8 +351,8 @@ sub name {
 =cut
 
 sub taxonomy_id {
-  my ($self) = @_;
-  return $self->organism()->taxonomy_id();
+    my ($self) = @_;
+    return $self->organism()->taxonomy_id();
 }
 
 =head2 species_taxonomy_id
@@ -365,8 +364,8 @@ sub taxonomy_id {
 =cut
 
 sub species_taxonomy_id {
-  my ($self) = @_;
-  return $self->organism()->species_taxonomy_id();
+    my ($self) = @_;
+    return $self->organism()->species_taxonomy_id();
 }
 
 =head2 assembly
@@ -379,10 +378,10 @@ sub species_taxonomy_id {
 =cut
 
 sub assembly {
-  my ( $self, $assembly ) = @_;
-  $self->{assembly} = $assembly if ( defined $assembly );
-  $self->_load_child( 'assembly', '_fetch_assembly' );
-  return $self->{assembly};
+    my ($self, $assembly) = @_;
+    $self->{assembly} = $assembly if (defined $assembly);
+    $self->_load_child('assembly', '_fetch_assembly');
+    return $self->{assembly};
 }
 
 =head2 assembly_name
@@ -394,8 +393,8 @@ sub assembly {
 =cut
 
 sub assembly_name {
-  my ($self) = @_;
-  return $self->assembly()->assembly_name();
+    my ($self) = @_;
+    return $self->assembly()->assembly_name();
 }
 
 =head2 assembly_accession
@@ -407,8 +406,8 @@ sub assembly_name {
 =cut
 
 sub assembly_accession {
-  my ($self) = @_;
-  return $self->assembly()->assembly_accession();
+    my ($self) = @_;
+    return $self->assembly()->assembly_accession();
 }
 
 =head2 assembly_default
@@ -420,8 +419,8 @@ sub assembly_accession {
 =cut
 
 sub assembly_default {
-  my ($self) = @_;
-  return $self->assembly()->assembly_default();
+    my ($self) = @_;
+    return $self->assembly()->assembly_default();
 }
 
 =head2 assembly_ucsc
@@ -433,8 +432,8 @@ sub assembly_default {
 =cut
 
 sub assembly_ucsc {
-  my ($self) = @_;
-  return $self->assembly()->assembly_ucsc();
+    my ($self) = @_;
+    return $self->assembly()->assembly_ucsc();
 }
 
 =head2 assembly_level
@@ -446,8 +445,8 @@ sub assembly_ucsc {
 =cut
 
 sub assembly_level {
-  my ($self) = @_;
-  return $self->assembly()->assembly_level();
+    my ($self) = @_;
+    return $self->assembly()->assembly_level();
 }
 
 =head2 genebuild
@@ -460,9 +459,9 @@ sub assembly_level {
 =cut
 
 sub genebuild {
-  my ( $self, $genebuild ) = @_;
-  $self->{genebuild} = $genebuild if ( defined $genebuild );
-  return $self->{genebuild};
+    my ($self, $genebuild) = @_;
+    $self->{genebuild} = $genebuild if (defined $genebuild);
+    return $self->{genebuild};
 }
 
 =head2 division
@@ -475,9 +474,9 @@ sub genebuild {
 =cut
 
 sub division {
-  my ( $self, $division ) = @_;
-  $self->{division} = $division if ( defined $division );
-  return $self->{division};
+    my ($self, $division) = @_;
+    $self->{division} = $division if (defined $division);
+    return $self->{division};
 }
 
 =head2 reference
@@ -490,8 +489,25 @@ sub division {
 =cut
 
 sub reference {
-  my ( $self, $is_ref ) = @_;
-  return $self->organism()->reference($is_ref);
+    my ($self, $is_ref) = @_;
+    return $self->organism()->reference($is_ref);
+}
+
+=head2 is_reference
+  Description: Gets/sets whether this is a reference for the species
+  Returntype : bool
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub is_reference {
+    my ($self) = @_;
+    if (defined $self->organism()->reference()) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 =head2 db_size
@@ -504,9 +520,9 @@ sub reference {
 =cut
 
 sub db_size {
-  my ( $self, $arg ) = @_;
-  $self->{db_size} = $arg if ( defined $arg );
-  return $self->{db_size};
+    my ($self, $arg) = @_;
+    $self->{db_size} = $arg if (defined $arg);
+    return $self->{db_size};
 }
 
 =head2 base_count
@@ -518,8 +534,8 @@ sub db_size {
 =cut
 
 sub base_count {
-  my ($self) = @_;
-  return $self->assembly()->base_count();
+    my ($self) = @_;
+    return $self->assembly()->base_count();
 }
 
 =head2 aliases
@@ -531,8 +547,8 @@ sub base_count {
 =cut
 
 sub aliases {
-  my ($self) = @_;
-  return $self->organism()->aliases();
+    my ($self) = @_;
+    return $self->organism()->aliases();
 }
 
 =head2 compara
@@ -545,16 +561,16 @@ sub aliases {
 =cut
 
 sub compara {
-  my ( $self, $compara ) = @_;
-  if ( defined $compara ) {
-    $self->{compara}               = $compara;
-    $self->{has_peptide_compara}   = undef;
-    $self->{has_synteny}           = undef;
-    $self->{has_genome_alignments} = undef;
-    $self->{has_pan_compara}       = undef;
-  }
-  $self->_load_child( 'compara', '_fetch_comparas' );
-  return $self->{compara};
+    my ($self, $compara) = @_;
+    if (defined $compara) {
+        $self->{compara} = $compara;
+        $self->{has_peptide_compara} = undef;
+        $self->{has_synteny} = undef;
+        $self->{has_genome_alignments} = undef;
+        $self->{has_pan_compara} = undef;
+    }
+    $self->_load_child('compara', '_fetch_comparas');
+    return $self->{compara};
 }
 
 =head2 sequences
@@ -566,8 +582,8 @@ sub compara {
 =cut
 
 sub sequences {
-  my ($self) = @_;
-  return $self->assembly()->sequences();
+    my ($self) = @_;
+    return $self->assembly()->sequences();
 }
 
 =head2 publications
@@ -579,8 +595,8 @@ sub sequences {
 =cut
 
 sub publications {
-  my ($self) = @_;
-  return $self->organism()->publications();
+    my ($self) = @_;
+    return $self->organism()->publications();
 }
 
 =head2 variations
@@ -595,13 +611,13 @@ sub publications {
 =cut
 
 sub variations {
-  my ( $self, $variations ) = @_;
-  if ( defined $variations ) {
-    $self->{variations}     = $variations;
-    $self->{has_variations} = undef;
-  }
-  $self->_load_child( 'variations', '_fetch_variations' );
-  return $self->{variations};
+    my ($self, $variations) = @_;
+    if (defined $variations) {
+        $self->{variations} = $variations;
+        $self->{has_variations} = undef;
+    }
+    $self->_load_child('variations', '_fetch_variations');
+    return $self->{variations};
 }
 
 =head2 features
@@ -616,12 +632,12 @@ sub variations {
 =cut
 
 sub features {
-  my ( $self, $features ) = @_;
-  if ( defined $features ) {
-    $self->{features} = $features;
-  }
-  $self->_load_child( 'features', '_fetch_features' );
-  return $self->{features};
+    my ($self, $features) = @_;
+    if (defined $features) {
+        $self->{features} = $features;
+    }
+    $self->_load_child('features', '_fetch_features');
+    return $self->{features};
 }
 
 =head2 annotations
@@ -635,12 +651,12 @@ sub features {
 =cut
 
 sub annotations {
-  my ( $self, $annotation ) = @_;
-  if ( defined $annotation ) {
-    $self->{annotations} = $annotation;
-  }
-  $self->_load_child( 'annotations', '_fetch_annotations' );
-  return $self->{annotations};
+    my ($self, $annotation) = @_;
+    if (defined $annotation) {
+        $self->{annotations} = $annotation;
+    }
+    $self->_load_child('annotations', '_fetch_annotations');
+    return $self->{annotations};
 }
 
 =head2 other_alignments
@@ -654,13 +670,13 @@ sub annotations {
 =cut
 
 sub other_alignments {
-  my ( $self, $other_alignments ) = @_;
-  if ( defined $other_alignments ) {
-    $self->{other_alignments}     = $other_alignments;
-    $self->{has_other_alignments} = undef;
-  }
-  $self->_load_child( 'other_alignments', '_fetch_other_alignments' );
-  return $self->{other_alignments} || 0;
+    my ($self, $other_alignments) = @_;
+    if (defined $other_alignments) {
+        $self->{other_alignments} = $other_alignments;
+        $self->{has_other_alignments} = undef;
+    }
+    $self->_load_child('other_alignments', '_fetch_other_alignments');
+    return $self->{other_alignments} || 0;
 }
 
 =head1 utility methods
@@ -674,14 +690,14 @@ sub other_alignments {
 =cut
 
 sub has_variations {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-    $self->{has_variations} = $arg;
-  }
-  elsif ( !defined( $self->{has_variations} ) && defined $self->variations() ) {
-    $self->{has_variations} = $self->count_variation() > 0 ? 1 : 0;
-  }
-  return $self->{has_variations} || 0;
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+        $self->{has_variations} = $arg;
+    }
+    elsif (!defined($self->{has_variations}) && defined $self->variations()) {
+        $self->{has_variations} = $self->count_variation() > 0 ? 1 : 0;
+    }
+    return $self->{has_variations} || 0;
 }
 
 =head2 has_microarray
@@ -714,22 +730,21 @@ sub has_microarray {
 =cut
 
 sub has_genome_alignments {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-    $self->{has_genome_alignments} = $arg;
-  }
-  elsif ( !defined( $self->{has_genome_alignments} ) &&
-          defined $self->compara() )
-  {
-    $self->{has_genome_alignments} = 0;
-    for my $compara ( @{ $self->compara() } ) {
-      if ( $compara->is_dna_compara() ) {
-        $self->{has_genome_alignments} = 1;
-        last;
-      }
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+        $self->{has_genome_alignments} = $arg;
     }
-  }
-  return $self->{has_genome_alignments} || 0;
+    elsif (!defined($self->{has_genome_alignments}) &&
+        defined $self->compara()) {
+        $self->{has_genome_alignments} = 0;
+        for my $compara (@{$self->compara()}) {
+            if ($compara->is_dna_compara()) {
+                $self->{has_genome_alignments} = 1;
+                last;
+            }
+        }
+    }
+    return $self->{has_genome_alignments} || 0;
 }
 
 =head2 has_synteny
@@ -742,20 +757,20 @@ sub has_genome_alignments {
 =cut
 
 sub has_synteny {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-    $self->{has_synteny} = $arg;
-  }
-  elsif ( !defined( $self->{has_synteny} ) && defined $self->compara() ) {
-    $self->{has_synteny} = 0;
-    for my $compara ( @{ $self->compara() } ) {
-      if ( $compara->is_synteny() ) {
-        $self->{has_synteny} = 1;
-        last;
-      }
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+        $self->{has_synteny} = $arg;
     }
-  }
-  return $self->{has_synteny} || 0;
+    elsif (!defined($self->{has_synteny}) && defined $self->compara()) {
+        $self->{has_synteny} = 0;
+        for my $compara (@{$self->compara()}) {
+            if ($compara->is_synteny()) {
+                $self->{has_synteny} = 1;
+                last;
+            }
+        }
+    }
+    return $self->{has_synteny} || 0;
 }
 
 =head2 has_peptide_compara
@@ -768,21 +783,20 @@ sub has_synteny {
 =cut
 
 sub has_peptide_compara {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-    $self->{has_peptide_compara} = $arg;
-  }
-  elsif ( !defined( $self->{has_peptide_compara} ) && defined $self->compara() )
-  {
-    $self->{has_peptide_compara} = 0;
-    for my $compara ( @{ $self->compara() } ) {
-      if ( $compara->is_peptide_compara() && !$compara->is_pan_compara() ) {
-        $self->{has_peptide_compara} = 1;
-        last;
-      }
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+        $self->{has_peptide_compara} = $arg;
     }
-  }
-  return $self->{has_peptide_compara} || 0;
+    elsif (!defined($self->{has_peptide_compara}) && defined $self->compara()) {
+        $self->{has_peptide_compara} = 0;
+        for my $compara (@{$self->compara()}) {
+            if ($compara->is_peptide_compara() && !$compara->is_pan_compara()) {
+                $self->{has_peptide_compara} = 1;
+                last;
+            }
+        }
+    }
+    return $self->{has_peptide_compara} || 0;
 }
 
 =head2 has_pan_compara
@@ -795,20 +809,20 @@ sub has_peptide_compara {
 =cut
 
 sub has_pan_compara {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-    $self->{has_pan_compara} = $arg;
-  }
-  elsif ( !defined( $self->{has_pan_compara} ) && defined $self->compara() ) {
-    $self->{has_pan_compara} = 0;
-    for my $compara ( @{ $self->compara() } ) {
-      if ( $compara->is_pan_compara() ) {
-        $self->{has_pan_compara} = 1;
-        last;
-      }
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+        $self->{has_pan_compara} = $arg;
     }
-  }
-  return $self->{has_pan_compara} || 0;
+    elsif (!defined($self->{has_pan_compara}) && defined $self->compara()) {
+        $self->{has_pan_compara} = 0;
+        for my $compara (@{$self->compara()}) {
+            if ($compara->is_pan_compara()) {
+                $self->{has_pan_compara} = 1;
+                last;
+            }
+        }
+    }
+    return $self->{has_pan_compara} || 0;
 }
 
 =head2 has_other_alignments
@@ -821,14 +835,14 @@ sub has_pan_compara {
 =cut
 
 sub has_other_alignments {
-  my ( $self, $arg ) = @_;
-  if ( defined $arg ) {
-    $self->{has_other_alignments} = $arg;
-  }
-  elsif ( !defined( $self->{has_other_alignments} ) ) {
-    $self->{has_other_alignments} = $self->count_alignments() > 0 ? 1 : 0;
-  }
-  return $self->{has_other_alignments} || 0;
+    my ($self, $arg) = @_;
+    if (defined $arg) {
+        $self->{has_other_alignments} = $arg;
+    }
+    elsif (!defined($self->{has_other_alignments})) {
+        $self->{has_other_alignments} = $self->count_alignments() > 0 ? 1 : 0;
+    }
+    return $self->{has_other_alignments} || 0;
 }
 
 =head2 count_variation
@@ -840,9 +854,9 @@ sub has_other_alignments {
 =cut
 
 sub count_variation {
-  my ($self) = @_;
-  return $self->count_hash_values( $self->{variations}{variations} ) +
-    $self->count_hash_values( $self->{variations}{structural_variations} );
+    my ($self) = @_;
+    return $self->count_hash_values($self->{variations}{variations}) +
+        $self->count_hash_values($self->{variations}{structural_variations});
 }
 
 =head2 count_alignments
@@ -854,10 +868,10 @@ sub count_variation {
 =cut
 
 sub count_alignments {
-  my ($self) = @_;
-  return $self->count_hash_values( $self->{other_alignments}{bam} ) +
-    $self->count_hash_values( $self->{other_alignments}{proteinAlignFeatures} )
-    + $self->count_hash_values( $self->{other_alignments}{dnaAlignFeatures} );
+    my ($self) = @_;
+    return $self->count_hash_values($self->{other_alignments}{bam}) +
+        $self->count_hash_values($self->{other_alignments}{proteinAlignFeatures})
+        + $self->count_hash_values($self->{other_alignments}{dnaAlignFeatures});
 }
 
 =head2 get_uniprot_coverage
@@ -869,10 +883,10 @@ sub count_alignments {
 =cut
 
 sub get_uniprot_coverage {
-  my ($self) = @_;
-  return 100.0*
-    ( $self->annotations()->{nProteinCodingUniProtKB} )/
-    $self->annotations()->{nProteinCoding};
+    my ($self) = @_;
+    return 100.0 *
+        ($self->annotations()->{nProteinCodingUniProtKB}) /
+        $self->annotations()->{nProteinCoding};
 }
 
 =head2 add_database
@@ -886,13 +900,13 @@ sub get_uniprot_coverage {
 =cut
 
 sub add_database {
-  my ( $self, $dbname, $species_id ) = @_;
-  $self->{species_id} ||= 1;
-  push @{ $self->{databases} },
-    Bio::EnsEMBL::MetaData::DatabaseInfo->new( -SUBJECT    => $self,
-                                               -DBNAME     => $dbname,
-                                               -SPECIES_ID => $species_id );
-  return;
+    my ($self, $dbname, $species_id) = @_;
+    $self->{species_id} ||= 1;
+    push @{$self->{databases}},
+        Bio::EnsEMBL::MetaData::DatabaseInfo->new(-SUBJECT => $self,
+            -DBNAME                                        => $dbname,
+            -SPECIES_ID                                    => $species_id);
+    return;
 }
 
 =head2 to_string
@@ -904,11 +918,11 @@ sub add_database {
 =cut
 
 sub to_string {
-  my ($self) = @_;
-  return
-    join( ':',
-          ( $self->dbID() || '-' ), $self->name(),
-          $self->dbname(), $self->species_id() );
+    my ($self) = @_;
+    return
+        join(':',
+            ($self->dbID() || '-'), $self->name(),
+            $self->dbname(), $self->species_id());
 }
 
 =head2 to_hash
@@ -921,48 +935,46 @@ sub to_string {
 =cut
 
 sub to_hash {
-  my ( $in, $keen ) = @_;
-  my $out;
-  my $type = ref $in;
-  if ( defined $keen &&
-       $keen == 1 &&
-       $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
-  {
-    $in->_preload();
-  }
-  if ( $type eq 'ARRAY' ) {
-    $out = [];
-    for my $item ( @{$in} ) {
-      push @{$out}, to_hash( $item, $keen );
+    my ($in, $keen) = @_;
+    my $out;
+    my $type = ref $in;
+    if (defined $keen &&
+        $keen == 1 &&
+        $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/) {
+        $in->_preload();
     }
-  }
-  elsif ( $type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo' ) {
-    $out = {};
-    while ( my ( $key, $val ) = each %$in ) {
-      if ( $key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger' ) {
-
-# deal with keys starting with numbers, which are not valid element names in XML
-        if ( $key =~ m/^[0-9].*/ ) {
-          $key = '_' . $key;
+    if ($type eq 'ARRAY') {
+        $out = [];
+        for my $item (@{$in}) {
+            push @{$out}, to_hash($item, $keen);
         }
-        $out->{$key} = to_hash( $val, $keen );
-      }
-
     }
-  }
-  elsif ( $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ ) {
-    $out = $in->to_hash($keen);
-  }
-  else {
-    $out = $in;
-  }
-  if ( defined $keen &&
-       $keen == 1 &&
-       $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/ )
-  {
-    $in->_preload();
-  }
-  return $out;
+    elsif ($type eq 'HASH' || $type eq 'Bio::EnsEMBL::MetaData::GenomeInfo') {
+        $out = {};
+        while (my ($key, $val) = each %$in) {
+            if ($key ne 'dbID' && $key ne 'adaptor' && $key ne 'logger') {
+
+                # deal with keys starting with numbers, which are not valid element names in XML
+                if ($key =~ m/^[0-9].*/) {
+                    $key = '_' . $key;
+                }
+                $out->{$key} = to_hash($val, $keen);
+            }
+
+        }
+    }
+    elsif ($type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/) {
+        $out = $in->to_hash($keen);
+    }
+    else {
+        $out = $in;
+    }
+    if (defined $keen &&
+        $keen == 1 &&
+        $type =~ m/Bio::EnsEMBL::MetaData::[A-z]+Info/) {
+        $in->_preload();
+    }
+    return $out;
 } ## end sub to_hash
 
 =head1 INTERNAL METHODS
@@ -975,11 +987,11 @@ sub to_hash {
 =cut
 
 sub _get_core {
-  my ($self) = @_;
-  if ( !defined $self->{core} ) {
-    ( $self->{core} ) = grep { $_->type() eq 'core' } @{ $self->databases() };
-  }
-  return $self->{core};
+    my ($self) = @_;
+    if (!defined $self->{core}) {
+        ($self->{core}) = grep {$_->type() eq 'core'} @{$self->databases()};
+    }
+    return $self->{core};
 }
 
 =head2 count_hash_values
@@ -992,14 +1004,14 @@ sub _get_core {
 =cut
 
 sub count_hash_values {
-  my ( $self, $hash ) = @_;
-  my $tot = 0;
-  if ( defined $hash ) {
-    for my $v ( values %{$hash} ) {
-      $tot += $v;
+    my ($self, $hash) = @_;
+    my $tot = 0;
+    if (defined $hash) {
+        for my $v (values %{$hash}) {
+            $tot += $v;
+        }
     }
-  }
-  return $tot;
+    return $tot;
 }
 
 =head2 count_hash_lengths
@@ -1012,14 +1024,14 @@ sub count_hash_values {
 =cut
 
 sub count_hash_lengths {
-  my ( $self, $hash ) = @_;
-  my $tot = 0;
-  if ( defined $hash ) {
-    for my $v ( values %{$hash} ) {
-      $tot += scalar(@$v);
+    my ($self, $hash) = @_;
+    my $tot = 0;
+    if (defined $hash) {
+        for my $v (values %{$hash}) {
+            $tot += scalar(@$v);
+        }
     }
-  }
-  return $tot;
+    return $tot;
 }
 
 =head2 dbID
@@ -1032,9 +1044,9 @@ sub count_hash_lengths {
 =cut
 
 sub dbID {
-  my ( $self, $id ) = @_;
-  $self->{dbID} = $id if ( defined $id );
-  return $self->{dbID};
+    my ($self, $id) = @_;
+    $self->{dbID} = $id if (defined $id);
+    return $self->{dbID};
 }
 
 =head2 adaptor
@@ -1047,9 +1059,9 @@ sub dbID {
 =cut
 
 sub adaptor {
-  my ( $self, $adaptor ) = @_;
-  $self->{adaptor} = $adaptor if ( defined $adaptor );
-  return $self->{adaptor};
+    my ($self, $adaptor) = @_;
+    $self->{adaptor} = $adaptor if (defined $adaptor);
+    return $self->{adaptor};
 }
 
 =head2 _preload
@@ -1061,13 +1073,13 @@ sub adaptor {
 =cut
 
 sub _preload {
-  my ($self) = @_;
-  $self->annotations();
-  $self->compara();
-  $self->features();
-  $self->other_alignments();
-  $self->variations();
-  return;
+    my ($self) = @_;
+    $self->annotations();
+    $self->compara();
+    $self->features();
+    $self->other_alignments();
+    $self->variations();
+    return;
 }
 
 =head2 _preload
@@ -1079,13 +1091,13 @@ sub _preload {
 =cut
 
 sub _unload {
-  my ($self) = @_;
-  $self->{annotations}      = undef;
-  $self->{compara}          = undef;
-  $self->{features}         = undef;
-  $self->{other_alignments} = undef;
-  $self->{variations}       = undef;
-  return;
+    my ($self) = @_;
+    $self->{annotations} = undef;
+    $self->{compara} = undef;
+    $self->{features} = undef;
+    $self->{other_alignments} = undef;
+    $self->{variations} = undef;
+    return;
 }
 
 1;
