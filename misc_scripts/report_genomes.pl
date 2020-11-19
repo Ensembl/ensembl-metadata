@@ -189,7 +189,7 @@ foreach my $div (@{$opts->{divisions}}){
 
   $logger->info("Getting genomes from release ".$release." for ".$division);
   my $genomes = get_genomes($gdba, $division_name);
-  $logger->info("Found ".scalar(keys %$genomes)." genomes from from release ".$release." for ".$division);
+  $logger->info("Found ".scalar(keys %$genomes)." genomes from release ".$release." for ".$division);
   eval {
     $gdba->set_ensembl_release($prev_ens);
     $logger->info("Switching release to Ensembl $prev_ens");
