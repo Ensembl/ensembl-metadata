@@ -503,7 +503,8 @@ sub reference {
 
 sub is_reference {
     my ($self) = @_;
-    if (defined $self->organism()->reference()) {
+    my $ref = $self->organism()->reference();
+    if (defined $ref && $ref == $self->organism()->name() ) {
         return 1;
     } else {
         return 0;
