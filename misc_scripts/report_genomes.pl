@@ -456,7 +456,7 @@ sub write_to_file {
             print $file join("\t", @{$callback->($data->{$datum})}) . "\n";
         };
         if ($@){
-            $logger->indo("Issue Dumping");
+            $logger->info("Issue Dumping");
             $logger->error(Dumper($data->{$datum}));
         }
     }
