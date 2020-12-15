@@ -3,3 +3,4 @@
 *.xml
 *.out
 .*
+modules/t/MultiTestDB.conf
