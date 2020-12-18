@@ -229,6 +229,7 @@ foreach my $div (@{$opts->{divisions}}) {
         my $prev_genome = $prev_genomes->{$set_chain};
         # Gather list of new genomes
         if (!defined $prev_genome) {
+            # qw/name assembly database species_id has_variation has_microarray strain/
             $report_updates->{$division}->{new_genomes}->{$genome->{name}} = {
                 name => $genome->{name},
                 assembly => $genome->{assembly},
@@ -299,12 +300,15 @@ foreach my $div (@{$opts->{divisions}}) {
     # Gather list of removed genomes
     while (my ($set_chain, $genome) = each %{$prev_genomes}) {
         if (!defined $genomes->{$set_chain}) {
+            # qw/name assembly database species_id has_variation has_microarray strain/
             $report_updates->{$division}->{removed_genomes}->{$genome->{name}} = {
                 name => $genome->{name},
                 assembly => $genome->{assembly},
                 database => $genome->{database},
                 species_id => $genome->{species_id},
                 display_name => $genome->{display_name},
+                has_variation => $genome->{has_variations},
+                has_microarray => $genome->{has_microarray},
                 strain => $genome->{strain}  // ''
             };
         }
