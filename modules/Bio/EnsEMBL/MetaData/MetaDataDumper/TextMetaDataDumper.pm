@@ -65,7 +65,7 @@ sub start {
 	print $fh '#'
 	  .
 	  join("\t",
-		   qw(name species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
+		   qw(name species division taxonomy_id assembly assembly_accession genebuild variation microarray pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
 	  ) .
 	  "\n";
   }

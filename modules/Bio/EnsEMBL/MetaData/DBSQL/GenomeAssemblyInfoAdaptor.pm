@@ -195,7 +195,7 @@ sub fetch_all_by_sequence_accession_unversioned {
   return
     $self->_fetch_generic(
     $self->_get_base_sql() .
-' where assembly_id in (select distinct(assembly_id) from assembly_sequence where acc like ? or name like ?)',
+' where assembly_id in (select distinct(assembly_id) from assembly_sequence where acc like ? or name like ?) order by dbID desc',
     [ $id . '.%', $id . '.%' ],
     $keen );
 }
@@ -215,7 +215,7 @@ sub fetch_all_by_sequence_accession_versioned {
   return
     $self->_fetch_generic(
     $self->_get_base_sql() .
-' where assembly_id in (select distinct(assembly_id) from assembly_sequence where acc=? or name=?)',
+' where assembly_id in (select distinct(assembly_id) from assembly_sequence where acc=? or name=?) order by dbID desc',
     [ $id, $id ],
     $keen );
 }
@@ -235,7 +235,7 @@ sub fetch_by_assembly_accession {
   return
     $self->_first_element(
                          $self->_fetch_generic(
-                           $self->_get_base_sql . ' where assembly_accession=?',
+                           $self->_get_base_sql . ' where assembly_accession=? order by dbID desc',
                            [$id], $keen ) );
 
 }
@@ -254,7 +254,7 @@ sub fetch_all_by_assembly_set_chain {
   my ( $self, $id, $keen ) = @_;
   return
     $self->_fetch_generic(
-                      $self->_get_base_sql . ' where assembly_accession like ?',
+                      $self->_get_base_sql . ' where assembly_accession like ? order by dbID desc',
                       [ $id . '.%' ], $keen );
 }
 =head1 INTERNAL METHODS
