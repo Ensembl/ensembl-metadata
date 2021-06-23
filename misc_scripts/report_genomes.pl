@@ -79,6 +79,11 @@ If not defined, the script will process all the divisions
 Release number of the vertebrates or non-vertebrates release
 If not defined, the script will get the current release
 
+=item B<-pr[evious_release]> <previous_release>
+
+Release number of the previous vertebrates or non-vertebrates release to compare against
+It should be strictly smalled than <release>
+
 =item B<-o[output_format]> <output_format> [txt|json]
 
 Script output format, options in text files one per change type, see description
@@ -131,7 +136,17 @@ my $logger = get_logger();
 
 my $cli_helper = Bio::EnsEMBL::Utils::CliHelper->new();
 # get the basic options for connecting to a database server
-my $optsd = [ @{$cli_helper->get_dba_opts()}, "division:s", "output_format:s", "release:i", "eg_first:s", "dump_path:s", "help", "man" ];
+my $optsd = [
+  @{$cli_helper->get_dba_opts()},
+  "division:s",
+  "output_format:s",
+  "release:i",
+  "previous_release:i",
+  "eg_first:s",
+  "dump_path:s",
+  "help",
+  "man"
+];
 
 my $opts = $cli_helper->process_args($optsd, \&pod2usage);
 $opts->{dbname} ||= 'ensembl_metadata';
@@ -145,9 +160,19 @@ my $rdba = $metadatadba->get_DataReleaseInfoAdaptor();
 # Get the given release
 my ($release, $release_info);
 ($rdba, $gdba, $release, $release_info) = fetch_and_set_release($opts->{release}, $rdba, $gdba);
+
+my $release_offset = 1;
+if (defined $opts->{previous_release}) {
+    my $previous_release = $opts->{previous_release};
+    $release_offset = $release - $previous_release;
+    if ($release_offset <= 0) {
+      die "Previous release ($previous_release) should be strictly smaller than release ($release)";
+    }
+}
+
 # Set previous releases
-my $prev_ens = $gdba->data_release()->ensembl_version() - 1;
-my $prev_eg = $gdba->data_release()->ensembl_genomes_version() - 1;
+my $prev_ens = $gdba->data_release()->ensembl_version() - $release_offset;
+my $prev_eg = $gdba->data_release()->ensembl_genomes_version() - $release_offset;
 
 # get all divisions
 my $dump_all = 0;
