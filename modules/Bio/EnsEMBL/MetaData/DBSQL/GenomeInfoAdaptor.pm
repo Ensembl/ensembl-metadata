@@ -352,7 +352,7 @@ sub store {
         -SQL => q/insert into genome(division_id,
     genebuild,has_pan_compara,has_variations,has_microarray,has_peptide_compara,
     has_genome_alignments,has_synteny,has_other_alignments,website_packed,assembly_id,organism_id,data_release_id)
-        values(?,?,?,?,?,?,?,?,?,?,?,?)/,
+        values(?,?,?,?,?,?,?,?,?,?,?,?,?)/,
         -PARAMS => [ $self->_get_division_id( $genome->division() ),
                     $genome->genebuild(),
                     $genome->has_pan_compara(),
