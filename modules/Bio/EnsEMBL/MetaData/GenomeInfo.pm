@@ -846,6 +846,23 @@ sub has_other_alignments {
     return $self->{has_other_alignments} || 0;
 }
 
+=head2 website_packed
+  Arg        : (optional) 1/0 to set if genome has been packed for web display 
+  Description: Boolean-style method, returns 1 if genome has been packed, 0 if not
+  Returntype : 1 or 0
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub website_packed {
+  my ( $self, $arg ) = @_;
+  if ( defined $arg ) {
+    $self->{website_packed} = $arg;
+  }
+  return $self->{website_packed} || 0;
+}
+
 =head2 count_variation
   Description: Returns total number of variations and structural variations mapped to genome
   Returntype : integer
