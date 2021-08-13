@@ -1,7 +1,7 @@
 
 =head1 LICENSE
 
-Copyright [1999-2020] EMBL-European Bioinformatics Institute
+Copyright [1999-2021] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -218,13 +218,13 @@ sub to_string {
 
 sub _parse_type {
   my ($dbname) = @_;
-  if ( $dbname =~ m/mart/ ) {
+  if ( $dbname =~ m/_mart_/ ) {
     return 'mart';
   }
-  elsif ( $dbname =~ m/ontology/ ) {
+  elsif ( $dbname =~ m/_ontology(?:_|$)/ ) {
     return 'ontology';
   }
-  elsif ( $dbname =~ m/ancestral/ ){
+  elsif ( $dbname =~ m/_ancestral_/ ){
     return 'other';
   }
   else {

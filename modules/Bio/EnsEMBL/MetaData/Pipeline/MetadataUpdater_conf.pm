@@ -7,7 +7,7 @@
 
 =head1 LICENSE
     Copyright [1999-2015] Wellcome Trust Sanger Institute and the EMBL-European Bioinformatics Institute
-    Copyright [2016-2020] EMBL-European Bioinformatics Institute
+    Copyright [2016-2021] EMBL-European Bioinformatics Institute
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
          http://www.apache.org/licenses/LICENSE-2.0
@@ -28,9 +28,9 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');  # All Hive datab
 
 sub resource_classes {
     my ($self) = @_;
-    return { 'default' => { 'LSF' => '-q production-rh74'},
-         '1GB' => { 'LSF' => '-q production-rh74 -M 1000 -R "rusage[mem=1000]"' },
-         '2GB' => { 'LSF' => '-q production-rh74 -M 2000 -R "rusage[mem=2000]"' } };
+    return { 'default' => { 'LSF' => '-q production'},
+         '1GB' => { 'LSF' => '-q production -M 1000 -R "rusage[mem=1000]"' },
+         '2GB' => { 'LSF' => '-q production -M 2000 -R "rusage[mem=2000]"' } };
 }
 
 sub default_options {
