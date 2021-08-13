@@ -1,6 +1,6 @@
 =head1 LICENSE
 
-Copyright [2009-2020] EMBL-European Bioinformatics Institute
+Copyright [2009-2021] EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ sub start {
 	print $fh '#'
 	  .
 	  join("\t",
-		   qw(name species division taxonomy_id assembly assembly_accession genebuild variation pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
+		   qw(name species division taxonomy_id assembly assembly_accession genebuild variation microarray pan_compara peptide_compara genome_alignments other_alignments core_db species_id)
 	  ) .
 	  "\n";
   }
