@@ -351,8 +351,8 @@ sub store {
       $self->dbc()->sql_helper()->execute_update(
         -SQL => q/insert into genome(division_id,
     genebuild,has_pan_compara,has_variations,has_microarray,has_peptide_compara,
-    has_genome_alignments,has_synteny,has_other_alignments,assembly_id,organism_id,data_release_id)
-        values(?,?,?,?,?,?,?,?,?,?,?,?)/,
+    has_genome_alignments,has_synteny,has_other_alignments,website_packed,assembly_id,organism_id,data_release_id)
+        values(?,?,?,?,?,?,?,?,?,?,?,?,?)/,
         -PARAMS => [ $self->_get_division_id( $genome->division() ),
                     $genome->genebuild(),
                     $genome->has_pan_compara(),
@@ -362,6 +362,7 @@ sub store {
                     $genome->has_genome_alignments(),
                     $genome->has_synteny(),
                     $genome->has_other_alignments(),
+                    $genome->website_packed(),
                     $genome->assembly()->dbID(),
                     $genome->organism()->dbID(),
                     $genome->data_release()->dbID() ],
@@ -415,7 +416,7 @@ sub update {
         $self->dbc()->sql_helper()->execute_update(
           -SQL => q/update genome set division_id=?,
     genebuild=?,has_pan_compara=?,has_variations=?,has_microarray=?,has_peptide_compara=?,
-    has_genome_alignments=?,has_synteny=?,has_other_alignments=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
+    has_genome_alignments=?,has_synteny=?,has_other_alignments=?,website_packed=?,assembly_id=?,organism_id=?,data_release_id=? where genome_id=?/
         ,
           -PARAMS => [ $self->_get_division_id( $genome->division() ),
                     $genome->genebuild(),
@@ -426,6 +427,7 @@ sub update {
                     $genome->has_genome_alignments(),
                     $genome->has_synteny(),
                     $genome->has_other_alignments(),
+                    $genome->website_packed(),
                     $genome->assembly()->dbID(),
                     $genome->organism()->dbID(),
                     $genome->data_release()->dbID(),
@@ -457,6 +459,31 @@ sub update {
     });
   return;
 } ## end sub update
+
+
+=head2 update_website_packed
+  Arg	       : Bio::EnsEMBL::MetaData::GenomeInfo
+  Arg	       : packed (optional, default 1)
+  Description: Update flag for packed status
+  Returntype : None
+  Exceptions : none
+  Caller     : internal
+  Status     : Stable
+=cut
+
+sub update_website_packed {
+  my ($self, $genome, $packed) = @_;
+
+  $packed = 1 unless defined $packed;
+
+  $self->dbc()->sql_helper()->execute_update(
+    -SQL => q/update genome g set g.website_packed = ? where g.genome_id = ?/,
+    -PARAMS => [ $packed, $genome->dbID() ]
+  );
+
+  return;
+}
+
 
 =head2 fetch_databases 
   Arg        : release (optional)
@@ -969,6 +996,38 @@ sub fetch_all_with_other_alignments {
                                      $keen );
 }
 
+=head2 fetch_all_with_website_packed
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have been packed for web display
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_with_website_packed {
+  my ( $self, $keen ) = @_;
+  return
+    $self->_fetch_generic_with_args( { 'website_packed' => '1' },
+                                     $keen );
+}
+
+=head2 fetch_all_without_website_packed
+  Arg        : (optional) if 1, expand children of genome info
+  Description: Fetch all genome info that have been packed for web display
+  Returntype : arrayref of Bio::EnsEMBL::MetaData::GenomeInfo
+  Exceptions : none
+  Caller     : general
+  Status     : Stable
+=cut
+
+sub fetch_all_without_website_packed {
+  my ( $self, $keen ) = @_;
+  return
+    $self->_fetch_generic_with_args( { 'website_packed' => '0' },
+                                     $keen );
+}
+
 =head2 list_divisions
   Description: Fetch all divisions for which we have genomes
   Returntype : arrayref of String
@@ -1459,7 +1518,7 @@ sub clear_genome {
 my $base_genome_fetch_sql =
   q/select genome_id as dbID, division.name as division, genebuild, 
 has_pan_compara, has_variations, has_microarray, has_peptide_compara,
-has_genome_alignments, has_synteny, has_other_alignments, 
+has_genome_alignments, has_synteny, has_other_alignments, website_packed, 
 assembly_id, data_release_id, organism_id
 from genome join division using (division_id)/;
 
