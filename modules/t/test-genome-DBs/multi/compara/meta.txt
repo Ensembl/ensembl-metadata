@@ -1,7 +1,7 @@
 2	\N	schema_type	compara
 3	\N	patch	patch_98_99_a.sql|schema_version
 4	0		
-24	\N	schema_version	105
+27	\N	schema_version	106
 6	\N	patch	patch_99_100_a.sql|schema_version
 7	\N	patch	patch_99_100_b.sql|homology_id_64-bits
 9	\N	patch	patch_100_101_a.sql|schema_version
@@ -17,3 +17,5 @@
 22	\N	patch	patch_103_104_b.sql|dnafrag_alt_region
 23	\N	patch	patch_103_104_c.sql|fix_int_types
 25	\N	patch	patch_104_105_a.sql|schema_version
+26	\N	patch	patch_104_105_b.sql|genebuild_varchar255
+28	\N	patch	patch_105_106_a.sql|schema_version
