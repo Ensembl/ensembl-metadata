@@ -29,7 +29,7 @@ before_install:
   - echo "SECONDARY_BRANCH=$SECONDARY_BRANCH"
   - git-ensembl --clone --branch $ENSEMBL_BRANCH --secondary_branch $SECONDARY_BRANCH --depth 1 ensembl
   - git-ensembl --clone --branch $ENSEMBL_BRANCH --secondary_branch $SECONDARY_BRANCH --depth 1 ensembl-test
-  - git-ensembl --clone --branch $ENSEMBL_BRANCH --secondary_branch $SECONDARY_BRANCH --depth 1 ensembl-taxonomy
+  - git-ensembl --clone --depth 1 ensembl-taxonomy
   - git-ensembl --clone --branch $ENSEMBL_BRANCH --secondary_branch $SECONDARY_BRANCH --depth 1 ensembl-compara
   - git-ensembl --clone --branch $ENSEMBL_BRANCH --secondary_branch $SECONDARY_BRANCH --depth 1 ensembl-variation
   - git clone --branch version/2.5 --depth 1 https://github.com/Ensembl/ensembl-hive.git
