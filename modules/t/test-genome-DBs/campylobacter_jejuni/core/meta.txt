@@ -1,5 +1,5 @@
 1	\N	schema_type	core
-2	\N	schema_version	107
+2	\N	schema_version	108
 3	\N	patch	patch_98_99_a.sql|schema_version
 113	1	species.species_name	Campylobacter jejuni
 112	1	simple_featurebuild.level	toplevel
@@ -123,3 +123,4 @@ c512 210 210 A/- 1
 183	\N	patch	patch_105_106_a.sql|schema_version
 184	\N	patch	patch_106_107_a.sql|schema_version
 185	\N	patch	patch_106_107_b.sql|Added index for seq_region_mapping
+186	\N	patch	patch_107_108_a.sql|schema_version
