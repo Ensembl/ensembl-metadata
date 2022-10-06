@@ -100,7 +100,7 @@ sub do_dump {
 </script> 
 <div id="static">
 <h2>Ensembl Genomes Release $eg_version</h2>
-<p>Ensembl Genomes species metadata are also available via FTP: <a href="ftp://ftp.ensemblgenomes.org/pub/current/species.txt">Tabular text</a> | <a href="ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.json">JSON</a> | <a href="ftp://ftp.ensemblgenomes.org/pub/current/species_metadata.xml">XML</a></p> 
+<p>Ensembl Genomes species metadata are also available via FTP: <a href="https://ftp.ensemblgenomes.org/pub/current/species.txt">Tabular text</a> | <a href="https://ftp.ensemblgenomes.org/pub/current/species_metadata.json">JSON</a> | <a href="https://ftp.ensemblgenomes.org/pub/current/species_metadata.xml">XML</a></p> 
 <table cellpadding="0" cellspacing="0" border="1px dotted #eeeeee"
 class="display" id="species_list">
 <thead> 
