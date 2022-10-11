@@ -255,7 +255,7 @@ sub analyze_tracks {
 # [1_Puccinia_triticina_SRR035315]
 # source_name        = Transcriptomics sequences of fresh spores. Run id: SRR035315
 # description        = RNA-Seq study.
-# source_url         = http://ftp.sra.ebi.ac.uk/vol1/ERZ000/ERZ000002/SRR035315.bam
+# source_url         = https://ftp.sra.ebi.ac.uk/vol1/ERZ000/ERZ000002/SRR035315.bam
 # source_type        = rnaseq
 # display            = normal
 # then store some or all of this in my output e.g. {bam}{source_type}[{source_name,description,source_url}]

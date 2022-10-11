@@ -444,10 +444,10 @@ sub write_output_to_file {
     my $news = '';
     my $url;
     if ($division eq "vertebrates") {
-        $url = "ftp://ftp.ensembl.org/pub/release-" . $release . "/"
+        $url = "https://ftp.ensembl.org/pub/release-" . $release . "/"
     }
     else {
-        $url = "ftp://ftp.ensemblgenomes.org/pub/release-" . $release . "/$division/";
+        $url = "https://ftp.ensemblgenomes.org/pub/release-" . $release . "/$division/";
     }
 
     if ($division eq 'bacteria') {
