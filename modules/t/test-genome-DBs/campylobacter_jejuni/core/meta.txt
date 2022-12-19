@@ -1,5 +1,5 @@
 1	\N	schema_type	core
-2	\N	schema_version	109
+2	\N	schema_version	110
 3	\N	patch	patch_98_99_a.sql|schema_version
 113	1	species.species_name	Campylobacter jejuni
 112	1	simple_featurebuild.level	toplevel
@@ -126,3 +126,6 @@ c512 210 210 A/- 1
 186	\N	patch	patch_107_108_a.sql|schema_version
 187	\N	patch	patch_108_109_a.sql|schema_version
 188	\N	patch	patch_108_109_b.sql|Added xref source GeneCards into external_db
+189	\N	patch	patch_109_110_a.sql|schema_version
+190	\N	patch	patch_109_110_b.sql|Add IS_PAR relationship to link X- and Y-PAR genes
+191	\N	patch	patch_109_110_c.sql|Allow gene id to belong to multiple alt allele groups
