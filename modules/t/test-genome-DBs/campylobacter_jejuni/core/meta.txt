@@ -1,5 +1,5 @@
 1	\N	schema_type	core
-2	\N	schema_version	110
+2	\N	schema_version	111
 3	\N	patch	patch_98_99_a.sql|schema_version
 113	1	species.species_name	Campylobacter jejuni
 112	1	simple_featurebuild.level	toplevel
@@ -129,3 +129,4 @@ c512 210 210 A/- 1
 189	\N	patch	patch_109_110_a.sql|schema_version
 190	\N	patch	patch_109_110_b.sql|Add IS_PAR relationship to link X- and Y-PAR genes
 191	\N	patch	patch_109_110_c.sql|Allow gene id to belong to multiple alt allele groups
+192	\N	patch	patch_110_111_a.sql|schema_version
