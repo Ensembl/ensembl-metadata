@@ -89,8 +89,10 @@ sub _write_metadata_to_file {
 				  $self->yesno($md->has_genome_alignments()),
 				  $self->yesno($md->has_other_alignments()),
 				  $md->dbname(),
-				  $md->species_id(),
-				  "\n"));
+				  $md->species_id()
+				  ));
+
+	print $fh "\n";
   return;
 }
 
