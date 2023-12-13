@@ -40,6 +40,8 @@ sub default_options {
       },    # inherit other stuff from the base class
 
     pipeline_name => 'metadata_updater',
+    new_metadata_uri => '',
+    taxonomy_uri => '',
     metadata_uri => '',
     database_uri => '',
     release_date=> '',
@@ -80,9 +82,25 @@ sub pipeline_analyses {
             -parameters => {
              },
             -flow_into =>
-            { 2 => ['metadata_updater_core'],
+            { 2 => ['metadata_updater_core','metadata_updater_core_new'],
             3 => ['metadata_updater_other'],
             4 => ['metadata_updater_compara'] }
+        },
+        {
+            -logic_name        => 'metadata_updater_core_new',
+            -module            => 'ensembl.production.hive.ensembl_genome_metadata.MetadataUpdaterHiveCore',
+            -language          => 'python3',
+            -max_retry_count   => 1,
+            -analysis_capacity => 30,
+            -parameters        => {
+                 taxonomy_uri => $self->o('taxonomy_uri'),
+                 metadata_uri => $self->o('new_metadata_uri'),
+            },
+            -rc_name           => 'default',
+            # Testing Necessary            -rc_name => '2GB',
+            -flow_into         => {
+                2 => [ '?table_name=result', ],
+            },
         },
         {
             -logic_name => 'metadata_updater_core',
