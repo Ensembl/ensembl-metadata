@@ -41,8 +41,8 @@ sub default_options {
 
     pipeline_name => 'metadata_updater',
     new_metadata_uri => '',
-    taxonomy_uri => undef,
-    metadata_uri => undef,
+    taxonomy_uri => $ENV{'TAXONOMY_URI'} || undef,
+    metadata_uri => $ENV{'GENOME_METADATA_URI'} || undef,
     database_uri => '',
     release_date=> '',
     e_release => '',
