@@ -40,8 +40,8 @@ sub default_options {
       },    # inherit other stuff from the base class
 
     pipeline_name => 'metadata_updater',
-    genome_metadata_uri => $ENV{'GENOME_METADATA_URI'},
-    taxonomy_uri => $ENV{'TAXONOMY_URI'},
+    genome_metadata_uri => '',
+    taxonomy_uri => '',
     metadata_uri => '',
     database_uri => '',
     release_date=> '',
