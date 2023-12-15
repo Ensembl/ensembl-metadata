@@ -40,9 +40,9 @@ sub default_options {
       },    # inherit other stuff from the base class
 
     pipeline_name => 'metadata_updater',
-    new_metadata_uri => '',
-    taxonomy_uri => $ENV{'TAXONOMY_URI'} || undef,
-    metadata_uri => $ENV{'GENOME_METADATA_URI'} || undef,
+    genome_metadata_uri => $ENV{'GENOME_METADATA_URI'},
+    taxonomy_uri => $ENV{'TAXONOMY_URI'},
+    metadata_uri => '',
     database_uri => '',
     release_date=> '',
     e_release => '',
@@ -94,7 +94,7 @@ sub pipeline_analyses {
             -analysis_capacity => 30,
             -parameters        => {
                  taxonomy_uri => $self->o('taxonomy_uri'),
-                 metadata_uri => $self->o('new_metadata_uri'),
+                 metadata_uri => $self->o('genome_metadata_uri'),
             },
             -rc_name           => 'default',
             # Testing Necessary            -rc_name => '2GB',
