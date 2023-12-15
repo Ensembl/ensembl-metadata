@@ -41,8 +41,8 @@ sub default_options {
 
     pipeline_name => 'metadata_updater',
     new_metadata_uri => '',
-    taxonomy_uri => '',
-    metadata_uri => '',
+    taxonomy_uri => undef,
+    metadata_uri => undef,
     database_uri => '',
     release_date=> '',
     e_release => '',
