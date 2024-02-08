@@ -42,7 +42,7 @@ sub default_options {
     pipeline_name => 'metadata_updater',
     genome_metadata_uri => '',
     taxonomy_uri => '',
-    metadata_uri => '',
+    genome_metadata_uri => '',
     database_uri => '',
     release_date=> '',
     e_release => '',
@@ -94,7 +94,7 @@ sub pipeline_analyses {
             -analysis_capacity => 30,
             -parameters        => {
                  taxonomy_uri => $self->o('taxonomy_uri'),
-                 metadata_uri => $self->o('genome_metadata_uri'),
+                 genome_metadata_uri => $self->o('genome_metadata_uri'),
             },
             -rc_name           => 'default',
             # Testing Necessary            -rc_name => '2GB',
