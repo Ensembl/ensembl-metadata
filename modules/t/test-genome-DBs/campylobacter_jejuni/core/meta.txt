@@ -1,5 +1,5 @@
 1	\N	schema_type	core
-2	\N	schema_version	112
+2	\N	schema_version	113
 3	\N	patch	patch_98_99_a.sql|schema_version
 113	1	species.species_name	Campylobacter jejuni
 112	1	simple_featurebuild.level	toplevel
@@ -132,3 +132,6 @@ c512 210 210 A/- 1
 192	\N	patch	patch_110_111_a.sql|schema_version
 193	\N	patch	patch_111_112_a.sql|schema_version
 194	\N	patch	patch_111_112_b.sql|Allow meta_value to be null
+195	\N	patch	patch_111_112_c.sql|Extend meta_key length to 64
+196	\N	patch	patch_112_113_a.sql|schema_version
+197	\N	patch	patch_112_113_b.sql|Ensure meta_value is not null
