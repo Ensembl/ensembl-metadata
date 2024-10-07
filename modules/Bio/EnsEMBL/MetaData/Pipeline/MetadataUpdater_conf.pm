@@ -30,8 +30,9 @@ sub resource_classes {
     my ($self) = @_;
     return { 
         'default' => { 'SLURM' => '--time=1-00:00:00 --mem=1G'},
-         '1GB'    => { 'SLURM' => '--time=1-00:00:00 --mem=1G'  },
-         '2GB'    => { 'SLURM' => '--time=1-00:00:00 --mem=2G' } };
+         '1GB'    => { 'SLURM' => '--time=1-00:00:00 --mem=1G'},
+         '2GB'    => { 'SLURM' => '--time=1-00:00:00 --mem=2G'}
+    };
 }
 
 sub default_options {
