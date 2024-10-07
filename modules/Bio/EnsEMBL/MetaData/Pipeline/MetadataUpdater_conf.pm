@@ -28,9 +28,10 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');  # All Hive datab
 
 sub resource_classes {
     my ($self) = @_;
-    return { 'default' => { 'LSF' => '-q production'},
-         '1GB' => { 'LSF' => '-q production -M 1000 -R "rusage[mem=1000]"' },
-         '2GB' => { 'LSF' => '-q production -M 2000 -R "rusage[mem=2000]"' } };
+    return { 
+        'default' => { 'SLURM' => '--time=1-00:00:00 --mem=1G'},
+         '1GB'    => { 'SLURM' => '--time=1-00:00:00 --mem=1G'  },
+         '2GB'    => { 'SLURM' => '--time=1-00:00:00 --mem=2G' } };
 }
 
 sub default_options {
