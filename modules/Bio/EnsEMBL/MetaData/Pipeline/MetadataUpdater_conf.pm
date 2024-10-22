@@ -28,9 +28,13 @@ use base ('Bio::EnsEMBL::Hive::PipeConfig::HiveGeneric_conf');  # All Hive datab
 
 sub resource_classes {
     my ($self) = @_;
-    return { 'default' => { 'LSF' => '-q production'},
-         '1GB' => { 'LSF' => '-q production -M 1000 -R "rusage[mem=1000]"' },
-         '2GB' => { 'LSF' => '-q production -M 2000 -R "rusage[mem=2000]"' } };
+    return { 
+        'default' => { SLURM => '--time=1-00:00:00  --mem=1G' },
+        '2GB'     => { SLURM => '--time=1-00:00:00  --mem=2G' },
+        '4GB'     => { SLURM => '--time=1-00:00:00  --mem=4G' },
+        '8GB'     => { SLURM => '--time=1-00:00:00  --mem=8G' },
+        '16GB'    => { SLURM => '--time=1-00:00:00  --mem=16G' },
+    };
 }
 
 sub default_options {
@@ -81,13 +85,12 @@ sub pipeline_analyses {
             -max_retry_count => 1,
             -parameters => {
              },
-            -flow_into =>
-            { 2 => ['metadata_updater_core','metadata_updater_core_new'],
-            3 => ['metadata_updater_other'],
-            4 => ['metadata_updater_compara'] }
+            -flow_into => { 
+                2 => ['metadata_updater_core'],
+             }
         },
         {
-            -logic_name        => 'metadata_updater_core_new',
+            -logic_name        => 'metadata_updater_core',
             -module            => 'ensembl.production.hive.ensembl_genome_metadata.MetadataUpdaterHiveCore',
             -language          => 'python3',
             -max_retry_count   => 1,
@@ -96,48 +99,9 @@ sub pipeline_analyses {
                  taxonomy_uri => $self->o('taxonomy_uri'),
                  genome_metadata_uri => $self->o('genome_metadata_uri'),
             },
-            -rc_name           => 'default',
-            # Testing Necessary            -rc_name => '2GB',
+            -rc_name           => '2GB',
             -flow_into         => {
                 2 => [ '?table_name=result', ],
-            },
-        },
-        {
-            -logic_name => 'metadata_updater_core',
-            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
-            -max_retry_count => 1,
-            -analysis_capacity => 30,
-            -parameters => {
-             },
-            -rc_name => '2GB',
-            -flow_into     => {
-                   2 => [ '?table_name=result']
-            },
-        },
-        {
-            -logic_name => 'metadata_updater_other',
-            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
-            -max_retry_count => 1,
-            -analysis_capacity => 30,
-            -wait_for      => [ 'metadata_updater_core' ],
-            -parameters => {
-             },
-            -rc_name => '1GB',
-            -flow_into     => {
-                   2 => [ '?table_name=result']
-            },
-        },
-        {
-            -logic_name => 'metadata_updater_compara',
-            -module     => 'Bio::EnsEMBL::MetaData::Pipeline::MetadataUpdaterHive',
-            -max_retry_count => 1,
-            -analysis_capacity => 10,
-            -wait_for      => [ 'metadata_updater_core', 'metadata_updater_other' ],
-            -parameters => {
-             },
-            -rc_name => '1GB',
-            -flow_into     => {
-                   2 => [ '?table_name=result']
             },
         }
         ];
