@@ -31,8 +31,8 @@ use Cwd;
 sub resource_classes {
   my ($self) = @_;
   return { 
-	  'default' => { 'LSF' => '-q production' },
-	  'himem' => { 'LSF' => '-q production -M 20000 -R "rusage[mem=20000]"' }
+	  'default' => { 'LSF' => '-q production' , 'SLURM' => '--partition=production --time=1-00:00:00 --mem=1G'},
+	  'himem' => { 'LSF' => '-q production -M 20000 -R "rusage[mem=20000]"', 'SLURM' => '--partition=production --time=1-00:00:00 --mem=2G' }
 	 };
 }
 
