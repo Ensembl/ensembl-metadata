@@ -81,7 +81,6 @@ sub pipeline_analyses {
     { 
       -logic_name  => 'metadata_txt_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-      -meadow_type => 'LSF',
       -rc_name         => 'default',
       -parameters  => {
         'cmd' => 'perl #base_dir#/ensembl-metadata/misc_scripts/dump_metadata.pl -user #user# -port #port# -host #host# -dbname #dbname# -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::TextMetaDataDumper -release #release# -dump_path #dump_path# -division #expr( join(" -division ", @{ #division# }) )expr#',
@@ -98,7 +97,6 @@ sub pipeline_analyses {
     { 
       -logic_name  => 'metadata_xml_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-      -meadow_type => 'LSF',
       -rc_name         => 'himem',
       -parameters  => {
         'cmd' =>'perl #base_dir#/ensembl-metadata/misc_scripts/dump_metadata.pl -user #user# -port #port# -host #host# -dbname #dbname# -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::XMLMetaDataDumper -release #release# -dump_path #dump_path# -division #expr( join(" -division ", @{ #division# }) )expr#',
@@ -115,7 +113,6 @@ sub pipeline_analyses {
     { 
       -logic_name  => 'metadata_json_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-      -meadow_type => 'LSF',
       -rc_name         => 'himem',
       -parameters  => {
         'cmd' =>'perl #base_dir#/ensembl-metadata/misc_scripts/dump_metadata.pl -user #user# -port #port# -host #host# -dbname #dbname# -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::JsonMetaDataDumper -release #release# -dump_path #dump_path# -division #expr( join(" -division ", @{ #division# }) )expr#',
@@ -132,7 +129,6 @@ sub pipeline_analyses {
     { 
       -logic_name  => 'metadata_uniprot_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-      -meadow_type => 'LSF',
       -rc_name         => 'default',
       -parameters  => {
         'cmd' =>'perl #base_dir#/ensembl-metadata/misc_scripts/dump_metadata.pl -user #user# -port #port# -host #host# -dbname #dbname# -dumper Bio::EnsEMBL::MetaData::MetaDataDumper::UniProtReportDumper -release #release# -dump_path #dump_path# -division #expr( join(" -division ", @{ #division# }) )expr#',
@@ -149,7 +145,6 @@ sub pipeline_analyses {
     { 
       -logic_name  => 'metadata_genome_reports_dumps',
       -module      => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-      -meadow_type => 'LSF',
       -rc_name         => 'default',
       -parameters  => {
         'cmd' =>'for DIVISION in #expr( join(" ", @{ #division# }) )expr#;do echo "processing $DIVISION"; perl #base_dir#/ensembl-metadata/misc_scripts/report_genomes.pl -user #user# -port #port# -host #host# -dbname #dbname# -dump_path #dump_path#/$DIVISION -division $DIVISION -release #release#;done',
