@@ -32,7 +32,7 @@ sub resource_classes {
   my ($self) = @_;
   return { 
 	  'default' => { 'SLURM' => '--time=1-00:00:00 --mem=1G' },
-	  'himem'   => { 'SLURM' => '--time=1-00:00:00 --mem=2G' }
+	  'himem'   => { 'SLURM' => '--time=1-00:00:00 --mem=60G' }
 	 };
 }
 
