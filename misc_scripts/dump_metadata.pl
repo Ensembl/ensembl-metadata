@@ -124,7 +124,8 @@ for my $div ( @{ $opts->{division} } ) {
   #Get both division short and full name from a division short or full name
   my ($division,$division_name)=process_division_names($div);
   $logger->info("Fetching metadata for $division");
-  push $division_list, $division_name;
+  $division_list = [] unless defined $division_list;
+  push @{$division_list}, $division_name;
   @metadata = ( @{ $gdba->fetch_all_by_division($division_name, 1) }, @metadata );
 }
 $logger->info( "Retrieved metadata for " . scalar(@metadata) . " genomes" );
