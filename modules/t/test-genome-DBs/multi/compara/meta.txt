@@ -1,7 +1,7 @@
 2	\N	schema_type	compara
 3	\N	patch	patch_98_99_a.sql|schema_version
 4	0		
-55	\N	schema_version	115
+57	\N	schema_version	116
 6	\N	patch	patch_99_100_a.sql|schema_version
 7	\N	patch	patch_99_100_b.sql|homology_id_64-bits
 9	\N	patch	patch_100_101_a.sql|schema_version
@@ -38,3 +38,4 @@
 52	\N	patch	patch_112_113_b.sql|meta_key_64
 54	\N	patch	patch_113_114_a.sql|schema_version
 56	\N	patch	patch_114_115_a.sql|schema_version
+58	\N	patch	patch_115_116_a.sql|schema_version
